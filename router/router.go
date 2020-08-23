@@ -31,4 +31,6 @@ func SDRouter() (*gin.Engine, error) {
 	// TODO: add any future routes here
 
 	//
+	return restRouter, nil
 }
+
