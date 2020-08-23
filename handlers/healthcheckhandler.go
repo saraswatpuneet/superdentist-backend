@@ -26,7 +26,7 @@ func HealthCheckHandler(c *gin.Context) {
 
 //GetHealthStatus ...
 func GetHealthStatus(w http.ResponseWriter) {
-	healthStatus := "Apple backend service is healthy"
+	healthStatus := "Super Dentist backend service is healthy"
 	response, _ := json.Marshal(healthStatus)
 	w.Header().Add("content-type", "application/json")
 	w.WriteHeader(http.StatusOK)
