@@ -16,7 +16,7 @@ func SDRouter() (*gin.Engine, error) {
 	configCors.AllowAllOrigins = true
 	configCors.AllowHeaders = []string{"Origin", "Content-Length", "Content-Type", "Authorization"}
 	restRouter.Use(cors.New(configCors))
-	
+
 	// TODO: inti rout handlers
 
 	//
