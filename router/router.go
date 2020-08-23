@@ -23,14 +23,16 @@ func SDRouter() (*gin.Engine, error) {
 	if !global.Options.Debug {
 		gin.SetMode(gin.ReleaseMode)
 	}
-
-	// This router is not added to the v1 group even though the route prefix is the same to avoid
-	// making it require authentication (k8s need it for liveness check)
+	//.....................................................................
+	// healthcheck is need by Kubernetes to test readiness of containers
+	// register route is again not protected since it will be used for registration
+	// todo prevent spam/bot attaches for register route
+	// login route will take in user info check against IAP/IP and return token/reject
 	restRouter.GET("/api/v1/healthcheck", handlers.HealthCheckHandler)
-
+	restRouter.POST("/api/v1/register", handlers.UserRegistrationHandler)
+	restRouter.POST("/api/v1/login", handlers.UserLoginHandler)
+	// ....................................................................
 	// TODO: add any future routes here
-
 	//
 	return restRouter, nil
 }
-
