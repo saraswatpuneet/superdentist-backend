@@ -1,3 +1,5 @@
+// Package identity that handles signup, reset password, verification of email etc.
+// This is an admin package be careful while using these functions .....
 package identity
 
 import (
@@ -56,7 +58,45 @@ func (id *IDP) SignUpUser(ctx context.Context, user *contracts.UserRegistrationR
 	if err != nil {
 		return nil, err
 	}
+	verificationEmailLink, err := id.client.EmailVerificationLink(ctx, user.Email)
+	if err != nil {
+		return nil, err
+	}
+	// TODO: Implement SMTP server from GSuite/Others to send out custom emails
+	// Would also need HTML template for the same
+	fmt.Println(verificationEmailLink)
 	return createResponse, nil
+
+}
+
+// ResetUserPassword ...
+func (id *IDP) ResetUserPassword(ctx context.Context, email string) error {
+	currentResetLink, err := id.client.PasswordResetLink(ctx, email)
+	if err != nil {
+		return err
+	}
+	// TODO: Implement SMTP server from GSuite/Others to send out custom emails
+	// Would also need HTML template for the same
+	fmt.Println(currentResetLink)
+	return nil
+}
+
+// GetUserByEmail ...
+func (id *IDP) GetUserByEmail(ctx context.Context, email string) (*auth.UserRecord, error) {
+	currentUser, err := id.client.GetUserByEmail(ctx, email)
+	if err != nil {
+		return nil, err
+	}
+	return currentUser, nil
+}
+
+// GetUserByPhone ...
+func (id *IDP) GetUserByPhone(ctx context.Context, phone string) (*auth.UserRecord, error) {
+	currentUser, err := id.client.GetUserByPhoneNumber(ctx, phone)
+	if err != nil {
+		return nil, err
+	}
+	return currentUser, nil
 }
 
 func readCredentialsFile(ctx context.Context, filename string, scopes []string) (*google.Credentials, []byte, error) {
