@@ -7,6 +7,8 @@ import (
 // Options .. contains global options like ones read from environment variables
 type Options struct {
 	Debug          bool   `json:"debug,omitempty"`
+	MaxPayloadSize int64  `json:"max_payload_size,omitempty"`
+	MaxHeaderSize  int    `json:"max_header_size,omitempty"`
 }
 
 // New .. create a new instance 

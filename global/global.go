@@ -13,10 +13,10 @@ import (
 
 // some global variables commonly used
 var (
-	Options   *options.Options
-	UnitTest  bool
-	Ctx       context.Context
-	ProcessWG sync.WaitGroup
+	Options         *options.Options
+	UnitTest        bool
+	Ctx             context.Context
+	WaitGroupServer sync.WaitGroup
 )
 
 // initializes global package to read environment variables as needed
