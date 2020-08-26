@@ -1,9 +1,12 @@
 package main
 
 import (
+	"os"
+
 	log "github.com/sirupsen/logrus"
 	"github.com/superdentist/superdentist-backend/config"
 	"github.com/superdentist/superdentist-backend/global"
+	servertrigger "github.com/superdentist/superdentist-backend/trigger"
 )
 
 func main() {
@@ -15,6 +18,12 @@ func main() {
 	if global.Options.Debug {
 		log.SetLevel(log.DebugLevel)
 	}
-	// TODO Initialize Core that handles routes, middleware and requests
+	err := servertrigger.CoreServer()
+	if err != nil {
+		//send signal to all channels to calm down we found an error
+		log.Errorf("Backend server went crazy: %v", err.Error())
+		// send OS signal and shut it all down
+		os.Exit(1)
+	}
 	log.Infof("Backend intialization completed")
 }
