@@ -67,12 +67,8 @@ jobs:
             curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
             dep ensure
         fi
-    - name: Install lint
-      run: apt install golint
     - name: Run Tests
       run: make test
-    - name: Lint Code
-      run: make lint
     - name: Build Binary
       run: make
     - name: Build
