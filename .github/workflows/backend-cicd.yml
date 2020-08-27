@@ -13,6 +13,9 @@
 name: Build, Push and Deploy SuperDentist Backend Server
 
 on:
+  push:
+    branches:
+      - master
   release:
     types: [created]
 
