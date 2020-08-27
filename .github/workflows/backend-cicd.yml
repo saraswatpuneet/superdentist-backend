@@ -47,9 +47,9 @@ jobs:
         gcloud --quiet auth configure-docker
 
     # Get the GKE credentials so we can deploy to the cluster
-   # - run: |-
+    # - run: |-
     #    gcloud container clusters get-credentials "$GKE_CLUSTER" --zone "$GKE_ZONE"
-  #
+    #
     # Build the Docker image
     - name: Set up Go 1.x
       uses: actions/setup-go@v2
@@ -67,11 +67,11 @@ jobs:
             curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
             dep ensure
         fi
-    - name: Build Go
+    - name: Run Tests
       run: make test
-    - name: Build Go
+    - name: Lint Code
       run: make lint
-    - name: Build Go
+    - name: Build Binary
       run: make
     - name: Build
       run: |-
@@ -94,8 +94,8 @@ jobs:
 #TODO enable deployment
     # Deploy the Docker image to the GKE cluster
     #- name: Deploy
-     # run: |-
-      #  ./kustomize edit set image gcr.io/PROJECT_ID/IMAGE:TAG=gcr.io/$PROJECT_ID/$IMAGE:$GITHUB_SHA
-       # ./kustomize build . | kubectl apply -f -
-        #kubectl rollout status deployment/$DEPLOYMENT_NAME
-        #kubectl get services -o wide
+    #  run: |-
+    #    ./kustomize edit set image gcr.io/PROJECT_ID/IMAGE:TAG=gcr.io/$PROJECT_ID/$IMAGE:$GITHUB_SHA
+    #    ./kustomize build . | kubectl apply -f -
+    #    kubectl rollout status deployment/$DEPLOYMENT_NAME
+    #    kubectl get services -o wide

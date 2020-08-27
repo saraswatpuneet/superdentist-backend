@@ -33,7 +33,7 @@ func CoreServer() error {
 	// Block the server until server encounter any errors
 	err := <-bootUPErrors
 	if err != nil {
-		log.Errorf("There is an issue starting backend server for super dentist", err.Error())
+		log.Errorf("There is an issue starting backend server for super dentist: %v", err.Error())
 		global.WaitGroupServer.Wait()
 		return err
 	}
