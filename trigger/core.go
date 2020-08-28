@@ -20,7 +20,7 @@ func CoreServer() error {
 	port := 8080
 	ctx, cancel := context.WithCancel(context.Background())
 	log.Infof("Starting superdentist-backend container.")
-	flag.IntVar(&port, "port", 8080, "Expose a port to accept HTTP/1.x connections default 8080")
+	flag.IntVar(&port, "port", 8090, "Expose a port to accept HTTP/1.x connections default 8080")
 
 	global.Ctx = ctx
 

@@ -1,0 +1,37 @@
+# Default values for superdentist-backend.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+maxSurge: 1
+replicaCountSwagger: 1
+
+#Authorization reverse proxy details
+
+image:
+  repository: gcr.io/$PROJECT_ID/$IMAGE
+  tag: $GITHUB_SHA
+  pullPolicy: Always
+  health: /healthz
+  port: 8090
+
+#Authorization reverse proxy details
+asp:
+  repository: gcr.io/$PROJECT_ID/superdentist-auth-proxy
+  tag: latest
+  port: 8080
+  pullPolicy: Always
+  arg:
+    mode: "authz"
+
+
+sdServiceAccount:
+  name: superdentist-backend
+  secret: superdentist-backend
+  credential:
+    dir: /var/run/secrets/superdentist-backend
+    file: $SD_BACKEND_JSON
+
+service:
+  type: ClusterIP
+  port: 80
