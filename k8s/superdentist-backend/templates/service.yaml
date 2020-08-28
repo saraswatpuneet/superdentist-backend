@@ -6,7 +6,8 @@ metadata:
     app: {{ template "superdentist-backend.name" . }}
     chart: {{ template "superdentist-backend.chart" . }}
     release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}spec:
+    heritage: {{ .Release.Service }}
+spec:
   type: {{ .Values.service.type }}
   ports:
     - port: {{ .Values.service.port }}
