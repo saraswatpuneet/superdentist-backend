@@ -9,15 +9,15 @@ replicaCountSwagger: 1
 #Authorization reverse proxy details
 
 image:
-  repository: gcr.io/$PROJECT_ID/$IMAGE
-  tag: $GITHUB_SHA
+  repository: gcr.io/superdentist/superdentist-backend
+  tag: latest
   pullPolicy: Always
   health: /healthz
   port: 8090
 
 #Authorization reverse proxy details
 asp:
-  repository: gcr.io/$PROJECT_ID/superdentist-auth-proxy
+  repository: gcr.io/superdentist/superdentist-auth-proxy
   tag: latest
   port: 8080
   pullPolicy: Always
@@ -30,7 +30,7 @@ sdServiceAccount:
   secret: superdentist-backend
   credential:
     dir: /var/run/secrets/superdentist-backend
-    file: $SD_BACKEND_JSON
+    file: super-dentist-backend.json
 
 service:
   type: ClusterIP
