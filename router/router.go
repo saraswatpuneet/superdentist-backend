@@ -28,6 +28,7 @@ func SDRouter() (*gin.Engine, error) {
 	// register route is again not protected since it will be used for registration
 	// todo prevent spam/bot attaches for register route
 	// login route will take in user info check against IAP/IP and return token/reject
+	restRouter.GET("/healthz", handlers.HealthCheckHandler)
 	restRouter.GET("/api/v1/healthz", handlers.HealthCheckHandler)
 	restRouter.POST("/api/v1/hello", handlers.UserRegistrationHandler)
 	// ....................................................................
