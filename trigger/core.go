@@ -3,9 +3,9 @@ package trigger
 
 import (
 	"context"
-	"flag"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 
 	log "github.com/sirupsen/logrus"
@@ -20,8 +20,14 @@ func CoreServer() error {
 	port := 8080
 	ctx, cancel := context.WithCancel(context.Background())
 	log.Infof("Starting superdentist-backend container.")
-	flag.IntVar(&port, "port", 8090, "Expose a port to accept HTTP/1.x connections default 8080")
-
+	portFromEnv := os.Getenv("PORT")
+	var err error
+	if portFromEnv != "" {
+		port, err = strconv.Atoi(portFromEnv)
+		if err != nil {
+			port = 8090
+		}
+	}
 	global.Ctx = ctx
 
 	// setup cancel signal for graceful shutdown of serve\
@@ -31,7 +37,7 @@ func CoreServer() error {
 	controller.SDBackendController(ctx, port, bootUPErrors)
 	//........................................................................................
 	// Block the server until server encounter any errors
-	err := <-bootUPErrors
+	err = <-bootUPErrors
 	if err != nil {
 		log.Errorf("There is an issue starting backend server for super dentist: %v", err.Error())
 		global.WaitGroupServer.Wait()
