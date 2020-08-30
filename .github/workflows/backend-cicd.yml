@@ -46,9 +46,9 @@ jobs:
         gcloud --quiet auth configure-docker
 
     # Get the GKE credentials so we can deploy to the cluster
-    # - run: |-
-    #    gcloud container clusters get-credentials "$GKE_CLUSTER" --zone "$GKE_ZONE"
-    #
+    - run: |-
+        gcloud container clusters get-credentials "$GKE_CLUSTER" --zone "$GKE_ZONE"
+    
     # Build the Docker image
     - name: Set up Go 1.x
       uses: actions/setup-go@v2
@@ -83,3 +83,8 @@ jobs:
       run: |-
         docker push "gcr.io/$PROJECT_ID/$IMAGE:$GITHUB_SHA"
         docker push "gcr.io/$PROJECT_ID/$IMAGE:latest"
+
+    - name: Deploy to SuperDentist cluster
+      uses: WyriHaximus/github-action-helm3@v2.0
+      with: 
+        exec: helm upgrade superdentist-backend superdentist-backend --install --wait --atomic
