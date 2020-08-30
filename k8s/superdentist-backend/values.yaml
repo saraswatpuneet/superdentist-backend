@@ -35,3 +35,21 @@ sdServiceAccount:
 service:
   type: ClusterIP
   port: 80
+
+## Ingress relation values below
+
+apisRegexp: "/api/(v1|documents|settings)/"
+swaggerPagesRegexp: "/docs/(sd|documents|settings)/"
+uiPagesRegexp: "/(workspace|login|home)$"
+cors:
+  origins: '^no_origin_allowed$'
+  methods: 'GET, POST, DELETE, PATCH, PUT, OPTIONS'
+  headers: 'Accept,Authorization,Cache-Control,Content-Type,Keep-Alive,Origin,User-Agent'
+routes:
+  - route: /api/v1/?(.*)
+    service: superdentist-backend
+    replica: 1
+    port: 80
+maxBodySizeMb: 100
+# TODO add more routes for frontend etc..
+
