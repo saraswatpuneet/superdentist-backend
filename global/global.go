@@ -25,5 +25,7 @@ func init() {
 	if err != nil {
 		log.Fatal("Options init errored: ", err.Error())
 	}
+	// set it to true if debugging
+	options.Debug = false
 	Options = options
 }

@@ -66,7 +66,7 @@ func serverHTTPRoutes(ctx context.Context, httpAddress string, handler http.Hand
 	if err != nil {
 		log.Fatalf("SDController: Failed to start server : %s", err.Error())
 	}
-
+	log.Infof("Backend is serving the routes.")
 	for {
 		// wait for the server to stop or be canceled
 		select {
