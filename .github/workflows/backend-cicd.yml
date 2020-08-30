@@ -83,8 +83,13 @@ jobs:
       run: |-
         docker push "gcr.io/$PROJECT_ID/$IMAGE:$GITHUB_SHA"
         docker push "gcr.io/$PROJECT_ID/$IMAGE:latest"
-
+  
+    - name: Install helm
+      run: |
+        curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
+        chmod 700 get_helm.sh
+        ./get_helm.sh
     - name: Deploy to SuperDentist cluster
-      uses: WyriHaximus/github-action-helm3@v2.0
-      with: 
-        exec: helm upgrade superdentist-backend superdentist-backend --install --wait --atomic
+      run: |-
+        gcloud container clusters get-credentials "$GKE_CLUSTER" --zone "$GKE_ZONE"
+        helm upgrade superdentist-backend superdentist-backend --install --wait --atomic
