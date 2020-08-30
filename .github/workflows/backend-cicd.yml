@@ -92,4 +92,4 @@ jobs:
     - name: Deploy to SuperDentist cluster
       run: |-
         gcloud container clusters get-credentials "$GKE_CLUSTER" --zone "$GKE_ZONE"
-        helm upgrade superdentist-backend superdentist-backend --install --wait --atomic
+        helm upgrade superdentist-backend ./k8s/superdentist-backend --install --wait --atomic
