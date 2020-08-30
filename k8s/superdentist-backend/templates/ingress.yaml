@@ -125,10 +125,8 @@ spec:
     - http:
         paths:
         {{- range .Values.routes }}
-        {{- if (.replica) and (gt .replica 0) }}
         - path: {{ .route }}
           backend:
             serviceName: {{ .service }}
             servicePort: {{ .port | default 80 }}
-        {{- end }}
         {{- end }}

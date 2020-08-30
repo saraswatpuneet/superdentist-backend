@@ -48,7 +48,6 @@ cors:
 routes:
   - route: /api/v1/?(.*)
     service: superdentist-backend
-    replica: 1
     port: 80
 maxBodySizeMb: 100
 # TODO add more routes for frontend etc..
