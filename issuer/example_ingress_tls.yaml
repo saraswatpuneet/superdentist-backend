@@ -1,0 +1,21 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: kuard
+  annotations:
+    kubernetes.io/ingress.class: nginx   
+    cert-manager.io/issuer: letsencrypt-production-dns
+
+spec:
+  tls:
+  - hosts:
+    - superdentist.io
+    secretName: super-dentist-io-tls
+  rules:
+  - host: superdentist.io
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: kuard
+          servicePort: 80
