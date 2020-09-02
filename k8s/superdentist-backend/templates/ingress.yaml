@@ -9,6 +9,7 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-read-timeout: "86400"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "86400"
     nginx.ingress.kubernetes.io/use-regex: "true"
+    cert-manager.io/issuer: "letsencrypt-production-tls"
     nginx.ingress.kubernetes.io/proxy-body-size: "{{ .Values.maxBodySizeMb }}m"
     nginx.ingress.kubernetes.io/configuration-snippet: |
       server_tokens off;
@@ -121,8 +122,13 @@ metadata:
         return 204;
       }
 spec:
+  tls:
+  - hosts:
+    - superdentist.io
+    secretName: superdentist-backend-cert-10074
   rules:
-    - http:
+    - host: superdentist.io
+      http:
         paths:
         {{- range .Values.routes }}
         - path: {{ .route }}
