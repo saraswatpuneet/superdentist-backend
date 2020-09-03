@@ -33,7 +33,7 @@ func SDRouter() (*gin.Engine, error) {
 	restRouter.GET("/api/v1/healthz", handlers.HealthCheckHandler)
 	// ....................................................................
 	// TODO: add any future routes here
-	restRouter.POST("/api/v1/hello", handlers.UserRegistrationHandler)
+	restRouter.Static("/docs/", "./swaggerui")
 
 	//
 	return restRouter, nil

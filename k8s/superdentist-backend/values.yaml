@@ -4,7 +4,6 @@
 
 replicaCount: 1
 maxSurge: 1
-replicaCountSwagger: 1
 
 #Backend image details
 
@@ -14,15 +13,6 @@ image:
   pullPolicy: Always
   health: /healthz
   port: 8090
-# Swagger page details
-imageswagger:
-  repository: swaggerapi/swagger-ui
-  tag: v3.32.5
-  port: 8080
-  health: /
-  pullPolicy: IfNotPresent
-  mountPathSwaggerConfig: /etc/config
-  swaggerFilePath: /etc/config/swagger.yaml
 
 #Authorization reverse proxy details
 asp:
@@ -48,7 +38,6 @@ service:
 ## Ingress relation values below
 
 apisRegexp: "/api/(v1|documents|settings)/"
-swaggerPagesRegexp: "/docs"
 uiPagesRegexp: "/(workspace|login|home)$"
 cors:
   origins: '^no_origin_allowed$'
@@ -59,7 +48,7 @@ routes:
     service: superdentist-backend
     port: 80
   - route: /docs
-    service: superdentist-backend-swagger
+    service: superdentist-backend
     port: 80
   - route: /
     service: superdentist-backend

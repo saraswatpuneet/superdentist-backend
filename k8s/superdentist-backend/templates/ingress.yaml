@@ -32,12 +32,7 @@ metadata:
       if ($request_uri ~* {{ .Values.apisRegexp }}) {
         set $cache_control_value 'no-cache, no-store, max-age=0';
       }
-      # Swagger pages
-      if ($request_uri ~* {{ .Values.swaggerPagesRegexp }}) {
-        # For swagger docs we should allow slightly more in terms of script behavior and images
-        set $csp_script_src_value "'self' 'unsafe-eval' 'unsafe-inline'";
-        set $csp_image_src_value "'self' data: https://online.swagger.io";
-      }
+
       # Js, css: Cache js, css for 1 year. Cache will be revalidated when file's name is changed
       if ($request_uri ~* ".(css|js)$") {
         set $cache_control_value 'public, max-age=31536000';

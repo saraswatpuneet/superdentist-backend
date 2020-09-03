@@ -16,6 +16,7 @@ RUN apk add --no-cache bash && \
     addgroup -S appgroup && adduser -u 1000 -S appuser -G appgroup
 
 COPY --from=builder /go/src/app/superdentist-backend /usr/bin/
+COPY --from=builder /go/src/app/swaggerui /usr/bin/swaggerui
 
 EXPOSE 8090
 
