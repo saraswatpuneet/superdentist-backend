@@ -39,6 +39,8 @@ spec:
         env:
         - name: SWAGGER_JSON
           value: {{ .Values.imageswagger.swaggerFilePath }}
+        - name: BASE_URL
+          value:  {{ .Values.imageswagger.swaggerBaseURL }}
 
       volumes:
       - name: swagger-config
