@@ -55,14 +55,11 @@ cors:
   methods: 'GET, POST, DELETE, PATCH, PUT, OPTIONS'
   headers: 'Accept,Authorization,Cache-Control,Content-Type,Keep-Alive,Origin,User-Agent'
 routes:
-  - route: /api/v1/?(.*)
+  - route: /?(.*)
     service: superdentist-backend
     port: 80
-  - route: /docs
+  - route: /docs/?(.*)
     service: superdentist-backend-swagger
-    port: 80
-  - route: /
-    service: superdentist-backend
     port: 80
 maxBodySizeMb: 100
 # TODO add more routes for frontend etc..
