@@ -48,7 +48,7 @@ service:
 ## Ingress relation values below
 
 apisRegexp: "/api/(v1|documents|settings)/"
-swaggerPagesRegexp: "/docs/(sd|documents|settings)/"
+swaggerPagesRegexp: "/docs"
 uiPagesRegexp: "/(workspace|login|home)$"
 cors:
   origins: '^no_origin_allowed$'
