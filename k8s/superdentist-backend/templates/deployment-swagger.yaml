@@ -36,18 +36,9 @@ spec:
         volumeMounts:
         - name: swagger-config
           mountPath: {{ .Values.imageswagger.mountPathSwaggerConfig }}
-        - name: swagger-config
-          mountPath: {{.Values.imageswagger.mountPathSwaggerNGConfig}}
         env:
-        - name: API_URLS
-          value: >-
-            [
-            {url:'/docs/swagger.yaml',name:'Swagger File'}
-            ]
         - name: SWAGGER_JSON
           value: {{ .Values.imageswagger.swaggerFilePath }}
-        - name: BASE_URL
-          value:  {{ .Values.imageswagger.swaggerBaseURL }}
 
       volumes:
       - name: swagger-config
