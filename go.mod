@@ -8,9 +8,10 @@ require (
 	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-gonic/gin v1.6.3
 	github.com/sirupsen/logrus v1.6.0
-	github.com/stretchr/testify v1.4.0
-	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
-	golang.org/x/tools v0.0.0-20200826220159-b85e56c1dc27 // indirect
-	google.golang.org/api v0.30.0
+	github.com/stretchr/testify v1.6.1
+	golang.org/x/oauth2 v0.0.0-20200902213428-5d25da1a8d43
+	golang.org/x/tools v0.0.0-20200902224051-cf7880770c1e // indirect
+	google.golang.org/api v0.31.0
 	gopkg.in/tylerb/graceful.v1 v1.2.15
+	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776 // indirect
 )

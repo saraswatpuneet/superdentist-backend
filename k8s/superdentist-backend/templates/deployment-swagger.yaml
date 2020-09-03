@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "superdentist-backend.fullname" . }}-swagger
+  labels:
+    app: {{ template "superdentist-backend.name" . }}
+    chart: {{ template "superdentist-backend.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCountSwagger }}
+  selector:
+    matchLabels:
+      app: {{ template "superdentist-backend.name" . }}-swagger
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "superdentist-backend.name" . }}-swagger
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: {{ .Chart.Name }}-swagger
+        image: "{{ .Values.imageswagger.repository }}:{{ .Values.imageswagger.tag }}"
+        imagePullPolicy: {{ .Values.imageswagger.pullPolicy }}
+        ports:
+          - name: http-server
+            containerPort: {{ .Values.imageswagger.port }}
+            protocol: TCP
+        readinessProbe:
+          httpGet:
+            path: {{ .Values.imageswagger.health }}
+            port: {{ .Values.imageswagger.port }}
+          initialDelaySeconds: 5
+          timeoutSeconds: 1
+        volumeMounts:
+        - name: swagger-config
+          mountPath: {{ .Values.imageswagger.mountPathSwaggerConfig }}
+        env:
+        - name: SWAGGER_JSON
+          value: {{ .Values.imageswagger.swaggerFilePath }}
+
+      volumes:
+      - name: swagger-config
+        configMap:
+          name:  {{ template "superdentist-backend.fullname" . }}-swagger
