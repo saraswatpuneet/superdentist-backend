@@ -47,7 +47,7 @@ routes:
   - route: /api/v1/?(.*)
     service: superdentist-backend
     port: 80
-  - route: /docs
+  - route: /docs/
     service: superdentist-backend
     port: 80
   - route: /

@@ -17,7 +17,8 @@ RUN apk add --no-cache bash && \
 
 COPY --from=builder /go/src/app/superdentist-backend /usr/bin/
 COPY --from=builder /go/src/app/swaggerui /usr/bin/swaggerui
-
+RUN ls /usr/bin 
+RUN ls /usr/bin/swaggerui
 EXPOSE 8090
 
 ENTRYPOINT ["/usr/bin/superdentist-backend"]
