@@ -8,4 +8,4 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 data:
-   swagger.yaml: {{ include "sd.openapi" | quote }}
+   swagger.yaml: {{ include "sd.openapi" . | quote }}
