@@ -58,7 +58,7 @@ routes:
   - route: /api/v1/?(.*)
     service: superdentist-backend
     port: 80
-  - route: /docs/ecb/?(.*)
+  - route: /docs/?(.*)
     service: superdentist-backend-swagger
     port: 80
   - route: /
