@@ -23,7 +23,7 @@ imageswagger:
   pullPolicy: IfNotPresent
   mountPathSwaggerConfig: /etc/config
   swaggerFilePath: /etc/config/swagger.yaml
-  mountPathSwaggerNGConfig: /etc/nginx/html
+  mountPathSwaggerNGConfig: /usr/share/nginx/html/docs
   swaggerBaseURL: /docs
 
 #Authorization reverse proxy details
