@@ -37,7 +37,7 @@ spec:
         - name: swagger-config
           mountPath: {{ .Values.imageswagger.mountPathSwaggerConfig }}
         - name: swagger-config
-          mountPath{{.Values.imageswagger.mountPathSwaggerNGConfig}}
+          mountPath: {{.Values.imageswagger.mountPathSwaggerNGConfig}}
         env:
         - name: API_URLS
           value: >-
