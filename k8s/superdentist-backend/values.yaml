@@ -17,7 +17,7 @@ image:
 # Swagger page details
 imageswagger:
   repository: swaggerapi/swagger-ui
-  tag: v3.19.0
+  tag: v3.32.5
   port: 8080
   health: /
   pullPolicy: IfNotPresent
