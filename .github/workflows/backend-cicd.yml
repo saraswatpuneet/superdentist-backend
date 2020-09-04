@@ -21,7 +21,7 @@ on:
 
 env:
   PROJECT_ID: ${{ secrets.GKE_PROJECT }}
-  GKE_CLUSTER:  superdentist-minimal
+  GKE_CLUSTER:  superdentist-main	
   GKE_ZONE: us-central1-c
   IMAGE: superdentist-backend
 

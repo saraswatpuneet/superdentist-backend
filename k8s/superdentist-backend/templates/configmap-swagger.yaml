@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "superdentist-backend.fullname" . }}-swagger
+  labels:
+    app: {{ template "superdentist-backend.name" . }}
+    chart: {{ template "superdentist-backend.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+   swagger.yaml: {{ include "sd.openapi" . | quote }}

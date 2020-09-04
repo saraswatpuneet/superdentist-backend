@@ -1,3 +1,4 @@
+{{- define "sd.openapi" -}}
 swagger: "2.0"
 info:
   description: "This is a swagger spec for APIs provided by superdentist.io"
@@ -9,8 +10,13 @@ info:
     name: "Apache 2.0"
     url: "http://www.apache.org/licenses/LICENSE-2.0.html"
 host: "superdentist.io"
-basePath: "/"
+basePath: "/api/v1"
 tags:
+- name: "general"
+  description: "General API checks"
+  externalDocs:
+    description: "Find out more"
+    url: "http://superdentist.io"
 - name: "user"
   description: "All these APIs deals with users (Specialist/GD alike)"
   externalDocs:
@@ -19,7 +25,22 @@ tags:
 schemes:
 - "https"
 paths:
-  /v1/registerUser:
+  /hello:
+    get:
+      tags:
+      - "general"
+      summary: "Say hello"
+      produces:
+      - "application/json"
+      operationId: "HelloHandler"
+      responses:
+       '200':
+        description: "Super Dentist Says Hi"
+       '401':
+        description: "Unauthorized: Bad request or authorization details"
+      security:
+        - Bearer: []
+  /registerUser:
     post:
       tags:
       - "user"
@@ -74,3 +95,4 @@ definitions:
         description: "User Status"
     xml:
       name: "User"
+{{ end }}
