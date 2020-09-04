@@ -10,13 +10,8 @@ info:
     name: "Apache 2.0"
     url: "http://www.apache.org/licenses/LICENSE-2.0.html"
 host: "superdentist.io"
-basePath: "/api/v1"
+basePath: "/api/sd"
 tags:
-- name: "general"
-  description: "General API checks"
-  externalDocs:
-    description: "Find out more"
-    url: "http://superdentist.io"
 - name: "user"
   description: "All these APIs deals with users (Specialist/GD alike)"
   externalDocs:
@@ -25,22 +20,7 @@ tags:
 schemes:
 - "https"
 paths:
-  /hello:
-    get:
-      tags:
-      - "general"
-      summary: "Say hello"
-      produces:
-      - "application/json"
-      operationId: "HelloHandler"
-      responses:
-       '200':
-        description: "Super Dentist Says Hi"
-       '401':
-        description: "Unauthorized: Bad request or authorization details"
-      security:
-        - Bearer: []
-  /registerUser:
+  /v1/registerUser:
     post:
       tags:
       - "user"
@@ -63,7 +43,6 @@ paths:
           description: "Unauthorized: Bad request or authorization details"
       security:
         - Bearer: []
-
 securityDefinitions:
   Bearer:
     type: "apiKey"
