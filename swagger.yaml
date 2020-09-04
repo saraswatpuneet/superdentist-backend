@@ -9,7 +9,7 @@ info:
     name: "Apache 2.0"
     url: "http://www.apache.org/licenses/LICENSE-2.0.html"
 host: "superdentist.io"
-basePath: "/"
+basePath: "/api/sd"
 tags:
 - name: "user"
   description: "All these APIs deals with users (Specialist/GD alike)"
@@ -42,7 +42,6 @@ paths:
           description: "Unauthorized: Bad request or authorization details"
       security:
         - Bearer: []
-
 securityDefinitions:
   Bearer:
     type: "apiKey"
