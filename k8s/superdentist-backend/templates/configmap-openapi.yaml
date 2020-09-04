@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ template "superdentist-backend.name" . }}
-  namespace: ecb-space
+  namespace: default
   labels:
     app: {{ template "superdentist-backend.name" . }}
     chart: {{ template "superdentist-backend.chart" . }}
