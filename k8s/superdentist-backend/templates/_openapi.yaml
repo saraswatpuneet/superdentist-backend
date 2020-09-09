@@ -53,7 +53,7 @@ definitions:
   UserRegistration:
     type: "object"
     properties:
-      emailID:
+      emailId:
         type: "string"
       phoneNumber:
         type: "string"
