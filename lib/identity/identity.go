@@ -10,7 +10,6 @@ import (
 
 	firebase "firebase.google.com/go"
 	"firebase.google.com/go/auth"
-	"github.com/superdentist/superdentist-backend/contracts"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/option"
 )
@@ -43,30 +42,6 @@ func NewIDPEP(ctx context.Context, projectID string) (*IDP, error) {
 		return nil, fmt.Errorf("Failed to initialize identity client")
 	}
 	return &IDP{projectID: projectID, client: currentClient, fireApp: app}, nil
-}
-
-// SignUpUser ....
-func (id *IDP) SignUpUser(ctx context.Context, user *contracts.UserRegistrationRequest) (*auth.UserRecord, error) {
-	params := (&auth.UserToCreate{}).
-		Email(user.Email).
-		EmailVerified(false).
-		PhoneNumber(user.PhoneNumber).
-		Password(user.Password).
-		DisplayName(user.FirstName + " " + user.LastName).
-		Disabled(false)
-	createResponse, err := id.client.CreateUser(ctx, params)
-	if err != nil {
-		return nil, err
-	}
-	verificationEmailLink, err := id.client.EmailVerificationLink(ctx, user.Email)
-	if err != nil {
-		return nil, err
-	}
-	// TODO: Implement SMTP server from GSuite/Others to send out custom emails
-	// Would also need HTML template for the same
-	fmt.Println(verificationEmailLink)
-	return createResponse, nil
-
 }
 
 // ResetUserPassword ...
