@@ -7,13 +7,6 @@ import (
 
 // UserRegistrationHandler ...
 func UserRegistrationHandler(c *gin.Context) {
-	log.Infof("Signing up user to platform")
-	// TODO: implement GCP indentity platform registration routine
+	log.Infof("Registering Signed Up User to SD database")
 
-}
-
-// UserLoginHandler ...
-func UserLoginHandler(c *gin.Context) {
-	log.Infof("Attempting to login user.")
-	// TODO: implement GCP authentication checks and return tokens back
 }

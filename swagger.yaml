@@ -24,7 +24,7 @@ paths:
       tags:
       - "user"
       summary: "Register user"
-      description: "Frotend upon firebase registration send payload to backend with token."
+      description: "Frontend upon firebase registration will call backend with token and details"
       operationId: "createUser"
       produces:
       - "application/json"
@@ -52,24 +52,11 @@ definitions:
   UserRegistration:
     type: "object"
     properties:
-      id:
-        type: "integer"
-        format: "int64"
-      username:
+      emailID:
         type: "string"
-      firstName:
+      phoneNumber:
         type: "string"
-      lastName:
+      userRole:
         type: "string"
-      email:
-        type: "string"
-      password:
-        type: "string"
-      phone:
-        type: "string"
-      userStatus:
-        type: "integer"
-        format: "int32"
-        description: "User Status"
     xml:
       name: "User"

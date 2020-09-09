@@ -31,8 +31,6 @@ func SDRouter() (*gin.Engine, error) {
 	restRouter.GET("/", handlers.HealthCheckHandler)
 	restRouter.GET("/healthz", handlers.HealthCheckHandler)
 	restRouter.GET("/api/v1/healthz", handlers.HealthCheckHandler)
-	// ....................................................................
-	// TODO: add any future routes here
-	//
+	restRouter.POST("/v1/registerUser", handlers.UserRegistrationHandler)
 	return restRouter, nil
 }
