@@ -33,6 +33,7 @@ func SDRouter() (*gin.Engine, error) {
 	restRouter.GET("/api/v1/healthz", handlers.HealthCheckHandler)
 	restRouter.POST("/v1/registerClinic", handlers.ClinicRegistrationHandler)
 	restRouter.POST("/v1/verifyClinic", handlers.ClinicVerificationHandler)
+	restRouter.POST("/v1/addPhysicalClinics", handlers.AddPhysicalClinics)
 
 	return restRouter, nil
 }

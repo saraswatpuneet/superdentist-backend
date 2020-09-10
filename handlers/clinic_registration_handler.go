@@ -135,3 +135,8 @@ func ClinicVerificationHandler(c *gin.Context) {
 	})
 	clinicDB.Close()
 }
+
+//AddPhysicalClinics ... after registering clinic main account we add multiple locations etc.
+func AddPhysicalClinics(c *gin.Context) {
+
+}

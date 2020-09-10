@@ -77,8 +77,6 @@ definitions:
     properties:
       emailId:
         type: "string"
-      phoneNumber:
-        type: "string"
       clinicType:
         type: "string"
       isVerified:
