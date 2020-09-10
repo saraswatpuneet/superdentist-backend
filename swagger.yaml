@@ -60,7 +60,7 @@ paths:
           $ref: "#/definitions/ClinicVerificationData"
       responses:
         '200':
-          description: "Clinic has successfully been verified at backend"
+          $ref: '#/definitions/PostRegistrationResponse'
         '401':
           description: "Unauthorized: Bad request or authorization details"
       security:
@@ -97,6 +97,8 @@ definitions:
   PostRegistrationResponse:
     type: object
     properties:
+      emailId:
+        type: string
       clinicId:
         type: string
       isVerified:

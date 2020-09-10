@@ -13,10 +13,16 @@ type ClinicRegistrationData struct {
 	PhoneNumber string `json:"phoneNumber"`
 }
 
+// ClinicVerificationData ...
+type ClinicVerificationData struct {
+	EmailID     string `json:"emailId" valid:"required"`
+	IsVerified  bool   `json:"isVerified" valid:"required"`
+}
 // ClinicRegistrationResponse ....
 type ClinicRegistrationResponse struct {
-	EmailID    int64 `json:"emailId" valid:"required"`
-	IsVerified bool  `json:"isVerified" valid:"required"`
+	EmailID    string `json:"emailId" valid:"required"`
+	ClinicID   string  `json:"clinicId" valid:"required"`
+	IsVerified bool   `json:"isVerified" valid:"required"`
 }
 
 // ClinicRegistrationDatabase provides thread-safe access to a database of UserRegistration.
