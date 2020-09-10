@@ -12,7 +12,7 @@ info:
 host: "superdentist.io"
 basePath: "/api/sd"
 tags:
-- name: "user"
+- name: "clinic"
   description: "All these APIs deals with users (Specialist/GD alike)"
   externalDocs:
     description: "Find out more"
@@ -20,25 +20,48 @@ tags:
 schemes:
 - "https"
 paths:
-  /v1/registerUser:
+  /v1/registerClinic:
     post:
       tags:
-      - "user"
-      summary: "Register user"
+      - "clinic"
+      summary: "Register Clinic"
       description: "Frontend upon firebase registration will call backend with token and details"
-      operationId: "createUser"
+      operationId: "ClinicRegistrationHandler"
       produces:
       - "application/json"
       parameters:
       - in: "body"
         name: "body"
-        description: "Created user object"
+        description: "Created clinic object"
         required: true
         schema:
-          $ref: "#/definitions/UserRegistration"
+          $ref: "#/definitions/ClinicRegistrationData"
       responses:
         '200':
-          description: "successful operation"
+          $ref: '#/definitions/PostRegistrationResponse'
+        '401':
+          description: "Unauthorized: Bad request or authorization details"
+      security:
+        - Bearer: []
+  /v1/verifyClinic:
+    post:
+      tags:
+      - "clinic"
+      summary: "Verify Clinic"
+      description: " Frontend will tell backend that clinic has verified itself "
+      operationId: "ClinicVerificationHandler"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Created clinic object"
+        required: true
+        schema:
+          $ref: "#/definitions/ClinicVerificationData"
+      responses:
+        '200':
+          description: "Clinic has successfully been verified at backend"
         '401':
           description: "Unauthorized: Bad request or authorization details"
       security:
@@ -50,15 +73,33 @@ securityDefinitions:
     in: "header"
 
 definitions:
-  UserRegistration:
+  ClinicRegistrationData:
     type: "object"
     properties:
       emailId:
         type: "string"
       phoneNumber:
         type: "string"
-      userRole:
+      clinicType:
         type: "string"
+      isVerified:
+        type: "boolean"
+        default: false
     xml:
-      name: "User"
+      name: "Clinic"
+  ClinicVerificationData:
+    type: object
+    properties:
+      emailId:
+        type:  string
+      isVerified:
+        type: boolean
+        default: false
+  PostRegistrationResponse:
+    type: object
+    properties:
+      clinicId:
+        type: string
+      isVerified:
+        type: boolean
 {{ end }}

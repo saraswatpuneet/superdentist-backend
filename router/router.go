@@ -31,6 +31,8 @@ func SDRouter() (*gin.Engine, error) {
 	restRouter.GET("/", handlers.HealthCheckHandler)
 	restRouter.GET("/healthz", handlers.HealthCheckHandler)
 	restRouter.GET("/api/v1/healthz", handlers.HealthCheckHandler)
-	restRouter.POST("/v1/registerUser", handlers.UserRegistrationHandler)
+	restRouter.POST("/v1/registerClinic", handlers.ClinicRegistrationHandler)
+	restRouter.POST("/v1/verifyClinic", handlers.ClinicVerificationHandler)
+
 	return restRouter, nil
 }
