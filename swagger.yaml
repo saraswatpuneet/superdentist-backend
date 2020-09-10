@@ -37,7 +37,7 @@ paths:
           $ref: "#/definitions/ClinicRegistrationData"
       responses:
         '200':
-          $ref: '#/definitions/PostRegistrationResponse'
+          $ref: '#/responses/PostClinicRegistrationResponse'
         '401':
           description: "Unauthorized: Bad request or authorization details"
       security:
@@ -60,7 +60,7 @@ paths:
           $ref: "#/definitions/ClinicVerificationData"
       responses:
         '200':
-          $ref: '#/definitions/PostRegistrationResponse'
+          $ref: '#/responses/PostClinicVerificationResponse'
         '401':
           description: "Unauthorized: Bad request or authorization details"
       security:
@@ -101,3 +101,12 @@ definitions:
         type: string
       isVerified:
         type: boolean
+responses:
+  PostClinicRegistrationResponse:
+    description: Returns successful completion of register clinic stage one
+    schema:
+      $ref: '#/definitions/PostRegistrationResponse'
+  PostClinicVerificationResponse:
+    description: Returns successful completion of verify clinic in backend
+    schema:
+      $ref: '#/definitions/PostRegistrationResponse'
