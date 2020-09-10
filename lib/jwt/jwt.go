@@ -1,3 +1,4 @@
+package jwt
 
 import (
 	"fmt"
