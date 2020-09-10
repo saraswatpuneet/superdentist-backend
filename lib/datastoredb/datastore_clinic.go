@@ -55,8 +55,9 @@ func (db *dsClinic) InitializeDataBase(ctx context.Context, projectID string) er
 }
 
 // AddClinicRegistration ....
-func (db *dsClinic) AddClinicRegistration(ctx context.Context, clinic *contracts.ClinicRegistrationData) (int64, error) {
-	primaryKey := datastore.NameKey("ClinicRegistrationMain", clinic.EmailID, nil)
+func (db *dsClinic) AddClinicRegistration(ctx context.Context, clinic *contracts.ClinicRegistrationData, uID string) (int64, error) {
+	parentKey := datastore.NameKey("ClinicRegistrationMain", uID, nil)
+	primaryKey := datastore.NameKey("ClinicRegistrationMain", clinic.EmailID, parentKey)
 	allPrimaryClinics := make([]contracts.ClinicRegistrationData, 0)
 	qP := datastore.NewQuery("ClinicRegistrationMain").Ancestor(primaryKey)
 
@@ -77,8 +78,9 @@ func (db *dsClinic) AddClinicRegistration(ctx context.Context, clinic *contracts
 }
 
 // VerifyClinicInDatastore ..
-func (db *dsClinic) VerifyClinicInDatastore(ctx context.Context, emailID string) (int64, error) {
-	pk := datastore.NameKey("ClinicRegistrationMain", emailID, nil)
+func (db *dsClinic) VerifyClinicInDatastore(ctx context.Context, emailID string, uID string) (int64, error) {
+	parentKey := datastore.NameKey("ClinicRegistrationMain", uID, nil)
+	pk := datastore.NameKey("ClinicRegistrationMain", emailID, parentKey)
 	clinic := &contracts.ClinicRegistrationData{}
 	if err := db.client.Get(ctx, pk, clinic); err != nil {
 		return 0.0, fmt.Errorf("datastoredb: could not get registered cli: %v", err)

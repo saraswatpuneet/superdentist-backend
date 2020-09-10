@@ -12,6 +12,7 @@ import (
 	"github.com/superdentist/superdentist-backend/contracts"
 	"github.com/superdentist/superdentist-backend/lib/datastoredb"
 	"github.com/superdentist/superdentist-backend/lib/googleprojectlib"
+	"github.com/superdentist/superdentist-backend/lib/identity"
 	"go.opencensus.io/trace"
 )
 
@@ -33,8 +34,8 @@ func ClinicRegistrationHandler(c *gin.Context) {
 		)
 		return
 	}
-	clinicDB := datastoredb.NewClinicHandler()
-	err := clinicDB.InitializeDataBase(ctx, gProjectDeployment)
+	identityClient, _ := identity.NewIDPEP(ctx, gProjectDeployment)
+	currentClinicRecord, err := identityClient.GetUserByEmail(ctx, clinicRegistrationReq.EmailID)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
@@ -45,7 +46,19 @@ func ClinicRegistrationHandler(c *gin.Context) {
 		)
 		return
 	}
-	sdClinicID, err := clinicDB.AddClinicRegistration(ctx, &clinicRegistrationReq)
+	clinicDB := datastoredb.NewClinicHandler()
+	err = clinicDB.InitializeDataBase(ctx, gProjectDeployment)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err,
+			},
+		)
+		return
+	}
+	sdClinicID, err := clinicDB.AddClinicRegistration(ctx, &clinicRegistrationReq, currentClinicRecord.UID)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
@@ -98,7 +111,9 @@ func ClinicVerificationHandler(c *gin.Context) {
 		)
 		return
 	}
-	sdClinicID, err := clinicDB.VerifyClinicInDatastore(ctx, clinicVerificationReq.EmailID)
+	identityClient, _ := identity.NewIDPEP(ctx, gProjectDeployment)
+	currentClinicRecord, err := identityClient.GetUserByEmail(ctx, clinicVerificationReq.EmailID)
+	sdClinicID, err := clinicDB.VerifyClinicInDatastore(ctx, clinicVerificationReq.EmailID, currentClinicRecord.UID)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
