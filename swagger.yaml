@@ -40,6 +40,8 @@ paths:
           $ref: '#/responses/PostClinicRegistrationResponse'
         '401':
           description: "Unauthorized: Bad request or authorization details"
+        '500':
+          description: "Internal server error occured"
       security:
         - Bearer: []
   /v1/clinic/verifyClinic:
@@ -63,6 +65,8 @@ paths:
           $ref: '#/responses/PostClinicVerificationResponse'
         '401':
           description: "Unauthorized: Bad request or authorization details"
+        '500':
+          description: "Internal server error occured"
       security:
         - Bearer: []
   /v1/clinic/addPhysicalAddresses:
@@ -84,6 +88,31 @@ paths:
       responses:
         '200':
           $ref: '#/responses/PostClinicAddressResponse'
+        '401':
+          description: "Unauthorized: Bad request or authorization details"
+        '500':
+          description: "Internal server error occured"
+      security:
+        - Bearer: []
+  /v1/clinic/registerClinicDoctors:
+    post:
+      tags:
+       - "clinic"
+      summary: "Add clinical addresses"
+      description: "Provide a range of doctors associated with each clinic"
+      operationId: "RegisterClinicDoctors"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Created clinic object"
+        required: true
+        schema:
+          $ref: "#/definitions/ClinicDoctorsRegisterRequest"
+      responses:
+        '200':
+          description: "Doctors have been successfully registered"
         '401':
           description: "Unauthorized: Bad request or authorization details"
         '500':
@@ -156,12 +185,40 @@ definitions:
         items:
           type: object
           properties:
+            clinicAddressId:
+              type: string
             clinicName:
               type: string
             clinicAddress:
               type: string
             clinicPhoneNumber:
               type: string
+  ClinicDoctorsRegisterRequest:
+    type: object
+    properties:
+      clinicId:
+        type: string
+      emailId:
+        type: string
+      clinicAddressId:
+        type: string
+      doctors:
+        type: object
+        properties:
+          doctorPrefix:
+            type: string
+          doctorFirstName:
+            type: string
+          doctorLastName:
+            type: string
+          doctorEmailAddress:
+            type: string
+          doctorSpeciality:
+            type: array
+            items:
+              type: string
+
+          
 responses:
   PostClinicRegistrationResponse:
     description: Returns successful completion of register clinic stage one
@@ -175,3 +232,4 @@ responses:
     description: Returns successful completion of clinic address registration
     schema:
       $ref: '#/definitions/ClinicAddressResponse'
+  

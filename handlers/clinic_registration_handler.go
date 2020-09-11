@@ -140,3 +140,8 @@ func ClinicVerificationHandler(c *gin.Context) {
 func AddPhysicalClinicsHandler(c *gin.Context) {
 
 }
+
+//RegisterClinicDoctors .... once clinics are registers multiple doctors needs to be added to them
+func RegisterClinicDoctors(c *gin.Context) {
+
+}

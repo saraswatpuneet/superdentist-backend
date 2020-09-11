@@ -22,7 +22,7 @@ func NewClinicHandler() *dsClinic {
 	return &dsClinic{projectID: "", client: nil}
 }
 
-// Ensure dsClinic conforms to the ComputeActionDatabase interface.
+// Ensure dsClinic conforms to the ClinicRegistrationDatabase interface.
 
 var _ contracts.ClinicRegistrationDatabase = &dsClinic{}
 
