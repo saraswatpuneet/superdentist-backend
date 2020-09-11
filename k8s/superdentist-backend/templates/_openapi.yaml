@@ -20,11 +20,11 @@ tags:
 schemes:
 - "https"
 paths:
-  /v1/registerClinic:
+  /v1/clinic/registerClinic:
     post:
       tags:
       - "clinic"
-      summary: "Register Clinic"
+      summary: "Register clinic"
       description: "Frontend upon firebase registration will call backend with token and details"
       operationId: "ClinicRegistrationHandler"
       produces:
@@ -43,11 +43,11 @@ paths:
           description: "Unauthorized: Bad request or authorization details"
       security:
         - Bearer: []
-  /v1/verifyClinic:
+  /v1/clinic/verifyClinic:
     post:
       tags:
       - "clinic"
-      summary: "Verify Clinic"
+      summary: "Verify clinic"
       description: " Frontend will tell backend that clinic has verified itself "
       operationId: "ClinicVerificationHandler"
       produces:
@@ -64,6 +64,31 @@ paths:
           $ref: '#/responses/PostClinicVerificationResponse'
         '401':
           description: "Unauthorized: Bad request or authorization details"
+      security:
+        - Bearer: []
+  /v1/clinic/addPhysicalAddresses:
+    post:
+      tags:
+       - "clinic"
+      summary: "Add clinical addresses"
+      description: "Provide a range of addresses associated with registered clinic"
+      operationId: "AddPhysicalClinicsHandler"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Created clinic object"
+        required: true
+        schema:
+          $ref: "#/definitions/ClinicAddressRequest"
+      responses:
+        '200':
+          $ref: '#/responses/PostClinicAddressResponse'
+        '401':
+          description: "Unauthorized: Bad request or authorization details"
+        '500':
+          description: "Internal server error occured"
       security:
         - Bearer: []
 securityDefinitions:
@@ -102,6 +127,42 @@ definitions:
         type: string
       isVerified:
         type: boolean
+  ClinicAddressRequest:
+    type: object
+    properties:
+      clinicId:
+        type: string
+      emailId:
+        type: string
+      clinicDetails:
+        type:  array
+        items:
+          type: object
+          properties:
+            clinicName:
+              type: string
+            clinicAddress:
+              type: string
+            clinicPhoneNumber:
+              type: string
+  ClinicAddressResponse:
+    type: object
+    properties:
+      clinicId:
+        type: string
+      emailId:
+        type: string
+      clinicDetails:
+        type:  array
+        items:
+          type: object
+          properties:
+            clinicName:
+              type: string
+            clinicAddress:
+              type: string
+            clinicPhoneNumber:
+              type: string
 responses:
   PostClinicRegistrationResponse:
     description: Returns successful completion of register clinic stage one
@@ -111,4 +172,8 @@ responses:
     description: Returns successful completion of verify clinic in backend
     schema:
       $ref: '#/definitions/PostRegistrationResponse'
+  PostClinicAddressResponse:
+    description: Returns successful completion of clinic address registration
+    schema:
+      $ref: '#/definitions/ClinicAddressResponse'
 {{ end }}

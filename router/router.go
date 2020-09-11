@@ -23,6 +23,8 @@ func SDRouter() (*gin.Engine, error) {
 	if !global.Options.Debug {
 		gin.SetMode(gin.ReleaseMode)
 	}
+	version1 := restRouter.Group("/api/v1")
+
 	//.....................................................................
 	// healthcheck is need by Kubernetes to test readiness of containers
 	// register route is again not protected since it will be used for registration
@@ -31,9 +33,12 @@ func SDRouter() (*gin.Engine, error) {
 	restRouter.GET("/", handlers.HealthCheckHandler)
 	restRouter.GET("/healthz", handlers.HealthCheckHandler)
 	restRouter.GET("/api/v1/healthz", handlers.HealthCheckHandler)
-	restRouter.POST("/v1/registerClinic", handlers.ClinicRegistrationHandler)
-	restRouter.POST("/v1/verifyClinic", handlers.ClinicVerificationHandler)
-	restRouter.POST("/v1/addPhysicalClinics", handlers.AddPhysicalClinics)
-
+	clinicGroup := version1.Group("/clinic") 
+	{
+		clinicGroup.POST("/registerClinic", handlers.ClinicRegistrationHandler)
+		clinicGroup.POST("/verifyClinic", handlers.ClinicVerificationHandler)
+		clinicGroup.POST("/addPhysicalClinics", handlers.AddPhysicalClinicsHandler)
+	}
+	// Derive groups from version group to consolidate our APIs in a better way
 	return restRouter, nil
 }
