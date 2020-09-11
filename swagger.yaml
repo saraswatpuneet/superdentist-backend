@@ -160,8 +160,6 @@ definitions:
     properties:
       clinicId:
         type: string
-      emailId:
-        type: string
       clinicDetails:
         type:  array
         items:
@@ -198,13 +196,11 @@ definitions:
     properties:
       clinicId:
         type: string
-      emailId:
-        type: string
-      clinicAddressId:
-        type: string
       doctors:
         type: object
         properties:
+          clinicAddressId:
+            type: string
           doctorPrefix:
             type: string
           doctorFirstName:

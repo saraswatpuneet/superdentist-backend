@@ -81,3 +81,8 @@ func (db dsClinicMeta) AddPhysicalAddessressToClinic(ctx context.Context, clinic
 	}
 	return  returnedAddress,nil
 }
+
+func (db dsClinicMeta) 	AddDoctorsToPhysicalClincs(ctx context.Context, clinicEmailID string, clinicFBID string, doctorsData []contracts.ClinicDoctorRegistration) error {
+	
+	return nil
+}
