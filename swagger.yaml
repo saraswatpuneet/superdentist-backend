@@ -119,6 +119,29 @@ paths:
           description: "Internal server error occured"
       security:
         - Bearer: []
+  /v1/clinic/registerClinicPMS:
+    post:
+      tags:
+        - "clinic"
+      summary: Add all PMS used by current clinic
+      description: Collect information on PMS used by current clinic
+      operationId: "RegisterClinicPMS"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Created clinic object"
+        required: true
+        schema:
+          $ref: "#/definitions/RegisterClinicPMS"
+      responses:
+        '200':
+          description: "PMS have registered for the clinic"
+        '401':
+          description: "Unauthorized: Bad request or authorization details"
+        '500':
+          description: "Internal server error occured"
+      security:
+        - Bearer: []
 securityDefinitions:
   Bearer:
     type: "apiKey"
@@ -126,6 +149,15 @@ securityDefinitions:
     in: "header"
 
 definitions:
+  RegisterClinicPMS:
+    type: object
+    properties:
+      clinicId:
+        type: string
+      pmsNames:
+        type:  array
+        items:
+          type: string
   ClinicRegistrationData:
     type: "object"
     properties:

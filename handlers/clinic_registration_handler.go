@@ -145,3 +145,7 @@ func AddPhysicalClinicsHandler(c *gin.Context) {
 func RegisterClinicDoctors(c *gin.Context) {
 
 }
+
+func RegisterClinicPMS (c * gin.Context) {
+	
+}
