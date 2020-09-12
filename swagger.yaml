@@ -197,6 +197,10 @@ definitions:
               type: string
             clinicPhoneNumber:
               type: string
+            clinicSpeciality:
+              type: array
+              items:
+                type: string
   ClinicAddressResponse:
     type: object
     properties:
@@ -215,6 +219,10 @@ definitions:
               type: string
             clinicPhoneNumber:
               type: string
+            clinicSpeciality:
+              type: array
+              items:
+                type: string
   ClinicDoctorsRegisterRequest:
     type: object
     properties:
@@ -242,9 +250,6 @@ definitions:
                     type: array
                     items:
                       type: string
-    
-            
-          
 responses:
   PostClinicRegistrationResponse:
     description: Returns successful completion of register clinic stage one

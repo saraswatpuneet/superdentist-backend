@@ -8,6 +8,7 @@ type PhysicalClinicsRegistration struct {
 	ClinicName        string `json:"clinicName" valid:"required"`
 	ClinicAddress     string `json:"clinicAddress" valid:"required"`
 	ClinicPhoneNumber string `json:"clinicPhoneNumber" valid:"required"`
+	ClinicSpeciality   []string `json:"clinicSpeciality"`
 }
 
 //ClinicAddressResponse ....
