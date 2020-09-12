@@ -20,7 +20,7 @@ tags:
 schemes:
 - "https"
 paths:
-  /v1/clinic/registerClinic:
+  /v1/clinic/registerAdmin:
     post:
       tags:
       - "clinic"
@@ -45,7 +45,7 @@ paths:
           description: "Internal server error occured"
       security:
         - Bearer: []
-  /v1/clinic/verifyClinic:
+  /v1/clinic/verifyAdmin:
     post:
       tags:
       - "clinic"
@@ -70,7 +70,7 @@ paths:
           description: "Internal server error occured"
       security:
         - Bearer: []
-  /v1/clinic/addPhysicalAddresses:
+  /v1/clinic/addClinics:
     post:
       tags:
        - "clinic"
@@ -95,7 +95,7 @@ paths:
           description: "Internal server error occured"
       security:
         - Bearer: []
-  /v1/clinic/registerClinicDoctors:
+  /v1/clinic/registerDoctors:
     post:
       tags:
        - "clinic"
@@ -120,7 +120,7 @@ paths:
           description: "Internal server error occured"
       security:
         - Bearer: []
-  /v1/clinic/registerClinicPMS:
+  /v1/clinic/registerPMS:
     post:
       tags:
         - "clinic"
