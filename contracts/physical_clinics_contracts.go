@@ -22,13 +22,11 @@ type ClinicDoctorRegistration struct {
 
 // PostPhysicalClinicDetails .....
 type PostPhysicalClinicDetails struct {
-	ClinicID      string                        `json:"clinicId" valid:"required"`
 	ClinicDetails []PhysicalClinicsRegistration `json:"clinicDetails" valid:"required"`
 }
 
 //PostDoctorDetails ....
 type PostDoctorDetails struct {
-	ClinicID string                     `json:"clinicId" valid:"required"`
 	Doctors  []ClinicDoctorRegistration `json:"doctors" valid:"required"`
 }
 

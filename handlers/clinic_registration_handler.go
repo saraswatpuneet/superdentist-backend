@@ -13,6 +13,7 @@ import (
 	"github.com/superdentist/superdentist-backend/lib/datastoredb"
 	"github.com/superdentist/superdentist-backend/lib/googleprojectlib"
 	"github.com/superdentist/superdentist-backend/lib/identity"
+	"github.com/superdentist/superdentist-backend/lib/jwt"
 	"go.opencensus.io/trace"
 )
 
@@ -87,6 +88,7 @@ func ClinicVerificationHandler(c *gin.Context) {
 	ctx := c.Request.Context()
 	var clinicVerificationReq contracts.ClinicVerificationData
 	gProjectDeployment := googleprojectlib.GetGoogleProjectID()
+	userEmail, _ := jwt.GetUserEmail(c.Request)
 	ctx, span := trace.StartSpan(ctx, "Register incoming request for clinic")
 	defer span.End()
 	if err := c.ShouldBindWith(&clinicVerificationReq, binding.JSON); err != nil || !clinicVerificationReq.IsVerified {
@@ -112,8 +114,8 @@ func ClinicVerificationHandler(c *gin.Context) {
 		return
 	}
 	identityClient, _ := identity.NewIDPEP(ctx, gProjectDeployment)
-	currentClinicRecord, err := identityClient.GetUserByEmail(ctx, clinicVerificationReq.EmailID)
-	sdClinicID, err := clinicDB.VerifyClinicInDatastore(ctx, clinicVerificationReq.EmailID, currentClinicRecord.UID)
+	currentClinicRecord, err := identityClient.GetUserByEmail(ctx, userEmail)
+	sdClinicID, err := clinicDB.VerifyClinicInDatastore(ctx, userEmail, currentClinicRecord.UID)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
@@ -125,7 +127,7 @@ func ClinicVerificationHandler(c *gin.Context) {
 		return
 	}
 	responseData := contracts.ClinicRegistrationResponse{
-		EmailID:    clinicVerificationReq.EmailID,
+		EmailID:    userEmail,
 		ClinicID:   strconv.FormatInt(sdClinicID, 10),
 		IsVerified: true,
 	}
@@ -136,16 +138,17 @@ func ClinicVerificationHandler(c *gin.Context) {
 	clinicDB.Close()
 }
 
-//AddPhysicalClinicsHandler ... after registering clinic main account we add multiple locations etc.
+// AddPhysicalClinicsHandler ... after registering clinic main account we add multiple locations etc.
 func AddPhysicalClinicsHandler(c *gin.Context) {
 
 }
 
-//RegisterClinicDoctors .... once clinics are registers multiple doctors needs to be added to them
+// RegisterClinicDoctors .... once clinics are registers multiple doctors needs to be added to them
 func RegisterClinicDoctors(c *gin.Context) {
 
 }
 
-func RegisterClinicPMS (c * gin.Context) {
-	
+// RegisterClinicPMS ..... add all PMS current clinic is using
+func RegisterClinicPMS(c *gin.Context) {
+
 }

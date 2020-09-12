@@ -14,7 +14,6 @@ type ClinicRegistrationData struct {
 
 // ClinicVerificationData ...
 type ClinicVerificationData struct {
-	EmailID    string `json:"emailId" valid:"required"`
 	IsVerified bool   `json:"isVerified" valid:"required"`
 }
 

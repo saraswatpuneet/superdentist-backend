@@ -152,8 +152,6 @@ definitions:
   RegisterClinicPMS:
     type: object
     properties:
-      clinicId:
-        type: string
       pmsNames:
         type:  array
         items:
@@ -173,8 +171,6 @@ definitions:
   ClinicVerificationData:
     type: object
     properties:
-      emailId:
-        type:  string
       isVerified:
         type: boolean
         default: false
@@ -190,8 +186,6 @@ definitions:
   ClinicAddressRequest:
     type: object
     properties:
-      clinicId:
-        type: string
       clinicDetails:
         type:  array
         items:
@@ -226,8 +220,6 @@ definitions:
   ClinicDoctorsRegisterRequest:
     type: object
     properties:
-      clinicId:
-        type: string
       doctors:
         type: object
         properties:
