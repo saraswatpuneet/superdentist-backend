@@ -202,8 +202,6 @@ definitions:
     properties:
       clinicId:
         type: string
-      emailId:
-        type: string
       clinicDetails:
         type:  array
         items:

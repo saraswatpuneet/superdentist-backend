@@ -10,6 +10,12 @@ type PhysicalClinicsRegistration struct {
 	ClinicPhoneNumber string `json:"clinicPhoneNumber" valid:"required"`
 }
 
+//ClinicAddressResponse ....
+type ClinicAddressResponse struct {
+	ClinicID      string                        `json:"clinicId" valid:"required"`
+	ClinicDetails []PhysicalClinicsRegistration `json:"clinicDetails" valid:"required"`
+}
+
 // ClinicDoctorRegistration ...
 type ClinicDoctorRegistration struct {
 	ClinicAddressID    string   `json:"clinicAddressId" valid:"required"`
@@ -27,7 +33,7 @@ type PostPhysicalClinicDetails struct {
 
 //PostDoctorDetails ....
 type PostDoctorDetails struct {
-	Doctors  []ClinicDoctorRegistration `json:"doctors" valid:"required"`
+	Doctors []ClinicDoctorRegistration `json:"doctors" valid:"required"`
 }
 
 // ClinicPhysicalAddressDatabase provides thread-safe access to a database of UserRegistration.
@@ -38,4 +44,7 @@ type ClinicPhysicalAddressDatabase interface {
 	AddPhysicalAddessressToClinic(ctx context.Context, clinicEmailID string, clinicFBID string, addresses []PhysicalClinicsRegistration) ([]PhysicalClinicsRegistration, error)
 	// AddDoctorsToPhysicalClincs ....
 	AddDoctorsToPhysicalClincs(ctx context.Context, clinicEmailID string, clinicFBID string, doctorsData []ClinicDoctorRegistration) error
+	// Close closes the database, freeing up any available resources.
+	// TODO(cbro): Close() should return an error.
+	Close() error
 }

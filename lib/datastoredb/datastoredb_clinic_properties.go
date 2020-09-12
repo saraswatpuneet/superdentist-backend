@@ -82,7 +82,13 @@ func (db dsClinicMeta) AddPhysicalAddessressToClinic(ctx context.Context, clinic
 	return  returnedAddress,nil
 }
 
+// AddDoctorsToPhysicalClincs ....
 func (db dsClinicMeta) 	AddDoctorsToPhysicalClincs(ctx context.Context, clinicEmailID string, clinicFBID string, doctorsData []contracts.ClinicDoctorRegistration) error {
 	
 	return nil
+}
+
+// Close closes the database.
+func (db *dsClinicMeta) Close() error {
+	return db.client.Close()
 }

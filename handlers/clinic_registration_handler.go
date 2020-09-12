@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -22,7 +23,17 @@ func ClinicRegistrationHandler(c *gin.Context) {
 	log.Infof("Registering clinic with SD database")
 	ctx := c.Request.Context()
 	var clinicRegistrationReq contracts.ClinicRegistrationData
-	gProjectDeployment := googleprojectlib.GetGoogleProjectID()
+	_, userID, gproject, err := getUserDetails(ctx, c.Request)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err,
+			},
+		)
+		return
+	}
 	ctx, span := trace.StartSpan(ctx, "Register incoming request for clinic")
 	defer span.End()
 	if err := c.ShouldBindWith(&clinicRegistrationReq, binding.JSON); err != nil {
@@ -35,20 +46,9 @@ func ClinicRegistrationHandler(c *gin.Context) {
 		)
 		return
 	}
-	identityClient, _ := identity.NewIDPEP(ctx, gProjectDeployment)
-	currentClinicRecord, err := identityClient.GetUserByEmail(ctx, clinicRegistrationReq.EmailID)
-	if err != nil {
-		c.AbortWithStatusJSON(
-			http.StatusInternalServerError,
-			gin.H{
-				constants.RESPONSE_JSON_DATA:   nil,
-				constants.RESPONSDE_JSON_ERROR: err,
-			},
-		)
-		return
-	}
+
 	clinicDB := datastoredb.NewClinicHandler()
-	err = clinicDB.InitializeDataBase(ctx, gProjectDeployment)
+	err = clinicDB.InitializeDataBase(ctx, gproject)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
@@ -59,7 +59,7 @@ func ClinicRegistrationHandler(c *gin.Context) {
 		)
 		return
 	}
-	sdClinicID, err := clinicDB.AddClinicRegistration(ctx, &clinicRegistrationReq, currentClinicRecord.UID)
+	sdClinicID, err := clinicDB.AddClinicRegistration(ctx, &clinicRegistrationReq, userID)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
@@ -87,8 +87,27 @@ func ClinicVerificationHandler(c *gin.Context) {
 	log.Infof("Verifying clinic with SD database")
 	ctx := c.Request.Context()
 	var clinicVerificationReq contracts.ClinicVerificationData
-	gProjectDeployment := googleprojectlib.GetGoogleProjectID()
-	userEmail, _ := jwt.GetUserEmail(c.Request)
+	userEmail, userID, gproject, err := getUserDetails(ctx, c.Request)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err,
+			},
+		)
+		return
+	}
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err,
+			},
+		)
+		return
+	}
 	ctx, span := trace.StartSpan(ctx, "Register incoming request for clinic")
 	defer span.End()
 	if err := c.ShouldBindWith(&clinicVerificationReq, binding.JSON); err != nil || !clinicVerificationReq.IsVerified {
@@ -102,7 +121,7 @@ func ClinicVerificationHandler(c *gin.Context) {
 		return
 	}
 	clinicDB := datastoredb.NewClinicHandler()
-	err := clinicDB.InitializeDataBase(ctx, gProjectDeployment)
+	err = clinicDB.InitializeDataBase(ctx, gproject)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
@@ -113,9 +132,7 @@ func ClinicVerificationHandler(c *gin.Context) {
 		)
 		return
 	}
-	identityClient, _ := identity.NewIDPEP(ctx, gProjectDeployment)
-	currentClinicRecord, err := identityClient.GetUserByEmail(ctx, userEmail)
-	sdClinicID, err := clinicDB.VerifyClinicInDatastore(ctx, userEmail, currentClinicRecord.UID)
+	sdClinicID, err := clinicDB.VerifyClinicInDatastore(ctx, userEmail, userID)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
@@ -140,7 +157,74 @@ func ClinicVerificationHandler(c *gin.Context) {
 
 // AddPhysicalClinicsHandler ... after registering clinic main account we add multiple locations etc.
 func AddPhysicalClinicsHandler(c *gin.Context) {
-
+	log.Infof("Verifying clinic with SD database")
+	ctx := c.Request.Context()
+	var addClinicAddressRequest contracts.PostPhysicalClinicDetails
+	userEmail, userID, gproject, err := getUserDetails(ctx, c.Request)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err,
+			},
+		)
+		return
+	}
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err,
+			},
+		)
+		return
+	}
+	ctx, span := trace.StartSpan(ctx, "Register address for various clinics for this admin")
+	defer span.End()
+	if err := c.ShouldBindWith(&addClinicAddressRequest, binding.JSON); err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: fmt.Errorf("Bad data sent to backened"),
+			},
+		)
+		return
+	}
+	clinicMetaDB := datastoredb.NewClinicMetaHandler()
+	err = clinicMetaDB.InitializeDataBase(ctx, gproject)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err,
+			},
+		)
+		return
+	}
+	registeredClinics, err := clinicMetaDB.AddPhysicalAddessressToClinic(ctx, userEmail, userID, addClinicAddressRequest.ClinicDetails)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err,
+			},
+		)
+		return
+	}
+	responseData := contracts.ClinicAddressResponse{
+		ClinicID:      userID,
+		ClinicDetails: registeredClinics,
+	}
+	c.JSON(http.StatusOK, gin.H{
+		constants.RESPONSE_JSON_DATA:   responseData,
+		constants.RESPONSDE_JSON_ERROR: nil,
+	})
+	clinicMetaDB.Close()
 }
 
 // RegisterClinicDoctors .... once clinics are registers multiple doctors needs to be added to them
@@ -151,4 +235,18 @@ func RegisterClinicDoctors(c *gin.Context) {
 // RegisterClinicPMS ..... add all PMS current clinic is using
 func RegisterClinicPMS(c *gin.Context) {
 
+}
+
+func getUserDetails(ctx context.Context, request *http.Request) (string, string, string, error) {
+	gProjectDeployment := googleprojectlib.GetGoogleProjectID()
+	identityClient, _ := identity.NewIDPEP(ctx, gProjectDeployment)
+	userEmail, _ := jwt.GetUserEmail(request)
+	currentClinicRecord, err := identityClient.GetUserByEmail(ctx, userEmail)
+	if err != nil {
+		return "", "", "", err
+	}
+	if userEmail != currentClinicRecord.Email {
+		return "", "", "", fmt.Errorf("Unauthorized access: aborting")
+	}
+	return currentClinicRecord.Email, currentClinicRecord.UID, gProjectDeployment, nil
 }
