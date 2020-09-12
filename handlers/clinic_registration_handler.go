@@ -223,7 +223,7 @@ func RegisterClinicDoctors(c *gin.Context) {
 		)
 		return
 	}
-	ctx, span := trace.StartSpan(ctx, "Register address for various clinics for this admin")
+	ctx, span := trace.StartSpan(ctx, "Register doctors for various clinics for this admin")
 	defer span.End()
 	if err := c.ShouldBindWith(&addClinicAddressRequest, binding.JSON); err != nil {
 		c.AbortWithStatusJSON(
@@ -247,7 +247,7 @@ func RegisterClinicDoctors(c *gin.Context) {
 		)
 		return
 	}
-	err = clinicMetaDB.AddDoctorsToPhysicalClincs(ctx,userEmail, userID, addClinicAddressRequest.Doctors)
+	err = clinicMetaDB.AddDoctorsToPhysicalClincs(ctx, userEmail, userID, addClinicAddressRequest.Doctors)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
@@ -259,7 +259,7 @@ func RegisterClinicDoctors(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
-		constants.RESPONSE_JSON_DATA:"Doctors have been successfully registered",
+		constants.RESPONSE_JSON_DATA:   "Doctors have been successfully registered",
 		constants.RESPONSDE_JSON_ERROR: nil,
 	})
 	clinicMetaDB.Close()
@@ -267,7 +267,46 @@ func RegisterClinicDoctors(c *gin.Context) {
 
 // RegisterClinicPMS ..... add all PMS current clinic is using
 func RegisterClinicPMS(c *gin.Context) {
-
+	log.Infof("Adding PMS list used by clinics")
+	ctx := c.Request.Context()
+	var addPMSList contracts.PostPMSDetails
+	userEmail, userID, gproject, err := getUserDetails(ctx, c.Request)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err,
+			},
+		)
+		return
+	}
+	ctx, span := trace.StartSpan(ctx, "Register PMS list used by clinics")
+	defer span.End()
+	if err := c.ShouldBindWith(&addPMSList, binding.JSON); err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: fmt.Errorf("Bad data sent to backened"),
+			},
+		)
+		return
+	}
+	clinicMetaDB := datastoredb.NewClinicMetaHandler()
+	err = clinicMetaDB.InitializeDataBase(ctx, gproject)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err,
+			},
+		)
+		return
+	}
+	err = clinicMetaDB.AddPMSUsedByClinics(ctx, userEmail, userID, addPMSList.PMSNames)
+	clinicMetaDB.Close()
 }
 
 func getUserDetails(ctx context.Context, request *http.Request) (string, string, string, error) {

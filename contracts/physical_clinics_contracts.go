@@ -41,6 +41,10 @@ type PostDoctorDetails struct {
 	Doctors []ClinicDoctorsDetails `json:"doctorDetails" valid:"required"`
 }
 
+// PostPMSDetails .....
+type PostPMSDetails struct {
+	PMSNames [] string `json:"pmsNames" valid:"required"`
+}
 // ClinicPhysicalAddressDatabase provides thread-safe access to a database of UserRegistration.
 type ClinicPhysicalAddressDatabase interface {
 	//InitializeDataBase initialize computation database
@@ -49,6 +53,8 @@ type ClinicPhysicalAddressDatabase interface {
 	AddPhysicalAddessressToClinic(ctx context.Context, clinicEmailID string, clinicFBID string, addresses []PhysicalClinicsRegistration) ([]PhysicalClinicsRegistration, error)
 	// AddDoctorsToPhysicalClincs ....
 	AddDoctorsToPhysicalClincs(ctx context.Context, clinicEmailID string, clinicFBID string, doctorsData []ClinicDoctorsDetails) error // Close closes the database, freeing up any available resources.
+	// Add PMS to DB 
+	AddPMSUsedByClinics(ctx context.Context,  clinicEmailID string, clinicFBID string, pmsData []string) error
 	// TODO(cbro): Close() should return an error.
 	Close() error
 }
