@@ -98,16 +98,6 @@ func ClinicVerificationHandler(c *gin.Context) {
 		)
 		return
 	}
-	if err != nil {
-		c.AbortWithStatusJSON(
-			http.StatusInternalServerError,
-			gin.H{
-				constants.RESPONSE_JSON_DATA:   nil,
-				constants.RESPONSDE_JSON_ERROR: err,
-			},
-		)
-		return
-	}
 	ctx, span := trace.StartSpan(ctx, "Register incoming request for clinic")
 	defer span.End()
 	if err := c.ShouldBindWith(&clinicVerificationReq, binding.JSON); err != nil || !clinicVerificationReq.IsVerified {
@@ -157,20 +147,10 @@ func ClinicVerificationHandler(c *gin.Context) {
 
 // AddPhysicalClinicsHandler ... after registering clinic main account we add multiple locations etc.
 func AddPhysicalClinicsHandler(c *gin.Context) {
-	log.Infof("Verifying clinic with SD database")
+	log.Infof("Adding physical addresses to database for logged in clinic")
 	ctx := c.Request.Context()
 	var addClinicAddressRequest contracts.PostPhysicalClinicDetails
 	userEmail, userID, gproject, err := getUserDetails(ctx, c.Request)
-	if err != nil {
-		c.AbortWithStatusJSON(
-			http.StatusInternalServerError,
-			gin.H{
-				constants.RESPONSE_JSON_DATA:   nil,
-				constants.RESPONSDE_JSON_ERROR: err,
-			},
-		)
-		return
-	}
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
@@ -229,7 +209,60 @@ func AddPhysicalClinicsHandler(c *gin.Context) {
 
 // RegisterClinicDoctors .... once clinics are registers multiple doctors needs to be added to them
 func RegisterClinicDoctors(c *gin.Context) {
-
+	log.Infof("Adding doctors to clinics identified by their addressId")
+	ctx := c.Request.Context()
+	var addClinicAddressRequest contracts.PostDoctorDetails
+	userEmail, userID, gproject, err := getUserDetails(ctx, c.Request)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err,
+			},
+		)
+		return
+	}
+	ctx, span := trace.StartSpan(ctx, "Register address for various clinics for this admin")
+	defer span.End()
+	if err := c.ShouldBindWith(&addClinicAddressRequest, binding.JSON); err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: fmt.Errorf("Bad data sent to backened"),
+			},
+		)
+		return
+	}
+	clinicMetaDB := datastoredb.NewClinicMetaHandler()
+	err = clinicMetaDB.InitializeDataBase(ctx, gproject)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err,
+			},
+		)
+		return
+	}
+	err = clinicMetaDB.AddDoctorsToPhysicalClincs(ctx,userEmail, userID, addClinicAddressRequest.Doctors)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err,
+			},
+		)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		constants.RESPONSE_JSON_DATA:"Doctors have been successfully registered",
+		constants.RESPONSDE_JSON_ERROR: nil,
+	})
+	clinicMetaDB.Close()
 }
 
 // RegisterClinicPMS ..... add all PMS current clinic is using

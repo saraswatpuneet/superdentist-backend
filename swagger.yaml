@@ -218,24 +218,32 @@ definitions:
   ClinicDoctorsRegisterRequest:
     type: object
     properties:
-      doctors:
-        type: object
-        properties:
-          clinicAddressId:
-            type: string
-          doctorPrefix:
-            type: string
-          doctorFirstName:
-            type: string
-          doctorLastName:
-            type: string
-          doctorEmailAddress:
-            type: string
-          doctorSpeciality:
-            type: array
-            items:
+      doctorDetails:
+        type: array
+        items:
+         type: object
+         properties:
+            clinicAddressId:
               type: string
-
+            doctors:
+              type: array
+              items:
+                type: object
+                properties:
+                  doctorPrefix:
+                    type: string
+                  doctorFirstName:
+                    type: string
+                  doctorLastName:
+                    type: string
+                  doctorEmailAddress:
+                    type: string
+                  doctorSpeciality:
+                    type: array
+                    items:
+                      type: string
+    
+            
           
 responses:
   PostClinicRegistrationResponse:
