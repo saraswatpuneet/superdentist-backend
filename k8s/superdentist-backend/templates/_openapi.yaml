@@ -23,7 +23,7 @@ paths:
   /v1/clinic/registerAdmin:
     post:
       tags:
-      - "Registration APIs (C of CRUD)"
+      - "Registration APIs (C & U of CRUD)"
       summary: "Register clinic"
       description: "Frontend upon firebase registration will call backend with token and details"
       operationId: "ClinicRegistrationHandler"
@@ -48,7 +48,7 @@ paths:
   /v1/clinic/verifyAdmin:
     post:
       tags:
-      - "Registration APIs (C of CRUD)"
+      - "Registration APIs (C & U of CRUD)"
       summary: "Verify clinic"
       description: " Frontend will tell backend that clinic has verified itself "
       operationId: "ClinicVerificationHandler"
@@ -73,7 +73,7 @@ paths:
   /v1/clinic/addClinics:
     post:
       tags:
-       - "Registration APIs (C of CRUD)"
+       - "Registration APIs (C & U of CRUD)"
       summary: "Add clinical addresses"
       description: "Provide a range of addresses associated with registered clinic"
       operationId: "AddPhysicalClinicsHandler"
@@ -98,7 +98,7 @@ paths:
   /v1/clinic/registerDoctors:
     post:
       tags:
-       - "Registration APIs (C of CRUD)"
+       - "Registration APIs (C & U of CRUD)"
       summary: "Add clinical addresses"
       description: "Provide a range of doctors associated with each clinic"
       operationId: "RegisterClinicDoctors"
@@ -123,7 +123,7 @@ paths:
   /v1/clinic/registerPMS:
     post:
       tags:
-        - "Registration APIs (C of CRUD)"
+        - "Registration APIs (C & U of CRUD)"
       summary: Add all PMS used by current clinic
       description: Collect information on PMS used by current clinic
       operationId: "RegisterClinicPMS"
@@ -146,7 +146,7 @@ paths:
   /v1/clinic/registerClinicServices:
     post:
       tags:
-        - "Registration APIs (C of CRUD)"
+        - "Registration APIs (C & U of CRUD)"
       summary: Add all services clinic offers if any
       description: Collect information on services offered by clinic
       operationId: "RegisterSpecialityServices"
