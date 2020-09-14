@@ -306,12 +306,79 @@ func RegisterClinicPMS(c *gin.Context) {
 		return
 	}
 	err = clinicMetaDB.AddPMSUsedByClinics(ctx, userEmail, userID, addPMSList.PMSNames)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err,
+			},
+		)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		constants.RESPONSE_JSON_DATA:   "PMS have registered for the clinic",
+		constants.RESPONSDE_JSON_ERROR: nil,
+	})
 	clinicMetaDB.Close()
 }
 
 // RegisterSpecialityServices .... register any special services a clinic admin offers
 func RegisterSpecialityServices(c *gin.Context) {
-
+	log.Infof("Adding services offered by clinics")
+	ctx := c.Request.Context()
+	var addServices contracts.PostClinicServices
+	userEmail, userID, gproject, err := getUserDetails(ctx, c.Request)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err,
+			},
+		)
+		return
+	}
+	ctx, span := trace.StartSpan(ctx, "Adding services offered by clinics")
+	defer span.End()
+	if err := c.ShouldBindWith(&addServices, binding.JSON); err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: fmt.Errorf("Bad data sent to backened"),
+			},
+		)
+		return
+	}
+	clinicMetaDB := datastoredb.NewClinicMetaHandler()
+	err = clinicMetaDB.InitializeDataBase(ctx, gproject)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err,
+			},
+		)
+		return
+	}
+	err = clinicMetaDB.AddServicesForClinic(ctx, userEmail, userID, addServices.Services)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err,
+			},
+		)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		constants.RESPONSE_JSON_DATA:   "Services have registered for the clinic",
+		constants.RESPONSDE_JSON_ERROR: nil,
+	})
+	clinicMetaDB.Close()
 }
 
 func getUserDetails(ctx context.Context, request *http.Request) (string, string, string, error) {

@@ -66,8 +66,10 @@ type ClinicPhysicalAddressDatabase interface {
 	AddPhysicalAddessressToClinic(ctx context.Context, clinicEmailID string, clinicFBID string, addresses []PhysicalClinicsRegistration) ([]PhysicalClinicsRegistration, error)
 	// AddDoctorsToPhysicalClincs ....
 	AddDoctorsToPhysicalClincs(ctx context.Context, clinicEmailID string, clinicFBID string, doctorsData []ClinicDoctorsDetails) error // Close closes the database, freeing up any available resources.
-	// Add PMS to DB
+	// AddPMSUsedByClinics PMS to DB
 	AddPMSUsedByClinics(ctx context.Context, clinicEmailID string, clinicFBID string, pmsData []string) error
+	// AddServicesForClinic add services offered by clinic
+	AddServicesForClinic(ctx context.Context, clinicEmailID string, clinicFBID string, serviceData []ServiceObject) error
 	// TODO(cbro): Close() should return an error.
 	Close() error
 }
