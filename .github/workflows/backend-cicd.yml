@@ -27,7 +27,7 @@ env:
 
 jobs:
   setup-build-publish-deploy:
-    name: Setup, Build, Publish, and Deploy(TODO)
+    name: Setup, Build, Publish, and Deploy to GCP
     runs-on: ubuntu-latest
 
     steps:
