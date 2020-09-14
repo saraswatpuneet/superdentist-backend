@@ -4,11 +4,11 @@ import "context"
 
 // PhysicalClinicsRegistration ...
 type PhysicalClinicsRegistration struct {
-	ClinicAddressID   string `json:"clinicAddressId"`
-	ClinicName        string `json:"clinicName" valid:"required"`
-	ClinicAddress     string `json:"clinicAddress" valid:"required"`
-	ClinicPhoneNumber string `json:"clinicPhoneNumber" valid:"required"`
-	ClinicSpeciality   []string `json:"clinicSpeciality"`
+	ClinicAddressID   string   `json:"clinicAddressId"`
+	ClinicName        string   `json:"clinicName" valid:"required"`
+	ClinicAddress     string   `json:"clinicAddress" valid:"required"`
+	ClinicPhoneNumber string   `json:"clinicPhoneNumber" valid:"required"`
+	ClinicSpeciality  []string `json:"clinicSpeciality"`
 }
 
 //ClinicAddressResponse ....
@@ -44,8 +44,20 @@ type PostDoctorDetails struct {
 
 // PostPMSDetails .....
 type PostPMSDetails struct {
-	PMSNames [] string `json:"pmsNames" valid:"required"`
+	PMSNames []string `json:"pmsNames" valid:"required"`
 }
+
+//ServiceObject .....
+type ServiceObject struct {
+	ServiceGroup string   `json:"serviceGroup" valid:"required"`
+	ServiceList  []string `json:"serviceList" valid:"required"`
+}
+
+// PostClinicServices ....
+type PostClinicServices struct {
+	Services []ServiceObject `json:"services" valid:"required"`
+}
+
 // ClinicPhysicalAddressDatabase provides thread-safe access to a database of UserRegistration.
 type ClinicPhysicalAddressDatabase interface {
 	//InitializeDataBase initialize computation database
@@ -54,8 +66,8 @@ type ClinicPhysicalAddressDatabase interface {
 	AddPhysicalAddessressToClinic(ctx context.Context, clinicEmailID string, clinicFBID string, addresses []PhysicalClinicsRegistration) ([]PhysicalClinicsRegistration, error)
 	// AddDoctorsToPhysicalClincs ....
 	AddDoctorsToPhysicalClincs(ctx context.Context, clinicEmailID string, clinicFBID string, doctorsData []ClinicDoctorsDetails) error // Close closes the database, freeing up any available resources.
-	// Add PMS to DB 
-	AddPMSUsedByClinics(ctx context.Context,  clinicEmailID string, clinicFBID string, pmsData []string) error
+	// Add PMS to DB
+	AddPMSUsedByClinics(ctx context.Context, clinicEmailID string, clinicFBID string, pmsData []string) error
 	// TODO(cbro): Close() should return an error.
 	Close() error
 }

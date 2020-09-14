@@ -40,6 +40,7 @@ func SDRouter() (*gin.Engine, error) {
 		clinicGroup.POST("/addClinics", handlers.AddPhysicalClinicsHandler)
 		clinicGroup.POST("/registerDoctors", handlers.RegisterClinicDoctors)
 		clinicGroup.POST("/registerPMS", handlers.RegisterClinicPMS)
+		clinicGroup.POST("/registerServices", handlers.RegisterSpecialityServices)
 
 	}
 	// Derive groups from version group to consolidate our APIs in a better way

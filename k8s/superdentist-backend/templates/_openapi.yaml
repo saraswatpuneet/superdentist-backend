@@ -143,6 +143,29 @@ paths:
           description: "Internal server error occured"
       security:
         - Bearer: []
+  /v1/clinic/registerClinicServices:
+    post:
+      tags:
+        - "clinic"
+      summary: Add all services clinic offers if any
+      description: Collect information on services offered by clinic
+      operationId: "RegisterSpecialityServices"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Created clinic object"
+        required: true
+        schema:
+          $ref: "#/definitions/RegisterClinicServices"
+      responses:
+        '200':
+          description: "Services have registered for the clinic"
+        '401':
+          description: "Unauthorized: Bad request or authorization details"
+        '500':
+          description: "Internal server error occured"
+      security:
+        - Bearer: []
 securityDefinitions:
   Bearer:
     type: "apiKey"
@@ -150,6 +173,21 @@ securityDefinitions:
     in: "header"
 
 definitions:
+  RegisterClinicServices:
+    type: object
+    properties:
+      services:
+        type: array
+        items:
+          type: object
+          properties:
+            serviceGroup:
+              type: string
+            serviceList:
+              type: array
+              items:
+                type: string
+            
   RegisterClinicPMS:
     type: object
     properties:
@@ -264,6 +302,5 @@ responses:
     description: Returns successful completion of clinic address registration
     schema:
       $ref: '#/definitions/ClinicAddressResponse'
-  
   
 {{ end }}

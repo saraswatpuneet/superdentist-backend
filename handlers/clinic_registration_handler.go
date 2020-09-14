@@ -309,6 +309,11 @@ func RegisterClinicPMS(c *gin.Context) {
 	clinicMetaDB.Close()
 }
 
+// RegisterSpecialityServices .... register any special services a clinic admin offers
+func RegisterSpecialityServices(c *gin.Context) {
+
+}
+
 func getUserDetails(ctx context.Context, request *http.Request) (string, string, string, error) {
 	gProjectDeployment := googleprojectlib.GetGoogleProjectID()
 	identityClient, _ := identity.NewIDPEP(ctx, gProjectDeployment)
