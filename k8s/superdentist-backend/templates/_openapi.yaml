@@ -12,7 +12,7 @@ info:
 host: "superdentist.io"
 basePath: "/api/sd"
 tags:
-- name: "clinic"
+- name: "Registration APIs (C of CRUD)"
   description: "All these APIs deals with users (Specialist/GD alike)"
   externalDocs:
     description: "Find out more"

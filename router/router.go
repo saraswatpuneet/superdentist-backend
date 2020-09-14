@@ -35,13 +35,16 @@ func SDRouter() (*gin.Engine, error) {
 	restRouter.GET("/api/v1/healthz", handlers.HealthCheckHandler)
 	clinicGroup := version1.Group("/clinic")
 	{
+		// All data entry related APIs: Basic Stuff
 		clinicGroup.POST("/registerAdmin", handlers.ClinicRegistrationHandler)
 		clinicGroup.POST("/verifyAdmin", handlers.ClinicVerificationHandler)
 		clinicGroup.POST("/addClinics", handlers.AddPhysicalClinicsHandler)
 		clinicGroup.POST("/registerDoctors", handlers.RegisterClinicDoctors)
 		clinicGroup.POST("/registerPMS", handlers.RegisterClinicPMS)
 		clinicGroup.POST("/registerServices", handlers.RegisterSpecialityServices)
-
+	}
+	{
+		// All data query related APIs: Basic stuff
 	}
 	// Derive groups from version group to consolidate our APIs in a better way
 	return restRouter, nil
