@@ -12,7 +12,7 @@ info:
 host: "superdentist.io"
 basePath: "/api/sd"
 tags:
-- name: "Registration APIs (C of CRUD)"
+- name: "Registration APIs (C & U of CRUD)"
   description: "All these APIs deals with users (Specialist/GD alike)"
   externalDocs:
     description: "Find out more"
@@ -302,5 +302,5 @@ responses:
     description: Returns successful completion of clinic address registration
     schema:
       $ref: '#/definitions/ClinicAddressResponse'
-    
+  
 {{ end }}
