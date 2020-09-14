@@ -23,7 +23,7 @@ func SDRouter() (*gin.Engine, error) {
 	if !global.Options.Debug {
 		gin.SetMode(gin.ReleaseMode)
 	}
-	version1 := restRouter.Group("/api/v1")
+	version1 := restRouter.Group("/v1")
 
 	//.....................................................................
 	// healthcheck is need by Kubernetes to test readiness of containers
