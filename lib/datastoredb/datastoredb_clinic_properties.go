@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"strconv"
 
+	guuid "github.com/google/uuid"
 	"github.com/superdentist/superdentist-backend/contracts"
 	"github.com/superdentist/superdentist-backend/lib/helpers"
 	"google.golang.org/api/option"
@@ -69,13 +69,16 @@ func (db dsClinicMeta) AddPhysicalAddessressToClinic(ctx context.Context, clinic
 	if noKeys > 0 && noKeys < 2 {
 		currentPrimarykey := keyClinics[0]
 		for _, address := range addresses {
-			addressKey := datastore.IncompleteKey("ClinicAddress", currentPrimarykey)
-			registredKey, err := db.client.Put(ctx, addressKey, address)
+			addrID, err := guuid.NewUUID()
+			address.ClinicAddressID = addrID.String()
 			if err != nil {
 				return nil, fmt.Errorf("cannot register clinic with sd: %v", err)
 			}
-			uniqueAddressID := registredKey.ID
-			address.ClinicAddressID = strconv.FormatInt(uniqueAddressID, 10)
+			addressKey := datastore.NameKey("ClinicAddress", addrID.String(), currentPrimarykey)
+			_, err = db.client.Put(ctx, addressKey, address)
+			if err != nil {
+				return nil, fmt.Errorf("cannot register clinic with sd: %v", err)
+			}
 			returnedAddress = append(returnedAddress, address)
 		}
 		return returnedAddress, nil
