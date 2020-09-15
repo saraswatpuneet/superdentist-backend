@@ -148,8 +148,9 @@ func AddPhysicalClinicsHandler(c *gin.Context) {
 	ctx := c.Request.Context()
 	var addClinicAddressRequest contracts.PostPhysicalClinicDetails
 	userEmail, userID, gproject, err := getUserDetails(ctx, c.Request)
-	log.Infof(err.Error())
 	if err != nil {
+		log.Infof(err.Error())
+
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
 			gin.H{
