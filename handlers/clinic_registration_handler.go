@@ -148,8 +148,9 @@ func AddPhysicalClinicsHandler(c *gin.Context) {
 	ctx := c.Request.Context()
 	var addClinicAddressRequest contracts.PostPhysicalClinicDetails
 	userEmail, userID, gproject, err := getUserDetails(ctx, c.Request)
+	log.Infof("here1")
 	if err != nil {
-		log.Infof(err.Error())
+		log.Infof("hereerror1: %v", err.Error())
 
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
@@ -162,7 +163,7 @@ func AddPhysicalClinicsHandler(c *gin.Context) {
 	}
 	ctx, span := trace.StartSpan(ctx, "Register address for various clinics for this admin")
 	defer span.End()
-	if err := c.ShouldBindWith(&addClinicAddressRequest, binding.JSON); err != nil {
+	if err = c.ShouldBindWith(&addClinicAddressRequest, binding.JSON); err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusBadRequest,
 			gin.H{
@@ -172,9 +173,13 @@ func AddPhysicalClinicsHandler(c *gin.Context) {
 		)
 		return
 	}
+	log.Infof("here2")
+
 	clinicMetaDB := datastoredb.NewClinicMetaHandler()
 	err = clinicMetaDB.InitializeDataBase(ctx, gproject)
 	if err != nil {
+		log.Infof("hereerror2: %v", err.Error())
+
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
 			gin.H{
@@ -186,6 +191,8 @@ func AddPhysicalClinicsHandler(c *gin.Context) {
 	}
 	registeredClinics, err := clinicMetaDB.AddPhysicalAddessressToClinic(ctx, userEmail, userID, addClinicAddressRequest.ClinicDetails)
 	if err != nil {
+		log.Infof("hereerror3: %v", err.Error())
+
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
 			gin.H{
