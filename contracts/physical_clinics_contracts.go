@@ -19,6 +19,7 @@ type ClinicAddressResponse struct {
 
 // ClinicDoctorRegistration ...
 type ClinicDoctorRegistration struct {
+	ClinicAddressID    string   `json:"-"`
 	DoctorPrefix       string   `json:"doctorPrefix" valid:"required"`
 	DoctorFirstName    string   `json:"doctorFirstName" valid:"required"`
 	DoctorLastName     string   `json:"doctorLastName" valid:"required"`

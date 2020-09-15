@@ -11,7 +11,7 @@ import (
 
 func main() {
 	log.Infof("Starting superdentist backend service")
-
+	os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", "D:\\SuperDentist\\keys\\super-dentist-backend.json")
 	// any global settings like PMS username/password/configuration goes here
 	config.Init()
 	// Only log the warning severity or above.
