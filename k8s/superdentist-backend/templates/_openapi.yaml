@@ -26,7 +26,7 @@ paths:
       - "Registration APIs (C & U of CRUD)"
       summary: "Register clinic"
       description: "Frontend upon firebase registration will call backend with token and details"
-      operationId: "ClinicRegistrationHandler"
+      operationId: "AdminRegistrationHandler"
       produces:
       - "application/json"
       parameters:
@@ -51,7 +51,7 @@ paths:
       - "Registration APIs (C & U of CRUD)"
       summary: "Verify clinic"
       description: " Frontend will tell backend that clinic has verified itself "
-      operationId: "ClinicVerificationHandler"
+      operationId: "AdminVerificationHandler"
       produces:
       - "application/json"
       parameters:

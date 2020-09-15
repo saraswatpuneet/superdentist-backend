@@ -34,8 +34,8 @@ func SDRouter() (*gin.Engine, error) {
 	clinicGroup := version1.Group("/clinic")
 	{
 		// All data entry related APIs: Basic Stuff C & U
-		clinicGroup.POST("/registerAdmin", handlers.ClinicRegistrationHandler)
-		clinicGroup.POST("/verifyAdmin", handlers.ClinicVerificationHandler)
+		clinicGroup.POST("/registerAdmin", handlers.AdminRegistrationHandler)
+		clinicGroup.POST("/verifyAdmin", handlers.AdminVerificationHandler)
 		clinicGroup.POST("/addClinics", handlers.AddPhysicalClinicsHandler)
 		clinicGroup.POST("/registerDoctors", handlers.RegisterClinicDoctors)
 		clinicGroup.POST("/registerPMS", handlers.RegisterClinicPMS)

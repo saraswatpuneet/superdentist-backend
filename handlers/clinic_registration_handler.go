@@ -17,8 +17,8 @@ import (
 	"go.opencensus.io/trace"
 )
 
-// ClinicRegistrationHandler ...
-func ClinicRegistrationHandler(c *gin.Context) {
+// AdminRegistrationHandler ...
+func AdminRegistrationHandler(c *gin.Context) {
 	log.Infof("Registering clinic with SD database")
 	ctx := c.Request.Context()
 	var clinicRegistrationReq contracts.ClinicRegistrationData
@@ -80,8 +80,8 @@ func ClinicRegistrationHandler(c *gin.Context) {
 	clinicDB.Close()
 }
 
-// ClinicVerificationHandler ...
-func ClinicVerificationHandler(c *gin.Context) {
+// AdminVerificationHandler ...
+func AdminVerificationHandler(c *gin.Context) {
 	log.Infof("Verifying clinic with SD database")
 	ctx := c.Request.Context()
 	var clinicVerificationReq contracts.ClinicVerificationData
