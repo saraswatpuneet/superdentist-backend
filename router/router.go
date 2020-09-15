@@ -23,16 +23,14 @@ func SDRouter() (*gin.Engine, error) {
 	if !global.Options.Debug {
 		gin.SetMode(gin.ReleaseMode)
 	}
-	version1 := restRouter.Group("/v1")
+	restRouter.GET("/healthz", handlers.HealthCheckHandler)
+	version1 := restRouter.Group("/api/sd/v1")
 
 	//.....................................................................
 	// healthcheck is need by Kubernetes to test readiness of containers
 	// register route is again not protected since it will be used for registration
 	// todo prevent spam/bot attaches for register route
 	// login route will take in user info check against IAP/IP and return token/reject
-	restRouter.GET("/", handlers.HealthCheckHandler)
-	restRouter.GET("/healthz", handlers.HealthCheckHandler)
-	restRouter.GET("/api/v1/healthz", handlers.HealthCheckHandler)
 	clinicGroup := version1.Group("/clinic")
 	{
 		// All data entry related APIs: Basic Stuff C & U
