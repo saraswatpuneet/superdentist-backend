@@ -218,8 +218,6 @@ definitions:
     properties:
       emailId:
         type: string
-      clinicId:
-        type: string
       isVerified:
         type: boolean
   ClinicAddressRequest:

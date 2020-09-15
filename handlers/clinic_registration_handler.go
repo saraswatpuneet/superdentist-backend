@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -59,7 +58,7 @@ func ClinicRegistrationHandler(c *gin.Context) {
 		)
 		return
 	}
-	sdClinicID, err := clinicDB.AddClinicRegistration(ctx, &clinicRegistrationReq, userID)
+	err = clinicDB.AddClinicRegistration(ctx, &clinicRegistrationReq, userID)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
@@ -72,7 +71,6 @@ func ClinicRegistrationHandler(c *gin.Context) {
 	}
 	responseData := contracts.ClinicRegistrationResponse{
 		EmailID:    clinicRegistrationReq.EmailID,
-		ClinicID:   strconv.FormatInt(sdClinicID, 10),
 		IsVerified: false,
 	}
 	c.JSON(http.StatusOK, gin.H{
@@ -122,7 +120,7 @@ func ClinicVerificationHandler(c *gin.Context) {
 		)
 		return
 	}
-	sdClinicID, err := clinicDB.VerifyClinicInDatastore(ctx, userEmail, userID)
+	err = clinicDB.VerifyClinicInDatastore(ctx, userEmail, userID)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
@@ -135,7 +133,6 @@ func ClinicVerificationHandler(c *gin.Context) {
 	}
 	responseData := contracts.ClinicRegistrationResponse{
 		EmailID:    userEmail,
-		ClinicID:   strconv.FormatInt(sdClinicID, 10),
 		IsVerified: true,
 	}
 	c.JSON(http.StatusOK, gin.H{

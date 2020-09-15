@@ -20,7 +20,6 @@ type ClinicVerificationData struct {
 // ClinicRegistrationResponse ....
 type ClinicRegistrationResponse struct {
 	EmailID    string `json:"emailId" valid:"required"`
-	ClinicID   string `json:"clinicId" valid:"required"`
 	IsVerified bool   `json:"isVerified" valid:"required"`
 }
 
@@ -29,9 +28,9 @@ type ClinicRegistrationDatabase interface {
 	//InitializeDataBase initialize computation database
 	InitializeDataBase(ctx context.Context, projectID string) error
 	// AddClinicRegistration returns a unique user id in datastore that will be used to add others
-	AddClinicRegistration(ctx context.Context, clinic *ClinicRegistrationData, uID string) (int64, error)
+	AddClinicRegistration(ctx context.Context, clinic *ClinicRegistrationData, uID string) error
 	// VerifyUserInDatastore returns a unique user id in datastore that will be used to add others
-	VerifyClinicInDatastore(ctx context.Context, emailID string, uID string) (int64, error)
+	VerifyClinicInDatastore(ctx context.Context, emailID string, uID string) error
 	// Close closes the database, freeing up any available resources.
 	// TODO(cbro): Close() should return an error.
 	Close() error

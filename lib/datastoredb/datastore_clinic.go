@@ -55,7 +55,7 @@ func (db *dsClinic) InitializeDataBase(ctx context.Context, projectID string) er
 }
 
 // AddClinicRegistration ....
-func (db *dsClinic) AddClinicRegistration(ctx context.Context, clinic *contracts.ClinicRegistrationData, uID string) (int64, error) {
+func (db *dsClinic) AddClinicRegistration(ctx context.Context, clinic *contracts.ClinicRegistrationData, uID string) error {
 	parentKey := datastore.NameKey("ClinicAdmin", uID, nil)
 	primaryKey := datastore.NameKey("ClinicAdmin", clinic.EmailID, parentKey)
 	allPrimaryClinics := make([]contracts.ClinicRegistrationData, 0)
@@ -65,33 +65,31 @@ func (db *dsClinic) AddClinicRegistration(ctx context.Context, clinic *contracts
 	noKeys := len(keyClinics)
 	if err != nil || noKeys <= 0 {
 		//lets create the clinic
-		k := datastore.IncompleteKey("ClinicAdmin", primaryKey)
-		k, err = db.client.Put(ctx, k, clinic)
+		_, err := db.client.Put(ctx, primaryKey, clinic)
 		if err != nil {
-			return 0, fmt.Errorf("cannot register clinic with sd: %v", err)
+			return fmt.Errorf("cannot register clinic with sd: %v", err)
 		}
-		clinic.ClinicID = k.ID
-		return k.ID, nil
+		return nil
 	}
-	return 0, fmt.Errorf("cannot register the clinic as it is already registred with same credentials: %v", err)
+	return fmt.Errorf("cannot register the clinic as it is already registred with same credentials: %v", err)
 
 }
 
 // VerifyClinicInDatastore ..
-func (db *dsClinic) VerifyClinicInDatastore(ctx context.Context, emailID string, uID string) (int64, error) {
+func (db *dsClinic) VerifyClinicInDatastore(ctx context.Context, emailID string, uID string) error {
 	parentKey := datastore.NameKey("ClinicAdmin", uID, nil)
 	pk := datastore.NameKey("ClinicAdmin", emailID, parentKey)
 	clinic := &contracts.ClinicRegistrationData{}
 	if err := db.client.Get(ctx, pk, clinic); err != nil {
-		return 0.0, fmt.Errorf("datastoredb: could not get registered cli: %v", err)
+		return fmt.Errorf("datastoredb: could not get registered cli: %v", err)
 
 	}
 	clinic.IsVerified = true
-	returnedKey, err := db.client.Put(ctx, pk, clinic)
+	_, err := db.client.Put(ctx, pk, clinic)
 	if err != nil {
-		return 0.0, fmt.Errorf("datastoredb: could not verify clinic: %v", err)
+		return fmt.Errorf("datastoredb: could not verify clinic: %v", err)
 	}
-	return returnedKey.ID, nil
+	return nil
 }
 
 // Close closes the database.
