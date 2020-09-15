@@ -24,7 +24,7 @@ func SDRouter() (*gin.Engine, error) {
 		gin.SetMode(gin.ReleaseMode)
 	}
 	restRouter.GET("/healthz", handlers.HealthCheckHandler)
-	version1 := restRouter.Group("/api/sd/v1")
+	version1 := restRouter.Group("/v1")
 
 	//.....................................................................
 	// healthcheck is need by Kubernetes to test readiness of containers
