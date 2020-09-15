@@ -28,7 +28,7 @@ func ClinicRegistrationHandler(c *gin.Context) {
 			http.StatusInternalServerError,
 			gin.H{
 				constants.RESPONSE_JSON_DATA:   nil,
-				constants.RESPONSDE_JSON_ERROR: err,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
 			},
 		)
 		return
@@ -53,7 +53,7 @@ func ClinicRegistrationHandler(c *gin.Context) {
 			http.StatusInternalServerError,
 			gin.H{
 				constants.RESPONSE_JSON_DATA:   nil,
-				constants.RESPONSDE_JSON_ERROR: err,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
 			},
 		)
 		return
@@ -64,7 +64,7 @@ func ClinicRegistrationHandler(c *gin.Context) {
 			http.StatusInternalServerError,
 			gin.H{
 				constants.RESPONSE_JSON_DATA:   nil,
-				constants.RESPONSDE_JSON_ERROR: err,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
 			},
 		)
 		return
@@ -91,7 +91,7 @@ func ClinicVerificationHandler(c *gin.Context) {
 			http.StatusInternalServerError,
 			gin.H{
 				constants.RESPONSE_JSON_DATA:   nil,
-				constants.RESPONSDE_JSON_ERROR: err,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
 			},
 		)
 		return
@@ -115,7 +115,7 @@ func ClinicVerificationHandler(c *gin.Context) {
 			http.StatusInternalServerError,
 			gin.H{
 				constants.RESPONSE_JSON_DATA:   nil,
-				constants.RESPONSDE_JSON_ERROR: err,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
 			},
 		)
 		return
@@ -126,7 +126,7 @@ func ClinicVerificationHandler(c *gin.Context) {
 			http.StatusInternalServerError,
 			gin.H{
 				constants.RESPONSE_JSON_DATA:   nil,
-				constants.RESPONSDE_JSON_ERROR: err,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
 			},
 		)
 		return
@@ -148,15 +148,12 @@ func AddPhysicalClinicsHandler(c *gin.Context) {
 	ctx := c.Request.Context()
 	var addClinicAddressRequest contracts.PostPhysicalClinicDetails
 	userEmail, userID, gproject, err := getUserDetails(ctx, c.Request)
-	log.Infof("here1")
 	if err != nil {
-		log.Infof("hereerror1: %v", err.Error())
-
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
 			gin.H{
 				constants.RESPONSE_JSON_DATA:   nil,
-				constants.RESPONSDE_JSON_ERROR: err,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
 			},
 		)
 		return
@@ -173,31 +170,25 @@ func AddPhysicalClinicsHandler(c *gin.Context) {
 		)
 		return
 	}
-	log.Infof("here2")
-
 	clinicMetaDB := datastoredb.NewClinicMetaHandler()
 	err = clinicMetaDB.InitializeDataBase(ctx, gproject)
 	if err != nil {
-		log.Infof("hereerror2: %v", err.Error())
-
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
 			gin.H{
 				constants.RESPONSE_JSON_DATA:   nil,
-				constants.RESPONSDE_JSON_ERROR: err,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
 			},
 		)
 		return
 	}
 	registeredClinics, err := clinicMetaDB.AddPhysicalAddessressToClinic(ctx, userEmail, userID, addClinicAddressRequest.ClinicDetails)
 	if err != nil {
-		log.Infof("hereerror3: %v", err.Error())
-
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
 			gin.H{
 				constants.RESPONSE_JSON_DATA:   nil,
-				constants.RESPONSDE_JSON_ERROR: err,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
 			},
 		)
 		return
@@ -224,7 +215,7 @@ func RegisterClinicDoctors(c *gin.Context) {
 			http.StatusInternalServerError,
 			gin.H{
 				constants.RESPONSE_JSON_DATA:   nil,
-				constants.RESPONSDE_JSON_ERROR: err,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
 			},
 		)
 		return
@@ -248,7 +239,7 @@ func RegisterClinicDoctors(c *gin.Context) {
 			http.StatusInternalServerError,
 			gin.H{
 				constants.RESPONSE_JSON_DATA:   nil,
-				constants.RESPONSDE_JSON_ERROR: err,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
 			},
 		)
 		return
@@ -259,7 +250,7 @@ func RegisterClinicDoctors(c *gin.Context) {
 			http.StatusInternalServerError,
 			gin.H{
 				constants.RESPONSE_JSON_DATA:   nil,
-				constants.RESPONSDE_JSON_ERROR: err,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
 			},
 		)
 		return
@@ -282,7 +273,7 @@ func RegisterClinicPMS(c *gin.Context) {
 			http.StatusInternalServerError,
 			gin.H{
 				constants.RESPONSE_JSON_DATA:   nil,
-				constants.RESPONSDE_JSON_ERROR: err,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
 			},
 		)
 		return
@@ -306,7 +297,7 @@ func RegisterClinicPMS(c *gin.Context) {
 			http.StatusInternalServerError,
 			gin.H{
 				constants.RESPONSE_JSON_DATA:   nil,
-				constants.RESPONSDE_JSON_ERROR: err,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
 			},
 		)
 		return
@@ -317,7 +308,7 @@ func RegisterClinicPMS(c *gin.Context) {
 			http.StatusInternalServerError,
 			gin.H{
 				constants.RESPONSE_JSON_DATA:   nil,
-				constants.RESPONSDE_JSON_ERROR: err,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
 			},
 		)
 		return
@@ -340,7 +331,7 @@ func RegisterSpecialityServices(c *gin.Context) {
 			http.StatusInternalServerError,
 			gin.H{
 				constants.RESPONSE_JSON_DATA:   nil,
-				constants.RESPONSDE_JSON_ERROR: err,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
 			},
 		)
 		return
@@ -364,7 +355,7 @@ func RegisterSpecialityServices(c *gin.Context) {
 			http.StatusInternalServerError,
 			gin.H{
 				constants.RESPONSE_JSON_DATA:   nil,
-				constants.RESPONSDE_JSON_ERROR: err,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
 			},
 		)
 		return
@@ -375,7 +366,7 @@ func RegisterSpecialityServices(c *gin.Context) {
 			http.StatusInternalServerError,
 			gin.H{
 				constants.RESPONSE_JSON_DATA:   nil,
-				constants.RESPONSDE_JSON_ERROR: err,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
 			},
 		)
 		return
