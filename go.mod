@@ -17,6 +17,7 @@ require (
 	golang.org/x/oauth2 v0.0.0-20200902213428-5d25da1a8d43
 	golang.org/x/tools v0.0.0-20200902224051-cf7880770c1e // indirect
 	google.golang.org/api v0.31.0
+	googlemaps.github.io/maps v1.2.2
 	gopkg.in/tylerb/graceful.v1 v1.2.15
 	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776 // indirect
 )

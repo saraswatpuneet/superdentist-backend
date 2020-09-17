@@ -6,14 +6,14 @@ import "context"
 // We will secure the connection to backend via SSL/TLS certificates over HTTPS
 // So we dont care to send over these details without hashing over the internet
 type ClinicRegistrationData struct {
-	EmailID     string `json:"emailId" valid:"required"`
-	ClinicType  string `json:"clinicType" valid:"required"`
-	IsVerified  bool   `json:"isVerified" valid:"required"`
+	EmailID    string `json:"emailId" valid:"required"`
+	ClinicType string `json:"clinicType" valid:"required"`
+	IsVerified bool   `json:"isVerified" valid:"required"`
 }
 
 // ClinicVerificationData ...
 type ClinicVerificationData struct {
-	IsVerified bool   `json:"isVerified" valid:"required"`
+	IsVerified bool `json:"isVerified" valid:"required"`
 }
 
 // ClinicRegistrationResponse ....
