@@ -41,7 +41,9 @@ sdServiceAccount:
   credential:
     dir: /var/run/secrets/superdentist-backend
     file: super-dentist-backend.json
-
+sdAPISecret:
+  name: sd-api-key
+  secret: GCP_API_KEY
 service:
   type: ClusterIP
   port: 80

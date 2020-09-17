@@ -63,6 +63,11 @@ spec:
             value: {{ .Values.image.port | quote }}
           - name: GOOGLE_APPLICATION_CREDENTIALS
             value: {{ $sdbcred }}
+          - name: GCP_API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: {{.Values.sdAPISecret.name}}
+                key : {{.Values.sdAPISecret.secret}}
       volumes:
       - name: superdentist-backend
         secret:

@@ -25,5 +25,10 @@ func main() {
 		// send OS signal and shut it all down
 		os.Exit(1)
 	}
+	gcpAPIKey := os.Getenv("GCP_API_KEY")
+	if gcpAPIKey == "" {
+		 log.Infof("Bad mounting not api keu")
+	}
+	log.Infof(gcpAPIKey)
 	log.Infof("Backend intialization completed")
 }
