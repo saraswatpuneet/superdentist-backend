@@ -18,6 +18,11 @@ func main() {
 	if global.Options.Debug {
 		log.SetLevel(log.DebugLevel)
 	}
+	gcpAPIKey := os.Getenv("GCP_API_KEY")
+	if gcpAPIKey == "" {
+		 log.Infof("Bad mounting not api keu")
+	}
+	log.Infof(gcpAPIKey)
 	err := servertrigger.CoreServer()
 	if err != nil {
 		//send signal to all channels to calm down we found an error
@@ -25,10 +30,5 @@ func main() {
 		// send OS signal and shut it all down
 		os.Exit(1)
 	}
-	gcpAPIKey := os.Getenv("GCP_API_KEY")
-	if gcpAPIKey == "" {
-		 log.Infof("Bad mounting not api keu")
-	}
-	log.Infof(gcpAPIKey)
 	log.Infof("Backend intialization completed")
 }
