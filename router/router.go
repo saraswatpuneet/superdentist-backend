@@ -5,10 +5,14 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/superdentist/superdentist-backend/global"
 	"github.com/superdentist/superdentist-backend/handlers"
+	"github.com/superdentist/superdentist-backend/lib/websocket"
 )
 
 // SDRouter ... superdentist backend router to handle various APIs
 func SDRouter() (*gin.Engine, error) {
+	// Initialize and run websocket pool manager
+	poolConnections := websocket.NewPool()
+	go poolConnections.RunPool()
 	restRouter := gin.Default()
 	// configure cors as needed for FE/BE interactions: For now defaults
 
@@ -43,6 +47,9 @@ func SDRouter() (*gin.Engine, error) {
 	}
 	{
 		// All data query related APIs: Basic stuff R
+		clinicGroup.GET("/queryAddress", func(c *gin.Context) {
+			handlers.QueryAddressHandlerWebsocket(poolConnections, c)
+		})
 	}
 	// Derive groups from version group to consolidate our APIs in a better way
 	return restRouter, nil

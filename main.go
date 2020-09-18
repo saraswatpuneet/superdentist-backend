@@ -18,7 +18,7 @@ func main() {
 	if global.Options.Debug {
 		log.SetLevel(log.DebugLevel)
 	}
-
+	// Initialize Rest APIs
 	err := servertrigger.CoreServer()
 	if err != nil {
 		//send signal to all channels to calm down we found an error

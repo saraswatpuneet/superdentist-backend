@@ -14,6 +14,7 @@ import (
 	"github.com/superdentist/superdentist-backend/lib/googleprojectlib"
 	"github.com/superdentist/superdentist-backend/lib/identity"
 	"github.com/superdentist/superdentist-backend/lib/jwt"
+	"github.com/superdentist/superdentist-backend/lib/websocket"
 	"go.opencensus.io/trace"
 )
 
@@ -376,6 +377,18 @@ func RegisterSpecialityServices(c *gin.Context) {
 		constants.RESPONSDE_JSON_ERROR: nil,
 	})
 	clinicMetaDB.Close()
+}
+
+// QueryAddressHandlerWebsocket ...
+func QueryAddressHandlerWebsocket(webPool *websocket.Pool, c *gin.Context) {
+	webSocketConn, err := websocket.UpgradeWebSocket(c)
+	if err != nil {
+		log.Errorf("Failed to establish websocket connection: %v", err.Error())
+	}
+	client := &websocket.Client{CurrentPool: webPool, CurrentConn: webSocketConn, Send: make(chan []byte, 1024)}
+	client.CurrentPool.Register <- client
+	go client.ReadAddressString()
+	go client.WriteAdderessJSON()
 }
 
 func getUserDetails(ctx context.Context, request *http.Request) (string, string, string, error) {
