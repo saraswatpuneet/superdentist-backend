@@ -21,6 +21,7 @@ const (
 	// MaxMessageSize Maximum message size allowed from peer.
 	MaxMessageSize = 512
 )
+
 var (
 	newline = []byte{'\n'}
 	space   = []byte{' '}
@@ -29,16 +30,34 @@ var (
 // Pool maintains clients and monitor connections.
 type Pool struct {
 	// Registered clients.
-	Clients map[*Client]bool
+	Clients map[string]*Client
 
 	// Inbound messages from the clients.
-	Broadcast chan []byte
+	Broadcast chan BroadCastChannel
 
 	// Register requests from the clients.
-	Register chan *Client
+	Register chan *RegisterChannel
 
 	// Unregister requests from clients.
-	Unregister chan *Client
+	Unregister chan *UnRegisterChannel
+}
+
+// BroadCastChannel ...
+type BroadCastChannel struct {
+	ClientID string
+	Message  []byte
+}
+
+// RegisterChannel ...
+type RegisterChannel struct {
+	ClientID  string
+	WebClient *Client
+}
+
+// UnRegisterChannel ...
+type UnRegisterChannel struct {
+	ClientID  string
+	WebClient *Client
 }
 
 // Client is a middleman between the websocket connection and the backend.
@@ -48,6 +67,9 @@ type Client struct {
 
 	// CurrentConn The websocket connection.
 	CurrentConn *websocket.Conn
+
+	//CurrentConnID ... the id of connection established
+	CurrentConnID string
 
 	// Send Buffered channel of outbound messages.
 	Send chan []byte
@@ -61,10 +83,10 @@ var wsupgrader = websocket.Upgrader{
 // NewPool .. this will handle all websocket connections needed by SD
 func NewPool() *Pool {
 	return &Pool{
-		Broadcast:  make(chan []byte),
-		Register:   make(chan *Client),
-		Unregister: make(chan *Client),
-		Clients:    make(map[*Client]bool),
+		Broadcast:  make(chan BroadCastChannel),
+		Register:   make(chan *RegisterChannel),
+		Unregister: make(chan *UnRegisterChannel),
+		Clients:    make(map[string]*Client),
 	}
 }
 
@@ -73,20 +95,16 @@ func (h *Pool) RunPool() {
 	for {
 		select {
 		case client := <-h.Register:
-			h.Clients[client] = true
+			h.Clients[client.ClientID] = client.WebClient
 		case client := <-h.Unregister:
-			if _, ok := h.Clients[client]; ok {
-				delete(h.Clients, client)
-				close(client.Send)
+			if _, ok := h.Clients[client.ClientID]; ok {
+				delete(h.Clients, client.ClientID)
+				close(client.WebClient.Send)
 			}
 		case message := <-h.Broadcast:
-			for client := range h.Clients {
-				select {
-				case client.Send <- message:
-				default:
-					close(client.Send)
-					delete(h.Clients, client)
-				}
+			clientID := message.ClientID
+			if client, ok := h.Clients[clientID]; ok {
+				client.Send <- message.Message
 			}
 		}
 	}

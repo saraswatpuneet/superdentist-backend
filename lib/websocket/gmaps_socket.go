@@ -14,7 +14,10 @@ import (
 // ReadAddressString ....
 func (c *Client) ReadAddressString() {
 	defer func() {
-		c.CurrentPool.Unregister <- c
+		c.CurrentPool.Unregister <- &UnRegisterChannel{
+			ClientID:  c.CurrentConnID,
+			WebClient: c,
+		}
 		c.CurrentConn.Close()
 	}()
 	c.CurrentConn.SetReadLimit(MaxMessageSize)
@@ -40,7 +43,11 @@ func (c *Client) ReadAddressString() {
 			break
 		}
 		message = bytes.TrimSpace(bytes.Replace(message, newline, space, -1))
-		c.CurrentPool.Broadcast <- message
+		c.CurrentPool.Broadcast <- BroadCastChannel{
+			ClientID: c.CurrentConnID,
+			Message:  message,
+		}
+
 	}
 }
 
@@ -63,11 +70,19 @@ func (c *Client) WriteAdderessJSON(mapClient *gmaps.ClientGMaps) {
 			resultPlaces, err := mapClient.FindPlacesFromText(string(message))
 			if err != nil {
 				log.Errorf("error finding places: %v", err.Error())
+				currentBlankResponse := maps.FindPlaceFromTextResponse{}
+				returnError := contracts.PostAddressList{
+					AddressList: currentBlankResponse,
+					Error:       err.Error(),
+				}
+				c.CurrentConn.WriteJSON(returnError)
+				c.CurrentConn.WriteMessage(websocket.CloseMessage, []byte{})
 				return
 			}
 			err = c.CurrentConn.WriteJSON(resultPlaces)
 			if err != nil {
 				log.Errorf("error writing places: %v", err.Error())
+				c.CurrentConn.WriteMessage(websocket.CloseMessage, []byte{})
 				return
 			}
 		case <-ticker.C:

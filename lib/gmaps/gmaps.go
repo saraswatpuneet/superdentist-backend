@@ -12,7 +12,6 @@ import (
 type ClientGMaps struct {
 	projectID string
 	client    *maps.Client
-	ctx       *context.Context
 }
 
 // NewMapsHandler return new database action
@@ -32,18 +31,18 @@ func (gm *ClientGMaps) InitializeGoogleMapsAPIClient(ctx context.Context, projec
 	}
 	gm.client = gmClient
 	gm.projectID = projectID
-	gm.ctx = &ctx
 	return nil
 }
 
 // FindPlacesFromText ....
 func (gm *ClientGMaps) FindPlacesFromText(placeText string) (maps.FindPlaceFromTextResponse, error) {
+	ctx := context.Background()
 	placesFromTextReq := maps.FindPlaceFromTextRequest{
 		Input:     placeText,
 		InputType: maps.FindPlaceFromTextInputTypeTextQuery,
 		Fields:    []maps.PlaceSearchFieldMask{maps.PlaceSearchFieldMaskName, maps.PlaceSearchFieldMaskFormattedAddress},
 	}
-	placesSearchResponse, err := gm.client.FindPlaceFromText(*gm.ctx, &placesFromTextReq)
+	placesSearchResponse, err := gm.client.FindPlaceFromText(ctx, &placesFromTextReq)
 	if err != nil {
 		return maps.FindPlaceFromTextResponse{}, err
 	}
