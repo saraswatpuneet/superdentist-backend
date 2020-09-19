@@ -384,19 +384,10 @@ func RegisterSpecialityServices(c *gin.Context) {
 // QueryAddressHandlerWebsocket ...
 func QueryAddressHandlerWebsocket(webPool *websocket.Pool, c *gin.Context) {
 	ctx := c.Request.Context()
-	_, _, gproject, err := getUserDetails(ctx, c.Request)
-	if err != nil {
-		c.AbortWithStatusJSON(
-			http.StatusInternalServerError,
-			gin.H{
-				constants.RESPONSE_JSON_DATA:   nil,
-				constants.RESPONSDE_JSON_ERROR: err.Error(),
-			},
-		)
-		return
-	}
+	gproject := googleprojectlib.GetGoogleProjectID()
+
 	mapClient := gmaps.NewMapsHandler()
-	err = mapClient.InitializeGoogleMapsAPIClient(ctx, gproject)
+	err := mapClient.InitializeGoogleMapsAPIClient(ctx, gproject)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
