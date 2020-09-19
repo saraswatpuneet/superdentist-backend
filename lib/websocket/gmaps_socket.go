@@ -2,10 +2,10 @@ package websocket
 
 import (
 	"bytes"
-	"log"
 	"time"
 
 	"github.com/gorilla/websocket"
+	log "github.com/sirupsen/logrus"
 	"github.com/superdentist/superdentist-backend/contracts"
 	"github.com/superdentist/superdentist-backend/lib/gmaps"
 	"googlemaps.github.io/maps"
@@ -24,7 +24,7 @@ func (c *Client) ReadAddressString() {
 		messageType, message, err := c.CurrentConn.ReadMessage()
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-				log.Printf("error: %v", err)
+				log.Errorf("error: %v", err)
 			}
 			break
 		}
@@ -34,6 +34,7 @@ func (c *Client) ReadAddressString() {
 				AddressList: currentBlankResponse,
 				Error:       "Websocket only accepts text message",
 			}
+			log.Errorf("bad message sent to backend: %v", string(message))
 			c.CurrentConn.WriteJSON(returnError)
 			c.CurrentConn.Close()
 			break
@@ -61,10 +62,12 @@ func (c *Client) WriteAdderessJSON(mapClient *gmaps.ClientGMaps) {
 			}
 			resultPlaces, err := mapClient.FindPlacesFromText(string(message))
 			if err != nil {
+				log.Errorf("error finding places: %v", err.Error())
 				return
 			}
 			err = c.CurrentConn.WriteJSON(resultPlaces)
 			if err != nil {
+				log.Errorf("error writing places: %v", err.Error())
 				return
 			}
 		case <-ticker.C:
