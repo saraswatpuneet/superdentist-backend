@@ -11,6 +11,7 @@ import (
 	"github.com/superdentist/superdentist-backend/constants"
 	"github.com/superdentist/superdentist-backend/contracts"
 	"github.com/superdentist/superdentist-backend/lib/datastoredb"
+	"github.com/superdentist/superdentist-backend/lib/gmaps"
 	"github.com/superdentist/superdentist-backend/lib/googleprojectlib"
 	"github.com/superdentist/superdentist-backend/lib/identity"
 	"github.com/superdentist/superdentist-backend/lib/jwt"
@@ -381,6 +382,30 @@ func RegisterSpecialityServices(c *gin.Context) {
 
 // QueryAddressHandlerWebsocket ...
 func QueryAddressHandlerWebsocket(webPool *websocket.Pool, c *gin.Context) {
+	ctx := c.Request.Context()
+	_, _, gproject, err := getUserDetails(ctx, c.Request)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	mapClient := gmaps.NewMapsHandler()
+	err = mapClient.InitializeGoogleMapsAPIClient(ctx, gproject)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
 	webSocketConn, err := websocket.UpgradeWebSocket(c)
 	if err != nil {
 		log.Errorf("Failed to establish websocket connection: %v", err.Error())
@@ -388,7 +413,7 @@ func QueryAddressHandlerWebsocket(webPool *websocket.Pool, c *gin.Context) {
 	client := &websocket.Client{CurrentPool: webPool, CurrentConn: webSocketConn, Send: make(chan []byte, 1024)}
 	client.CurrentPool.Register <- client
 	go client.ReadAddressString()
-	go client.WriteAdderessJSON()
+	go client.WriteAdderessJSON(mapClient)
 }
 
 func getUserDetails(ctx context.Context, request *http.Request) (string, string, string, error) {

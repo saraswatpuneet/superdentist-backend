@@ -6,6 +6,9 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
+	"github.com/superdentist/superdentist-backend/contracts"
+	"github.com/superdentist/superdentist-backend/lib/gmaps"
+	"googlemaps.github.io/maps"
 )
 
 // ReadAddressString ....
@@ -18,11 +21,21 @@ func (c *Client) ReadAddressString() {
 	c.CurrentConn.SetReadDeadline(time.Now().Add(PongWait))
 	c.CurrentConn.SetPongHandler(func(string) error { c.CurrentConn.SetReadDeadline(time.Now().Add(PongWait)); return nil })
 	for {
-		_, message, err := c.CurrentConn.ReadMessage()
+		messageType, message, err := c.CurrentConn.ReadMessage()
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
 				log.Printf("error: %v", err)
 			}
+			break
+		}
+		if messageType != websocket.TextMessage {
+			currentBlankResponse := maps.FindPlaceFromTextResponse{}
+			returnError := contracts.PostAddressList{
+				AddressList: currentBlankResponse,
+				Error:       "Websocket only accepts text message",
+			}
+			c.CurrentConn.WriteJSON(returnError)
+			c.CurrentConn.Close()
 			break
 		}
 		message = bytes.TrimSpace(bytes.Replace(message, newline, space, -1))
@@ -31,7 +44,7 @@ func (c *Client) ReadAddressString() {
 }
 
 // WriteAdderessJSON ... write json places back to socket for FE to provide suggestions
-func (c *Client) WriteAdderessJSON() {
+func (c *Client) WriteAdderessJSON(mapClient *gmaps.ClientGMaps) {
 	ticker := time.NewTicker(PingPeriod)
 	defer func() {
 		ticker.Stop()
@@ -42,25 +55,16 @@ func (c *Client) WriteAdderessJSON() {
 		case message, ok := <-c.Send:
 			c.CurrentConn.SetWriteDeadline(time.Now().Add(WriteWait))
 			if !ok {
-				// The hub closed the channel.
+				// The pool closed the channel.
 				c.CurrentConn.WriteMessage(websocket.CloseMessage, []byte{})
 				return
 			}
-
-			w, err := c.CurrentConn.NextWriter(websocket.TextMessage)
+			resultPlaces, err := mapClient.FindPlacesFromText(string(message))
 			if err != nil {
 				return
 			}
-			w.Write(message)
-
-			// Add queued chat messages to the current websocket message.
-			n := len(c.Send)
-			for i := 0; i < n; i++ {
-				w.Write(newline)
-				w.Write(<-c.Send)
-			}
-
-			if err := w.Close(); err != nil {
+			err = c.CurrentConn.WriteJSON(resultPlaces)
+			if err != nil {
 				return
 			}
 		case <-ticker.C:

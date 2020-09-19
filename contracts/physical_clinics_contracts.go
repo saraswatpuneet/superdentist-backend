@@ -1,6 +1,10 @@
 package contracts
 
-import "context"
+import (
+	"context"
+
+	"googlemaps.github.io/maps"
+)
 
 // PhysicalClinicsRegistration ...
 type PhysicalClinicsRegistration struct {
@@ -52,6 +56,12 @@ type PostPMSDetails struct {
 type ServiceObject struct {
 	ServiceGroup string   `json:"serviceGroup" valid:"required"`
 	ServiceList  []string `json:"serviceList" valid:"required"`
+}
+
+// PostAddressList ....
+type PostAddressList struct {
+	AddressList maps.FindPlaceFromTextResponse `json:"addressList" valid:"required"`
+	Error       string                         `json:"error" valid:"required"`
 }
 
 // PostClinicServices ....
