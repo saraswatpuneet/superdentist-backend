@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/google/uuid"
 	"googlemaps.github.io/maps"
 )
 
@@ -52,8 +53,10 @@ func (gm *ClientGMaps) FindPlaceFromText(placeText string) (maps.FindPlaceFromTe
 // FindPlacesFromText ....
 func (gm *ClientGMaps) FindPlacesFromText(placeText string) (maps.PlacesSearchResponse, error) {
 	ctx := context.Background()
+	randomPageToken, _ := uuid.NewUUID()
 	placesFromTextReq := maps.TextSearchRequest{
 		Query:     placeText,
+		PageToken: randomPageToken.String(),
 	}
 	placesSearchResponse, err := gm.client.TextSearch(ctx, &placesFromTextReq)
 	if err != nil {
