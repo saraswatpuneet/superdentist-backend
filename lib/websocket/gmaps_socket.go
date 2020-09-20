@@ -81,7 +81,7 @@ func (c *Client) WriteAdderessJSON(mapClient *gmaps.ClientGMaps) {
 			}
 			restunedResults := contracts.PostAddressList{
 				AddressList: resultPlaces.Results,
-				Error:       err.Error(),
+				Error:       "",
 			}
 			err = c.CurrentConn.WriteJSON(restunedResults)
 			if err != nil {
