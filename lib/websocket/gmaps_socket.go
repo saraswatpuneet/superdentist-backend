@@ -32,7 +32,7 @@ func (c *Client) ReadAddressString() {
 			break
 		}
 		if messageType != websocket.TextMessage {
-			currentBlankResponse := maps.FindPlaceFromTextResponse{}
+			currentBlankResponse := make([]maps.PlacesSearchResult, 0)
 			returnError := contracts.PostAddressList{
 				AddressList: currentBlankResponse,
 				Error:       "Websocket only accepts text message",
@@ -70,7 +70,7 @@ func (c *Client) WriteAdderessJSON(mapClient *gmaps.ClientGMaps) {
 			resultPlaces, err := mapClient.FindPlacesFromText(string(message))
 			if err != nil {
 				log.Errorf("error finding places: %v", err.Error())
-				currentBlankResponse := maps.FindPlaceFromTextResponse{}
+				currentBlankResponse := make([]maps.PlacesSearchResult, 0)
 				returnError := contracts.PostAddressList{
 					AddressList: currentBlankResponse,
 					Error:       err.Error(),
@@ -79,7 +79,11 @@ func (c *Client) WriteAdderessJSON(mapClient *gmaps.ClientGMaps) {
 				c.CurrentConn.WriteMessage(websocket.CloseMessage, []byte{})
 				return
 			}
-			err = c.CurrentConn.WriteJSON(resultPlaces)
+			restunedResults := contracts.PostAddressList{
+				AddressList: resultPlaces.Results,
+				Error:       err.Error(),
+			}
+			err = c.CurrentConn.WriteJSON(restunedResults)
 			if err != nil {
 				log.Errorf("error writing places: %v", err.Error())
 				c.CurrentConn.WriteMessage(websocket.CloseMessage, []byte{})

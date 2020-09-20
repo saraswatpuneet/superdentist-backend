@@ -60,8 +60,8 @@ type ServiceObject struct {
 
 // PostAddressList ....
 type PostAddressList struct {
-	AddressList maps.FindPlaceFromTextResponse `json:"addressList" valid:"required"`
-	Error       string                         `json:"error" valid:"required"`
+	AddressList []maps.PlacesSearchResult `json:"addressList" valid:"required"`
+	Error       string                    `json:"error" valid:"required"`
 }
 
 // PostClinicServices ....
