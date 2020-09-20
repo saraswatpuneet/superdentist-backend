@@ -12,8 +12,8 @@ import (
 func main() {
 	log.Infof("Starting superdentist backend service")
 	// Only for local debugging and testing ......
-	os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", "D:\\SuperDentist\\keys\\super-dentist-backend.json")
-	os.Setenv("GCP_API_KEY", "pastekey")
+	//os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", "D:\\SuperDentist\\keys\\super-dentist-backend.json")
+	//os.Setenv("GCP_API_KEY", "pastekey")
 	// ...........................................
 
 	// any global settings like PMS username/password/configuration goes here
