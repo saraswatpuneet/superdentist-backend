@@ -34,8 +34,8 @@ func (gm *ClientGMaps) InitializeGoogleMapsAPIClient(ctx context.Context, projec
 	return nil
 }
 
-// FindPlacesFromText ....
-func (gm *ClientGMaps) FindPlacesFromText(placeText string) (maps.FindPlaceFromTextResponse, error) {
+// FindPlaceFromText ....
+func (gm *ClientGMaps) FindPlaceFromText(placeText string) (maps.FindPlaceFromTextResponse, error) {
 	ctx := context.Background()
 	placesFromTextReq := maps.FindPlaceFromTextRequest{
 		Input:     placeText,
@@ -45,6 +45,19 @@ func (gm *ClientGMaps) FindPlacesFromText(placeText string) (maps.FindPlaceFromT
 	placesSearchResponse, err := gm.client.FindPlaceFromText(ctx, &placesFromTextReq)
 	if err != nil {
 		return maps.FindPlaceFromTextResponse{}, err
+	}
+	return placesSearchResponse, nil
+}
+
+// FindPlacesFromText ....
+func (gm *ClientGMaps) FindPlacesFromText(placeText string) (maps.PlacesSearchResponse, error) {
+	ctx := context.Background()
+	placesFromTextReq := maps.TextSearchRequest{
+		Query:     placeText,
+	}
+	placesSearchResponse, err := gm.client.TextSearch(ctx, &placesFromTextReq)
+	if err != nil {
+		return maps.PlacesSearchResponse{}, err
 	}
 	return placesSearchResponse, nil
 }
