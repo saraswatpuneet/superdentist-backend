@@ -16,6 +16,11 @@ tags:
   externalDocs:
     description: "Find out more"
     url: "http://superdentist.io"
+- name: "Registration APIs (R of CRUD)"
+  description: "All these APIs deals with users (Specialist/GD alike)"
+  externalDocs:
+    description: "Find out more"
+    url: "http://superdentist.io"
 schemes:
 - "https"
 paths:
@@ -165,6 +170,24 @@ paths:
           description: "Internal server error occured"
       security:
         - Bearer: []
+  /v1/clinic/getClinics:
+    get:
+      tags:
+       - "Registration APIs (R of CRUD)"
+      summary: "Get all clinics associated with admin"
+      description: "Get a list of clinics and info for admin"
+      operationId: "GetPhysicalClinics"
+      produces:
+      - "application/json"
+      responses:
+        '200':
+          $ref: '#/responses/GetClinicsResponse'
+        '401':
+          description: "Unauthorized: Bad request or authorization details"
+        '500':
+          description: "Internal server error occured"
+      security:
+        - Bearer: []
 securityDefinitions:
   Bearer:
     type: "apiKey"
@@ -240,8 +263,6 @@ definitions:
   ClinicAddressResponse:
     type: object
     properties:
-      clinicId:
-        type: string
       clinicDetails:
         type:  array
         items:
@@ -286,7 +307,31 @@ definitions:
                     type: array
                     items:
                       type: string
+  GetClinics:
+    type: object
+    properties:
+      clinicDetails:
+        type: array
+        items:
+          type: object
+          properties:
+            clinicAddressId:
+              type: string
+            clinicName:
+              type: string
+            clinicAddress:
+              type: string
+            clinicPhoneNumber:
+              type: string
+            clinicSpeciality:
+              type: array
+              items:
+                type: string
 responses:
+  GetClinicsResponse:
+    description: Retunrs a list of all clinics registered by admin
+    schema:
+      $ref: '#/definitions/GetClinics'
   PostClinicRegistrationResponse:
     description: Returns successful completion of register clinic stage one
     schema:

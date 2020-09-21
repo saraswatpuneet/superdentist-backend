@@ -17,7 +17,6 @@ type PhysicalClinicsRegistration struct {
 
 //ClinicAddressResponse ....
 type ClinicAddressResponse struct {
-	ClinicID      string                        `json:"clinicId" valid:"required"`
 	ClinicDetails []PhysicalClinicsRegistration `json:"clinicDetails" valid:"required"`
 }
 
@@ -81,6 +80,8 @@ type ClinicPhysicalAddressDatabase interface {
 	AddPMSUsedByClinics(ctx context.Context, clinicEmailID string, clinicFBID string, pmsData []string) error
 	// AddServicesForClinic add services offered by clinic
 	AddServicesForClinic(ctx context.Context, clinicEmailID string, clinicFBID string, serviceData []ServiceObject) error
+	// GetAllClinics get all clinics associated by admin
+	GetAllClinics(ctx context.Context, clinicEmailID string, clinicFBID string) ([]PhysicalClinicsRegistration, error)
 	// TODO(cbro): Close() should return an error.
 	Close() error
 }

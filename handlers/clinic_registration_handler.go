@@ -197,7 +197,6 @@ func AddPhysicalClinicsHandler(c *gin.Context) {
 		return
 	}
 	responseData := contracts.ClinicAddressResponse{
-		ClinicID:      userID,
 		ClinicDetails: registeredClinics,
 	}
 	c.JSON(http.StatusOK, gin.H{

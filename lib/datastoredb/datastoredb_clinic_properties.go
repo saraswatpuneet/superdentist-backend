@@ -158,9 +158,12 @@ func (db *dsClinicMeta) AddServicesForClinic(ctx context.Context, clinicEmailID 
 		return fmt.Errorf("cannot register clinic with sd: %v", err)
 	}
 	return nil
-
 }
 
+// GetAllClinics .... 
+func (db *dsClinicMeta) GetAllClinics(ctx context.Context, clinicEmailID string, clinicFBID string) ([] contracts.PhysicalClinicsRegistration, error){
+	return nil, nil
+}
 // Close closes the database.
 func (db *dsClinicMeta) Close() error {
 	return db.client.Close()

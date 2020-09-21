@@ -47,6 +47,12 @@ func SDRouter() (*gin.Engine, error) {
 	}
 	{
 		// All data query related APIs: Basic stuff R
+		clinicGroup.GET("/getClinics", handlers.GetPhysicalClinics)
+		clinicGroup.GET("/getDoctors/:addressID", handlers.GetClinicDoctors)
+	}
+	{
+		// All wesocket related routing goes here follow the pattern
+
 		clinicGroup.GET("/queryAddress", func(c *gin.Context) {
 			handlers.QueryAddressHandlerWebsocket(poolConnections, c)
 		})
