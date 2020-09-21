@@ -58,17 +58,7 @@ func (db *dsClinicMeta) InitializeDataBase(ctx context.Context, projectID string
 func (db dsClinicMeta) AddPhysicalAddessressToClinic(ctx context.Context, clinicEmailID string, clinicFBID string, addresses []contracts.PhysicalClinicsRegistration) ([]contracts.PhysicalClinicsRegistration, error) {
 	parentKey := datastore.NameKey("ClinicAdmin", clinicFBID, nil)
 	primaryKey := datastore.NameKey("ClinicAdmin", clinicEmailID, parentKey)
-	allPrimaryClinics := make([]contracts.ClinicRegistrationData, 0)
-	qP := datastore.NewQuery("ClinicAddress").Ancestor(primaryKey)
 	returnedAddress := make([]contracts.PhysicalClinicsRegistration, 0)
-	keyClinics, err := db.client.GetAll(ctx, qP, &allPrimaryClinics)
-	if err != nil {
-		return nil, err
-	}
-	noKeys := len(keyClinics)
-	if noKeys > 1 {
-		return nil, fmt.Errorf("Bad database entry, more than one entity exists for admin")
-	}
 	for _, address := range addresses {
 		addrID, err := guuid.NewUUID()
 		address.ClinicAddressID = addrID.String()
@@ -89,16 +79,6 @@ func (db dsClinicMeta) AddPhysicalAddessressToClinic(ctx context.Context, clinic
 func (db dsClinicMeta) AddDoctorsToPhysicalClincs(ctx context.Context, clinicEmailID string, clinicFBID string, doctorsData []contracts.ClinicDoctorsDetails) error {
 	parentKey := datastore.NameKey("ClinicAdmin", clinicFBID, nil)
 	primaryKey := datastore.NameKey("ClinicAdmin", clinicEmailID, parentKey)
-	allPrimaryClinics := make([]contracts.ClinicDoctorRegistration, 0)
-	qP := datastore.NewQuery("ClinicDoctors").Ancestor(primaryKey)
-	keyClinics, err := db.client.GetAll(ctx, qP, &allPrimaryClinics)
-	if err != nil {
-		return err
-	}
-	noKeys := len(keyClinics)
-	if noKeys > 1 {
-		return fmt.Errorf("Bad database entry, more than one entity exists for admin")
-	}
 	for _, doctor := range doctorsData {
 		for _, doc := range doctor.Doctors {
 			docID, err := guuid.NewUUID()
@@ -120,18 +100,8 @@ func (db dsClinicMeta) AddDoctorsToPhysicalClincs(ctx context.Context, clinicEma
 func (db *dsClinicMeta) AddPMSUsedByClinics(ctx context.Context, clinicEmailID string, clinicFBID string, pmsData []string) error {
 	parentKey := datastore.NameKey("ClinicAdmin", clinicFBID, nil)
 	primaryKey := datastore.NameKey("ClinicAdmin", clinicEmailID, parentKey)
-	allPrimaryClinics := make([]string, 0)
-	qP := datastore.NewQuery("ClinicPMS").Ancestor(primaryKey)
-	keyClinics, err := db.client.GetAll(ctx, qP, &allPrimaryClinics)
-	if err != nil {
-		return err
-	}
-	noKeys := len(keyClinics)
-	if noKeys > 1 {
-		return fmt.Errorf("Bad database entry, more than one entity exists for admin")
-	}
 	clinicPMSKey := datastore.IncompleteKey("ClinicPMS", primaryKey)
-	_, err = db.client.Put(ctx, clinicPMSKey, &pmsData)
+	_, err := db.client.Put(ctx, clinicPMSKey, &pmsData)
 	if err != nil {
 		return fmt.Errorf("cannot register clinic with sd: %v", err)
 	}
@@ -142,28 +112,27 @@ func (db *dsClinicMeta) AddPMSUsedByClinics(ctx context.Context, clinicEmailID s
 func (db *dsClinicMeta) AddServicesForClinic(ctx context.Context, clinicEmailID string, clinicFBID string, serviceData []contracts.ServiceObject) error {
 	parentKey := datastore.NameKey("ClinicAdmin", clinicFBID, nil)
 	primaryKey := datastore.NameKey("ClinicAdmin", clinicEmailID, parentKey)
-	allPrimaryClinics := make([]contracts.ServiceObject, 0)
-	qP := datastore.NewQuery("ClinicAdmin").Ancestor(primaryKey)
-	keyClinics, err := db.client.GetAll(ctx, qP, &allPrimaryClinics)
-	if err != nil {
-		return err
-	}
-	noKeys := len(keyClinics)
-	if noKeys > 1 {
-		return fmt.Errorf("Bad database entry, more than one entity exists for admin")
-	}
 	clinicPMSKey := datastore.IncompleteKey("ClinicServices", primaryKey)
-	_, err = db.client.Put(ctx, clinicPMSKey, serviceData)
+	_, err := db.client.Put(ctx, clinicPMSKey, serviceData)
 	if err != nil {
 		return fmt.Errorf("cannot register clinic with sd: %v", err)
 	}
 	return nil
 }
 
-// GetAllClinics .... 
-func (db *dsClinicMeta) GetAllClinics(ctx context.Context, clinicEmailID string, clinicFBID string) ([] contracts.PhysicalClinicsRegistration, error){
-	return nil, nil
+// GetAllClinics ....
+func (db *dsClinicMeta) GetAllClinics(ctx context.Context, clinicEmailID string, clinicFBID string) ([]contracts.PhysicalClinicsRegistration, error) {
+	parentKey := datastore.NameKey("ClinicAdmin", clinicFBID, nil)
+	primaryKey := datastore.NameKey("ClinicAdmin", clinicEmailID, parentKey)
+	returnedAddress := make([]contracts.PhysicalClinicsRegistration, 0)
+	qP := datastore.NewQuery("ClinicAddress").Ancestor(primaryKey)
+	keysClinics, err := db.client.GetAll(ctx, qP, &returnedAddress)
+	if err != nil || len(keysClinics) <= 0 {
+		return nil, fmt.Errorf("no clinics have been found for the admin error: %v", err)
+	}
+	return returnedAddress, nil
 }
+
 // Close closes the database.
 func (db *dsClinicMeta) Close() error {
 	return db.client.Close()
