@@ -7,6 +7,7 @@ import (
 
 	guuid "github.com/google/uuid"
 	"github.com/superdentist/superdentist-backend/contracts"
+	"github.com/superdentist/superdentist-backend/lib/gmaps"
 	"github.com/superdentist/superdentist-backend/lib/helpers"
 	"google.golang.org/api/option"
 
@@ -55,7 +56,7 @@ func (db *dsClinicMeta) InitializeDataBase(ctx context.Context, projectID string
 	return nil
 }
 
-func (db dsClinicMeta) AddPhysicalAddessressToClinic(ctx context.Context, clinicEmailID string, clinicFBID string, addresses []contracts.PhysicalClinicsRegistration) ([]contracts.PhysicalClinicsRegistration, error) {
+func (db dsClinicMeta) AddPhysicalAddessressToClinic(ctx context.Context, clinicEmailID string, clinicFBID string, addresses []contracts.PhysicalClinicsRegistration, mapsClient *gmaps.ClientGMaps) ([]contracts.PhysicalClinicsRegistration, error) {
 	parentKey := datastore.NameKey("ClinicAdmin", clinicFBID, nil)
 	primaryKey := datastore.NameKey("ClinicAdmin", clinicEmailID, parentKey)
 	returnedAddress := make([]contracts.PhysicalClinicsRegistration, 0)
@@ -65,8 +66,22 @@ func (db dsClinicMeta) AddPhysicalAddessressToClinic(ctx context.Context, clinic
 		if err != nil {
 			return nil, fmt.Errorf("cannot register clinic with sd: %v", err)
 		}
+		gmapAddress, err := mapsClient.FindPlacesFromText(address.ClinicAddress)
+		location := contracts.ClinicLocation{
+			Lat:  0.0,
+			Long: 0.0,
+		}
+		if err == nil && len(gmapAddress.Results) > 0 {
+			currentLocation := gmapAddress.Results[0]
+			location.Lat = currentLocation.Geometry.Location.Lat
+			location.Long = currentLocation.Geometry.Location.Lng
+		}
 		addressKey := datastore.NameKey("ClinicAddress", addrID.String(), primaryKey)
-		_, err = db.client.Put(ctx, addressKey, &address)
+		currentLocWithMap := contracts.PhysicalClinicMapLocation{
+			PhysicalClinicsRegistration: address,
+			Location:                    location,
+		}
+		_, err = db.client.Put(ctx, addressKey, &currentLocWithMap)
 		if err != nil {
 			return nil, fmt.Errorf("cannot register clinic with sd: %v", err)
 		}

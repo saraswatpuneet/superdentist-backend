@@ -162,6 +162,18 @@ func AddPhysicalClinicsHandler(c *gin.Context) {
 		return
 	}
 	ctx, span := trace.StartSpan(ctx, "Register address for various clinics for this admin")
+	mapClient := gmaps.NewMapsHandler()
+	err = mapClient.InitializeGoogleMapsAPIClient(ctx, gproject)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
 	defer span.End()
 	if err = c.ShouldBindWith(&addClinicAddressRequest, binding.JSON); err != nil {
 		c.AbortWithStatusJSON(
@@ -185,7 +197,7 @@ func AddPhysicalClinicsHandler(c *gin.Context) {
 		)
 		return
 	}
-	registeredClinics, err := clinicMetaDB.AddPhysicalAddessressToClinic(ctx, userEmail, userID, addClinicAddressRequest.ClinicDetails)
+	registeredClinics, err := clinicMetaDB.AddPhysicalAddessressToClinic(ctx, userEmail, userID, addClinicAddressRequest.ClinicDetails, mapClient)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,

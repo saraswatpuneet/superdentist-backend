@@ -3,6 +3,7 @@ package contracts
 import (
 	"context"
 
+	"github.com/superdentist/superdentist-backend/lib/gmaps"
 	"googlemaps.github.io/maps"
 )
 
@@ -18,6 +19,12 @@ type PhysicalClinicsRegistration struct {
 //ClinicAddressResponse ....
 type ClinicAddressResponse struct {
 	ClinicDetails []PhysicalClinicsRegistration `json:"clinicDetails" valid:"required"`
+}
+
+// PhysicalClinicMapLocation ....
+type PhysicalClinicMapLocation struct {
+	PhysicalClinicsRegistration
+	Location ClinicLocation
 }
 
 //GetClinicAddressResponse ....
@@ -74,12 +81,18 @@ type PostClinicServices struct {
 	Services []ServiceObject `json:"services" valid:"required"`
 }
 
+// ClinicLocation .....
+type ClinicLocation struct {
+	Lat  float64 `json:"lat" valid:"required"`
+	Long float64 `json:"long" valid:"required"`
+}
+
 // ClinicPhysicalAddressDatabase provides thread-safe access to a database of UserRegistration.
 type ClinicPhysicalAddressDatabase interface {
 	//InitializeDataBase initialize computation database
 	InitializeDataBase(ctx context.Context, projectID string) error
 	// AddPhysicalAddessressToClinic .......
-	AddPhysicalAddessressToClinic(ctx context.Context, clinicEmailID string, clinicFBID string, addresses []PhysicalClinicsRegistration) ([]PhysicalClinicsRegistration, error)
+	AddPhysicalAddessressToClinic(ctx context.Context, clinicEmailID string, clinicFBID string, addresses []PhysicalClinicsRegistration, mapsClient *gmaps.ClientGMaps) ([]PhysicalClinicsRegistration, error)
 	// AddDoctorsToPhysicalClincs ....
 	AddDoctorsToPhysicalClincs(ctx context.Context, clinicEmailID string, clinicFBID string, doctorsData []ClinicDoctorsDetails) error // Close closes the database, freeing up any available resources.
 	// AddPMSUsedByClinics PMS to DB
