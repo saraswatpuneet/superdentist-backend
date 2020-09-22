@@ -151,14 +151,12 @@ func (db *dsClinicMeta) GetAllClinics(ctx context.Context, clinicEmailID string,
 	if err != nil || len(keysClinics) <= 0 {
 		return nil, "", fmt.Errorf("no clinics have been found for the admin error: %v", err)
 	}
-	/// Get Admin clinic type
-	qP = datastore.NewQuery("ClinicAdmin").Ancestor(primaryKey)
-	allPrimaryClinics := make([]contracts.ClinicRegistrationData, 0)
-	_, err = db.client.GetAll(ctx, qP, allPrimaryClinics)
-	if err != nil || len(keysClinics) <= 0 {
-		return nil, "", fmt.Errorf("no clinics have been found for the admin error: %v", err)
+	clinic := &contracts.ClinicRegistrationData{}
+	if err := db.client.Get(ctx, primaryKey, clinic); err != nil {
+		return nil, "", fmt.Errorf("datastoredb: could not get registered cli: %v", err)
+
 	}
-	return returnedAddress, allPrimaryClinics[0].ClinicType, nil
+	return returnedAddress, clinic.ClinicType, nil
 }
 
 // GetClinicDoctors ....
