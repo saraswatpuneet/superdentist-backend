@@ -354,6 +354,8 @@ definitions:
   GetClinics:
     type: object
     properties:
+      clinicType:
+        type: string
       clinicDetails:
         type: array
         items:
@@ -415,4 +417,5 @@ responses:
     description: Returns list of doctors associated with clinic address
     schema:
      $ref: '#/definitions/ClinicDoctors'
+  
 {{ end }}

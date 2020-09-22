@@ -121,16 +121,23 @@ func (db *dsClinicMeta) AddServicesForClinic(ctx context.Context, clinicEmailID 
 }
 
 // GetAllClinics ....
-func (db *dsClinicMeta) GetAllClinics(ctx context.Context, clinicEmailID string, clinicFBID string) ([]contracts.PhysicalClinicsRegistration, error) {
+func (db *dsClinicMeta) GetAllClinics(ctx context.Context, clinicEmailID string, clinicFBID string) ([]contracts.PhysicalClinicsRegistration, string, error) {
 	parentKey := datastore.NameKey("ClinicAdmin", clinicFBID, nil)
 	primaryKey := datastore.NameKey("ClinicAdmin", clinicEmailID, parentKey)
 	returnedAddress := make([]contracts.PhysicalClinicsRegistration, 0)
 	qP := datastore.NewQuery("ClinicDoctors").Ancestor(primaryKey)
 	keysClinics, err := db.client.GetAll(ctx, qP, &returnedAddress)
 	if err != nil || len(keysClinics) <= 0 {
-		return nil, fmt.Errorf("no clinics have been found for the admin error: %v", err)
+		return nil, "", fmt.Errorf("no clinics have been found for the admin error: %v", err)
 	}
-	return returnedAddress, nil
+	/// Get Admin clinic type
+	qP = datastore.NewQuery("ClinicAdmin").Ancestor(primaryKey)
+	allPrimaryClinics := make([]contracts.ClinicRegistrationData, 0)
+	_, err = db.client.GetAll(ctx, qP, allPrimaryClinics)
+	if err != nil || len(keysClinics) <= 0 {
+		return nil, "", fmt.Errorf("no clinics have been found for the admin error: %v", err)
+	}
+	return returnedAddress, allPrimaryClinics[0].ClinicType, nil
 }
 
 // GetClinicDoctors ....

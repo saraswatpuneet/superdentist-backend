@@ -353,6 +353,8 @@ definitions:
   GetClinics:
     type: object
     properties:
+      clinicType:
+        type: string
       clinicDetails:
         type: array
         items:

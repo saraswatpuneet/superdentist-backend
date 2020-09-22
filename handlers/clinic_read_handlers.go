@@ -40,7 +40,7 @@ func GetPhysicalClinics(c *gin.Context) {
 		)
 		return
 	}
-	registeredClinics, err := clinicMetaDB.GetAllClinics(ctx, userEmail, userID)
+	registeredClinics, clinicType, err := clinicMetaDB.GetAllClinics(ctx, userEmail, userID)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
@@ -51,7 +51,8 @@ func GetPhysicalClinics(c *gin.Context) {
 		)
 		return
 	}
-	responseData := contracts.ClinicAddressResponse{
+	responseData := contracts.GetClinicAddressResponse{
+		ClinicType:    clinicType,
 		ClinicDetails: registeredClinics,
 	}
 	c.JSON(http.StatusOK, gin.H{
