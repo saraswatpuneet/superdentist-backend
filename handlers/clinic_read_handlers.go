@@ -61,7 +61,7 @@ func GetPhysicalClinics(c *gin.Context) {
 	clinicMetaDB.Close()
 }
 
-// GetClinicDoctors ... after registering clinic main account we add multiple locations etc.
+// GetClinicDoctors ... get doctors from specific clinic.
 func GetClinicDoctors(c *gin.Context) {
 	log.Infof("Get all doctors registered with specific physical clinic")
 	clinicAddressID := c.Param("clinicAddressId ")
@@ -112,12 +112,55 @@ func GetClinicDoctors(c *gin.Context) {
 		)
 		return
 	}
-	responseData := contracts.ClinicDoctorsDetails{
-		ClinicAddressID: clinicAddressID,
-		Doctors:         registeredDoctors,
+	c.JSON(http.StatusOK, gin.H{
+		constants.RESPONSE_JSON_DATA:   registeredDoctors,
+		constants.RESPONSDE_JSON_ERROR: nil,
+	})
+	clinicMetaDB.Close()
+}
+
+// GetAllDoctors ... get all doctors working for admin.
+func GetAllDoctors(c *gin.Context) {
+	log.Infof("Get all doctors associated with admin businesses")
+	ctx := c.Request.Context()
+	userEmail, userID, gproject, err := getUserDetails(ctx, c.Request)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	ctx, span := trace.StartSpan(ctx, "Get all doctors registered for a clinic")
+	defer span.End()
+	clinicMetaDB := datastoredb.NewClinicMetaHandler()
+	err = clinicMetaDB.InitializeDataBase(ctx, gproject)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	registeredDoctors, err := clinicMetaDB.GetClinicDoctors(ctx, userEmail, userID, "")
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
 	}
 	c.JSON(http.StatusOK, gin.H{
-		constants.RESPONSE_JSON_DATA:   responseData,
+		constants.RESPONSE_JSON_DATA:   registeredDoctors,
 		constants.RESPONSDE_JSON_ERROR: nil,
 	})
 	clinicMetaDB.Close()

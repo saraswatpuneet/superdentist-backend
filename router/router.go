@@ -49,6 +49,7 @@ func SDRouter() (*gin.Engine, error) {
 		// All data query related APIs: Basic stuff R
 		clinicGroup.GET("/getClinics", handlers.GetPhysicalClinics)
 		clinicGroup.GET("/getDoctors/:clinicAddressId", handlers.GetClinicDoctors)
+		clinicGroup.GET("/getAllDoctors", handlers.GetAllDoctors)
 	}
 	{
 		// All wesocket related routing goes here follow the pattern

@@ -134,17 +134,21 @@ func (db *dsClinicMeta) GetAllClinics(ctx context.Context, clinicEmailID string,
 }
 
 // GetClinicDoctors ....
-func (db *dsClinicMeta) GetClinicDoctors (ctx context.Context, clinicEmailID string, clinicFBID string, ClinicAddressID string) ([]contracts.ClinicDoctorRegistration, error) {
+func (db *dsClinicMeta) GetClinicDoctors(ctx context.Context, clinicEmailID string, clinicFBID string, clinicAddressID string) ([]contracts.ClinicDoctorRegistration, error) {
 	parentKey := datastore.NameKey("ClinicAdmin", clinicFBID, nil)
 	primaryKey := datastore.NameKey("ClinicAdmin", clinicEmailID, parentKey)
 	returnedDoctors := make([]contracts.ClinicDoctorRegistration, 0)
-	qP := datastore.NewQuery("ClinicAddress").Ancestor(primaryKey).Filter("ClinicAddressID =", ClinicAddressID)
+	qP := datastore.NewQuery("ClinicAddress").Ancestor(primaryKey)
+	if clinicAddressID != "" {
+		qP = qP.Filter("ClinicAddressID =", clinicAddressID)
+	}
 	keysClinics, err := db.client.GetAll(ctx, qP, &returnedDoctors)
 	if err != nil || len(keysClinics) <= 0 {
 		return nil, fmt.Errorf("no doctors have been found for the given clinic address: %v", err)
 	}
 	return returnedDoctors, nil
 }
+
 // Close closes the database.
 func (db *dsClinicMeta) Close() error {
 	return db.client.Close()

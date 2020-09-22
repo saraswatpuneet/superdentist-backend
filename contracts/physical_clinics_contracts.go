@@ -82,6 +82,8 @@ type ClinicPhysicalAddressDatabase interface {
 	AddServicesForClinic(ctx context.Context, clinicEmailID string, clinicFBID string, serviceData []ServiceObject) error
 	// GetAllClinics get all clinics associated by admin
 	GetAllClinics(ctx context.Context, clinicEmailID string, clinicFBID string) ([]PhysicalClinicsRegistration, error)
+	// GetClinicDoctors ... get doctors either all or for sepecific clinic address 
+	GetClinicDoctors(ctx context.Context, clinicEmailID string, clinicFBID string, ClinicAddressID string) ([]ClinicDoctorRegistration, error)
 	// TODO(cbro): Close() should return an error.
 	Close() error
 }

@@ -213,6 +213,24 @@ paths:
           description: "Internal server error occured"
       security:
         - Bearer: []
+  /v1/clinic/getAllDoctors:
+    get:
+      tags:
+       - "Registration APIs (R of CRUD)"
+      summary: "Get all doctors associated with given admin"
+      description: "Get all doctors associated with admin"
+      operationId: "GetAllDoctors"
+      produces:
+      - "application/json"
+      responses:
+        '200':
+          $ref: '#/responses/GetClinicDoctorDetailsResponse'
+        '401':
+          description: "Unauthorized: Bad request or authorization details"
+        '500':
+          description: "Internal server error occured"
+      security:
+        - Bearer: []
 securityDefinitions:
   Bearer:
     type: "apiKey"
@@ -355,8 +373,6 @@ definitions:
   ClinicDoctors:
     type: object
     properties:
-      clinicAddressId:
-        type: string
       doctors:
         type: array
         items:
