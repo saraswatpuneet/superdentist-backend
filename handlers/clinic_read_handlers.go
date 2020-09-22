@@ -1,11 +1,9 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/gin-gonic/gin/binding"
 	log "github.com/sirupsen/logrus"
 	"github.com/superdentist/superdentist-backend/constants"
 	"github.com/superdentist/superdentist-backend/contracts"
@@ -15,7 +13,7 @@ import (
 
 // GetPhysicalClinics ... after registering clinic main account we add multiple locations etc.
 func GetPhysicalClinics(c *gin.Context) {
-	log.Infof("Adding physical addresses to database for logged in clinic")
+	log.Infof("Get all clinics associated with admin")
 	ctx := c.Request.Context()
 	userEmail, userID, gproject, err := getUserDetails(ctx, c.Request)
 	if err != nil {
@@ -65,9 +63,19 @@ func GetPhysicalClinics(c *gin.Context) {
 
 // GetClinicDoctors ... after registering clinic main account we add multiple locations etc.
 func GetClinicDoctors(c *gin.Context) {
-	log.Infof("Adding physical addresses to database for logged in clinic")
+	log.Infof("Get all doctors registered with specific physical clinic")
+	clinicAddressID := c.Param("clinicAddressId ")
+	if clinicAddressID == "" {
+		c.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: "clinic address id not provided",
+			},
+		)
+		return
+	}
 	ctx := c.Request.Context()
-	var addClinicAddressRequest contracts.PostPhysicalClinicDetails
 	userEmail, userID, gproject, err := getUserDetails(ctx, c.Request)
 	if err != nil {
 		c.AbortWithStatusJSON(
@@ -79,18 +87,8 @@ func GetClinicDoctors(c *gin.Context) {
 		)
 		return
 	}
-	ctx, span := trace.StartSpan(ctx, "Register address for various clinics for this admin")
+	ctx, span := trace.StartSpan(ctx, "Get all doctors registered for a clinic")
 	defer span.End()
-	if err = c.ShouldBindWith(&addClinicAddressRequest, binding.JSON); err != nil {
-		c.AbortWithStatusJSON(
-			http.StatusBadRequest,
-			gin.H{
-				constants.RESPONSE_JSON_DATA:   nil,
-				constants.RESPONSDE_JSON_ERROR: fmt.Errorf("Bad data sent to backened"),
-			},
-		)
-		return
-	}
 	clinicMetaDB := datastoredb.NewClinicMetaHandler()
 	err = clinicMetaDB.InitializeDataBase(ctx, gproject)
 	if err != nil {
@@ -103,7 +101,7 @@ func GetClinicDoctors(c *gin.Context) {
 		)
 		return
 	}
-	registeredClinics, err := clinicMetaDB.AddPhysicalAddessressToClinic(ctx, userEmail, userID, addClinicAddressRequest.ClinicDetails)
+	registeredDoctors, err := clinicMetaDB.GetClinicDoctors(ctx, userEmail, userID, clinicAddressID)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
@@ -114,8 +112,9 @@ func GetClinicDoctors(c *gin.Context) {
 		)
 		return
 	}
-	responseData := contracts.ClinicAddressResponse{
-		ClinicDetails: registeredClinics,
+	responseData := contracts.ClinicDoctorsDetails{
+		ClinicAddressID: clinicAddressID,
+		Doctors:         registeredDoctors,
 	}
 	c.JSON(http.StatusOK, gin.H{
 		constants.RESPONSE_JSON_DATA:   responseData,

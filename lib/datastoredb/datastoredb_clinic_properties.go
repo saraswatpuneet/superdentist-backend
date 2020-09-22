@@ -125,7 +125,7 @@ func (db *dsClinicMeta) GetAllClinics(ctx context.Context, clinicEmailID string,
 	parentKey := datastore.NameKey("ClinicAdmin", clinicFBID, nil)
 	primaryKey := datastore.NameKey("ClinicAdmin", clinicEmailID, parentKey)
 	returnedAddress := make([]contracts.PhysicalClinicsRegistration, 0)
-	qP := datastore.NewQuery("ClinicAddress").Ancestor(primaryKey)
+	qP := datastore.NewQuery("ClinicDoctors").Ancestor(primaryKey)
 	keysClinics, err := db.client.GetAll(ctx, qP, &returnedAddress)
 	if err != nil || len(keysClinics) <= 0 {
 		return nil, fmt.Errorf("no clinics have been found for the admin error: %v", err)
@@ -133,6 +133,18 @@ func (db *dsClinicMeta) GetAllClinics(ctx context.Context, clinicEmailID string,
 	return returnedAddress, nil
 }
 
+// GetClinicDoctors ....
+func (db *dsClinicMeta) GetClinicDoctors (ctx context.Context, clinicEmailID string, clinicFBID string, ClinicAddressID string) ([]contracts.ClinicDoctorRegistration, error) {
+	parentKey := datastore.NameKey("ClinicAdmin", clinicFBID, nil)
+	primaryKey := datastore.NameKey("ClinicAdmin", clinicEmailID, parentKey)
+	returnedDoctors := make([]contracts.ClinicDoctorRegistration, 0)
+	qP := datastore.NewQuery("ClinicAddress").Ancestor(primaryKey).Filter("ClinicAddressID =", ClinicAddressID)
+	keysClinics, err := db.client.GetAll(ctx, qP, &returnedDoctors)
+	if err != nil || len(keysClinics) <= 0 {
+		return nil, fmt.Errorf("no doctors have been found for the given clinic address: %v", err)
+	}
+	return returnedDoctors, nil
+}
 // Close closes the database.
 func (db *dsClinicMeta) Close() error {
 	return db.client.Close()

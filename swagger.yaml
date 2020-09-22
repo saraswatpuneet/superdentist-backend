@@ -188,6 +188,31 @@ paths:
           description: "Internal server error occured"
       security:
         - Bearer: []
+  /v1/clinic/getDoctors/{clinicAddressId}:
+    get:
+      tags:
+       - "Registration APIs (R of CRUD)"
+      summary: "Get all doctors associated with give clinic"
+      description: "Get all doctors associated with a clinic"
+      operationId: "GetClinicDoctors"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "path"
+        type: string
+        name: "clinicAddressId"
+        description: "unique address id of registered clinic"
+        required: true
+
+      responses:
+        '200':
+          $ref: '#/responses/GetClinicDoctorDetailsResponse'
+        '401':
+          description: "Unauthorized: Bad request or authorization details"
+        '500':
+          description: "Internal server error occured"
+      security:
+        - Bearer: []
 securityDefinitions:
   Bearer:
     type: "apiKey"
@@ -327,6 +352,31 @@ definitions:
               type: array
               items:
                 type: string
+  ClinicDoctors:
+    type: object
+    properties:
+      clinicAddressId:
+        type: string
+      doctors:
+        type: array
+        items:
+          type: object
+          properties:
+            clinicAddressId:
+              type: string
+            doctorPrefix:
+              type: string
+            doctorFirstName:
+              type: string
+            doctorLastName:
+              type: string
+            doctorEmailAddress:
+              type: string
+            doctorSpeciality:
+              type: array
+              items:
+                type: string
+              
 responses:
   GetClinicsResponse:
     description: Retunrs a list of all clinics registered by admin
@@ -344,4 +394,8 @@ responses:
     description: Returns successful completion of clinic address registration
     schema:
       $ref: '#/definitions/ClinicAddressResponse'
+  GetClinicDoctorDetailsResponse:
+    description: Returns list of doctors associated with clinic address
+    schema:
+     $ref: '#/definitions/ClinicDoctors'
   
