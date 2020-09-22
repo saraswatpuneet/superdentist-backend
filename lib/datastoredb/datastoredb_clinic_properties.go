@@ -142,10 +142,10 @@ func (db *dsClinicMeta) AddServicesForClinic(ctx context.Context, clinicEmailID 
 }
 
 // GetAllClinics ....
-func (db *dsClinicMeta) GetAllClinics(ctx context.Context, clinicEmailID string, clinicFBID string) ([]contracts.PhysicalClinicsRegistration, string, error) {
+func (db *dsClinicMeta) GetAllClinics(ctx context.Context, clinicEmailID string, clinicFBID string) ([]contracts.PhysicalClinicMapLocation, string, error) {
 	parentKey := datastore.NameKey("ClinicAdmin", clinicFBID, nil)
 	primaryKey := datastore.NameKey("ClinicAdmin", clinicEmailID, parentKey)
-	returnedAddress := make([]contracts.PhysicalClinicsRegistration, 0)
+	returnedAddress := make([]contracts.PhysicalClinicMapLocation, 0)
 	qP := datastore.NewQuery("ClinicAddress").Ancestor(primaryKey)
 	keysClinics, err := db.client.GetAll(ctx, qP, &returnedAddress)
 	if err != nil || len(keysClinics) <= 0 {
