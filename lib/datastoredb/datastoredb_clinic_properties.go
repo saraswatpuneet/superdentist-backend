@@ -130,11 +130,14 @@ func (db *dsClinicMeta) AddPMSUsedByClinics(ctx context.Context, clinicEmailID s
 func (db *dsClinicMeta) AddServicesForClinic(ctx context.Context, clinicEmailID string, clinicFBID string, serviceData []contracts.ServiceObject) error {
 	parentKey := datastore.NameKey("ClinicAdmin", clinicFBID, nil)
 	primaryKey := datastore.NameKey("ClinicAdmin", clinicEmailID, parentKey)
-	clinicPMSKey := datastore.IncompleteKey("ClinicServices", primaryKey)
-	_, err := db.client.Put(ctx, clinicPMSKey, &serviceData)
-	if err != nil {
-		return fmt.Errorf("cannot register clinic with sd: %v", err)
+	for _, serObj := range serviceData {
+		clinicPMSKey := datastore.IncompleteKey("ClinicServices", primaryKey)
+		_, err := db.client.Put(ctx, clinicPMSKey, &serObj)
+		if err != nil {
+			return fmt.Errorf("cannot register clinic with sd: %v", err)
+		}
 	}
+
 	return nil
 }
 
