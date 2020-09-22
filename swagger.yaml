@@ -23,6 +23,7 @@ tags:
     url: "http://superdentist.io"
 schemes:
 - "https"
+- "wss"
 paths:
   /v1/clinic/registerAdmin:
     post:
@@ -231,6 +232,24 @@ paths:
           description: "Internal server error occured"
       security:
         - Bearer: []
+  /v1/clinic/queryAddress:
+    get:
+      tags:
+       - "Registration APIs (C & U of CRUD)"
+      summary: "Websocket implementation to get address suggestion in realtime"
+      description: "FE will connect to websocket to to have realtime address suggestions, use wss://. API takes string as input once connected."
+      operationId: "QueryAddressHandlerWebsocket"
+      produces:
+      - "application/json"
+      responses:
+        '200':
+          $ref: '#/responses/PostAddressList'
+        '401':
+          description: "Unauthorized: Bad request or authorization details"
+        '500':
+          description: "Internal server error occured"
+      security:
+        - Bearer: []
 securityDefinitions:
   Bearer:
     type: "apiKey"
@@ -394,7 +413,12 @@ definitions:
               type: array
               items:
                 type: string
-              
+  AddressSuggestions:
+    type: object
+    properties:
+      addressList:
+        type: object
+        description: results from google API search TextSearch
 responses:
   GetClinicsResponse:
     description: Retunrs a list of all clinics registered by admin
@@ -416,4 +440,7 @@ responses:
     description: Returns list of doctors associated with clinic address
     schema:
      $ref: '#/definitions/ClinicDoctors'
-  
+  PostAddressList:
+    description: This websocket provides 20 suggestions per string sent https://gist.github.com/bamnet/479bb808c10f9946c9ef86e34e11b1e0
+    schema:
+      $ref: '#/definitions/AddressSuggestions'
