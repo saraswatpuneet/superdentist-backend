@@ -147,7 +147,7 @@ paths:
           description: "Internal server error occured"
       security:
         - Bearer: []
-  /v1/clinic/registerClinicServices:
+  /v1/clinic/registerServices:
     post:
       tags:
         - "Registration APIs (C & U of CRUD)"
