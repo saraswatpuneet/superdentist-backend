@@ -146,7 +146,7 @@ func (db *dsClinicMeta) GetAllClinics(ctx context.Context, clinicEmailID string,
 	parentKey := datastore.NameKey("ClinicAdmin", clinicFBID, nil)
 	primaryKey := datastore.NameKey("ClinicAdmin", clinicEmailID, parentKey)
 	returnedAddress := make([]contracts.PhysicalClinicsRegistration, 0)
-	qP := datastore.NewQuery("ClinicDoctors").Ancestor(primaryKey)
+	qP := datastore.NewQuery("ClinicAddress").Ancestor(primaryKey)
 	keysClinics, err := db.client.GetAll(ctx, qP, &returnedAddress)
 	if err != nil || len(keysClinics) <= 0 {
 		return nil, "", fmt.Errorf("no clinics have been found for the admin error: %v", err)
@@ -166,7 +166,7 @@ func (db *dsClinicMeta) GetClinicDoctors(ctx context.Context, clinicEmailID stri
 	parentKey := datastore.NameKey("ClinicAdmin", clinicFBID, nil)
 	primaryKey := datastore.NameKey("ClinicAdmin", clinicEmailID, parentKey)
 	returnedDoctors := make([]contracts.ClinicDoctorRegistration, 0)
-	qP := datastore.NewQuery("ClinicAddress").Ancestor(primaryKey)
+	qP := datastore.NewQuery("ClinicDoctors").Ancestor(primaryKey)
 	if clinicAddressID != "" {
 		qP = qP.Filter("ClinicAddressID =", clinicAddressID)
 	}
