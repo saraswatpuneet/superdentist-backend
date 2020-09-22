@@ -116,11 +116,10 @@ func (db *dsClinicMeta) AddPMSUsedByClinics(ctx context.Context, clinicEmailID s
 	parentKey := datastore.NameKey("ClinicAdmin", clinicFBID, nil)
 	primaryKey := datastore.NameKey("ClinicAdmin", clinicEmailID, parentKey)
 	clinicPMSKey := datastore.IncompleteKey("ClinicPMS", primaryKey)
-	currentPMSData := make([]*string, 0)
-	for _, pmsName := range pmsData{
-		currentPMSData = append(currentPMSData, &pmsName)
+	currentPMSStruct := contracts.PostPMSDetails{
+		PMSNames: pmsData,
 	}
-	_, err := db.client.Put(ctx, clinicPMSKey, &currentPMSData)
+	_, err := db.client.Put(ctx, clinicPMSKey, &currentPMSStruct)
 	if err != nil {
 		return fmt.Errorf("cannot register clinic with sd: %v", err)
 	}
