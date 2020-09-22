@@ -65,7 +65,7 @@ func GetPhysicalClinics(c *gin.Context) {
 // GetClinicDoctors ... get doctors from specific clinic.
 func GetClinicDoctors(c *gin.Context) {
 	log.Infof("Get all doctors registered with specific physical clinic")
-	clinicAddressID := c.Param("clinicAddressId ")
+	clinicAddressID := c.Param("clinicAddressId")
 	if clinicAddressID == "" {
 		c.AbortWithStatusJSON(
 			http.StatusBadRequest,
