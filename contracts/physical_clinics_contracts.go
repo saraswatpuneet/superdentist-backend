@@ -9,11 +9,11 @@ import (
 
 // PhysicalClinicsRegistration ...
 type PhysicalClinicsRegistration struct {
-	ClinicAddressID   string         `json:"clinicAddressId"`
-	ClinicName        string         `json:"clinicName" valid:"required"`
-	ClinicAddress     string         `json:"clinicAddress" valid:"required"`
-	ClinicPhoneNumber string         `json:"clinicPhoneNumber" valid:"required"`
-	ClinicSpeciality  []string       `json:"clinicSpeciality"`
+	ClinicAddressID   string   `json:"clinicAddressId"`
+	ClinicName        string   `json:"clinicName" valid:"required"`
+	ClinicAddress     string   `json:"clinicAddress" valid:"required"`
+	ClinicPhoneNumber string   `json:"clinicPhoneNumber" valid:"required"`
+	ClinicSpeciality  []string `json:"clinicSpeciality"`
 }
 
 //ClinicAddressResponse ....
@@ -24,13 +24,15 @@ type ClinicAddressResponse struct {
 // PhysicalClinicMapLocation ....
 type PhysicalClinicMapLocation struct {
 	PhysicalClinicsRegistration
-	Location ClinicLocation
+	Location  ClinicLocation
+	Geohash   string `json:"-"`
+	Precision int    `json:"-"`
 }
 
 //GetClinicAddressResponse ....
 type GetClinicAddressResponse struct {
 	ClinicDetails []PhysicalClinicMapLocation `json:"clinicDetails" valid:"required"`
-	ClinicType    string                        `json:"clinicType" valid:"required"`
+	ClinicType    string                      `json:"clinicType" valid:"required"`
 }
 
 // ClinicDoctorRegistration ...

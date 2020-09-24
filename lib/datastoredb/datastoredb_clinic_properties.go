@@ -5,13 +5,13 @@ import (
 	"fmt"
 	"os"
 
+	"cloud.google.com/go/datastore"
 	guuid "github.com/google/uuid"
 	"github.com/superdentist/superdentist-backend/contracts"
+	"github.com/superdentist/superdentist-backend/lib/geohash"
 	"github.com/superdentist/superdentist-backend/lib/gmaps"
 	"github.com/superdentist/superdentist-backend/lib/helpers"
 	"google.golang.org/api/option"
-
-	"cloud.google.com/go/datastore"
 )
 
 type dsClinicMeta struct {
@@ -77,9 +77,12 @@ func (db dsClinicMeta) AddPhysicalAddessressToClinic(ctx context.Context, clinic
 			location.Long = currentLocation.Geometry.Location.Lng
 		}
 		addressKey := datastore.NameKey("ClinicAddress", addrID.String(), primaryKey)
+		currentHash := geohash.Encode(location.Lat, location.Long, 12)
 		currentLocWithMap := contracts.PhysicalClinicMapLocation{
 			PhysicalClinicsRegistration: address,
 			Location:                    location,
+			Geohash:                     currentHash,
+			Precision:                   12,
 		}
 		_, err = db.client.Put(ctx, addressKey, &currentLocWithMap)
 		if err != nil {
