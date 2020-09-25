@@ -50,6 +50,8 @@ func SDRouter() (*gin.Engine, error) {
 		clinicGroup.GET("/getClinics", handlers.GetPhysicalClinics)
 		clinicGroup.GET("/getDoctors/:clinicAddressId", handlers.GetClinicDoctors)
 		clinicGroup.GET("/getAllDoctors", handlers.GetAllDoctors)
+		clinicGroup.GET("/getNearbyClinics", handlers.GetNearbyClinics)
+
 	}
 	{
 		// All wesocket related routing goes here follow the pattern

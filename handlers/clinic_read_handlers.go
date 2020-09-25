@@ -2,12 +2,14 @@ package handlers
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 	"github.com/superdentist/superdentist-backend/constants"
 	"github.com/superdentist/superdentist-backend/contracts"
 	"github.com/superdentist/superdentist-backend/lib/datastoredb"
+	"github.com/superdentist/superdentist-backend/lib/gmaps"
 	"go.opencensus.io/trace"
 )
 
@@ -162,6 +164,102 @@ func GetAllDoctors(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{
 		constants.RESPONSE_JSON_DATA:   registeredDoctors,
+		constants.RESPONSDE_JSON_ERROR: nil,
+	})
+	clinicMetaDB.Close()
+}
+
+// GetNearbyClinics ..... get near by clinics based on distance to current clinic
+func GetNearbyClinics(c *gin.Context) {
+	log.Infof("Get all doctors registered with specific physical clinic")
+	clinicAddressID := c.Param("clinicAddressId")
+	searchRadius := c.Param("searchRadius")
+	if clinicAddressID == "" {
+		c.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: "clinic address id not provided",
+			},
+		)
+		return
+	}
+	dist := 20.0
+	if searchRadius == "" {
+		searchRadius = "20.0"
+	}
+	dist, _ = strconv.ParseFloat(searchRadius, 64)
+	ctx := c.Request.Context()
+	userEmail, userID, gproject, err := getUserDetails(ctx, c.Request)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	ctx, span := trace.StartSpan(ctx, "Get all clinics in close proximity to current clinic")
+	defer span.End()
+	clinicMetaDB := datastoredb.NewClinicMetaHandler()
+	err = clinicMetaDB.InitializeDataBase(ctx, gproject)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	nearbyClinics, err := clinicMetaDB.GetNearbyClinics(ctx, userEmail, userID, clinicAddressID, dist)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	mapClient := gmaps.NewMapsHandler()
+	err = mapClient.InitializeGoogleMapsAPIClient(ctx, gproject)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+	}
+	collectClinics := make([]contracts.PhysicalClinicMapDetails, 0)
+	for _, clinicAdd := range nearbyClinics {
+		var currentReturn contracts.PhysicalClinicMapDetails
+		getClinicSearchLoc, err := mapClient.FindPlaceFromText(clinicAdd.ClinicAddress)
+		if err != nil {
+			c.AbortWithStatusJSON(
+				http.StatusInternalServerError,
+				gin.H{
+					constants.RESPONSE_JSON_DATA:   nil,
+					constants.RESPONSDE_JSON_ERROR: err.Error(),
+				},
+			)
+		}
+		if len(getClinicSearchLoc.Candidates) > 0 {
+			currentReturn.ClinicDetails = getClinicSearchLoc.Candidates[0]
+			currentReturn.PhysicalClinicMapLocation = clinicAdd
+			collectClinics = append(collectClinics, currentReturn)
+		}
+	}
+	var responseData contracts.GetNearbyClinics
+	responseData.ClinicAddresses = collectClinics
+	c.JSON(http.StatusOK, gin.H{
+		constants.RESPONSE_JSON_DATA:   responseData,
 		constants.RESPONSDE_JSON_ERROR: nil,
 	})
 	clinicMetaDB.Close()

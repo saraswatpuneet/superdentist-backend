@@ -29,10 +29,21 @@ type PhysicalClinicMapLocation struct {
 	Precision int    `json:"-"`
 }
 
+// PhysicalClinicMapDetails ....
+type PhysicalClinicMapDetails struct {
+	PhysicalClinicMapLocation
+	ClinicDetails maps.PlacesSearchResult `json:"clinicDetails" valid:"required"`
+}
+
 //GetClinicAddressResponse ....
 type GetClinicAddressResponse struct {
 	ClinicDetails []PhysicalClinicMapLocation `json:"clinicDetails" valid:"required"`
 	ClinicType    string                      `json:"clinicType" valid:"required"`
+}
+
+// GetNearbyClinics ....
+type GetNearbyClinics struct {
+	ClinicAddresses []PhysicalClinicMapDetails `json:"clinicAddresses" valid:"required"`
 }
 
 // ClinicDoctorRegistration ...
