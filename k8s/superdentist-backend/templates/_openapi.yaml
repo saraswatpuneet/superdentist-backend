@@ -477,7 +477,7 @@ responses:
     schema:
       $ref: '#/definitions/GetClinics'
   GetNearbyClinicsResponse:
-    description: Returns clinic info plus gmaps addres format in field clinicDetails check https://gist.github.com/bamnet/479bb808c10f9946c9ef86e34e11b1e0
+    description: Returns clinic info plus gmaps addres format in field clinicDetails check one candidate https://developers.google.com/places/web-service/search#find-place-responses
     schema:
       $ref: '#/definitions/GetNearbyClinics'
   PostClinicRegistrationResponse:
@@ -497,7 +497,7 @@ responses:
     schema:
      $ref: '#/definitions/ClinicDoctors'
   PostAddressList:
-    description: This websocket provides 20 suggestions per string sent https://gist.github.com/bamnet/479bb808c10f9946c9ef86e34e11b1e0
+    description: This websocket provides 20 suggestions per string sent check results field https://developers.google.com/places/web-service/search#nearby-search-and-text-search-responses
     schema:
       $ref: '#/definitions/AddressSuggestions'
 {{ end }}
