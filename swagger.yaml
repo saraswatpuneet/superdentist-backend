@@ -55,7 +55,7 @@ paths:
       tags:
       - "Registration APIs (C & U of CRUD)"
       summary: "Verify clinic"
-      description: " Frontend will tell backend that clinic has verified itself "
+      description: " Frontend will tell backend that admin has been verified"
       operationId: "AdminVerificationHandler"
       produces:
       - "application/json"
@@ -80,7 +80,7 @@ paths:
       tags:
        - "Registration APIs (C & U of CRUD)"
       summary: "Add clinical addresses"
-      description: "Provide a range of addresses associated with registered clinic"
+      description: "Provide a range of addresses associated with registered clinic. Use websocket queryAddress to recommend users based on string text they fill."
       operationId: "AddPhysicalClinicsHandler"
       produces:
       - "application/json"
@@ -105,7 +105,7 @@ paths:
       tags:
        - "Registration APIs (C & U of CRUD)"
       summary: "Add clinical addresses"
-      description: "Provide a range of doctors associated with each clinic"
+      description: "Provide a range of doctors associated with each clinic, require clinic addressId generated when clinics were registered."
       operationId: "RegisterClinicDoctors"
       produces:
       - "application/json"
@@ -253,7 +253,7 @@ paths:
     get:
       tags:
        - "Registration APIs (R of CRUD)"
-      summary: "Get all clinics nearby current admin selected clinic"
+      summary: "Get all clinics nearby current admin selected clinic. Frontend will specific unique address id and radius and all clinics in App database will be returned."
       description: "Get a list of clinics nearby current admin clinic"
       operationId: "GetNearbyClinics"
       produces:
