@@ -204,7 +204,6 @@ paths:
         name: "clinicAddressId"
         description: "unique address id of registered clinic"
         required: true
-
       responses:
         '200':
           $ref: '#/responses/GetClinicDoctorDetailsResponse'
@@ -244,6 +243,35 @@ paths:
       responses:
         '200':
           $ref: '#/responses/PostAddressList'
+        '401':
+          description: "Unauthorized: Bad request or authorization details"
+        '500':
+          description: "Internal server error occured"
+      security:
+        - Bearer: []
+  /v1/clinic/getNearbyClinics:
+    get:
+      tags:
+       - "Registration APIs (R of CRUD)"
+      summary: "Get all clinics nearby current admin selected clinic"
+      description: "Get a list of clinics nearby current admin clinic"
+      operationId: "GetNearbyClinics"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "query"
+        type: string
+        name: "clinicAddressId"
+        description: "unique address id of selected admin clinic"
+        required: true
+      - in: "query"
+        type: number
+        name: "searchRadius"
+        description: "search radius defaulted to 20 miles"
+        required: false
+      responses:
+        '200':
+          $ref: '#/responses/GetNearbyClinicsResponse'
         '401':
           description: "Unauthorized: Bad request or authorization details"
         '500':
@@ -413,6 +441,29 @@ definitions:
               type: array
               items:
                 type: string
+  GetNearbyClinics:
+    type: object
+    properties:
+      clinicAddresses:
+        type: array
+        items:
+          type: object
+          properties:
+            clinicAddressId:
+              type: string
+            clinicName:
+              type: string
+            clinicAddress:
+              type: string
+            clinicPhoneNumber:
+              type: string
+            clinicSpeciality:
+              type: array
+              items:
+                type: string
+            clinicDetails:
+              type: object
+              description: refer to https://gist.github.com/bamnet/479bb808c10f9946c9ef86e34e11b1e0
   AddressSuggestions:
     type: object
     properties:
@@ -424,6 +475,10 @@ responses:
     description: Retunrs a list of all clinics registered by admin
     schema:
       $ref: '#/definitions/GetClinics'
+  GetNearbyClinicsResponse:
+    description: Returns clinic info plus gmaps addres format in field clinicDetails check https://gist.github.com/bamnet/479bb808c10f9946c9ef86e34e11b1e0
+    schema:
+      $ref: '#/definitions/GetNearbyClinics'
   PostClinicRegistrationResponse:
     description: Returns successful completion of register clinic stage one
     schema:
