@@ -172,8 +172,8 @@ func GetAllDoctors(c *gin.Context) {
 // GetNearbyClinics ..... get near by clinics based on distance to current clinic
 func GetNearbyClinics(c *gin.Context) {
 	log.Infof("Get all doctors registered with specific physical clinic")
-	clinicAddressID := c.Param("clinicAddressId")
-	searchRadius := c.Param("searchRadius")
+	clinicAddressID := c.Query("clinicAddressId")
+	searchRadius := c.Query("searchRadius")
 	if clinicAddressID == "" {
 		c.AbortWithStatusJSON(
 			http.StatusBadRequest,

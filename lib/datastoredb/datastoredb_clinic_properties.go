@@ -182,15 +182,16 @@ func (db *dsClinicMeta) GetClinicDoctors(ctx context.Context, clinicEmailID stri
 func (db *dsClinicMeta) GetNearbyClinics(ctx context.Context, clinicEmailID string, clinicFBID string, clinicAddressID string, distance float64) ([]contracts.PhysicalClinicMapLocation, error) {
 	parentKey := datastore.NameKey("ClinicAdmin", clinicFBID, nil)
 	primaryKey := datastore.NameKey("ClinicAdmin", clinicEmailID, parentKey)
-	var returnedAddress contracts.PhysicalClinicMapLocation
+	returnedAddresses := make([]contracts.PhysicalClinicMapLocation, 0)
 	qP := datastore.NewQuery("ClinicAddress").Ancestor(primaryKey)
 	if clinicAddressID != "" {
 		qP = qP.Filter("ClinicAddressID =", clinicAddressID)
 	}
-	keysClinics, err := db.client.GetAll(ctx, qP, &returnedAddress)
+	keysClinics, err := db.client.GetAll(ctx, qP, &returnedAddresses)
 	if err != nil || len(keysClinics) <= 0 {
 		return nil, fmt.Errorf("no doctors have been found for the given clinic address: %v", err)
 	}
+	returnedAddress := returnedAddresses[0]
 	currentLatLong := returnedAddress.Location
 	lat := 0.0144927536231884 // degrees latitude per mile
 	lon := 0.0181818181818182 // degrees longitude per mile
