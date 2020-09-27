@@ -313,8 +313,6 @@ definitions:
     properties:
       emailId:
         type: "string"
-      clinicType:
-        type: "string"
       isVerified:
         type: "boolean"
         default: false
@@ -341,6 +339,8 @@ definitions:
         items:
           type: object
           properties:
+            clinicType:
+              type: "string"
             clinicName:
               type: string
             clinicAddress:
@@ -401,13 +401,13 @@ definitions:
   GetClinics:
     type: object
     properties:
-      clinicType:
-        type: string
       clinicDetails:
         type: array
         items:
           type: object
           properties:
+            clinicType:
+              type: string
             clinicAddressId:
               type: string
             clinicName:
@@ -450,6 +450,8 @@ definitions:
         items:
           type: object
           properties:
+            clinicType:
+              type: string
             clinicAddressId:
               type: string
             clinicName:

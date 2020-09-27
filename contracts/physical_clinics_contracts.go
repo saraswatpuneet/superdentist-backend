@@ -9,6 +9,7 @@ import (
 
 // PhysicalClinicsRegistration ...
 type PhysicalClinicsRegistration struct {
+	ClinicType        string   `json:"clinicType" valid:"required"`
 	ClinicAddressID   string   `json:"clinicAddressId"`
 	ClinicName        string   `json:"clinicName" valid:"required"`
 	ClinicAddress     string   `json:"clinicAddress" valid:"required"`
@@ -38,7 +39,6 @@ type PhysicalClinicMapDetails struct {
 //GetClinicAddressResponse ....
 type GetClinicAddressResponse struct {
 	ClinicDetails []PhysicalClinicMapLocation `json:"clinic" valid:"required"`
-	ClinicType    string                      `json:"clinicType" valid:"required"`
 }
 
 // GetNearbyClinics ....
@@ -113,7 +113,7 @@ type ClinicPhysicalAddressDatabase interface {
 	// AddServicesForClinic add services offered by clinic
 	AddServicesForClinic(ctx context.Context, clinicEmailID string, clinicFBID string, serviceData []ServiceObject) error
 	// GetAllClinics get all clinics associated by admin
-	GetAllClinics(ctx context.Context, clinicEmailID string, clinicFBID string) ([]PhysicalClinicMapLocation, string, error)
+	GetAllClinics(ctx context.Context, clinicEmailID string, clinicFBID string) ([]PhysicalClinicMapLocation, error)
 	// GetClinicDoctors ... get doctors either all or for sepecific clinic address
 	GetClinicDoctors(ctx context.Context, clinicEmailID string, clinicFBID string, ClinicAddressID string) ([]ClinicDoctorRegistration, error)
 	// TODO(cbro): Close() should return an error.

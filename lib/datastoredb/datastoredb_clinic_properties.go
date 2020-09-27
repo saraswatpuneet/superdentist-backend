@@ -145,21 +145,16 @@ func (db *dsClinicMeta) AddServicesForClinic(ctx context.Context, clinicEmailID 
 }
 
 // GetAllClinics ....
-func (db *dsClinicMeta) GetAllClinics(ctx context.Context, clinicEmailID string, clinicFBID string) ([]contracts.PhysicalClinicMapLocation, string, error) {
+func (db *dsClinicMeta) GetAllClinics(ctx context.Context, clinicEmailID string, clinicFBID string) ([]contracts.PhysicalClinicMapLocation, error) {
 	parentKey := datastore.NameKey("ClinicAdmin", clinicFBID, nil)
 	primaryKey := datastore.NameKey("ClinicAdmin", clinicEmailID, parentKey)
 	returnedAddress := make([]contracts.PhysicalClinicMapLocation, 0)
 	qP := datastore.NewQuery("ClinicAddress").Ancestor(primaryKey)
 	keysClinics, err := db.client.GetAll(ctx, qP, &returnedAddress)
 	if err != nil || len(keysClinics) <= 0 {
-		return nil, "", fmt.Errorf("no clinics have been found for the admin error: %v", err)
+		return nil, fmt.Errorf("no clinics have been found for the admin error: %v", err)
 	}
-	clinic := &contracts.ClinicRegistrationData{}
-	if err := db.client.Get(ctx, primaryKey, clinic); err != nil {
-		return nil, "", fmt.Errorf("datastoredb: could not get registered cli: %v", err)
-
-	}
-	return returnedAddress, clinic.ClinicType, nil
+	return returnedAddress, nil
 }
 
 // GetClinicDoctors ....
