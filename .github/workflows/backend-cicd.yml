@@ -81,7 +81,7 @@ jobs:
           --tag "gcr.io/$PROJECT_ID/$IMAGE:latest" \
           --build-arg GITHUB_SHA="$GITHUB_SHA" \
           --build-arg GITHUB_REF="$GITHUB_REF" \
-          --build-arg GO_MODULES_TOKEN= "$GO_TOKEN" \
+          --build-arg GO_MODULES_TOKEN="$GO_TOKEN" \
           .
     # Push the Docker image to Google Container Registry
     - name: Publish
