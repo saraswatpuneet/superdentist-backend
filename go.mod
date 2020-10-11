@@ -14,6 +14,7 @@ require (
 	github.com/gorilla/websocket v1.4.2
 	github.com/sirupsen/logrus v1.7.0
 	github.com/stretchr/testify v1.6.1
+	github.com/superdentist/sdclients v0.0.0-20201011182105-7566e15ef0c0 // indirect
 	go.opencensus.io v0.22.4
 	golang.org/x/oauth2 v0.0.0-20200902213428-5d25da1a8d43
 	golang.org/x/tools v0.0.0-20200902224051-cf7880770c1e // indirect
