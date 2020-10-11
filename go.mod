@@ -12,10 +12,8 @@ require (
 	github.com/gin-gonic/gin v1.6.3
 	github.com/google/uuid v1.1.2
 	github.com/gorilla/websocket v1.4.2
-	github.com/konsorten/go-windows-terminal-sequences v1.0.3 // indirect
 	github.com/sirupsen/logrus v1.7.0
 	github.com/stretchr/testify v1.6.1
-	github.com/superdentist/sdclients v0.0.0-20201011182105-7566e15ef0c0 // indirect
 	go.opencensus.io v0.22.4
 	golang.org/x/oauth2 v0.0.0-20200902213428-5d25da1a8d43
 	golang.org/x/tools v0.0.0-20200902224051-cf7880770c1e // indirect
