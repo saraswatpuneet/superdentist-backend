@@ -148,6 +148,29 @@ paths:
           description: "Internal server error occured"
       security:
         - Bearer: []
+  /v1/clinic/registPMSAuth:
+    post:
+      tags:
+        - "Registration APIs (C & U of CRUD)"
+      summary: For each PMS add special auth details of partner clinics
+      description: Collect information on PMS used by current clinic
+      operationId: "AddPMSAuthDetails"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Created clinic object"
+        required: true
+        schema:
+          $ref: "#/definitions/RegisterPMSAuth"
+      responses:
+        '200':
+          description: "PMS have registered for the clinic"
+        '401':
+          description: "Unauthorized: Bad request or authorization details"
+        '500':
+          description: "Internal server error occured"
+      security:
+        - Bearer: []
   /v1/clinic/registerServices:
     post:
       tags:
@@ -307,6 +330,18 @@ definitions:
         type:  array
         items:
           type: string
+  RegisterPMSAuth:
+    type: object
+    properties:
+      pmsAuthData:
+        type: array
+        items:
+          type: object
+          properties:
+            pmsName:
+              type: string
+            authDetails:
+              type: object
   ClinicRegistrationData:
     type: "object"
     properties:

@@ -333,7 +333,63 @@ func RegisterClinicPMS(c *gin.Context) {
 	})
 	clinicMetaDB.Close()
 }
-
+// AddPMSAuthDetails ..... all authorization details for PMS
+func AddPMSAuthDetails(c *gin.Context) {
+	log.Infof("Adding PMS list used by clinics")
+	ctx := c.Request.Context()
+	var addPMSAuth contracts.PostPMSAuthDetails
+	userEmail, userID, gproject, err := getUserDetails(ctx, c.Request)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	ctx, span := trace.StartSpan(ctx, "Register PMS list used by clinics")
+	defer span.End()
+	if err := c.ShouldBindWith(&addPMSAuth, binding.JSON); err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: fmt.Errorf("Bad data sent to backened"),
+			},
+		)
+		return
+	}
+	clinicMetaDB := datastoredb.NewClinicMetaHandler()
+	err = clinicMetaDB.InitializeDataBase(ctx, gproject)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	err = clinicMetaDB.AddPMSAuthDetails(ctx, userEmail, userID, addPMSAuth)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		constants.RESPONSE_JSON_DATA:   "PMS have registered for the clinic",
+		constants.RESPONSDE_JSON_ERROR: nil,
+	})
+	clinicMetaDB.Close()
+}
 // RegisterSpecialityServices .... register any special services a clinic admin offers
 func RegisterSpecialityServices(c *gin.Context) {
 	log.Infof("Adding services offered by clinics")

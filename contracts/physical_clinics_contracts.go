@@ -77,6 +77,17 @@ type PostPMSDetails struct {
 	PMSNames []string `json:"pmsNames" valid:"required"`
 }
 
+// PMSAuthStruct .....
+type PMSAuthStruct struct {
+	PMSName     string                 `json:"pmsName" valid:"required"`
+	AuthDetails map[string]interface{} `json:"authDetails" valid:"required"`
+}
+
+// PostPMSAuthDetails ..
+type PostPMSAuthDetails struct {
+	PMSAuthData []PMSAuthStruct `json:"pmsAuthData" valid:"required"`
+}
+
 //ServiceObject .....
 type ServiceObject struct {
 	ServiceGroup string   `json:"serviceGroup" valid:"required"`
@@ -110,6 +121,8 @@ type ClinicPhysicalAddressDatabase interface {
 	AddDoctorsToPhysicalClincs(ctx context.Context, clinicEmailID string, clinicFBID string, doctorsData []ClinicDoctorsDetails) error // Close closes the database, freeing up any available resources.
 	// AddPMSUsedByClinics PMS to DB
 	AddPMSUsedByClinics(ctx context.Context, clinicEmailID string, clinicFBID string, pmsData []string) error
+	// AddPMSAuthDetails PMS Auth to DB
+	AddPMSAuthDetails(ctx context.Context, clinicEmailID string, clinicFBID string, pmsData PostPMSAuthDetails) error
 	// AddServicesForClinic add services offered by clinic
 	AddServicesForClinic(ctx context.Context, clinicEmailID string, clinicFBID string, serviceData []ServiceObject) error
 	// GetAllClinics get all clinics associated by admin

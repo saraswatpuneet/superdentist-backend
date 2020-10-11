@@ -129,6 +129,21 @@ func (db *dsClinicMeta) AddPMSUsedByClinics(ctx context.Context, clinicEmailID s
 	return nil
 }
 
+// AddPMSAuthDetails ......
+func (db *dsClinicMeta) AddPMSAuthDetails(ctx context.Context, clinicEmailID string, clinicFBID string, pmsInformation contracts.PostPMSAuthDetails) error {
+	parentKey := datastore.NameKey("ClinicAdmin", clinicFBID, nil)
+	primaryKey := datastore.NameKey("ClinicAdmin", clinicEmailID, parentKey)
+	for _, pmsData := range pmsInformation.PMSAuthData {
+		clinicPMSKey := datastore.NameKey("ClinicPMSAuth", pmsData.PMSName, primaryKey)
+		_, err := db.client.Put(ctx, clinicPMSKey, &pmsData)
+		if err != nil {
+			return fmt.Errorf("cannot register clinic with sd: %v", err)
+		}
+	}
+
+	return nil
+}
+
 // AddServicesForClinic .....
 func (db *dsClinicMeta) AddServicesForClinic(ctx context.Context, clinicEmailID string, clinicFBID string, serviceData []contracts.ServiceObject) error {
 	parentKey := datastore.NameKey("ClinicAdmin", clinicFBID, nil)
