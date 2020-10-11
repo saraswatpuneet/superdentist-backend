@@ -21,6 +21,7 @@ on:
 
 env:
   PROJECT_ID: ${{ secrets.GKE_PROJECT }}
+  GO_TOKEN: ${{ secrets.GO_MODULES_TOKEN }}
   GKE_CLUSTER:  superdentist-main	
   GKE_ZONE: us-central1-c
   IMAGE: superdentist-backend
@@ -80,7 +81,7 @@ jobs:
           --tag "gcr.io/$PROJECT_ID/$IMAGE:latest" \
           --build-arg GITHUB_SHA="$GITHUB_SHA" \
           --build-arg GITHUB_REF="$GITHUB_REF" \
-          --build-arg GO_MODULES_TOKEN= "$GO_MODULES_TOKEN" \
+          --build-arg GO_MODULES_TOKEN= "$GO_TOKEN" \
           .
     # Push the Docker image to Google Container Registry
     - name: Publish
