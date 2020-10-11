@@ -2,7 +2,8 @@ FROM golang:1.14 as builder
 ENV GO111MODULE=on
 ENV GO_MODULES_TOKEN=$GO_MODULES_TOKEN
 WORKDIR /go/src/app
-RUN echo "[url \"https://${{GO_MODULES_TOKEN}}:x-oauth-basic@github.com/superdentist/sdclients\"]\n\tinsteadOf = https://github.com/superdentist/sdclients" >> /root/.gitconfig
+RUN git config --global url."https://${GO_MODULES_TOKEN}:x-oauth-basic@github.com/superdentist/sdclients".insteadOf "https://github.com/superdentist/sdclients"
+
 COPY go.mod .
 COPY go.sum .
 # Get dependencies - will also be cached if we won't change mod/sum
