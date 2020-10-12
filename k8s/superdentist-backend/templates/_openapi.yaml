@@ -380,6 +380,8 @@ definitions:
               type: string
             clinicAddress:
               type: string
+            clinicEmailAddress:
+              type: string
             clinicPhoneNumber:
               type: string
             clinicSpeciality:

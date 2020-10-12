@@ -9,12 +9,13 @@ import (
 
 // PhysicalClinicsRegistration ...
 type PhysicalClinicsRegistration struct {
-	ClinicType        string   `json:"clinicType" valid:"required"`
-	ClinicAddressID   string   `json:"clinicAddressId"`
-	ClinicName        string   `json:"clinicName" valid:"required"`
-	ClinicAddress     string   `json:"clinicAddress" valid:"required"`
-	ClinicPhoneNumber string   `json:"clinicPhoneNumber" valid:"required"`
-	ClinicSpeciality  []string `json:"clinicSpeciality"`
+	ClinicType         string   `json:"clinicType" valid:"required"`
+	ClinicAddressID    string   `json:"clinicAddressId"`
+	ClinicName         string   `json:"clinicName" valid:"required"`
+	ClinicAddress      string   `json:"clinicAddress" valid:"required"`
+	ClinicEmailAddress string   `json:"clinicEmailAddress" valid:"required"`
+	ClinicPhoneNumber  string   `json:"clinicPhoneNumber" valid:"required"`
+	ClinicSpeciality   []string `json:"clinicSpeciality"`
 }
 
 //ClinicAddressResponse ....
