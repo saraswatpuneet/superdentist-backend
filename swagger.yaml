@@ -148,7 +148,7 @@ paths:
           description: "Internal server error occured"
       security:
         - Bearer: []
-  /v1/clinic/registPMSAuth:
+  /v1/clinic/registerPMSAuth:
     post:
       tags:
         - "Registration APIs (C & U of CRUD)"

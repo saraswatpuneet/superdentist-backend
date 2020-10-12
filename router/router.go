@@ -43,7 +43,7 @@ func SDRouter() (*gin.Engine, error) {
 		clinicGroup.POST("/addClinics", handlers.AddPhysicalClinicsHandler)
 		clinicGroup.POST("/registerDoctors", handlers.RegisterClinicDoctors)
 		clinicGroup.POST("/registerPMS", handlers.RegisterClinicPMS)
-		clinicGroup.POST("/registPMSAuth", handlers.AddPMSAuthDetails)
+		clinicGroup.POST("/registerPMSAuth", handlers.AddPMSAuthDetails)
 		clinicGroup.POST("/registerServices", handlers.RegisterSpecialityServices)
 	}
 	{
