@@ -457,6 +457,13 @@ definitions:
               type: array
               items:
                 type: string
+            Location:
+              type: object
+              properties:
+                lat:
+                  type: number
+                long:
+                  type: number
   ClinicDoctors:
     type: object
     properties:
