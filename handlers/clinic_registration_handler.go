@@ -486,7 +486,11 @@ func QueryAddressHandlerWebsocket(webPool *websocket.Pool, c *gin.Context) {
 
 func getUserDetails(ctx context.Context, request *http.Request) (string, string, string, error) {
 	gProjectDeployment := googleprojectlib.GetGoogleProjectID()
-	identityClient, _ := identity.NewIDPEP(ctx, gProjectDeployment)
+	identityClient, err := identity.NewIDPEP(ctx, gProjectDeployment)
+	if err!= nil {
+		log.Errorf("found error in identity: %v", err.Error())
+		return "", "", "", err
+	}
 	userEmail, _ := jwt.GetUserEmail(request)
 	currentClinicRecord, err := identityClient.GetUserByEmail(ctx, userEmail)
 	if err != nil {
