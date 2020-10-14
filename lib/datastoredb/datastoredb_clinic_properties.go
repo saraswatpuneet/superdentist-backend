@@ -2,6 +2,8 @@ package datastoredb
 
 import (
 	"context"
+	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"os"
 
@@ -135,7 +137,12 @@ func (db *dsClinicMeta) AddPMSAuthDetails(ctx context.Context, clinicEmailID str
 	primaryKey := datastore.NameKey("ClinicAdmin", clinicEmailID, parentKey)
 	for _, pmsData := range pmsInformation.PMSAuthData {
 		clinicPMSKey := datastore.NameKey("ClinicPMSAuth", pmsData.PMSName, primaryKey)
-		_, err := db.client.Put(ctx, clinicPMSKey, &pmsData)
+		bytesSafe, _ := json.Marshal(pmsData)
+		var dsPMSAuth contracts.PMSAuthStructStore
+		dsPMSAuth.PMSName = pmsData.PMSName
+		sEnc := base64.StdEncoding.EncodeToString(bytesSafe)
+		dsPMSAuth.AuthDetails = sEnc
+		_, err := db.client.Put(ctx, clinicPMSKey, &dsPMSAuth)
 		if err != nil {
 			return fmt.Errorf("cannot register clinic with sd: %v", err)
 		}
