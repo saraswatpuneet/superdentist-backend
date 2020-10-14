@@ -39,7 +39,7 @@ type PhysicalClinicMapDetails struct {
 
 //GetClinicAddressResponse ....
 type GetClinicAddressResponse struct {
-	ClinicDetails []PhysicalClinicMapLocation `json:"clinic" valid:"required"`
+	ClinicDetails []PhysicalClinicMapLocation `json:"clinicDetails" valid:"required"`
 }
 
 // GetNearbyClinics ....
