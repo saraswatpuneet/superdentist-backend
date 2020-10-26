@@ -64,6 +64,9 @@ routes:
   - route: /docs/sd/?(.*)
     service: superdentist-backend-swagger
     port: 80
+  - route: /?(.*)
+    service: superdentist-ui
+    port: 80
 maxBodySizeMb: 100
 # TODO add more routes for frontend etc..
 
