@@ -26,9 +26,10 @@ type ClinicAddressResponse struct {
 // PhysicalClinicMapLocation ....
 type PhysicalClinicMapLocation struct {
 	PhysicalClinicsRegistration
-	Location  ClinicLocation
-	Geohash   string `json:"-"`
-	Precision int    `json:"-"`
+	Location   ClinicLocation
+	IsVerified bool
+	Geohash    string `json:"-"`
+	Precision  int    `json:"-"`
 }
 
 // PhysicalClinicMapDetails ....
@@ -83,11 +84,13 @@ type PMSAuthStruct struct {
 	PMSName     string                 `json:"pmsName" valid:"required"`
 	AuthDetails map[string]interface{} `json:"authDetails" valid:"required"`
 }
+
 // PMSAuthStructStore .....
 type PMSAuthStructStore struct {
-	PMSName     string                 `json:"pmsName" valid:"required"`
+	PMSName     string `json:"pmsName" valid:"required"`
 	AuthDetails string `json:"authDetails" valid:"required"`
 }
+
 // PostPMSAuthDetails ..
 type PostPMSAuthDetails struct {
 	PMSAuthData []PMSAuthStruct `json:"pmsAuthData" valid:"required"`

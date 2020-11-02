@@ -196,7 +196,7 @@ func (db *dsClinicMeta) GetClinicDoctors(ctx context.Context, clinicEmailID stri
 }
 
 // GetClinicDoctors ....
-func (db *dsClinicMeta) GetNearbyClinics(ctx context.Context, clinicEmailID string, clinicFBID string, clinicAddressID string, distance float64) ([]contracts.PhysicalClinicMapLocation, error) {
+func (db *dsClinicMeta) GetNearbyClinics(ctx context.Context, clinicEmailID string, clinicFBID string, clinicAddressID string, distance float64) ([]contracts.PhysicalClinicMapLocation, *contracts.ClinicLocation, error) {
 	parentKey := datastore.NameKey("ClinicAdmin", clinicFBID, nil)
 	primaryKey := datastore.NameKey("ClinicAdmin", clinicEmailID, parentKey)
 	returnedAddresses := make([]contracts.PhysicalClinicMapLocation, 0)
@@ -206,7 +206,7 @@ func (db *dsClinicMeta) GetNearbyClinics(ctx context.Context, clinicEmailID stri
 	}
 	keysClinics, err := db.client.GetAll(ctx, qP, &returnedAddresses)
 	if err != nil || len(keysClinics) <= 0 {
-		return nil, fmt.Errorf("no doctors have been found for the given clinic address: %v", err)
+		return nil, nil, fmt.Errorf("no doctors have been found for the given clinic address: %v", err)
 	}
 	returnedAddress := returnedAddresses[0]
 	currentLatLong := returnedAddress.Location
@@ -224,9 +224,9 @@ func (db *dsClinicMeta) GetNearbyClinics(ctx context.Context, clinicEmailID stri
 	allNearbyAddresses := make([]contracts.PhysicalClinicMapLocation, 0)
 	keysClinics, err = db.client.GetAll(ctx, qPNearest, &allNearbyAddresses)
 	if err != nil || len(keysClinics) <= 0 {
-		return nil, fmt.Errorf("no clinics have been found for the admin error: %v", err)
+		return nil, nil, fmt.Errorf("no clinics have been found for the admin error: %v", err)
 	}
-	return allNearbyAddresses, nil
+	return allNearbyAddresses, &currentLatLong, nil
 }
 
 // Close closes the database.

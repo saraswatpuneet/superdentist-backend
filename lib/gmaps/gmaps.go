@@ -53,11 +53,16 @@ func (gm *ClientGMaps) FindPlaceFromText(placeText string) (maps.FindPlaceFromTe
 func (gm *ClientGMaps) FindPlacesFromText(placeText string) (maps.PlacesSearchResponse, error) {
 	ctx := context.Background()
 	placesFromTextReq := maps.TextSearchRequest{
-		Query:     placeText,
+		Query: placeText,
 	}
 	placesSearchResponse, err := gm.client.TextSearch(ctx, &placesFromTextReq)
 	if err != nil {
 		return maps.PlacesSearchResponse{}, err
 	}
 	return placesSearchResponse, nil
+}
+
+// FindNearbyPlacesFromLocation ....
+func (gm *ClientGMaps) FindNearbyPlacesFromLocation(location maps.LatLng, radius uint, keywords []string) {
+
 }

@@ -214,7 +214,7 @@ func GetNearbyClinics(c *gin.Context) {
 		)
 		return
 	}
-	nearbyClinics, err := clinicMetaDB.GetNearbyClinics(ctx, userEmail, userID, clinicAddressID, dist)
+	nearbyClinics, _, err := clinicMetaDB.GetNearbyClinics(ctx, userEmail, userID, clinicAddressID, dist)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
@@ -251,6 +251,7 @@ func GetNearbyClinics(c *gin.Context) {
 		}
 		if len(getClinicSearchLoc.Candidates) > 0 {
 			currentReturn.ClinicDetails = getClinicSearchLoc.Candidates[0]
+			clinicAdd.IsVerified = true
 			currentReturn.PhysicalClinicMapLocation = clinicAdd
 			collectClinics = append(collectClinics, currentReturn)
 		}
