@@ -72,9 +72,7 @@ jobs:
         fi
     - name: Run Tests
       run: make test
-    - name: Build Binary
-      run: make
-    - name: Build
+    - name: Build Docker Image
       run: |-
         docker build \
           --tag "gcr.io/$PROJECT_ID/$IMAGE:$GITHUB_SHA" \
@@ -84,17 +82,17 @@ jobs:
           --build-arg GO_MODULES_TOKEN="$GO_TOKEN" \
           .
     # Push the Docker image to Google Container Registry
-    - name: Publish
+    - name: Publish Docker Image
       run: |-
         docker push "gcr.io/$PROJECT_ID/$IMAGE:$GITHUB_SHA"
         docker push "gcr.io/$PROJECT_ID/$IMAGE:latest"
   
-    - name: Install helm
+    - name: Install Helm
       run: |
         curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
         chmod 700 get_helm.sh
         ./get_helm.sh
-    - name: Deploy to SuperDentist cluster
+    - name: Deploy to SuperDentist Cluster
       run: |-
         gcloud container clusters get-credentials "$GKE_CLUSTER" --zone "$GKE_ZONE"
         helm upgrade superdentist-backend ./k8s/superdentist-backend --set image.tag=$GITHUB_SHA --install --wait --atomic
