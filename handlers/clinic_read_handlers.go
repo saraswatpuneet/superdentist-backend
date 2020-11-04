@@ -252,6 +252,9 @@ func GetNearbySpeialists(c *gin.Context) {
 	}
 	collectClinics := make([]contracts.PhysicalClinicMapDetails, 0)
 	for _, clinicAdd := range nearbyClinics {
+		if clinicAdd.ClinicAddressID == nearbyRequest.ClinicAddessID{
+			continue
+		}
 		var currentReturn contracts.PhysicalClinicMapDetails
 		getClinicSearchLoc, err := mapClient.FindPlaceFromText(clinicAdd.ClinicAddress)
 		if err != nil {

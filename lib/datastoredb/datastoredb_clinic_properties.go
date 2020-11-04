@@ -254,11 +254,10 @@ func (db *dsClinicMeta) GetNearbySpecialist(ctx context.Context, clinicEmailID s
 	lowerHash := geohash.Encode(lowerLat, lowerLon, returnedAddress.Precision)
 	upperHash := geohash.Encode(upperLat, upperLon, returnedAddress.Precision)
 	qPNearest := datastore.NewQuery("ClinicAddress").Ancestor(primaryKey)
-	qPNearest.Filter("Geohash >=", lowerHash).Filter("Geohash <=", upperHash).Filter("AddressID !=", clinicAddressID)
-	qPNearest.Filter("ClinicType ==", "Specialist")
+	qPNearest = qPNearest.Filter("Geohash >=", lowerHash).Filter("Geohash <=", upperHash).Filter("ClinicType =", "Specialist")
 	allNearbyAddresses := make([]contracts.PhysicalClinicMapLocation, 0)
 	keysClinics, err = db.client.GetAll(ctx, qPNearest, &allNearbyAddresses)
-	if err != nil || len(keysClinics) <= 0 {
+	if err != nil {
 		return nil, nil, fmt.Errorf("no clinics have been found for the admin error: %v", err)
 	}
 	return allNearbyAddresses, &currentLatLong, nil
