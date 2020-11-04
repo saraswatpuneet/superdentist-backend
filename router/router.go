@@ -51,7 +51,7 @@ func SDRouter() (*gin.Engine, error) {
 		clinicGroup.GET("/getClinics", handlers.GetPhysicalClinics)
 		clinicGroup.GET("/getDoctors/:clinicAddressId", handlers.GetClinicDoctors)
 		clinicGroup.GET("/getAllDoctors", handlers.GetAllDoctors)
-		clinicGroup.GET("/getNearbyClinics", handlers.GetNearbyClinics)
+		clinicGroup.GET("/getNearbySpecialists", handlers.GetNearbySpeialists)
 
 	}
 	{

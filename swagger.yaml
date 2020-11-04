@@ -272,7 +272,7 @@ paths:
           description: "Internal server error occured"
       security:
         - Bearer: []
-  /v1/clinic/getNearbyClinics:
+  /v1/clinic/getNearbySpecialists:
     get:
       tags:
        - "Registration APIs (R of CRUD)"
@@ -282,16 +282,12 @@ paths:
       produces:
       - "application/json"
       parameters:
-      - in: "query"
-        type: string
-        name: "clinicAddressId"
-        description: "unique address id of selected admin clinic"
+      - in: "body"
+        name: "body"
+        description: "Created clinic object"
         required: true
-      - in: "query"
-        type: number
-        name: "searchRadius"
-        description: "search radius defaulted to 20 miles"
-        required: false
+        schema:
+          $ref: "#/definitions/GetNearbySpecialist"
       responses:
         '200':
           $ref: '#/responses/GetNearbyClinicsResponse'
@@ -308,6 +304,17 @@ securityDefinitions:
     in: "header"
 
 definitions:
+  GetNearbySpecialist:
+    type: object
+    properties:
+      clinicAddressId:
+        type: string
+      searchRadius:
+        type: string
+      specialities:
+        type: array
+        items:
+          type: string
   RegisterClinicServices:
     type: object
     properties:

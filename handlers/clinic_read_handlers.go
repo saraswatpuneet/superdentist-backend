@@ -1,10 +1,12 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	log "github.com/sirupsen/logrus"
 	"github.com/superdentist/superdentist-backend/constants"
 	"github.com/superdentist/superdentist-backend/contracts"
@@ -168,12 +170,25 @@ func GetAllDoctors(c *gin.Context) {
 	clinicMetaDB.Close()
 }
 
-// GetNearbyClinics ..... get near by clinics based on distance to current clinic
-func GetNearbyClinics(c *gin.Context) {
-	log.Infof("Get all doctors registered with specific physical clinic")
-	clinicAddressID := c.Query("clinicAddressId")
-	searchRadius := c.Query("searchRadius")
-	if clinicAddressID == "" {
+// GetNearbySpeialists ..... get near by clinics based on distance to current clinic
+func GetNearbySpeialists(c *gin.Context) {
+	log.Infof("Get specialists clinic in nearby give clinic")
+	ctx := c.Request.Context()
+	var nearbyRequest contracts.GetNearbySpecialists
+	ctx, span := trace.StartSpan(ctx, "Get all clinics in close proximity to current clinic")
+	defer span.End()
+	if err := c.ShouldBindWith(&nearbyRequest, binding.JSON); err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: fmt.Errorf("Bad data sent to backened"),
+			},
+		)
+		return
+	}
+
+	if nearbyRequest.ClinicAddessID == "" {
 		c.AbortWithStatusJSON(
 			http.StatusBadRequest,
 			gin.H{
@@ -184,11 +199,10 @@ func GetNearbyClinics(c *gin.Context) {
 		return
 	}
 	dist := 20.0
-	if searchRadius == "" {
-		searchRadius = "20.0"
+	if nearbyRequest.SearchRadius == "" {
+		nearbyRequest.SearchRadius = "20.0"
 	}
-	dist, _ = strconv.ParseFloat(searchRadius, 64)
-	ctx := c.Request.Context()
+	dist, _ = strconv.ParseFloat(nearbyRequest.SearchRadius, 64)
 	userEmail, userID, gproject, err := getUserDetails(ctx, c.Request)
 	if err != nil {
 		c.AbortWithStatusJSON(
@@ -200,7 +214,6 @@ func GetNearbyClinics(c *gin.Context) {
 		)
 		return
 	}
-	ctx, span := trace.StartSpan(ctx, "Get all clinics in close proximity to current clinic")
 	defer span.End()
 	clinicMetaDB := datastoredb.NewClinicMetaHandler()
 	err = clinicMetaDB.InitializeDataBase(ctx, gproject)
@@ -214,7 +227,7 @@ func GetNearbyClinics(c *gin.Context) {
 		)
 		return
 	}
-	nearbyClinics, _, err := clinicMetaDB.GetNearbyClinics(ctx, userEmail, userID, clinicAddressID, dist)
+	nearbyClinics, _, err := clinicMetaDB.GetNearbyClinics(ctx, userEmail, userID, nearbyRequest.ClinicAddessID, dist)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
