@@ -500,21 +500,24 @@ definitions:
         items:
           type: object
           properties:
-            clinicType:
-              type: string
-            clinicAddressId:
-              type: string
-            clinicName:
-              type: string
-            clinicAddress:
-              type: string
-            clinicPhoneNumber:
-              type: string
-            clinicSpeciality:
-              type: array
-              items:
-                type: string
-            clinicDetails:
+            verifiedDetails:
+              type: object
+              properties:
+                clinicType:
+                  type: string
+                clinicAddressId:
+                  type: string
+                clinicName:
+                  type: string
+                clinicAddress:
+                  type: string
+                clinicPhoneNumber:
+                  type: string
+                clinicSpeciality:
+                  type: array
+                  items:
+                    type: string
+            generalDetails:
               type: object
               description: refer to https://gist.github.com/bamnet/479bb808c10f9946c9ef86e34e11b1e0
   AddressSuggestions:

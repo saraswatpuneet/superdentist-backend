@@ -13,6 +13,7 @@ import (
 	"github.com/superdentist/superdentist-backend/lib/datastoredb"
 	"github.com/superdentist/superdentist-backend/lib/gmaps"
 	"go.opencensus.io/trace"
+	"googlemaps.github.io/maps"
 )
 
 // GetPhysicalClinics ... after registering clinic main account we add multiple locations etc.
@@ -227,7 +228,7 @@ func GetNearbySpeialists(c *gin.Context) {
 		)
 		return
 	}
-	nearbyClinics, _, err := clinicMetaDB.GetNearbySpecialist(ctx, userEmail, userID, nearbyRequest.ClinicAddessID, dist)
+	nearbyClinics, loc, err := clinicMetaDB.GetNearbySpecialist(ctx, userEmail, userID, nearbyRequest.ClinicAddessID, dist)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
@@ -263,9 +264,43 @@ func GetNearbySpeialists(c *gin.Context) {
 			)
 		}
 		if len(getClinicSearchLoc.Candidates) > 0 {
-			currentReturn.ClinicDetails = getClinicSearchLoc.Candidates[0]
+			currentReturn.GeneralDetails = getClinicSearchLoc.Candidates[0]
 			clinicAdd.IsVerified = true
-			currentReturn.PhysicalClinicMapLocation = clinicAdd
+			currentReturn.VerifiedDetails = clinicAdd
+			collectClinics = append(collectClinics, currentReturn)
+		}
+	}
+	currentMapLocation := maps.LatLng{
+		Lat: loc.Lat,
+		Lng: loc.Long,
+	}
+	currentRadius := uint(dist * 1609.34) // in meters
+	currentNonRegisteredNearby, err := mapClient.FindNearbyPlacesFromLocation(currentMapLocation, currentRadius, nearbyRequest.Specialities)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+	}
+	for _, clinicAdd := range currentNonRegisteredNearby {
+		var currentReturn contracts.PhysicalClinicMapDetails
+		getClinicSearchLoc, err := mapClient.FindPlaceFromText(clinicAdd.FormattedAddress)
+		if err != nil {
+			c.AbortWithStatusJSON(
+				http.StatusInternalServerError,
+				gin.H{
+					constants.RESPONSE_JSON_DATA:   nil,
+					constants.RESPONSDE_JSON_ERROR: err.Error(),
+				},
+			)
+		}
+		if len(getClinicSearchLoc.Candidates) > 0 {
+			currentReturn.GeneralDetails = getClinicSearchLoc.Candidates[0]
+			currentReturn.VerifiedDetails = contracts.PhysicalClinicMapLocation{}
+			currentReturn.VerifiedDetails.IsVerified = false
 			collectClinics = append(collectClinics, currentReturn)
 		}
 	}

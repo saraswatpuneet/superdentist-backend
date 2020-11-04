@@ -34,8 +34,8 @@ type PhysicalClinicMapLocation struct {
 
 // PhysicalClinicMapDetails ....
 type PhysicalClinicMapDetails struct {
-	PhysicalClinicMapLocation
-	ClinicDetails maps.PlacesSearchResult `json:"clinicDetails" valid:"required"`
+	VerifiedDetails PhysicalClinicMapLocation `json:"verifiedDetails" valid:"required"`
+	GeneralDetails  maps.PlacesSearchResult   `json:"generalDetails" valid:"required"`
 }
 
 //GetClinicAddressResponse ....
