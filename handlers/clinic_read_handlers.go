@@ -227,7 +227,7 @@ func GetNearbySpeialists(c *gin.Context) {
 		)
 		return
 	}
-	nearbyClinics, _, err := clinicMetaDB.GetNearbyClinics(ctx, userEmail, userID, nearbyRequest.ClinicAddessID, dist)
+	nearbyClinics, _, err := clinicMetaDB.GetNearbySpecialist(ctx, userEmail, userID, nearbyRequest.ClinicAddessID, dist)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
