@@ -252,7 +252,7 @@ func GetNearbySpeialists(c *gin.Context) {
 	}
 	collectClinics := make([]contracts.PhysicalClinicMapDetails, 0)
 	for _, clinicAdd := range nearbyClinics {
-		if clinicAdd.ClinicAddressID == nearbyRequest.ClinicAddessID{
+		if clinicAdd.ClinicAddressID == nearbyRequest.ClinicAddessID || clinicAdd.ClinicType == "General Dentist"{
 			continue
 		}
 		var currentReturn contracts.PhysicalClinicMapDetails
@@ -290,7 +290,7 @@ func GetNearbySpeialists(c *gin.Context) {
 	}
 	for _, clinicAdd := range currentNonRegisteredNearby {
 		var currentReturn contracts.PhysicalClinicMapDetails
-		getClinicSearchLoc, err := mapClient.FindPlaceFromText(clinicAdd.FormattedAddress)
+		getClinicSearchLoc, err := mapClient.FindPlaceFromText(clinicAdd.Name)
 		if err != nil {
 			c.AbortWithStatusJSON(
 				http.StatusInternalServerError,

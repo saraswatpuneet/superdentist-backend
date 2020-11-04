@@ -253,8 +253,8 @@ func (db *dsClinicMeta) GetNearbySpecialist(ctx context.Context, clinicEmailID s
 	upperLon := currentLatLong.Long + lon*distance
 	lowerHash := geohash.Encode(lowerLat, lowerLon, returnedAddress.Precision)
 	upperHash := geohash.Encode(upperLat, upperLon, returnedAddress.Precision)
-	qPNearest := datastore.NewQuery("ClinicAddress").Ancestor(primaryKey)
-	qPNearest = qPNearest.Filter("Geohash >=", lowerHash).Filter("Geohash <=", upperHash).Filter("ClinicType =", "Specialist")
+	qPNearest := datastore.NewQuery("ClinicAddress")
+	qPNearest = qPNearest.Filter("Geohash >=", lowerHash).Filter("Geohash <=", upperHash)
 	allNearbyAddresses := make([]contracts.PhysicalClinicMapLocation, 0)
 	keysClinics, err = db.client.GetAll(ctx, qPNearest, &allNearbyAddresses)
 	if err != nil {
