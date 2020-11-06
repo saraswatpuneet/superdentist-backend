@@ -252,7 +252,7 @@ func GetNearbySpeialists(c *gin.Context) {
 	}
 	collectClinics := make([]contracts.PhysicalClinicMapDetails, 0)
 	for _, clinicAdd := range nearbyClinics {
-		if clinicAdd.ClinicAddressID == nearbyRequest.ClinicAddessID || clinicAdd.ClinicType == "General Dentist"{
+		if clinicAdd.ClinicAddressID == nearbyRequest.ClinicAddessID || clinicAdd.ClinicType == "General Dentist" {
 			continue
 		}
 		var currentReturn contracts.PhysicalClinicMapDetails
@@ -290,22 +290,12 @@ func GetNearbySpeialists(c *gin.Context) {
 	}
 	for _, clinicAdd := range currentNonRegisteredNearby {
 		var currentReturn contracts.PhysicalClinicMapDetails
-		getClinicSearchLoc, err := mapClient.FindPlaceFromText(clinicAdd.Name)
-		if err != nil {
-			c.AbortWithStatusJSON(
-				http.StatusInternalServerError,
-				gin.H{
-					constants.RESPONSE_JSON_DATA:   nil,
-					constants.RESPONSDE_JSON_ERROR: err.Error(),
-				},
-			)
-		}
-		if len(getClinicSearchLoc.Candidates) > 0 {
-			currentReturn.GeneralDetails = getClinicSearchLoc.Candidates[0]
-			currentReturn.VerifiedDetails = contracts.PhysicalClinicMapLocation{}
-			currentReturn.VerifiedDetails.IsVerified = false
-			collectClinics = append(collectClinics, currentReturn)
-		}
+
+		currentReturn.GeneralDetails = clinicAdd
+		currentReturn.VerifiedDetails = contracts.PhysicalClinicMapLocation{}
+		currentReturn.VerifiedDetails.IsVerified = false
+		collectClinics = append(collectClinics, currentReturn)
+
 	}
 	var responseData contracts.GetNearbyClinics
 	responseData.ClinicAddresses = collectClinics
