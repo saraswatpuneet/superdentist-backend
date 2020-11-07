@@ -273,7 +273,7 @@ paths:
       security:
         - Bearer: []
   /v1/clinic/getNearbySpecialists:
-    get:
+    post:
       tags:
        - "Registration APIs (R of CRUD)"
       summary: "Get all clinics nearby current admin selected clinic. Frontend will specific unique address id and radius and all clinics in App database will be returned."
