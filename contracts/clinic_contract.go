@@ -15,6 +15,7 @@ type GetNearbySpecialists struct {
 	ClinicAddessID string   `json:"clinicAddressId" valid:"required"`
 	Specialities   []string `json:"specialities"`
 	SearchRadius   string   `json:"searchRadius"`
+	Cursor         string   `json:"cursor"`
 }
 
 // ClinicVerificationData ...

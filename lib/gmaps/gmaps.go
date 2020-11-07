@@ -64,26 +64,22 @@ func (gm *ClientGMaps) FindPlacesFromText(placeText string) (maps.PlacesSearchRe
 }
 
 // FindNearbyPlacesFromLocation ....
-func (gm *ClientGMaps) FindNearbyPlacesFromLocation(location maps.LatLng, radius uint, keywords []string) (map[string]maps.PlacesSearchResult, error) {
+func (gm *ClientGMaps) FindNearbyPlacesFromLocation(location maps.LatLng, radius uint, keyword string, toke string) (map[string]maps.PlacesSearchResult, string, error) {
 	ctx := context.Background()
-	if len(keywords) <= 0 {
-		keywords = SPECIALITIES
-	}
 	nearbyClinicsMap := make(map[string]maps.PlacesSearchResult)
-	for _, word := range keywords {
-		placesFromTextReq := maps.NearbySearchRequest{
-			Location: &location,
-			Radius:   radius,
-			Keyword:  word,
-			Type:     maps.PlaceTypeDentist,
-		}
-		placesSearchResponse, err := gm.client.NearbySearch(ctx, &placesFromTextReq)
-		if err != nil {
-			return nil, err
-		}
-		for _, place := range placesSearchResponse.Results {
-			nearbyClinicsMap[place.PlaceID] = place
-		}
+
+	placesFromTextReq := maps.NearbySearchRequest{
+		Location: &location,
+		Radius:   radius,
+		Keyword:  keyword,
+		Type:     maps.PlaceTypeDentist,
 	}
-	return nearbyClinicsMap, nil
+	placesSearchResponse, err := gm.client.NearbySearch(ctx, &placesFromTextReq)
+	if err != nil {
+		return nil, "", err
+	}
+	for _, place := range placesSearchResponse.Results {
+		nearbyClinicsMap[place.PlaceID] = place
+	}
+	return nearbyClinicsMap, placesSearchResponse.NextPageToken, nil
 }

@@ -203,6 +203,7 @@ func GetNearbySpeialists(c *gin.Context) {
 	if nearbyRequest.SearchRadius == "" {
 		nearbyRequest.SearchRadius = "20.0"
 	}
+	cursor := nearbyRequest.Cursor
 	dist, _ = strconv.ParseFloat(nearbyRequest.SearchRadius, 64)
 	userEmail, userID, gproject, err := getUserDetails(ctx, c.Request)
 	if err != nil {
@@ -278,7 +279,7 @@ func GetNearbySpeialists(c *gin.Context) {
 		Lng: loc.Long,
 	}
 	currentRadius := uint(dist * 1609.34) // in meters
-	currentNonRegisteredNearby, err := mapClient.FindNearbyPlacesFromLocation(currentMapLocation, currentRadius, nearbyRequest.Specialities)
+	currentNonRegisteredNearby, pToken, err := mapClient.FindNearbyPlacesFromLocation(currentMapLocation, currentRadius, "Specialist", cursor)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
@@ -299,6 +300,7 @@ func GetNearbySpeialists(c *gin.Context) {
 	}
 	var responseData contracts.GetNearbyClinics
 	responseData.ClinicAddresses = collectClinics
+	responseData.Cursor = pToken
 	c.JSON(http.StatusOK, gin.H{
 		constants.RESPONSE_JSON_DATA:   responseData,
 		constants.RESPONSDE_JSON_ERROR: nil,
