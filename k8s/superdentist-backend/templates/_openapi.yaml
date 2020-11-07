@@ -313,10 +313,6 @@ definitions:
       searchRadius:
         type: string
       specialities:
-        type: array
-        items:
-          type: string
-      cursor:
         type: string
   RegisterClinicServices:
     type: object
@@ -523,8 +519,6 @@ definitions:
             generalDetails:
               type: object
               description: refer to https://gist.github.com/bamnet/479bb808c10f9946c9ef86e34e11b1e0
-            cursor:
-              type: string
   AddressSuggestions:
     type: object
     properties:

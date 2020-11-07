@@ -278,8 +278,12 @@ func GetNearbySpeialists(c *gin.Context) {
 		Lat: loc.Lat,
 		Lng: loc.Long,
 	}
+	currentSpeciality := nearbyRequest.Specialities
+	if currentSpeciality == "" {
+		currentSpeciality = "Specialist"
+	}
 	currentRadius := uint(dist * 1609.34) // in meters
-	currentNonRegisteredNearby, pToken, err := mapClient.FindNearbyPlacesFromLocation(currentMapLocation, currentRadius, "Specialist", cursor)
+	currentNonRegisteredNearby, pToken, err := mapClient.FindNearbyPlacesFromLocation(currentMapLocation, currentRadius, currentSpeciality, cursor)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
