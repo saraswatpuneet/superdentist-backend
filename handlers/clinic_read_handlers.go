@@ -268,9 +268,9 @@ func GetNearbySpeialists(c *gin.Context) {
 				},
 			)
 		}
-		currentVerifiedPlaces[clinicAdd.PlaceID] = true
 		if len(getClinicSearchLoc.Candidates) > 0 {
 			currentReturn.GeneralDetails = getClinicSearchLoc.Candidates[0]
+			currentVerifiedPlaces[currentReturn.GeneralDetails.PlaceID] = true
 			clinicAdd.IsVerified = true
 			currentReturn.VerifiedDetails = clinicAdd
 			collectClinics = append(collectClinics, currentReturn)
@@ -285,7 +285,7 @@ func GetNearbySpeialists(c *gin.Context) {
 		currentSpeciality = "Specialist"
 	}
 	currentRadius := uint(dist * 1609.34) // in meters
-	currentNonRegisteredNearby, pToken, err := mapClient.FindNearbyPlacesFromLocation(currentMapLocation, currentRadius, currentSpeciality, cursor,currentVerifiedPlaces)
+	currentNonRegisteredNearby, pToken, err := mapClient.FindNearbyPlacesFromLocation(currentMapLocation, currentRadius, currentSpeciality, cursor, currentVerifiedPlaces)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
