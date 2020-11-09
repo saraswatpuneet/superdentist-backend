@@ -73,10 +73,12 @@ func (db dsClinicMeta) AddPhysicalAddessressToClinic(ctx context.Context, clinic
 			Lat:  0.0,
 			Long: 0.0,
 		}
+		placeID := ""
 		if err == nil && len(gmapAddress.Results) > 0 {
 			currentLocation := gmapAddress.Results[0]
 			location.Lat = currentLocation.Geometry.Location.Lat
 			location.Long = currentLocation.Geometry.Location.Lng
+			placeID = currentLocation.PlaceID
 		}
 		addressKey := datastore.NameKey("ClinicAddress", addrID.String(), primaryKey)
 		currentHash := geohash.Encode(location.Lat, location.Long, 12)
@@ -85,6 +87,7 @@ func (db dsClinicMeta) AddPhysicalAddessressToClinic(ctx context.Context, clinic
 			Location:                    location,
 			Geohash:                     currentHash,
 			Precision:                   12,
+			PlaceID:                     placeID,
 		}
 		_, err = db.client.Put(ctx, addressKey, &currentLocWithMap)
 		if err != nil {

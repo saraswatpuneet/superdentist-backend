@@ -30,6 +30,7 @@ type PhysicalClinicMapLocation struct {
 	IsVerified bool
 	Geohash    string `json:"-"`
 	Precision  int    `json:"-"`
+	PlaceID    string    `json:"-"`
 }
 
 // PhysicalClinicMapDetails ....

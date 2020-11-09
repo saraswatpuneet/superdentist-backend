@@ -252,6 +252,7 @@ func GetNearbySpeialists(c *gin.Context) {
 		)
 	}
 	collectClinics := make([]contracts.PhysicalClinicMapDetails, 0)
+	currentVerifiedPlaces := make(map[string]bool)
 	for _, clinicAdd := range nearbyClinics {
 		if clinicAdd.ClinicAddressID == nearbyRequest.ClinicAddessID || clinicAdd.ClinicType == "General Dentist" {
 			continue
@@ -267,6 +268,7 @@ func GetNearbySpeialists(c *gin.Context) {
 				},
 			)
 		}
+		currentVerifiedPlaces[clinicAdd.PlaceID] = true
 		if len(getClinicSearchLoc.Candidates) > 0 {
 			currentReturn.GeneralDetails = getClinicSearchLoc.Candidates[0]
 			clinicAdd.IsVerified = true
@@ -283,7 +285,7 @@ func GetNearbySpeialists(c *gin.Context) {
 		currentSpeciality = "Specialist"
 	}
 	currentRadius := uint(dist * 1609.34) // in meters
-	currentNonRegisteredNearby, pToken, err := mapClient.FindNearbyPlacesFromLocation(currentMapLocation, currentRadius, currentSpeciality, cursor)
+	currentNonRegisteredNearby, pToken, err := mapClient.FindNearbyPlacesFromLocation(currentMapLocation, currentRadius, currentSpeciality, cursor,currentVerifiedPlaces)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
