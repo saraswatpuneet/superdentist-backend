@@ -55,6 +55,9 @@ func SDRouter() (*gin.Engine, error) {
 
 	}
 	{
+		clinicGroup.GET("/createReferral", handlers.CreateRefSpecialist)
+	}
+	{
 		// All wesocket related routing goes here follow the pattern
 
 		clinicGroup.GET("/queryAddress", func(c *gin.Context) {
