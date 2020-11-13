@@ -129,6 +129,7 @@ func CreateRefSpecialist(c *gin.Context) {
 	dsReferral.Documents = docIDNames
 	dsReferral.CreatedOn = time.Now()
 	dsReferral.ModifiedOn = time.Now()
+	dsReferral.ReferralID = uniqueRefID
 	// Stage 3 Create datastore entry for referral
 	fromClinic, err := clinicDB.GetSingleClinic(ctx, referralDetails.FromAddressID)
 	if err != nil {
