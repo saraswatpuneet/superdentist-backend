@@ -7,4 +7,6 @@ const (
 	MAX_WRITE_TIMEOUT = 50 // secs
 	RESPONSE_JSON_DATA      string = "data"
 	RESPONSDE_JSON_ERROR     string = "error"
+	SD_REFERRAL_BUCKET = "superdentist-referrals"
+
 )

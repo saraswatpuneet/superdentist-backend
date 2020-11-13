@@ -198,6 +198,21 @@ func (db *dsClinicMeta) GetClinicDoctors(ctx context.Context, clinicEmailID stri
 	return returnedDoctors, nil
 }
 
+// GetSingleClinic ....
+func (db *dsClinicMeta) GetSingleClinic(ctx context.Context, clinicAddressID string) (*contracts.PhysicalClinicMapLocation, error) {
+
+	returnedAddresses := make([]contracts.PhysicalClinicMapLocation, 0)
+	qP := datastore.NewQuery("ClinicAddress")
+	if clinicAddressID != "" {
+		qP = qP.Filter("ClinicAddressID =", clinicAddressID)
+	}
+	keysClinics, err := db.client.GetAll(ctx, qP, &returnedAddresses)
+	if err != nil || len(keysClinics) <= 0 {
+		return nil, fmt.Errorf("clinic with given address id not found: %v", err)
+	}
+	return &returnedAddresses[0], nil
+}
+
 // GetNearbyClinics ....
 func (db *dsClinicMeta) GetNearbyClinics(ctx context.Context, clinicEmailID string, clinicFBID string, clinicAddressID string, distance float64) ([]contracts.PhysicalClinicMapLocation, *contracts.ClinicLocation, error) {
 	parentKey := datastore.NameKey("ClinicAdmin", clinicFBID, nil)
