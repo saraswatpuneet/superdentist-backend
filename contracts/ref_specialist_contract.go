@@ -18,6 +18,7 @@ type ReferralDetails struct {
 	Patient       Patient `json:"patient" valid:"required"`
 	FromAddressID string  `json:"fromAddressId" valid:"required"`
 	ToAddressID   string  `json:"toAddressId" valid:"required"`
+	ToPlaceID     string  `json:"toPlaceId"`
 	Status        string  `json:"status" valid:"required"`
 	Comments      string  `json:"comments"`
 }

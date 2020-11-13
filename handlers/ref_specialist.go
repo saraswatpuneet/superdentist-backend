@@ -158,4 +158,5 @@ func CreateRefSpecialist(c *gin.Context) {
 	// Use referral details and create datastore entry for referral
 	// Send email to fromClinic and toClinic and text 
 	// Send email to patient and text
+	// If being sent to unregistered clinic just create entry and notify
 }
