@@ -69,8 +69,8 @@ func GetPhysicalClinics(c *gin.Context) {
 // GetClinicDoctors ... get doctors from specific clinic.
 func GetClinicDoctors(c *gin.Context) {
 	log.Infof("Get all doctors registered with specific physical clinic")
-	clinicAddressID := c.Param("clinicAddressId")
-	if clinicAddressID == "" {
+	addressID := c.Param("addressId")
+	if addressID == "" {
 		c.AbortWithStatusJSON(
 			http.StatusBadRequest,
 			gin.H{
@@ -106,7 +106,7 @@ func GetClinicDoctors(c *gin.Context) {
 		)
 		return
 	}
-	registeredDoctors, err := clinicMetaDB.GetClinicDoctors(ctx, userEmail, userID, clinicAddressID)
+	registeredDoctors, err := clinicMetaDB.GetClinicDoctors(ctx, userEmail, userID, addressID)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
@@ -254,11 +254,11 @@ func GetNearbySpeialists(c *gin.Context) {
 	collectClinics := make([]contracts.PhysicalClinicMapDetails, 0)
 	currentVerifiedPlaces := make(map[string]bool)
 	for _, clinicAdd := range nearbyClinics {
-		if clinicAdd.ClinicAddressID == nearbyRequest.ClinicAddessID || clinicAdd.ClinicType == "General Dentist" {
+		if clinicAdd.AddressID == nearbyRequest.ClinicAddessID || clinicAdd.Type == "General Dentist" {
 			continue
 		}
 		var currentReturn contracts.PhysicalClinicMapDetails
-		getClinicSearchLoc, err := mapClient.FindPlaceFromText(clinicAdd.ClinicAddress)
+		getClinicSearchLoc, err := mapClient.FindPlaceFromText(clinicAdd.Address)
 		if err != nil {
 			c.AbortWithStatusJSON(
 				http.StatusInternalServerError,

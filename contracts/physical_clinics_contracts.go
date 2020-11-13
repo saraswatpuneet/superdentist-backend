@@ -9,13 +9,13 @@ import (
 
 // PhysicalClinicsRegistration ...
 type PhysicalClinicsRegistration struct {
-	ClinicType         string   `json:"clinicType" valid:"required"`
-	ClinicAddressID    string   `json:"clinicAddressId"`
-	ClinicName         string   `json:"clinicName" valid:"required"`
-	ClinicAddress      string   `json:"clinicAddress" valid:"required"`
-	ClinicEmailAddress string   `json:"clinicEmailAddress" valid:"required"`
-	ClinicPhoneNumber  string   `json:"clinicPhoneNumber" valid:"required"`
-	ClinicSpeciality   []string `json:"clinicSpeciality"`
+	Type         string   `json:"type" valid:"required"`
+	AddressID    string   `json:"addressId"`
+	Name         string   `json:"name" valid:"required"`
+	Address      string   `json:"address" valid:"required"`
+	EmailAddress string   `json:"emailAddress" valid:"required"`
+	PhoneNumber  string   `json:"phoneNumber" valid:"required"`
+	Speciality   []string `json:"speciality"`
 }
 
 //ClinicAddressResponse ....
@@ -30,7 +30,7 @@ type PhysicalClinicMapLocation struct {
 	IsVerified bool
 	Geohash    string `json:"-"`
 	Precision  int    `json:"-"`
-	PlaceID    string    `json:"-"`
+	PlaceID    string `json:"-"`
 }
 
 // PhysicalClinicMapDetails ....
@@ -52,12 +52,12 @@ type GetNearbyClinics struct {
 
 // ClinicDoctorRegistration ...
 type ClinicDoctorRegistration struct {
-	ClinicAddressID    string   `json:"clinicAddressId"`
-	DoctorPrefix       string   `json:"doctorPrefix" valid:"required"`
-	DoctorFirstName    string   `json:"doctorFirstName" valid:"required"`
-	DoctorLastName     string   `json:"doctorLastName" valid:"required"`
-	DoctorEmailAddress string   `json:"doctorEmailAddress" valid:"required"`
-	DoctorSpeciality   []string `json:"doctorSpeciality" valid:"required"`
+	AddressID    string   `json:"addressId"`
+	Prefix       string   `json:"prefix" valid:"required"`
+	FirstName    string   `json:"firstName" valid:"required"`
+	LastName     string   `json:"lastName" valid:"required"`
+	EmailAddress string   `json:"emailAddress" valid:"required"`
+	Speciality   []string `json:"speciality" valid:"required"`
 }
 
 // PostPhysicalClinicDetails .....
@@ -67,8 +67,8 @@ type PostPhysicalClinicDetails struct {
 
 // ClinicDoctorsDetails ....
 type ClinicDoctorsDetails struct {
-	ClinicAddressID string                     `json:"clinicAddressId" valid:"required"`
-	Doctors         []ClinicDoctorRegistration `json:"doctors" valid:"required"`
+	AddressID string                     `json:"addressId" valid:"required"`
+	Doctors   []ClinicDoctorRegistration `json:"doctors" valid:"required"`
 }
 
 //PostDoctorDetails ....
@@ -138,7 +138,7 @@ type ClinicPhysicalAddressDatabase interface {
 	// GetAllClinics get all clinics associated by admin
 	GetAllClinics(ctx context.Context, clinicEmailID string, clinicFBID string) ([]PhysicalClinicMapLocation, error)
 	// GetClinicDoctors ... get doctors either all or for sepecific clinic address
-	GetClinicDoctors(ctx context.Context, clinicEmailID string, clinicFBID string, ClinicAddressID string) ([]ClinicDoctorRegistration, error)
+	GetClinicDoctors(ctx context.Context, clinicEmailID string, clinicFBID string, AddressID string) ([]ClinicDoctorRegistration, error)
 	// TODO(cbro): Close() should return an error.
 	Close() error
 }

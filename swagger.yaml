@@ -212,7 +212,7 @@ paths:
           description: "Internal server error occured"
       security:
         - Bearer: []
-  /v1/clinic/getDoctors/{clinicAddressId}:
+  /v1/clinic/getDoctors/{addressId}:
     get:
       tags:
        - "Registration APIs (R of CRUD)"
@@ -224,7 +224,7 @@ paths:
       parameters:
       - in: "path"
         type: string
-        name: "clinicAddressId"
+        name: "addressId"
         description: "unique address id of registered clinic"
         required: true
       responses:
@@ -307,7 +307,7 @@ definitions:
   GetNearbySpecialist:
     type: object
     properties:
-      clinicAddressId:
+      addressId:
         type: string
       searchRadius:
         type: string
@@ -378,17 +378,17 @@ definitions:
         items:
           type: object
           properties:
-            clinicType:
+            type:
               type: "string"
-            clinicName:
+            name:
               type: string
-            clinicAddress:
+            address:
               type: string
-            clinicEmailAddress:
+            emailAddress:
               type: string
-            clinicPhoneNumber:
+            phoneNumber:
               type: string
-            clinicSpeciality:
+            speciality:
               type: array
               items:
                 type: string
@@ -400,15 +400,15 @@ definitions:
         items:
           type: object
           properties:
-            clinicAddressId:
+            addressId:
               type: string
-            clinicName:
+            name:
               type: string
-            clinicAddress:
+            address:
               type: string
-            clinicPhoneNumber:
+            phoneNumber:
               type: string
-            clinicSpeciality:
+            speciality:
               type: array
               items:
                 type: string
@@ -420,22 +420,22 @@ definitions:
         items:
          type: object
          properties:
-            clinicAddressId:
+            addressId:
               type: string
             doctors:
               type: array
               items:
                 type: object
                 properties:
-                  doctorPrefix:
+                  prefix:
                     type: string
-                  doctorFirstName:
+                  firstName:
                     type: string
-                  doctorLastName:
+                  lastName:
                     type: string
-                  doctorEmailAddress:
+                  emailAddress:
                     type: string
-                  doctorSpeciality:
+                  speciality:
                     type: array
                     items:
                       type: string
@@ -447,17 +447,17 @@ definitions:
         items:
           type: object
           properties:
-            clinicType:
+            type:
               type: string
-            clinicAddressId:
+            addressId:
               type: string
-            clinicName:
+            name:
               type: string
-            clinicAddress:
+            address:
               type: string
-            clinicPhoneNumber:
+            phoneNumber:
               type: string
-            clinicSpeciality:
+            speciality:
               type: array
               items:
                 type: string
@@ -476,17 +476,17 @@ definitions:
         items:
           type: object
           properties:
-            clinicAddressId:
+            addressId:
               type: string
-            doctorPrefix:
+            prefix:
               type: string
-            doctorFirstName:
+            firstName:
               type: string
-            doctorLastName:
+            lastName:
               type: string
-            doctorEmailAddress:
+            emailAddress:
               type: string
-            doctorSpeciality:
+            speciality:
               type: array
               items:
                 type: string
@@ -501,17 +501,17 @@ definitions:
             verifiedDetails:
               type: object
               properties:
-                clinicType:
+                type:
                   type: string
-                clinicAddressId:
+                addressId:
                   type: string
-                clinicName:
+                name:
                   type: string
-                clinicAddress:
+                address:
                   type: string
-                clinicPhoneNumber:
+                phoneNumber:
                   type: string
-                clinicSpeciality:
+                speciality:
                   type: array
                   items:
                     type: string

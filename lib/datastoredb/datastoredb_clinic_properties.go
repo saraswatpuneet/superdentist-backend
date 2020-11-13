@@ -64,11 +64,11 @@ func (db dsClinicMeta) AddPhysicalAddessressToClinic(ctx context.Context, clinic
 	returnedAddress := make([]contracts.PhysicalClinicsRegistration, 0)
 	for _, address := range addresses {
 		addrID, err := guuid.NewUUID()
-		address.ClinicAddressID = addrID.String()
+		address.AddressID = addrID.String()
 		if err != nil {
 			return nil, fmt.Errorf("cannot register clinic with sd: %v", err)
 		}
-		gmapAddress, err := mapsClient.FindPlacesFromText(address.ClinicAddress)
+		gmapAddress, err := mapsClient.FindPlacesFromText(address.Address)
 		location := contracts.ClinicLocation{
 			Lat:  0.0,
 			Long: 0.0,
@@ -80,7 +80,7 @@ func (db dsClinicMeta) AddPhysicalAddessressToClinic(ctx context.Context, clinic
 			location.Long = currentLocation.Geometry.Location.Lng
 			placeID = currentLocation.PlaceID
 		}
-		addressKey := datastore.NameKey("ClinicAddress", addrID.String(), primaryKey)
+		addressKey := datastore.NameKey("Address", addrID.String(), primaryKey)
 		currentHash := geohash.Encode(location.Lat, location.Long, 12)
 		currentLocWithMap := contracts.PhysicalClinicMapLocation{
 			PhysicalClinicsRegistration: address,
@@ -105,7 +105,7 @@ func (db dsClinicMeta) AddDoctorsToPhysicalClincs(ctx context.Context, clinicEma
 	for _, doctor := range doctorsData {
 		for _, doc := range doctor.Doctors {
 			docID, err := guuid.NewUUID()
-			doc.ClinicAddressID = doctor.ClinicAddressID
+			doc.AddressID = doctor.AddressID
 			clinicDoctorKey := datastore.NameKey("ClinicDoctors", docID.String(), primaryKey)
 			if err != nil {
 				return fmt.Errorf("cannot register doctor with sd: %v", err)
@@ -174,7 +174,7 @@ func (db *dsClinicMeta) GetAllClinics(ctx context.Context, clinicEmailID string,
 	parentKey := datastore.NameKey("ClinicAdmin", clinicFBID, nil)
 	primaryKey := datastore.NameKey("ClinicAdmin", clinicEmailID, parentKey)
 	returnedAddress := make([]contracts.PhysicalClinicMapLocation, 0)
-	qP := datastore.NewQuery("ClinicAddress").Ancestor(primaryKey)
+	qP := datastore.NewQuery("Address").Ancestor(primaryKey)
 	keysClinics, err := db.client.GetAll(ctx, qP, &returnedAddress)
 	if err != nil || len(keysClinics) <= 0 {
 		return nil, fmt.Errorf("no clinics have been found for the admin error: %v", err)
@@ -183,13 +183,13 @@ func (db *dsClinicMeta) GetAllClinics(ctx context.Context, clinicEmailID string,
 }
 
 // GetClinicDoctors ....
-func (db *dsClinicMeta) GetClinicDoctors(ctx context.Context, clinicEmailID string, clinicFBID string, clinicAddressID string) ([]contracts.ClinicDoctorRegistration, error) {
+func (db *dsClinicMeta) GetClinicDoctors(ctx context.Context, clinicEmailID string, clinicFBID string, addressID string) ([]contracts.ClinicDoctorRegistration, error) {
 	parentKey := datastore.NameKey("ClinicAdmin", clinicFBID, nil)
 	primaryKey := datastore.NameKey("ClinicAdmin", clinicEmailID, parentKey)
 	returnedDoctors := make([]contracts.ClinicDoctorRegistration, 0)
 	qP := datastore.NewQuery("ClinicDoctors").Ancestor(primaryKey)
-	if clinicAddressID != "" {
-		qP = qP.Filter("ClinicAddressID =", clinicAddressID)
+	if addressID != "" {
+		qP = qP.Filter("AddressID =", addressID)
 	}
 	keysClinics, err := db.client.GetAll(ctx, qP, &returnedDoctors)
 	if err != nil || len(keysClinics) <= 0 {
@@ -199,12 +199,12 @@ func (db *dsClinicMeta) GetClinicDoctors(ctx context.Context, clinicEmailID stri
 }
 
 // GetSingleClinic ....
-func (db *dsClinicMeta) GetSingleClinic(ctx context.Context, clinicAddressID string) (*contracts.PhysicalClinicMapLocation, error) {
+func (db *dsClinicMeta) GetSingleClinic(ctx context.Context, addressID string) (*contracts.PhysicalClinicMapLocation, error) {
 
 	returnedAddresses := make([]contracts.PhysicalClinicMapLocation, 0)
-	qP := datastore.NewQuery("ClinicAddress")
-	if clinicAddressID != "" {
-		qP = qP.Filter("ClinicAddressID =", clinicAddressID)
+	qP := datastore.NewQuery("Address")
+	if addressID != "" {
+		qP = qP.Filter("AddressID =", addressID)
 	}
 	keysClinics, err := db.client.GetAll(ctx, qP, &returnedAddresses)
 	if err != nil || len(keysClinics) <= 0 {
@@ -214,13 +214,13 @@ func (db *dsClinicMeta) GetSingleClinic(ctx context.Context, clinicAddressID str
 }
 
 // GetNearbyClinics ....
-func (db *dsClinicMeta) GetNearbyClinics(ctx context.Context, clinicEmailID string, clinicFBID string, clinicAddressID string, distance float64) ([]contracts.PhysicalClinicMapLocation, *contracts.ClinicLocation, error) {
+func (db *dsClinicMeta) GetNearbyClinics(ctx context.Context, clinicEmailID string, clinicFBID string, addressID string, distance float64) ([]contracts.PhysicalClinicMapLocation, *contracts.ClinicLocation, error) {
 	parentKey := datastore.NameKey("ClinicAdmin", clinicFBID, nil)
 	primaryKey := datastore.NameKey("ClinicAdmin", clinicEmailID, parentKey)
 	returnedAddresses := make([]contracts.PhysicalClinicMapLocation, 0)
-	qP := datastore.NewQuery("ClinicAddress").Ancestor(primaryKey)
-	if clinicAddressID != "" {
-		qP = qP.Filter("ClinicAddressID =", clinicAddressID)
+	qP := datastore.NewQuery("Address").Ancestor(primaryKey)
+	if addressID != "" {
+		qP = qP.Filter("AddressID =", addressID)
 	}
 	keysClinics, err := db.client.GetAll(ctx, qP, &returnedAddresses)
 	if err != nil || len(keysClinics) <= 0 {
@@ -237,8 +237,8 @@ func (db *dsClinicMeta) GetNearbyClinics(ctx context.Context, clinicEmailID stri
 	upperLon := currentLatLong.Long + lon*distance
 	lowerHash := geohash.Encode(lowerLat, lowerLon, returnedAddress.Precision)
 	upperHash := geohash.Encode(upperLat, upperLon, returnedAddress.Precision)
-	qPNearest := datastore.NewQuery("ClinicAddress").Ancestor(primaryKey)
-	qPNearest.Filter("Geohash >=", lowerHash).Filter("Geohash <=", upperHash).Filter("AddressID !=", clinicAddressID)
+	qPNearest := datastore.NewQuery("Address").Ancestor(primaryKey)
+	qPNearest.Filter("Geohash >=", lowerHash).Filter("Geohash <=", upperHash).Filter("AddressID !=", addressID)
 	allNearbyAddresses := make([]contracts.PhysicalClinicMapLocation, 0)
 	keysClinics, err = db.client.GetAll(ctx, qPNearest, &allNearbyAddresses)
 	if err != nil || len(keysClinics) <= 0 {
@@ -248,13 +248,13 @@ func (db *dsClinicMeta) GetNearbyClinics(ctx context.Context, clinicEmailID stri
 }
 
 // GetNearbySpecialist ....
-func (db *dsClinicMeta) GetNearbySpecialist(ctx context.Context, clinicEmailID string, clinicFBID string, clinicAddressID string, distance float64) ([]contracts.PhysicalClinicMapLocation, *contracts.ClinicLocation, error) {
+func (db *dsClinicMeta) GetNearbySpecialist(ctx context.Context, clinicEmailID string, clinicFBID string, addressID string, distance float64) ([]contracts.PhysicalClinicMapLocation, *contracts.ClinicLocation, error) {
 	parentKey := datastore.NameKey("ClinicAdmin", clinicFBID, nil)
 	primaryKey := datastore.NameKey("ClinicAdmin", clinicEmailID, parentKey)
 	returnedAddresses := make([]contracts.PhysicalClinicMapLocation, 0)
-	qP := datastore.NewQuery("ClinicAddress").Ancestor(primaryKey)
-	if clinicAddressID != "" {
-		qP = qP.Filter("ClinicAddressID =", clinicAddressID)
+	qP := datastore.NewQuery("Address").Ancestor(primaryKey)
+	if addressID != "" {
+		qP = qP.Filter("AddressID =", addressID)
 	}
 	keysClinics, err := db.client.GetAll(ctx, qP, &returnedAddresses)
 	if err != nil || len(keysClinics) <= 0 {
@@ -271,7 +271,7 @@ func (db *dsClinicMeta) GetNearbySpecialist(ctx context.Context, clinicEmailID s
 	upperLon := currentLatLong.Long + lon*distance
 	lowerHash := geohash.Encode(lowerLat, lowerLon, returnedAddress.Precision)
 	upperHash := geohash.Encode(upperLat, upperLon, returnedAddress.Precision)
-	qPNearest := datastore.NewQuery("ClinicAddress")
+	qPNearest := datastore.NewQuery("Address")
 	qPNearest = qPNearest.Filter("Geohash >=", lowerHash).Filter("Geohash <=", upperHash)
 	allNearbyAddresses := make([]contracts.PhysicalClinicMapLocation, 0)
 	keysClinics, err = db.client.GetAll(ctx, qPNearest, &allNearbyAddresses)

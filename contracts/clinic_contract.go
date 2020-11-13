@@ -12,7 +12,7 @@ type ClinicRegistrationData struct {
 
 // GetNearbySpecialists .....
 type GetNearbySpecialists struct {
-	ClinicAddessID string `json:"clinicAddressId" valid:"required"`
+	ClinicAddessID string `json:"addressId" valid:"required"`
 	Specialities   string `json:"specialities"`
 	SearchRadius   string `json:"searchRadius"`
 	Cursor         string `json:"cursor"`
