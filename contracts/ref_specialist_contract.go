@@ -23,6 +23,7 @@ type ReferralDetails struct {
 	Comments      string   `json:"comments"`
 	Reasons       []string `json:"reasons"`
 	History       []string `json:"history"`
+	Tooth         []string `json:"tooth"`
 }
 
 // DSReferral .....
