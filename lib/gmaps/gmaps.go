@@ -85,3 +85,16 @@ func (gm *ClientGMaps) FindNearbyPlacesFromLocation(location maps.LatLng, radius
 	}
 	return nearbyClinicsMap, placesSearchResponse.NextPageToken, nil
 }
+
+// FindPlaceFromID ...
+func (gm *ClientGMaps) FindPlaceFromID(placeID string)(*maps.PlaceDetailsResult, error) {
+	ctx := context.Background()
+	placeDetail := maps.PlaceDetailsRequest{
+		PlaceID: placeID,
+	}
+	details, err := gm.client.PlaceDetails(ctx, &placeDetail)
+	if err != nil {
+		return nil, err
+	}
+	return &details, nil
+}

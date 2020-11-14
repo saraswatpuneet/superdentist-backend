@@ -68,6 +68,11 @@ spec:
               secretKeyRef:
                 name: {{.Values.sdAPISecret.name}}
                 key : {{.Values.sdAPISecret.secret}}
+          - name: SENDGRID_API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: {{.Values.sgAPISecret.name}}
+                key : {{.Values.sgAPISecret.secret}}
       volumes:
       - name: superdentist-backend
         secret:

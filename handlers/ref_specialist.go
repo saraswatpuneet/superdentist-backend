@@ -14,6 +14,8 @@ import (
 	"github.com/superdentist/superdentist-backend/constants"
 	"github.com/superdentist/superdentist-backend/contracts"
 	"github.com/superdentist/superdentist-backend/lib/datastoredb"
+	"github.com/superdentist/superdentist-backend/lib/gmaps"
+	"github.com/superdentist/superdentist-backend/lib/sendgrid"
 	"github.com/superdentist/superdentist-backend/lib/storage"
 	"go.opencensus.io/trace"
 )
@@ -61,6 +63,18 @@ func CreateRefSpecialist(c *gin.Context) {
 	}
 	clinicDB := datastoredb.NewClinicMetaHandler()
 	err = clinicDB.InitializeDataBase(ctx, gproject)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	sgClient := sendgrid.NewSendGridClient()
+	err = sgClient.InitializeSendGridClient()
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
@@ -125,11 +139,19 @@ func CreateRefSpecialist(c *gin.Context) {
 		}
 	}
 	var dsReferral contracts.DSReferral
-	dsReferral.ReferralDetails = referralDetails
 	dsReferral.Documents = docIDNames
 	dsReferral.CreatedOn = time.Now()
 	dsReferral.ModifiedOn = time.Now()
 	dsReferral.ReferralID = uniqueRefID
+	dsReferral.Reasons = referralDetails.Reasons
+	dsReferral.Status = referralDetails.Status
+	dsReferral.History = referralDetails.History
+	dsReferral.Comments = referralDetails.Comments
+	dsReferral.Tooth = referralDetails.Tooth
+	dsReferral.PatientEmail = referralDetails.Patient.Email
+	dsReferral.PatientFirstName = referralDetails.Patient.FirstName
+	dsReferral.PatientLastName = referralDetails.Patient.LastName
+	dsReferral.PatientPhone = referralDetails.Patient.Phone
 	// Stage 3 Create datastore entry for referral
 	fromClinic, err := clinicDB.GetSingleClinic(ctx, referralDetails.FromAddressID)
 	if err != nil {
@@ -142,7 +164,53 @@ func CreateRefSpecialist(c *gin.Context) {
 		)
 		return
 	}
-	toClinic, err := clinicDB.GetSingleClinic(ctx, referralDetails.ToAddressID)
+	dsReferral.FromPlaceID = fromClinic.PlaceID
+	dsReferral.FromClinicName = fromClinic.Name
+	dsReferral.FromClinicAddress = fromClinic.Address
+	dsReferral.FromEmail = fromClinic.EmailAddress
+	if referralDetails.ToAddressID != "" {
+		toClinic, err := clinicDB.GetSingleClinic(ctx, referralDetails.ToAddressID)
+		if err != nil {
+			c.AbortWithStatusJSON(
+				http.StatusInternalServerError,
+				gin.H{
+					constants.RESPONSE_JSON_DATA:   nil,
+					constants.RESPONSDE_JSON_ERROR: err.Error(),
+				},
+			)
+			return
+		}
+		dsReferral.ToPlaceID = toClinic.PlaceID
+		dsReferral.ToClinicName = toClinic.Name
+		dsReferral.ToClinicAddress = toClinic.Address
+		dsReferral.ToEmail = toClinic.EmailAddress
+	} else {
+		mapClient := gmaps.NewMapsHandler()
+		err = mapClient.InitializeGoogleMapsAPIClient(ctx, gproject)
+		if err != nil {
+			c.AbortWithStatusJSON(
+				http.StatusInternalServerError,
+				gin.H{
+					constants.RESPONSE_JSON_DATA:   nil,
+					constants.RESPONSDE_JSON_ERROR: err.Error(),
+				},
+			)
+		}
+		details, err := mapClient.FindPlaceFromID(referralDetails.ToPlaceID)
+		if err != nil {
+			c.AbortWithStatusJSON(
+				http.StatusInternalServerError,
+				gin.H{
+					constants.RESPONSE_JSON_DATA:   nil,
+					constants.RESPONSDE_JSON_ERROR: err.Error(),
+				},
+			)
+		}
+		dsReferral.ToClinicAddress = details.FormattedAddress
+		dsReferral.ToPlaceID = details.PlaceID
+		dsReferral.ToClinicName = details.Name
+	}
+	err = dsRefC.CreateReferral(ctx, dsReferral)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
@@ -153,10 +221,34 @@ func CreateRefSpecialist(c *gin.Context) {
 		)
 		return
 	}
-	fmt.Print(fromClinic)
-	fmt.Print(toClinic)
-	// Use referral details and create datastore entry for referral
-	// Send email to fromClinic and toClinic and text 
-	// Send email to patient and text
-	// If being sent to unregistered clinic just create entry and notify
+	if dsReferral.ToEmail != "" {
+		err = sgClient.SendEmailNotification(dsReferral.ToEmail)
+	} else {
+		err = sgClient.SendEmailNotification(constants.SD_ADMIN_EMAIL)
+	}
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	err = sgClient.SendEmailNotification(dsReferral.PatientEmail)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		constants.RESPONSE_JSON_DATA:   dsReferral,
+		constants.RESPONSDE_JSON_ERROR: nil,
+	})
 }

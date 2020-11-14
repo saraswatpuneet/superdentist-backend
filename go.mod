@@ -13,6 +13,8 @@ require (
 	github.com/gin-gonic/gin v1.6.3
 	github.com/google/uuid v1.1.2
 	github.com/gorilla/websocket v1.4.2
+	github.com/sendgrid/rest v2.6.2+incompatible // indirect
+	github.com/sendgrid/sendgrid-go v3.7.1+incompatible // indirect
 	github.com/sirupsen/logrus v1.7.0
 	github.com/stretchr/testify v1.6.1
 	go.opencensus.io v0.22.4
@@ -20,6 +22,8 @@ require (
 	golang.org/x/tools v0.0.0-20200902224051-cf7880770c1e // indirect
 	google.golang.org/api v0.31.0
 	googlemaps.github.io/maps v1.2.2
+	github.com/sendgrid/sendgrid-go v3.7.1+incompatible
+	github.com/sendgrid/sendgrid-go v3.7.1+incompatible
 	gopkg.in/tylerb/graceful.v1 v1.2.15
 	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776 // indirect
 )

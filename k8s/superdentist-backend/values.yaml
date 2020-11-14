@@ -44,6 +44,9 @@ sdServiceAccount:
 sdAPISecret:
   name: sd-api-key
   secret: GCP_API_KEY
+sgAPISecret:
+  name: sg-api-key
+  secret: SENDGRID_API_KEY
 service:
   type: ClusterIP
   port: 80

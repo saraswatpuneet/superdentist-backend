@@ -55,7 +55,7 @@ func SDRouter() (*gin.Engine, error) {
 
 	}
 	{
-		clinicGroup.GET("/createReferral", handlers.CreateRefSpecialist)
+		clinicGroup.POST("/createReferral", handlers.CreateRefSpecialist)
 	}
 	{
 		// All wesocket related routing goes here follow the pattern

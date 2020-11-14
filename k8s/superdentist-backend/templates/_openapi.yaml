@@ -298,6 +298,31 @@ paths:
           description: "Internal server error occured"
       security:
         - Bearer: []
+  /v1/clinic/createReferral:
+    post:
+      tags:
+       - "Registration APIs (R of CRUD)"
+      summary: "Create a referral from GD to Specialist"
+      description: "Create a Referral and send out emails"
+      operationId: "CreateRefSpecialist"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Created clinic object"
+        required: true
+        schema:
+          $ref: "#/definitions/ReferralDetails"
+      responses:
+        '200':
+          $ref: '#/responses/CreateReferralResponse'
+        '401':
+          description: "Unauthorized: Bad request or authorization details"
+        '500':
+          description: "Internal server error occured"
+      security:
+        - Bearer: []
 securityDefinitions:
   Bearer:
     type: "apiKey"
@@ -305,6 +330,99 @@ securityDefinitions:
     in: "header"
 
 definitions:
+  ReferralResponse:
+    type: object
+    properties:
+      referralId:
+        type: string
+      document:
+        type: array
+        items:
+          type: string
+      fromPlaceId:
+        type: string
+      toPlaceId:
+        type: string
+      fromClinicName:
+        type: string
+      toClinicName:
+        type: string
+      fromClinicAddress:
+        type: string
+      toClinicAddress:
+        type: string
+      comments:
+        type: array
+        items:
+          type: string
+      status:
+        type: string
+      reasons:
+        type: array
+        items:
+          type: string
+      history:
+        type: array
+        items:
+          type: string
+      tooth:
+        type: array
+        items:
+          type: string
+      createOn:
+        type: string
+      modifiedOn:
+        type: string
+      patientEmail:
+        type: string
+      patientFirstName:
+        type: string
+      patientLastName:
+        type: string
+      patientPhone:
+        type: string
+      fromEmail:
+        type: string
+      toEmail:
+        type: string
+  ReferralDetails:
+    type: object
+    properties:
+      patient:
+        type: object
+        properties:
+          firstName:
+            type: string
+          lastName:
+            type: string
+          email:
+            type: string
+          phone:
+            type: string
+      fromAddressId:
+        type: string
+      toAddressId:
+        type: string
+      toPlaceId:
+        type: string
+      status:
+        type: string
+      comments:
+        type: array
+        items:
+          type: string
+      reasons:
+        type: array
+        items:
+          type: string
+      history:
+        type: array
+        items:
+          type: string
+      tooth:
+        type: array
+        items:
+          type: string
   GetNearbySpecialist:
     type: object
     properties:
@@ -554,4 +672,8 @@ responses:
     description: This websocket provides 20 suggestions per string sent check results field https://developers.google.com/places/web-service/search#nearby-search-and-text-search-responses
     schema:
       $ref: '#/definitions/AddressSuggestions'
+  CreateReferralResponse:
+    description: On successful referral creation payload containing unique referral id is returned and emails are send to patient and clinic for whom referral is created
+    schema:
+      $ref: '#/definitions/ReferralResponse'
 {{ end }}

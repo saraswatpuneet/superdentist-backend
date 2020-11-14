@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/superdentist/superdentist-backend/contracts"
 	"github.com/superdentist/superdentist-backend/lib/helpers"
 	"google.golang.org/api/option"
 
@@ -47,5 +48,16 @@ func (db *DSReferral) InitializeDataBase(ctx context.Context, projectID string) 
 	}
 	db.client = dsClient
 	db.projectID = projectID
+	return nil
+}
+
+// CreateReferral .....
+func (db *DSReferral) CreateReferral(ctx context.Context, referral contracts.DSReferral) error {
+	primaryKey := datastore.NameKey("ClinicReferrals", referral.ReferralID, nil)
+	//lets create the clinic
+	_, err := db.client.Put(ctx, primaryKey, &referral)
+	if err != nil {
+		return fmt.Errorf("cannot register clinic with sd: %v", err)
+	}
 	return nil
 }
