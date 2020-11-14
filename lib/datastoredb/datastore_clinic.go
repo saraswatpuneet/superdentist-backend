@@ -71,7 +71,7 @@ func (db *dsClinic) AddClinicRegistration(ctx context.Context, clinic *contracts
 		}
 		return nil
 	}
-	return fmt.Errorf("cannot register the clinic as it is already registred with same credentials: %v", err)
+	return fmt.Errorf("cannot register the admin as it is already registred with same credentials: %v", err)
 
 }
 
