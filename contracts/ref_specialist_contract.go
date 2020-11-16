@@ -4,9 +4,9 @@ import "time"
 
 type REFERRAL_STATUS string
 
-const StatusReferred REFERRAL_STATUS = "Ongoing"
-const StatusClosing REFERRAL_STATUS = "For Closing"
-const StatusCompleted REFERRAL_STATUS = "For Closing"
+const StatusReferred REFERRAL_STATUS 	= "Ongoing"
+const StatusClosing REFERRAL_STATUS 	= "For Closing"
+const StatusCompleted REFERRAL_STATUS 	= "For Closing"
 
 // Patient ....
 type Patient struct {
@@ -32,6 +32,16 @@ type ReferralDetails struct {
 	Tooth         []string        `json:"tooth"`
 }
 
+// ReferralComments .....
+type ReferralComments struct {
+	Comments []string `json:"comments"`
+}
+
+// ReferralStatus .....
+type ReferralStatus struct {
+	Status REFERRAL_STATUS `json:"status"`
+}
+
 // DSReferral .....
 type DSReferral struct {
 	ReferralID        string          `json:"referralId" valid:"required"`
@@ -53,6 +63,6 @@ type DSReferral struct {
 	PatientFirstName  string          `json:"patientFirstName" valid:"required"`
 	PatientLastName   string          `json:"patientLastName" valid:"required"`
 	PatientPhone      string          `json:"patientPhone" valid:"required"`
-	FromEmail string `json:"fromEmail" valid:"required"`
-	ToEmail   string `json:"toEmail" valid:"required"`
+	FromEmail         string          `json:"fromEmail" valid:"required"`
+	ToEmail           string          `json:"toEmail" valid:"required"`
 }

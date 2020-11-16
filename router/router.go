@@ -57,10 +57,10 @@ func SDRouter() (*gin.Engine, error) {
 	referralGroup := version1.Group("/referral")
 	{
 		referralGroup.POST("/create", handlers.CreateRefSpecialist)
-		referralGroup.POST("/addComments/:referralId", handlers.AddCommentsToReferral)
-		referralGroup.POST("/updateStatus/:referralId", handlers.AddCommentsToReferral)
-		referralGroup.DELETE("/delete/:referralId", handlers.AddCommentsToReferral)
-		referralGroup.POST("/uploadDocuments/:referralId", handlers.AddCommentsToReferral)
+		referralGroup.POST("/addComments/:id", handlers.AddCommentsToReferral)
+		referralGroup.POST("/updateStatus/:id", handlers.UpdateReferralStatus)
+		referralGroup.DELETE("/delete/:id", handlers.DeleteReferral)
+		referralGroup.POST("/uploadDocuments/:id", handlers.AddCommentsToReferral)
 		referralGroup.GET("/list", handlers.AddCommentsToReferral)
 
 	}

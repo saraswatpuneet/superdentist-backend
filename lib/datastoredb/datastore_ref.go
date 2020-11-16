@@ -61,3 +61,25 @@ func (db *DSReferral) CreateReferral(ctx context.Context, referral contracts.DSR
 	}
 	return nil
 }
+
+// GetReferral .....
+func (db *DSReferral) GetReferral(ctx context.Context, refID string) (*contracts.DSReferral, error) {
+	primaryKey := datastore.NameKey("ClinicReferrals", refID, nil)
+	var referral contracts.DSReferral
+	err := db.client.Get(ctx, primaryKey, &referral)
+	if err != nil {
+		return nil, err
+	}
+	return &referral, nil
+}
+
+// DeleteReferral .....
+func (db *DSReferral) DeleteReferral(ctx context.Context, refID string) (*contracts.DSReferral, error) {
+	primaryKey := datastore.NameKey("ClinicReferrals", refID, nil)
+	var referral contracts.DSReferral
+	err := db.client.Delete(ctx, primaryKey)
+	if err != nil {
+		return nil, err
+	}
+	return &referral, nil
+}

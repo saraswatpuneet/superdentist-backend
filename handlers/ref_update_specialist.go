@@ -2,22 +2,14 @@ package handlers
 
 import (
 	"fmt"
-	"io"
-	"mime/multipart"
 	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
-	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
 	"github.com/superdentist/superdentist-backend/constants"
 	"github.com/superdentist/superdentist-backend/contracts"
 	"github.com/superdentist/superdentist-backend/lib/datastoredb"
-	"github.com/superdentist/superdentist-backend/lib/gmaps"
-	"github.com/superdentist/superdentist-backend/lib/sendgrid"
-	"github.com/superdentist/superdentist-backend/lib/storage"
-	"go.opencensus.io/trace"
 )
 
 // AddCommentsToReferral ...
@@ -25,7 +17,9 @@ func AddCommentsToReferral(c *gin.Context) {
 	// Stage 1  Load the incoming request
 	log.Infof("Add comments to Referral")
 	ctx := c.Request.Context()
-	var referralDetails contracts.ReferralDetails
+	referralID := c.Param("id")
+
+	var referralDetails contracts.ReferralComments
 	_, _, gproject, err := getUserDetails(ctx, c.Request)
 	if err != nil {
 		c.AbortWithStatusJSON(
@@ -37,8 +31,6 @@ func AddCommentsToReferral(c *gin.Context) {
 		)
 		return
 	}
-	ctx, span := trace.StartSpan(ctx, "Register incoming request for clinic")
-	defer span.End()
 	if err := c.ShouldBindWith(&referralDetails, binding.JSON); err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusBadRequest,
@@ -49,8 +41,9 @@ func AddCommentsToReferral(c *gin.Context) {
 		)
 		return
 	}
-	storageC := storage.NewStorageHandler()
-	err = storageC.InitializeStorageClient(ctx, gproject)
+
+	dsRefC := datastoredb.NewReferralHandler()
+	err = dsRefC.InitializeDataBase(ctx, gproject)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
@@ -61,8 +54,7 @@ func AddCommentsToReferral(c *gin.Context) {
 		)
 		return
 	}
-	clinicDB := datastoredb.NewClinicMetaHandler()
-	err = clinicDB.InitializeDataBase(ctx, gproject)
+	dsReferral, err := dsRefC.GetReferral(ctx, referralID)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
@@ -73,8 +65,103 @@ func AddCommentsToReferral(c *gin.Context) {
 		)
 		return
 	}
-	sgClient := sendgrid.NewSendGridClient()
-	err = sgClient.InitializeSendGridClient()
+	dsReferral.Comments = append(dsReferral.Comments, referralDetails.Comments...)
+	err = dsRefC.CreateReferral(ctx, *dsReferral)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		constants.RESPONSE_JSON_DATA:   dsReferral,
+		constants.RESPONSDE_JSON_ERROR: nil,
+	})
+}
+
+// UpdateReferralStatus ...
+func UpdateReferralStatus(c *gin.Context) {
+	// Stage 1  Load the incoming request
+	log.Infof("Update Referral Status")
+	ctx := c.Request.Context()
+	referralID := c.Param("id")
+
+	var referralDetails contracts.ReferralStatus
+	_, _, gproject, err := getUserDetails(ctx, c.Request)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	if err := c.ShouldBindWith(&referralDetails, binding.JSON); err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: fmt.Errorf("Bad data sent to backened"),
+			},
+		)
+		return
+	}
+
+	dsRefC := datastoredb.NewReferralHandler()
+	err = dsRefC.InitializeDataBase(ctx, gproject)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	dsReferral, err := dsRefC.GetReferral(ctx, referralID)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	dsReferral.Status = referralDetails.Status
+	err = dsRefC.CreateReferral(ctx, *dsReferral)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		constants.RESPONSE_JSON_DATA:   dsReferral,
+		constants.RESPONSDE_JSON_ERROR: nil,
+	})
+}
+
+// DeleteReferral ...
+func DeleteReferral(c *gin.Context) {
+	// Stage 1  Load the incoming request
+	log.Infof("Delete Referral")
+	ctx := c.Request.Context()
+	referralID := c.Param("id")
+
+	_, _, gproject, err := getUserDetails(ctx, c.Request)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
@@ -97,146 +184,7 @@ func AddCommentsToReferral(c *gin.Context) {
 		)
 		return
 	}
-	currentRefUUID, _ := uuid.NewUUID()
-	uniqueRefID := currentRefUUID.String()
-	docIDNames := make([]string, 0)
-	// Stage 2 Upload files from
-	// parse request
-	const _24K = (1 << 10) * 24
-	if err = c.Request.ParseMultipartForm(_24K); err == nil {
-		for _, fheaders := range c.Request.MultipartForm.File {
-			for _, hdr := range fheaders {
-				// open uploaded
-				var infile multipart.File
-				if infile, err = hdr.Open(); err != nil {
-					if err := c.ShouldBindWith(&referralDetails, binding.JSON); err != nil {
-						c.AbortWithStatusJSON(
-							http.StatusBadRequest,
-							gin.H{
-								constants.RESPONSE_JSON_DATA:   nil,
-								constants.RESPONSDE_JSON_ERROR: fmt.Errorf("Bad files sent to backend"),
-							},
-						)
-						return
-					}
-				}
-				fileName := hdr.Filename
-				bucketPath := uniqueRefID + "/" + fileName
-				buckerW, err := storageC.UploadToGCS(ctx, bucketPath)
-				if err != nil {
-					c.AbortWithStatusJSON(
-						http.StatusInternalServerError,
-						gin.H{
-							constants.RESPONSE_JSON_DATA:   nil,
-							constants.RESPONSDE_JSON_ERROR: err.Error(),
-						},
-					)
-					return
-				}
-				io.Copy(buckerW, infile)
-				docIDNames = append(docIDNames, hdr.Filename)
-			}
-		}
-	}
-	var dsReferral contracts.DSReferral
-	dsReferral.Documents = docIDNames
-	dsReferral.CreatedOn = time.Now()
-	dsReferral.ModifiedOn = time.Now()
-	dsReferral.ReferralID = uniqueRefID
-	dsReferral.Reasons = referralDetails.Reasons
-	dsReferral.Status = referralDetails.Status
-	dsReferral.History = referralDetails.History
-	dsReferral.Comments = referralDetails.Comments
-	dsReferral.Tooth = referralDetails.Tooth
-	dsReferral.PatientEmail = referralDetails.Patient.Email
-	dsReferral.PatientFirstName = referralDetails.Patient.FirstName
-	dsReferral.PatientLastName = referralDetails.Patient.LastName
-	dsReferral.PatientPhone = referralDetails.Patient.Phone
-	// Stage 3 Create datastore entry for referral
-	fromClinic, err := clinicDB.GetSingleClinic(ctx, referralDetails.FromAddressID)
-	if err != nil {
-		c.AbortWithStatusJSON(
-			http.StatusInternalServerError,
-			gin.H{
-				constants.RESPONSE_JSON_DATA:   nil,
-				constants.RESPONSDE_JSON_ERROR: err.Error(),
-			},
-		)
-		return
-	}
-	dsReferral.FromPlaceID = fromClinic.PlaceID
-	dsReferral.FromClinicName = fromClinic.Name
-	dsReferral.FromClinicAddress = fromClinic.Address
-	dsReferral.FromEmail = fromClinic.EmailAddress
-	if referralDetails.ToAddressID != "" {
-		toClinic, err := clinicDB.GetSingleClinic(ctx, referralDetails.ToAddressID)
-		if err != nil {
-			c.AbortWithStatusJSON(
-				http.StatusInternalServerError,
-				gin.H{
-					constants.RESPONSE_JSON_DATA:   nil,
-					constants.RESPONSDE_JSON_ERROR: err.Error(),
-				},
-			)
-			return
-		}
-		dsReferral.ToPlaceID = toClinic.PlaceID
-		dsReferral.ToClinicName = toClinic.Name
-		dsReferral.ToClinicAddress = toClinic.Address
-		dsReferral.ToEmail = toClinic.EmailAddress
-	} else {
-		mapClient := gmaps.NewMapsHandler()
-		err = mapClient.InitializeGoogleMapsAPIClient(ctx, gproject)
-		if err != nil {
-			c.AbortWithStatusJSON(
-				http.StatusInternalServerError,
-				gin.H{
-					constants.RESPONSE_JSON_DATA:   nil,
-					constants.RESPONSDE_JSON_ERROR: err.Error(),
-				},
-			)
-		}
-		details, err := mapClient.FindPlaceFromID(referralDetails.ToPlaceID)
-		if err != nil {
-			c.AbortWithStatusJSON(
-				http.StatusInternalServerError,
-				gin.H{
-					constants.RESPONSE_JSON_DATA:   nil,
-					constants.RESPONSDE_JSON_ERROR: err.Error(),
-				},
-			)
-		}
-		dsReferral.ToClinicAddress = details.FormattedAddress
-		dsReferral.ToPlaceID = details.PlaceID
-		dsReferral.ToClinicName = details.Name
-	}
-	err = dsRefC.CreateReferral(ctx, dsReferral)
-	if err != nil {
-		c.AbortWithStatusJSON(
-			http.StatusInternalServerError,
-			gin.H{
-				constants.RESPONSE_JSON_DATA:   nil,
-				constants.RESPONSDE_JSON_ERROR: err.Error(),
-			},
-		)
-		return
-	}
-	if dsReferral.ToEmail != "" {
-		err = sgClient.SendEmailNotification(dsReferral.ToEmail)
-	} else {
-		err = sgClient.SendEmailNotification(constants.SD_ADMIN_EMAIL)
-	}
-	if err != nil {
-		c.AbortWithStatusJSON(
-			http.StatusInternalServerError,
-			gin.H{
-				constants.RESPONSE_JSON_DATA:   nil,
-				constants.RESPONSDE_JSON_ERROR: err.Error(),
-			},
-		)
-		return
-	}
-	err = sgClient.SendEmailNotification(dsReferral.PatientEmail)
+	dsReferral, err := dsRefC.DeleteReferral(ctx, referralID)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
