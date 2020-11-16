@@ -310,6 +310,9 @@ paths:
       summary: "Create a referral from GD to Specialist"
       description: "Create a Referral and send out emails"
       operationId: "CreateRefSpecialist"
+      consumes:
+         - multipart/form-data
+         - application/json
       produces:
       - "application/json"
       parameters:
