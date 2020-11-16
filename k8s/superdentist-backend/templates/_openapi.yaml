@@ -385,6 +385,9 @@ definitions:
         type: string
       toEmail:
         type: string
+      isDirty:
+        type: boolean
+        default: False
   ReferralDetails:
     type: object
     properties:

@@ -4,9 +4,9 @@ import "time"
 
 type REFERRAL_STATUS string
 
-const StatusReferred REFERRAL_STATUS 	= "Ongoing"
-const StatusClosing REFERRAL_STATUS 	= "For Closing"
-const StatusCompleted REFERRAL_STATUS 	= "For Closing"
+const StatusReferred REFERRAL_STATUS = "Ongoing"
+const StatusClosing REFERRAL_STATUS = "For Closing"
+const StatusCompleted REFERRAL_STATUS = "For Closing"
 
 // Patient ....
 type Patient struct {
@@ -65,4 +65,5 @@ type DSReferral struct {
 	PatientPhone      string          `json:"patientPhone" valid:"required"`
 	FromEmail         string          `json:"fromEmail" valid:"required"`
 	ToEmail           string          `json:"toEmail" valid:"required"`
+	IsDirty           bool            `json:"isDirty" valid:"required"`
 }

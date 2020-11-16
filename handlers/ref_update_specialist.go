@@ -184,7 +184,19 @@ func DeleteReferral(c *gin.Context) {
 		)
 		return
 	}
-	dsReferral, err := dsRefC.DeleteReferral(ctx, referralID)
+	dsReferral, err := dsRefC.GetReferral(ctx, referralID)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	dsReferral.IsDirty = true
+	err = dsRefC.CreateReferral(ctx, *dsReferral)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
@@ -196,7 +208,7 @@ func DeleteReferral(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
-		constants.RESPONSE_JSON_DATA:   dsReferral,
+		constants.RESPONSE_JSON_DATA:   nil,
 		constants.RESPONSDE_JSON_ERROR: nil,
 	})
 }
