@@ -54,8 +54,14 @@ func SDRouter() (*gin.Engine, error) {
 		clinicGroup.POST("/getNearbySpecialists", handlers.GetNearbySpeialists)
 
 	}
+	referralGroup := version1.Group("/referral")
 	{
-		clinicGroup.POST("/createReferral", handlers.CreateRefSpecialist)
+		referralGroup.POST("/create", handlers.CreateRefSpecialist)
+		referralGroup.POST("/addComments/:referralId", handlers.AddCommentsToReferral)
+		referralGroup.POST("/updateStatus/:referralId", handlers.AddCommentsToReferral)
+		referralGroup.POST("/delete/:referralId", handlers.AddCommentsToReferral)
+		referralGroup.POST("/uploadDocuments/:referralId", handlers.AddCommentsToReferral)
+
 	}
 	{
 		// All wesocket related routing goes here follow the pattern

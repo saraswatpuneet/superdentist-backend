@@ -298,7 +298,7 @@ paths:
           description: "Internal server error occured"
       security:
         - Bearer: []
-  /v1/clinic/createReferral:
+  /v1/referral/create:
     post:
       tags:
        - "Registration APIs (R of CRUD)"
