@@ -14,6 +14,7 @@ func main() {
 	// Only for local debugging and testing ......
 	//os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", "D:\\SuperDentist\\keys\\super-dentist-backend.json")
 	//os.Setenv("GCP_API_KEY", "AIzaSyCp-tO9Rk5iWTeg-bqtP2tvFaW9dXlsS6k")
+	//os.Setenv("SENDGRID_API_KEY", "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")
 	// ...........................................
 
 	// any global settings like PMS username/password/configuration goes here
