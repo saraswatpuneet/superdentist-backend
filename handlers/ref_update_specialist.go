@@ -23,7 +23,7 @@ import (
 // AddCommentsToReferral ...
 func AddCommentsToReferral(c *gin.Context) {
 	// Stage 1  Load the incoming request
-	log.Infof("Updating Referral")
+	log.Infof("Add comments to Referral")
 	ctx := c.Request.Context()
 	var referralDetails contracts.ReferralDetails
 	_, _, gproject, err := getUserDetails(ctx, c.Request)
