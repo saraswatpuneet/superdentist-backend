@@ -2,7 +2,10 @@ package handlers
 
 import (
 	"fmt"
+	"io"
+	"mime/multipart"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -10,6 +13,7 @@ import (
 	"github.com/superdentist/superdentist-backend/constants"
 	"github.com/superdentist/superdentist-backend/contracts"
 	"github.com/superdentist/superdentist-backend/lib/datastoredb"
+	"github.com/superdentist/superdentist-backend/lib/storage"
 )
 
 // AddCommentsToReferral ...
@@ -66,6 +70,7 @@ func AddCommentsToReferral(c *gin.Context) {
 		return
 	}
 	dsReferral.Comments = append(dsReferral.Comments, referralDetails.Comments...)
+	dsReferral.ModifiedOn = time.Now()
 	err = dsRefC.CreateReferral(ctx, *dsReferral)
 	if err != nil {
 		c.AbortWithStatusJSON(
@@ -137,6 +142,7 @@ func UpdateReferralStatus(c *gin.Context) {
 		return
 	}
 	dsReferral.Status = referralDetails.Status
+	dsReferral.ModifiedOn = time.Now()
 	err = dsRefC.CreateReferral(ctx, *dsReferral)
 	if err != nil {
 		c.AbortWithStatusJSON(
@@ -196,6 +202,8 @@ func DeleteReferral(c *gin.Context) {
 		return
 	}
 	dsReferral.IsDirty = true
+	dsReferral.ModifiedOn = time.Now()
+
 	err = dsRefC.CreateReferral(ctx, *dsReferral)
 	if err != nil {
 		c.AbortWithStatusJSON(
@@ -215,7 +223,112 @@ func DeleteReferral(c *gin.Context) {
 
 // UploadDocuments ....
 func UploadDocuments(c *gin.Context) {
+	// Stage 1  Load the incoming request
+	log.Infof("Update Referral Documents")
+	ctx := c.Request.Context()
+	referralID := c.Param("id")
+	_, _, gproject, err := getUserDetails(ctx, c.Request)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
 
+	dsRefC := datastoredb.NewReferralHandler()
+	err = dsRefC.InitializeDataBase(ctx, gproject)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	dsReferral, err := dsRefC.GetReferral(ctx, referralID)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	storageC := storage.NewStorageHandler()
+	err = storageC.InitializeStorageClient(ctx, gproject)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	docIDNames := make([]string, 0)
+	// Stage 2 Upload files from
+	// parse request
+	const _24K = (1 << 10) * 24
+	if err = c.Request.ParseMultipartForm(_24K); err == nil {
+		for _, fheaders := range c.Request.MultipartForm.File {
+			for _, hdr := range fheaders {
+				// open uploaded
+				var infile multipart.File
+				if infile, err = hdr.Open(); err != nil {
+
+					c.AbortWithStatusJSON(
+						http.StatusBadRequest,
+						gin.H{
+							constants.RESPONSE_JSON_DATA:   nil,
+							constants.RESPONSDE_JSON_ERROR: fmt.Errorf("Bad files sent to backend"),
+						},
+					)
+					return
+				}
+				fileName := hdr.Filename
+				bucketPath := referralID + "/" + fileName
+				buckerW, err := storageC.UploadToGCS(ctx, bucketPath)
+				if err != nil {
+					c.AbortWithStatusJSON(
+						http.StatusInternalServerError,
+						gin.H{
+							constants.RESPONSE_JSON_DATA:   nil,
+							constants.RESPONSDE_JSON_ERROR: err.Error(),
+						},
+					)
+					return
+				}
+				io.Copy(buckerW, infile)
+				docIDNames = append(docIDNames, hdr.Filename)
+			}
+		}
+	}
+	dsReferral.Documents = append(dsReferral.Documents, docIDNames...)
+	dsReferral.ModifiedOn = time.Now()
+	err = dsRefC.CreateReferral(ctx, *dsReferral)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		constants.RESPONSE_JSON_DATA:   dsReferral,
+		constants.RESPONSDE_JSON_ERROR: nil,
+	})
 }
 
 // GetReferrals ....
