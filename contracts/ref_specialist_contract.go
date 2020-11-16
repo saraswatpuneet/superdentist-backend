@@ -6,7 +6,7 @@ type REFERRAL_STATUS string
 
 const StatusReferred REFERRAL_STATUS = "Ongoing"
 const StatusClosing REFERRAL_STATUS = "For Closing"
-const StatusCompleted REFERRAL_STATUS = "For Closing"
+const StatusCompleted REFERRAL_STATUS = "Completed"
 
 // Patient ....
 type Patient struct {

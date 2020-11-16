@@ -22,6 +22,11 @@ tags:
   externalDocs:
     description: "Find out more"
     url: "http://superdentist.io"
+- name: "Referrals"
+  description: "CRUD of Referrals"
+  externalDocs:
+    description: "Find out more"
+    url: "http://superdentist.io"
 schemes:
 - "https"
 - "wss"
@@ -301,7 +306,7 @@ paths:
   /v1/referral/create:
     post:
       tags:
-       - "Registration APIs (R of CRUD)"
+       - "Referrals"
       summary: "Create a referral from GD to Specialist"
       description: "Create a Referral and send out emails"
       operationId: "CreateRefSpecialist"
@@ -323,6 +328,116 @@ paths:
           description: "Internal server error occured"
       security:
         - Bearer: []
+  /v1/referral/delete/{id}:
+    delete:
+      tags:
+       - "Referrals"
+      summary: "Create a referral from GD to Specialist"
+      description: "Create a Referral and send out emails"
+      operationId: "DeleteReferral"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "path"
+        type: string
+        name: "id"
+        description: "unique address id of registered clinic"
+        required: true
+      responses:
+        '200':
+          description: "Referral successfully deleted"
+        '401':
+          description: "Unauthorized: Bad request or authorization details"
+        '500':
+          description: "Internal server error occured"
+      security:
+        - Bearer: []
+  /v1/referral/addComments/{id}:
+    post:
+      tags:
+       - "Referrals"
+      summary: "Add comments to existing referral"
+      description: "Add comments to referral"
+      operationId: "AddCommentsToReferral"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "path"
+        type: string
+        name: "id"
+        description: "unique address id of registered clinic"
+        required: true
+      - in: "body"
+        name: "body"
+        description: "Created clinic object"
+        required: true
+        schema:
+          $ref: "#/definitions/ReferralComments"
+      responses:
+        '200':
+          $ref: '#/responses/CreateReferralResponse'
+        '401':
+          description: "Unauthorized: Bad request or authorization details"
+        '500':
+          description: "Internal server error occured"
+      security:
+        - Bearer: []
+  /v1/referral/updateStatus/{id}:
+    post:
+      tags:
+       - "Referrals"
+      summary: "Update status of a referral"
+      description: "Update status of a referral"
+      operationId: "UpdateReferralStatus"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "path"
+        type: string
+        name: "id"
+        description: "unique address id of registered clinic"
+        required: true
+      - in: "body"
+        name: "body"
+        description: "Created clinic object"
+        required: true
+        schema:
+          $ref: "#/definitions/ReferralStatus"
+      responses:
+        '200':
+          $ref: '#/responses/CreateReferralResponse'
+        '401':
+          description: "Unauthorized: Bad request or authorization details"
+        '500':
+          description: "Internal server error occured"
+      security:
+        - Bearer: []
+  /v1/referral/uploadDocuments/{id}:
+    post:
+      tags:
+       - "Referrals"
+      summary: "Upload supporting document files"
+      description: "Upload supporting documents"
+      operationId: "UploadDocuments"
+      consumes:
+         - multipart/form-data
+      produces:
+      - "application/json"
+      parameters:
+      - in: "path"
+        type: string
+        name: "id"
+        description: "unique address id of registered clinic"
+        required: true
+      responses:
+        '200':
+          $ref: '#/responses/CreateReferralResponse'
+        '401':
+          description: "Unauthorized: Bad request or authorization details"
+        '500':
+          description: "Internal server error occured"
+      security:
+        - Bearer: []
 securityDefinitions:
   Bearer:
     type: "apiKey"
@@ -330,6 +445,19 @@ securityDefinitions:
     in: "header"
 
 definitions:
+  ReferralStatus:
+    type: object
+    properties:
+      status:
+        type: string
+        default: "Ongoing OR For Closing or Completed"
+  ReferralComments:
+    type: object
+    properties:
+      comments:
+        type: array
+        items:
+          type: string
   ReferralResponse:
     type: object
     properties:
@@ -410,6 +538,7 @@ definitions:
         type: string
       status:
         type: string
+        default: "Ongoing OR For Closing or Completed"
       comments:
         type: array
         items:
