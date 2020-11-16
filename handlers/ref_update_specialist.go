@@ -200,3 +200,13 @@ func DeleteReferral(c *gin.Context) {
 		constants.RESPONSDE_JSON_ERROR: nil,
 	})
 }
+
+// UploadDocuments ....
+func UploadDocuments(c *gin.Context) {
+
+}
+
+// GetReferrals ....
+func GetReferrals(c *gin.Context) {
+
+}
