@@ -515,6 +515,31 @@ paths:
           description: "Internal server error occured"
       security:
         - Bearer: []
+  /v1/referral/downloadDocuments/{id}:
+    get:
+      tags:
+       - "Referrals"
+      summary: "Download all associated documents as zip file"
+      description:  "Download all associated documents as zip file"
+      operationId: "DownloadDocumentsAsZip"
+      consumes:
+         - application/json
+      produces:
+      - "application/json"
+      parameters:
+      - in: "path"
+        name: "id"
+        type: string
+        required: true
+      responses:
+        '200':
+          description: "response if type Content-Disposition, streaming file data to local download"
+        '401':
+          description: "Unauthorized: Bad request or authorization details"
+        '500':
+          description: "Internal server error occured"
+      security:
+        - Bearer: []
 securityDefinitions:
   Bearer:
     type: "apiKey"

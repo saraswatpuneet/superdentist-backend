@@ -61,7 +61,7 @@ func SDRouter() (*gin.Engine, error) {
 		referralGroup.POST("/updateStatus/:id", handlers.UpdateReferralStatus)
 		referralGroup.DELETE("/delete/:id", handlers.DeleteReferral)
 		referralGroup.POST("/uploadDocuments/:id", handlers.UploadDocuments)
-		referralGroup.GET("/downloadDocuments/:id", handlers.UploadDocuments)
+		referralGroup.GET("/downloadDocuments/:id", handlers.DownloadDocumentsAsZip)
 		referralGroup.GET("/gdReferrals", handlers.GetAllReferralsGD)
 		referralGroup.GET("/spReferrals", handlers.GetAllReferralsSP)
 		referralGroup.GET("/getOne/:id", handlers.GetOneReferral)

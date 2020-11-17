@@ -137,6 +137,17 @@ func CreateRefSpecialist(c *gin.Context) {
 				docIDNames = append(docIDNames, hdr.Filename)
 			}
 		}
+		err = storageC.ZipFile(ctx, uniqueRefID)
+		if err != nil {
+			c.AbortWithStatusJSON(
+				http.StatusInternalServerError,
+				gin.H{
+					constants.RESPONSE_JSON_DATA:   nil,
+					constants.RESPONSDE_JSON_ERROR: err.Error(),
+				},
+			)
+			return
+		}
 	}
 	var dsReferral contracts.DSReferral
 	dsReferral.Documents = docIDNames

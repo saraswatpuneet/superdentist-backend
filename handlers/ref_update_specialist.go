@@ -311,6 +311,17 @@ func UploadDocuments(c *gin.Context) {
 				docIDNames = append(docIDNames, hdr.Filename)
 			}
 		}
+		err = storageC.ZipFile(ctx, referralID)
+		if err != nil {
+			c.AbortWithStatusJSON(
+				http.StatusInternalServerError,
+				gin.H{
+					constants.RESPONSE_JSON_DATA:   nil,
+					constants.RESPONSDE_JSON_ERROR: err.Error(),
+				},
+			)
+			return
+		}
 	}
 	dsReferral.Documents = append(dsReferral.Documents, docIDNames...)
 	dsReferral.ModifiedOn = time.Now()
@@ -329,6 +340,61 @@ func UploadDocuments(c *gin.Context) {
 		constants.RESPONSE_JSON_DATA:   dsReferral,
 		constants.RESPONSDE_JSON_ERROR: nil,
 	})
+}
+
+// DownloadDocumentsAsZip .....
+func DownloadDocumentsAsZip(c *gin.Context) {
+	log.Infof("Download Referral Documents")
+	ctx := c.Request.Context()
+	referralID := c.Param("id")
+	_, _, gproject, err := getUserDetails(ctx, c.Request)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	storageC := storage.NewStorageHandler()
+	err = storageC.InitializeStorageClient(ctx, gproject)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	zipReader, err := storageC.DownloadAsZip(ctx, referralID)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	fileNameDefault := referralID + ".zip"
+	c.Header("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", fileNameDefault))
+	c.Header("Content-Type", c.GetHeader("Content-Type"))
+
+	if _, err := io.Copy(c.Writer, zipReader); err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
 }
 
 // GetAllReferralsGD ....
