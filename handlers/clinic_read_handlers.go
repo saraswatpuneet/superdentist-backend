@@ -229,17 +229,6 @@ func GetNearbySpeialists(c *gin.Context) {
 		)
 		return
 	}
-	nearbyClinics, loc, err := clinicMetaDB.GetNearbySpecialist(ctx, userEmail, userID, nearbyRequest.ClinicAddessID, dist)
-	if err != nil {
-		c.AbortWithStatusJSON(
-			http.StatusInternalServerError,
-			gin.H{
-				constants.RESPONSE_JSON_DATA:   nil,
-				constants.RESPONSDE_JSON_ERROR: err.Error(),
-			},
-		)
-		return
-	}
 	mapClient := gmaps.NewMapsHandler()
 	err = mapClient.InitializeGoogleMapsAPIClient(ctx, gproject)
 	if err != nil {
@@ -252,13 +241,12 @@ func GetNearbySpeialists(c *gin.Context) {
 		)
 	}
 	collectClinics := make([]contracts.PhysicalClinicMapDetails, 0)
+	currentClinic, _ := clinicMetaDB.GetSingleClinic(ctx, nearbyRequest.ClinicAddessID)
+	loc := currentClinic.Location
 	currentVerifiedPlaces := make(map[string]bool)
-	for _, clinicAdd := range nearbyClinics {
-		if clinicAdd.AddressID == nearbyRequest.ClinicAddessID || clinicAdd.Type == "General Dentist" {
-			continue
-		}
-		var currentReturn contracts.PhysicalClinicMapDetails
-		getClinicSearchLoc, err := mapClient.FindPlaceFromText(clinicAdd.Address)
+
+	if cursor == "" {
+		nearbyClinics, err := clinicMetaDB.GetNearbySpecialist(ctx, userEmail, userID, nearbyRequest.ClinicAddessID, dist)
 		if err != nil {
 			c.AbortWithStatusJSON(
 				http.StatusInternalServerError,
@@ -267,13 +255,30 @@ func GetNearbySpeialists(c *gin.Context) {
 					constants.RESPONSDE_JSON_ERROR: err.Error(),
 				},
 			)
+			return
 		}
-		if len(getClinicSearchLoc.Candidates) > 0 {
-			currentReturn.GeneralDetails = getClinicSearchLoc.Candidates[0]
-			currentVerifiedPlaces[currentReturn.GeneralDetails.PlaceID] = true
-			clinicAdd.IsVerified = true
-			currentReturn.VerifiedDetails = clinicAdd
-			collectClinics = append(collectClinics, currentReturn)
+		for _, clinicAdd := range nearbyClinics {
+			if clinicAdd.AddressID == nearbyRequest.ClinicAddessID || clinicAdd.Type == "General Dentist" {
+				continue
+			}
+			var currentReturn contracts.PhysicalClinicMapDetails
+			getClinicSearchLoc, err := mapClient.FindPlaceFromText(clinicAdd.Address)
+			if err != nil {
+				c.AbortWithStatusJSON(
+					http.StatusInternalServerError,
+					gin.H{
+						constants.RESPONSE_JSON_DATA:   nil,
+						constants.RESPONSDE_JSON_ERROR: err.Error(),
+					},
+				)
+			}
+			if len(getClinicSearchLoc.Candidates) > 0 {
+				currentReturn.GeneralDetails = getClinicSearchLoc.Candidates[0]
+				currentVerifiedPlaces[currentReturn.GeneralDetails.PlaceID] = true
+				clinicAdd.IsVerified = true
+				currentReturn.VerifiedDetails = clinicAdd
+				collectClinics = append(collectClinics, currentReturn)
+			}
 		}
 	}
 	currentMapLocation := maps.LatLng{
