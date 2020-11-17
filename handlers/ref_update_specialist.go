@@ -331,7 +331,140 @@ func UploadDocuments(c *gin.Context) {
 	})
 }
 
-// GetReferrals ....
-func GetReferrals(c *gin.Context) {
+// GetAllReferralsGD ....
+func GetAllReferralsGD(c *gin.Context) {
+	log.Infof("Get all referrals")
 
+	addressID := c.Param("addressId")
+	ctx := c.Request.Context()
+	_, _, gproject, err := getUserDetails(ctx, c.Request)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	dsRefC := datastoredb.NewReferralHandler()
+	err = dsRefC.InitializeDataBase(ctx, gproject)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	dsReferrals, err := dsRefC.GetAllReferralsGD(ctx, addressID)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		constants.RESPONSE_JSON_DATA:   dsReferrals,
+		constants.RESPONSDE_JSON_ERROR: nil,
+	})
+}
+
+// GetAllReferralsSP ....
+func GetAllReferralsSP(c *gin.Context) {
+	log.Infof("Get all referrals")
+
+	addressID := c.Param("addressId")
+	ctx := c.Request.Context()
+	_, _, gproject, err := getUserDetails(ctx, c.Request)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	dsRefC := datastoredb.NewReferralHandler()
+	err = dsRefC.InitializeDataBase(ctx, gproject)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	dsReferrals, err := dsRefC.GetAllReferralsSP(ctx, addressID)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		constants.RESPONSE_JSON_DATA:   dsReferrals,
+		constants.RESPONSDE_JSON_ERROR: nil,
+	})
+}
+
+// GetAllReferral ....
+func GetAllReferral(c *gin.Context) {
+	log.Infof("Get all referrals")
+
+	referralID := c.Param("id")
+	ctx := c.Request.Context()
+	_, _, gproject, err := getUserDetails(ctx, c.Request)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	dsRefC := datastoredb.NewReferralHandler()
+	err = dsRefC.InitializeDataBase(ctx, gproject)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	dsReferral, err := dsRefC.GetReferral(ctx, referralID)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		constants.RESPONSE_JSON_DATA:   dsReferral,
+		constants.RESPONSDE_JSON_ERROR: nil,
+	})
 }

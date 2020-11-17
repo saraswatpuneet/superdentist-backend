@@ -73,6 +73,39 @@ func (db *DSReferral) GetReferral(ctx context.Context, refID string) (*contracts
 	return &referral, nil
 }
 
+// GetAllReferralsGD .....
+func (db *DSReferral) GetAllReferralsGD(ctx context.Context, addressID string) ([]contracts.DSReferral, error) {
+	returnedReferrals := make([]contracts.DSReferral, 0)
+	qP := datastore.NewQuery("ClinicReferrals")
+	if addressID != "" {
+		qP = qP.Filter("FromAddressID =", addressID).Filter("IsDirty =", false)
+	}
+	keysClinics, err := db.client.GetAll(ctx, qP, &returnedReferrals)
+	if err != nil || len(keysClinics) <= 0 {
+		return nil, fmt.Errorf("no referrals found: %v", err)
+	}
+	return returnedReferrals, nil
+}
+
+// GetAllReferralsSP .....
+func (db *DSReferral) GetAllReferralsSP(ctx context.Context, addressID string) ([]contracts.DSReferral, error) {
+	returnedReferrals := make([]contracts.DSReferral, 0)
+	qP := datastore.NewQuery("ClinicReferrals")
+	if addressID != "" {
+		qP = qP.Filter("ToAddressID =", addressID).Filter("IsDirty =", false)
+	}
+	keysClinics, err := db.client.GetAll(ctx, qP, &returnedReferrals)
+	if err != nil || len(keysClinics) <= 0 {
+		qP = qP.Filter("ToPlaceID=", addressID).Filter("IsDirty =", false)
+		keysClinics, err := db.client.GetAll(ctx, qP, &returnedReferrals)
+		if err != nil || len(keysClinics) <= 0 {
+			return nil, fmt.Errorf("no referrals found: %v", err)
+		}
+		return returnedReferrals, nil
+	}
+	return returnedReferrals, nil
+}
+
 // DeleteReferral .....
 func (db *DSReferral) DeleteReferral(ctx context.Context, refID string) (*contracts.DSReferral, error) {
 	primaryKey := datastore.NameKey("ClinicReferrals", refID, nil)

@@ -452,15 +452,26 @@ definitions:
     type: object
     properties:
       status:
-        type: string
-        default: "Ongoing OR For Closing or Completed"
+        type: object
+        properties:
+          gdStatus:
+            type: string
+          spStatus:
+            type: string
   ReferralComments:
     type: object
     properties:
       comments:
         type: array
         items:
-          type: string
+          type: object
+          properties:
+            time:
+              type: string
+            comment:
+              type: string
+            createdBy:
+              type: string
   ReferralResponse:
     type: object
     properties:
@@ -485,9 +496,21 @@ definitions:
       comments:
         type: array
         items:
-          type: string
+          type: object
+          properties:
+            time:
+              type: string
+            comment:
+              type: string
+            createdBy:
+              type: string
       status:
-        type: string
+        type: object
+        properties:
+          gdStatus:
+            type: string
+          spStatus:
+            type: string
       reasons:
         type: array
         items:
@@ -540,12 +563,23 @@ definitions:
       toPlaceId:
         type: string
       status:
-        type: string
-        default: "Ongoing OR For Closing or Completed"
+        type: object
+        properties:
+          gdStatus:
+            type: string
+          spStatus:
+            type: string
       comments:
         type: array
         items:
-          type: string
+          type: object
+          properties:
+            time:
+              type: string
+            comment:
+              type: string
+            createdBy:
+              type: string
       reasons:
         type: array
         items:

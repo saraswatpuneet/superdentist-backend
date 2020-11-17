@@ -153,6 +153,8 @@ func CreateRefSpecialist(c *gin.Context) {
 	dsReferral.PatientLastName = referralDetails.Patient.LastName
 	dsReferral.PatientPhone = referralDetails.Patient.Phone
 	dsReferral.IsDirty = false
+	dsReferral.FromAddressID = referralDetails.FromAddressID
+	dsReferral.ToAddressID = referralDetails.ToAddressID
 	// Stage 3 Create datastore entry for referral
 	fromClinic, err := clinicDB.GetSingleClinic(ctx, referralDetails.FromAddressID)
 	if err != nil {
