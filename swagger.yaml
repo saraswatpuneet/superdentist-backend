@@ -440,6 +440,81 @@ paths:
           description: "Internal server error occured"
       security:
         - Bearer: []
+  /v1/referral/gdReferrals:
+    get:
+      tags:
+       - "Referrals"
+      summary: "Get all referrall for GD with addressId"
+      description: "Get all referrall for GD with addressId"
+      operationId: "GetAllReferralsGD"
+      consumes:
+         - application/json
+      produces:
+      - "application/json"
+      parameters:
+      - in: "query"
+        name: "addressId"
+        type: string
+        required: true
+      responses:
+        '200':
+          $ref: '#/responses/GetReferralListResponse'
+        '401':
+          description: "Unauthorized: Bad request or authorization details"
+        '500':
+          description: "Internal server error occured"
+      security:
+        - Bearer: []
+  /v1/referral/spReferrals:
+    get:
+      tags:
+       - "Referrals"
+      summary: "Get all referrall for SP with addressId"
+      description: "Get all referrall for SP with addressId"
+      operationId: "GetAllReferralsSP"
+      consumes:
+         - application/json
+      produces:
+      - "application/json"
+      parameters:
+      - in: "query"
+        name: "addressId"
+        type: string
+        required: true
+      responses:
+        '200':
+          $ref: '#/responses/GetReferralListResponse'
+        '401':
+          description: "Unauthorized: Bad request or authorization details"
+        '500':
+          description: "Internal server error occured"
+      security:
+        - Bearer: []
+  /v1/referral/getOne/{id}:
+    get:
+      tags:
+       - "Referrals"
+      summary: "Get referral with given referral id"
+      description:  "Get referral with given referral id"
+      operationId: "GetOneReferral"
+      consumes:
+         - application/json
+      produces:
+      - "application/json"
+      parameters:
+      - in: "path"
+        name: "id"
+        type: string
+        required: true
+      responses:
+        '200':
+          $ref: '#/responses/GetReferralListResponse'
+        '401':
+          description: "Unauthorized: Bad request or authorization details"
+        '500':
+          description: "Internal server error occured"
+      security:
+        - Bearer: []
 securityDefinitions:
   Bearer:
     type: "apiKey"
@@ -447,6 +522,78 @@ securityDefinitions:
     in: "header"
 
 definitions:
+  GetReferralList:
+    type: array
+    items:
+      type: object
+      properties:
+        referralId:
+          type: string
+        document:
+          type: array
+          items:
+            type: string
+        fromPlaceId:
+          type: string
+        toPlaceId:
+          type: string
+        fromClinicName:
+          type: string
+        toClinicName:
+          type: string
+        fromClinicAddress:
+          type: string
+        toClinicAddress:
+          type: string
+        comments:
+          type: array
+          items:
+            type: object
+            properties:
+              time:
+                type: string
+              comment:
+                type: string
+              createdBy:
+                type: string
+        status:
+          type: object
+          properties:
+            gdStatus:
+              type: string
+            spStatus:
+              type: string
+        reasons:
+          type: array
+          items:
+            type: string
+        history:
+          type: array
+          items:
+            type: string
+        tooth:
+          type: array
+          items:
+            type: string
+        createOn:
+          type: string
+        modifiedOn:
+          type: string
+        patientEmail:
+          type: string
+        patientFirstName:
+          type: string
+        patientLastName:
+          type: string
+        patientPhone:
+          type: string
+        fromEmail:
+          type: string
+        toEmail:
+          type: string
+        isDirty:
+          type: boolean
+          default: False
   ReferralStatus:
     type: object
     properties:
@@ -812,6 +959,10 @@ definitions:
         type: object
         description: results from google API search TextSearch
 responses:
+  GetReferralListResponse:
+    description: "List of referrals"
+    schema:
+      $ref: '#/definitions/GetReferralList'
   GetClinicsResponse:
     description: Retunrs a list of all clinics registered by admin
     schema:

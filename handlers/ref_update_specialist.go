@@ -424,7 +424,7 @@ func GetAllReferralsSP(c *gin.Context) {
 }
 
 // GetAllReferral ....
-func GetAllReferral(c *gin.Context) {
+func GetOneReferral(c *gin.Context) {
 	log.Infof("Get all referrals")
 
 	referralID := c.Param("id")
