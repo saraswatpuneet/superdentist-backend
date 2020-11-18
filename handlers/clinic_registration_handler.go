@@ -333,6 +333,7 @@ func RegisterClinicPMS(c *gin.Context) {
 	})
 	clinicMetaDB.Close()
 }
+
 // AddPMSAuthDetails ..... all authorization details for PMS
 func AddPMSAuthDetails(c *gin.Context) {
 	log.Infof("Adding PMS list used by clinics")
@@ -390,6 +391,7 @@ func AddPMSAuthDetails(c *gin.Context) {
 	})
 	clinicMetaDB.Close()
 }
+
 // RegisterSpecialityServices .... register any special services a clinic admin offers
 func RegisterSpecialityServices(c *gin.Context) {
 	log.Infof("Adding services offered by clinics")
@@ -448,6 +450,45 @@ func RegisterSpecialityServices(c *gin.Context) {
 	clinicMetaDB.Close()
 }
 
+// GetAddressListRest ...
+func GetAddressListRest(c *gin.Context) {
+	ctx := c.Request.Context()
+	gproject := googleprojectlib.GetGoogleProjectID()
+	searchText := c.Param("searchText")
+
+	mapClient := gmaps.NewMapsHandler()
+	err := mapClient.InitializeGoogleMapsAPIClient(ctx, gproject)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	resultPlaces, err := mapClient.FindPlacesFromText(searchText)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	restunedResults := contracts.PostAddressList{
+		AddressList: resultPlaces.Results,
+		Error:       "",
+	}
+	c.JSON(http.StatusOK, gin.H{
+		constants.RESPONSE_JSON_DATA:   restunedResults,
+		constants.RESPONSDE_JSON_ERROR: nil,
+	})
+}
+
 // QueryAddressHandlerWebsocket ...
 func QueryAddressHandlerWebsocket(webPool *websocket.Pool, c *gin.Context) {
 	ctx := c.Request.Context()
@@ -483,11 +524,10 @@ func QueryAddressHandlerWebsocket(webPool *websocket.Pool, c *gin.Context) {
 	go client.ReadAddressString()
 	go client.WriteAdderessJSON(mapClient)
 }
-
 func getUserDetails(ctx context.Context, request *http.Request) (string, string, string, error) {
 	gProjectDeployment := googleprojectlib.GetGoogleProjectID()
 	identityClient, err := identity.NewIDPEP(ctx, gProjectDeployment)
-	if err!= nil {
+	if err != nil {
 		log.Errorf("found error in identity: %v", err.Error())
 		return "", "", "", err
 	}

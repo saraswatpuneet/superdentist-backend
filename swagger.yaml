@@ -277,6 +277,29 @@ paths:
           description: "Internal server error occured"
       security:
         - Bearer: []
+  /v1/clinic/getAddressList:
+    get:
+      tags:
+       - "Registration APIs (C & U of CRUD)"
+      summary: "Websocket implementation to get address suggestion in realtime"
+      description: "FE will connect to websocket to to have realtime address suggestions, use wss://. API takes string as input once connected."
+      operationId: "GetAddressListRest"
+      parameters:
+      - in: "query"
+        name: "searchText"
+        type: string
+        required: true
+      produces:
+      - "application/json"
+      responses:
+        '200':
+          $ref: '#/responses/PostAddressList'
+        '401':
+          description: "Unauthorized: Bad request or authorization details"
+        '500':
+          description: "Internal server error occured"
+      security:
+        - Bearer: []
   /v1/clinic/getNearbySpecialists:
     post:
       tags:
