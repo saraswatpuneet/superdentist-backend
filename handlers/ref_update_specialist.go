@@ -401,7 +401,7 @@ func DownloadDocumentsAsZip(c *gin.Context) {
 func GetAllReferralsGD(c *gin.Context) {
 	log.Infof("Get all referrals")
 
-	addressID := c.Param("addressId")
+	addressID := c.Query("addressId")
 	ctx := c.Request.Context()
 	_, _, gproject, err := getUserDetails(ctx, c.Request)
 	if err != nil {
@@ -447,7 +447,7 @@ func GetAllReferralsGD(c *gin.Context) {
 func GetAllReferralsSP(c *gin.Context) {
 	log.Infof("Get all referrals")
 
-	addressID := c.Param("addressId")
+	addressID := c.Query("addressId")
 	ctx := c.Request.Context()
 	_, _, gproject, err := getUserDetails(ctx, c.Request)
 	if err != nil {
