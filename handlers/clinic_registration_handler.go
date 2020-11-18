@@ -454,7 +454,7 @@ func RegisterSpecialityServices(c *gin.Context) {
 func GetAddressListRest(c *gin.Context) {
 	ctx := c.Request.Context()
 	gproject := googleprojectlib.GetGoogleProjectID()
-	searchText := c.Param("searchText")
+	searchText := c.Query("searchText")
 
 	mapClient := gmaps.NewMapsHandler()
 	err := mapClient.InitializeGoogleMapsAPIClient(ctx, gproject)
