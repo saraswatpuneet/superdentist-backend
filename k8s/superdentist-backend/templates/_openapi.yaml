@@ -607,7 +607,7 @@ definitions:
                 type: string
               chatBox:
                 type: string
-                default: "either GD/SP"
+                default: "either GD/Patient"
         status:
           type: object
           properties:
@@ -672,7 +672,7 @@ definitions:
               type: string
             chatBox:
               type: string
-              default: "either GD/SP"
+              default: "either GD/Patient"
   ReferralResponse:
     type: object
     properties:
@@ -707,7 +707,7 @@ definitions:
               type: string
             chatBox:
               type: string
-              default: "either GD/SP"
+              default: "either GD/Patient"
       status:
         type: object
         properties:
@@ -786,7 +786,7 @@ definitions:
               type: string
             chatBox:
               type: string
-              default: "either GD/SP"
+              default: "either GD/Patient"
       reasons:
         type: array
         items:
