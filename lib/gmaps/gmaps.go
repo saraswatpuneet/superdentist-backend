@@ -64,9 +64,9 @@ func (gm *ClientGMaps) FindPlacesFromText(placeText string) (maps.PlacesSearchRe
 }
 
 // FindNearbyPlacesFromLocation ....
-func (gm *ClientGMaps) FindNearbyPlacesFromLocation(location maps.LatLng, radius uint, keyword string, toke string, ignorePlaces map[string]bool) (map[string]maps.PlacesSearchResult, string, error) {
+func (gm *ClientGMaps) FindNearbyPlacesFromLocation(location maps.LatLng, radius uint, keyword string, toke string, ignorePlaces map[string]bool) (map[string]maps.PlaceDetailsResult, string, error) {
 	ctx := context.Background()
-	nearbyClinicsMap := make(map[string]maps.PlacesSearchResult)
+	nearbyClinicsMap := make(map[string]maps.PlaceDetailsResult)
 
 	placesFromTextReq := maps.NearbySearchRequest{
 		Location: &location,
@@ -80,7 +80,8 @@ func (gm *ClientGMaps) FindNearbyPlacesFromLocation(location maps.LatLng, radius
 	}
 	for _, place := range placesSearchResponse.Results {
 		if _, ok := ignorePlaces[place.PlaceID]; !ok {
-			nearbyClinicsMap[place.PlaceID] = place
+			currentPlace, _ := gm.FindPlaceFromID(place.PlaceID)
+			nearbyClinicsMap[place.PlaceID] = *currentPlace
 		}
 	}
 	return nearbyClinicsMap, placesSearchResponse.NextPageToken, nil

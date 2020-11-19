@@ -262,7 +262,7 @@ func GetNearbySpeialists(c *gin.Context) {
 				continue
 			}
 			var currentReturn contracts.PhysicalClinicMapDetails
-			getClinicSearchLoc, err := mapClient.FindPlaceFromText(clinicAdd.Address)
+			getClinicSearchLoc, err := mapClient.FindPlaceFromID(clinicAdd.PlaceID)
 			if err != nil {
 				c.AbortWithStatusJSON(
 					http.StatusInternalServerError,
@@ -272,13 +272,13 @@ func GetNearbySpeialists(c *gin.Context) {
 					},
 				)
 			}
-			if len(getClinicSearchLoc.Candidates) > 0 {
-				currentReturn.GeneralDetails = getClinicSearchLoc.Candidates[0]
-				currentVerifiedPlaces[currentReturn.GeneralDetails.PlaceID] = true
-				clinicAdd.IsVerified = true
-				currentReturn.VerifiedDetails = clinicAdd
-				collectClinics = append(collectClinics, currentReturn)
-			}
+
+			currentReturn.GeneralDetails = *getClinicSearchLoc
+			currentVerifiedPlaces[currentReturn.GeneralDetails.PlaceID] = true
+			clinicAdd.IsVerified = true
+			currentReturn.VerifiedDetails = clinicAdd
+			collectClinics = append(collectClinics, currentReturn)
+
 		}
 	}
 	currentMapLocation := maps.LatLng{
