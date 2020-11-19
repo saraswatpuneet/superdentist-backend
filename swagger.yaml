@@ -604,6 +604,9 @@ definitions:
                 type: string
               createdBy:
                 type: string
+              chatBox:
+                type: string
+                default: "either GD/SP"
         status:
           type: object
           properties:
@@ -666,6 +669,9 @@ definitions:
               type: string
             createdBy:
               type: string
+            chatBox:
+              type: string
+              default: "either GD/SP"
   ReferralResponse:
     type: object
     properties:
@@ -698,6 +704,9 @@ definitions:
               type: string
             createdBy:
               type: string
+            chatBox:
+              type: string
+              default: "either GD/SP"
       status:
         type: object
         properties:
@@ -774,6 +783,9 @@ definitions:
               type: string
             createdBy:
               type: string
+            chatBox:
+              type: string
+              default: "either GD/SP"
       reasons:
         type: array
         items:

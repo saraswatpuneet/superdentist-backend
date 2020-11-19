@@ -18,6 +18,7 @@ type Comment struct {
 	Time      string `json:"time" valid:"required"`
 	Comment   string `json:"comment" valid:"required"`
 	CreatedBy string `json:"createdBy" valid:"required"`
+	ChatBox   string `json:"chatBox" valid:"required"`
 }
 
 // Status ....
