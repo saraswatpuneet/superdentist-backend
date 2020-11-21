@@ -97,8 +97,8 @@ func (db *DSReferral) GetAllReferralsSP(ctx context.Context, addressID string) (
 	keysClinics, err := db.client.GetAll(ctx, qP, &returnedReferrals)
 	if err != nil || len(keysClinics) <= 0 {
 		qP2 := datastore.NewQuery("ClinicReferrals")
-		qP2 = qP2.Filter("ToPlaceID=", addressID).Filter("IsDirty =", false)
-		keysClinics, err := db.client.GetAll(ctx, qP, &returnedReferrals)
+		qP2 = qP2.Filter("ToPlaceID =", addressID).Filter("IsDirty =", false)
+		keysClinics, err := db.client.GetAll(ctx, qP2, &returnedReferrals)
 		if err != nil || len(keysClinics) <= 0 {
 			return nil, fmt.Errorf("no referrals found: %v", err)
 		}
