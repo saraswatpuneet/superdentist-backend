@@ -134,6 +134,7 @@ func CreateRefSpecialist(c *gin.Context) {
 					return
 				}
 				io.Copy(buckerW, infile)
+				buckerW.Close()
 				docIDNames = append(docIDNames, hdr.Filename)
 			}
 		}
