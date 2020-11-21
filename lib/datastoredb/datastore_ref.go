@@ -68,7 +68,7 @@ func (db *DSReferral) GetReferral(ctx context.Context, refID string) (*contracts
 	var referral contracts.DSReferral
 	err := db.client.Get(ctx, primaryKey, &referral)
 	if err != nil {
-		return nil, err
+		return &referral, err
 	}
 	return &referral, nil
 }
@@ -82,7 +82,7 @@ func (db *DSReferral) GetAllReferralsGD(ctx context.Context, addressID string) (
 	}
 	keysClinics, err := db.client.GetAll(ctx, qP, &returnedReferrals)
 	if err != nil || len(keysClinics) <= 0 {
-		return nil, fmt.Errorf("no referrals found: %v", err)
+		return returnedReferrals, fmt.Errorf("no referrals found: %v", err)
 	}
 	return returnedReferrals, nil
 }
@@ -100,7 +100,7 @@ func (db *DSReferral) GetAllReferralsSP(ctx context.Context, addressID string) (
 		qP2 = qP2.Filter("ToPlaceID =", addressID).Filter("IsDirty =", false)
 		keysClinics, err := db.client.GetAll(ctx, qP2, &returnedReferrals)
 		if err != nil || len(keysClinics) <= 0 {
-			return nil, fmt.Errorf("no referrals found: %v", err)
+			return returnedReferrals, fmt.Errorf("no referrals found: %v", err)
 		}
 		return returnedReferrals, nil
 	}

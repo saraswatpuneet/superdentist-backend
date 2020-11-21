@@ -429,7 +429,7 @@ func GetAllReferralsGD(c *gin.Context) {
 	dsReferrals, err := dsRefC.GetAllReferralsGD(ctx, addressID)
 	if err != nil {
 		c.AbortWithStatusJSON(
-			http.StatusInternalServerError,
+			http.StatusNotFound,
 			gin.H{
 				constants.RESPONSE_JSON_DATA:   nil,
 				constants.RESPONSDE_JSON_ERROR: err.Error(),
@@ -475,7 +475,7 @@ func GetAllReferralsSP(c *gin.Context) {
 	dsReferrals, err := dsRefC.GetAllReferralsSP(ctx, addressID)
 	if err != nil {
 		c.AbortWithStatusJSON(
-			http.StatusInternalServerError,
+			http.StatusNotFound,
 			gin.H{
 				constants.RESPONSE_JSON_DATA:   nil,
 				constants.RESPONSDE_JSON_ERROR: err.Error(),
@@ -489,7 +489,7 @@ func GetAllReferralsSP(c *gin.Context) {
 	})
 }
 
-// GetAllReferral ....
+// GetOneReferral ....
 func GetOneReferral(c *gin.Context) {
 	log.Infof("Get all referrals")
 
@@ -521,7 +521,7 @@ func GetOneReferral(c *gin.Context) {
 	dsReferral, err := dsRefC.GetReferral(ctx, referralID)
 	if err != nil {
 		c.AbortWithStatusJSON(
-			http.StatusInternalServerError,
+			http.StatusNotFound,
 			gin.H{
 				constants.RESPONSE_JSON_DATA:   nil,
 				constants.RESPONSDE_JSON_ERROR: err.Error(),
