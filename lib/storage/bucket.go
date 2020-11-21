@@ -96,7 +96,7 @@ func (sc *Client) ZipFile(ctx context.Context, folderPath string) error {
 	if len(objects) < 1 {
 		return fmt.Errorf("No document is associated with current referral")
 	}
-	zipFileURI := currentFolder + "/zip/zipped.zip"
+	zipFileURI := currentFolder + "zip/zipped.zip"
 	storageWriter := currentBucket.Object(zipFileURI).NewWriter(ctx)
 	storageWriter.ContentType = "application/zip"
 	defer storageWriter.Close()

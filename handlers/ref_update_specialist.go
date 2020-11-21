@@ -307,7 +307,18 @@ func UploadDocuments(c *gin.Context) {
 					)
 					return
 				}
-				io.Copy(buckerW, infile)
+				_, err = io.Copy(buckerW, infile)
+				if err != nil {
+					c.AbortWithStatusJSON(
+						http.StatusInternalServerError,
+						gin.H{
+							constants.RESPONSE_JSON_DATA:   nil,
+							constants.RESPONSDE_JSON_ERROR: err.Error(),
+						},
+					)
+					return
+				}
+				buckerW.Close()
 				docIDNames = append(docIDNames, hdr.Filename)
 			}
 		}
