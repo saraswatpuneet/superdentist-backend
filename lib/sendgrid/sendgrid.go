@@ -41,13 +41,13 @@ func (sgc *ClientSendGrid) SendEmailNotificationPatient(pemail string,
 	mailSetup := mail.NewV3Mail()
 	from := mail.NewEmail("SuperDentist Admin", constants.SD_ADMIN_EMAIL)
 	mailSetup.SetFrom(from)
-	mailSetup.Subject = "Your Referral to " + spname
 	mailSetup.SetTemplateID(constants.SD_PATIENT_REF_CONF)
 	p := mail.NewPersonalization()
 	tos := []*mail.Email{
 		mail.NewEmail(pname, pemail),
 	}
 	p.AddTos(tos...)
+	p.SetDynamicTemplateData("subject", "Your Referral to " + spname)
 	p.SetDynamicTemplateData("pname", pname)
 	p.SetDynamicTemplateData("refid", refid)
 	p.SetDynamicTemplateData("spname", spname)
@@ -77,13 +77,13 @@ func (sgc *ClientSendGrid) SendEmailNotificationSpecialist(spemail string,
 	mailSetup := mail.NewV3Mail()
 	from := mail.NewEmail("SuperDentist Admin", constants.SD_ADMIN_EMAIL)
 	mailSetup.SetFrom(from)
-	mailSetup.Subject = "You have recieved a New Patient Referral on SuperDentist!"
 	mailSetup.SetTemplateID(constants.SD_SPECIALIZT_REF_CONF)
 	p := mail.NewPersonalization()
 	tos := []*mail.Email{
 		mail.NewEmail(spname, spemail),
 	}
 	p.AddTos(tos...)
+	p.SetDynamicTemplateData("subject", "You have recieved a New Patient Referral on SuperDentist!")
 	p.SetDynamicTemplateData("pname", pname)
 	p.SetDynamicTemplateData("refid", refid)
 	p.SetDynamicTemplateData("spname", spname)
