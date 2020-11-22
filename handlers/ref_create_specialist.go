@@ -244,7 +244,7 @@ func CreateRefSpecialist(c *gin.Context) {
 		sendPatientComments = append(sendPatientComments, comment.Comment)
 	}
 	y, m, d := dsReferral.CreatedOn.Date()
-	dateString := fmt.Sprintf("%s-%s-%s", string(y), m.String(), string(d))
+	dateString := fmt.Sprintf("%d-%d-%d", y, int(m), d)
 	if dsReferral.ToEmail != "" {
 		err = sgClient.SendEmailNotificationSpecialist(dsReferral.ToEmail,
 			dsReferral.PatientFirstName+" "+dsReferral.PatientLastName, dsReferral.ToClinicName,
