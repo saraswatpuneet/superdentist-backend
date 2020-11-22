@@ -183,6 +183,7 @@ func CreateRefSpecialist(c *gin.Context) {
 	dsReferral.FromClinicName = fromClinic.Name
 	dsReferral.FromClinicAddress = fromClinic.Address
 	dsReferral.FromEmail = fromClinic.EmailAddress
+	dsReferral.FromClinicPhone = fromClinic.PhoneNumber
 	if referralDetails.ToAddressID != "" {
 		toClinic, err := clinicDB.GetSingleClinic(ctx, referralDetails.ToAddressID)
 		if err != nil {
@@ -199,6 +200,7 @@ func CreateRefSpecialist(c *gin.Context) {
 		dsReferral.ToClinicName = toClinic.Name
 		dsReferral.ToClinicAddress = toClinic.Address
 		dsReferral.ToEmail = toClinic.EmailAddress
+		dsReferral.ToClinicPhone = toClinic.PhoneNumber
 	} else {
 		mapClient := gmaps.NewMapsHandler()
 		err = mapClient.InitializeGoogleMapsAPIClient(ctx, gproject)
@@ -224,6 +226,7 @@ func CreateRefSpecialist(c *gin.Context) {
 		dsReferral.ToClinicAddress = details.FormattedAddress
 		dsReferral.ToPlaceID = details.PlaceID
 		dsReferral.ToClinicName = details.Name
+		dsReferral.ToClinicPhone = details.FormattedPhoneNumber
 	}
 	err = dsRefC.CreateReferral(ctx, dsReferral)
 	if err != nil {
@@ -236,10 +239,14 @@ func CreateRefSpecialist(c *gin.Context) {
 		)
 		return
 	}
+	sendPatientComments := make([]string, 0)
+	for _, comment := range dsReferral.Comments {
+		sendPatientComments = append(sendPatientComments, comment.Comment)
+	}
 	if dsReferral.ToEmail != "" {
-		err = sgClient.SendEmailNotification(dsReferral.ToEmail)
+
 	} else {
-		err = sgClient.SendEmailNotification(constants.SD_ADMIN_EMAIL)
+
 	}
 	if err != nil {
 		c.AbortWithStatusJSON(
@@ -251,7 +258,9 @@ func CreateRefSpecialist(c *gin.Context) {
 		)
 		return
 	}
-	err = sgClient.SendEmailNotification(dsReferral.PatientEmail)
+	err = sgClient.SendEmailNotificationPatient(dsReferral.PatientEmail,
+		dsReferral.PatientFirstName+" "+dsReferral.PatientLastName, dsReferral.ToClinicName,
+		dsReferral.ToClinicPhone, uniqueRefID, dsReferral.ToClinicAddress, sendPatientComments)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,

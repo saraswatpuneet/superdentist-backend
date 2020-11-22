@@ -73,7 +73,9 @@ type DSReferral struct {
 	PatientFirstName  string    `json:"patientFirstName" valid:"required"`
 	PatientLastName   string    `json:"patientLastName" valid:"required"`
 	PatientPhone      string    `json:"patientPhone" valid:"required"`
-	FromEmail         string    `json:"fromEmail" valid:"required"`
-	ToEmail           string    `json:"toEmail" valid:"required"`
-	IsDirty           bool      `json:"isDirty" valid:"required"`
+	FromClinicPhone   string    `json:"fromClinicPhone" valid:"required"`
+	ToClinicPhone     string    `json:"toClinicPhone" valid:"required"`
+	FromEmail string `json:"fromEmail" valid:"required"`
+	ToEmail   string `json:"toEmail" valid:"required"`
+	IsDirty   bool   `json:"isDirty" valid:"required"`
 }

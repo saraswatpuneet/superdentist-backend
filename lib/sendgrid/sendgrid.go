@@ -30,14 +30,36 @@ func (sgc *ClientSendGrid) InitializeSendGridClient() error {
 	return nil
 }
 
-// SendEmailNotification ......
-func (sgc *ClientSendGrid) SendEmailNotification(toEmail string) error {
+// SendEmailNotificationPatient ......
+func (sgc *ClientSendGrid) SendEmailNotificationPatient(pemail string,
+	pname string,
+	spname string,
+	spphone string,
+	refid string,
+	spaddress string,
+	comments []string) error {
+	mailSetup := mail.NewV3Mail()
 	from := mail.NewEmail("SuperDentist Admin", constants.SD_ADMIN_EMAIL)
-	subject := "Referral is created"
-	to := mail.NewEmail("XYZPERSON", toEmail)
-	plainText := "This is to test if referrals are created"
-	message := mail.NewSingleEmail(from, subject, to, plainText, "")
-	_, err := sgc.client.Send(message)
+	mailSetup.SetFrom(from)
+	mailSetup.Subject = "Your Referral to " + spname
+	mailSetup.SetTemplateID(constants.SD_PATIENT_REF_CONF)
+	p := mail.NewPersonalization()
+	tos := []*mail.Email{
+		mail.NewEmail(pname, pemail),
+	}
+	p.AddTos(tos...)
+	p.SetDynamicTemplateData("pname", pname)
+	p.SetDynamicTemplateData("refid", refid)
+	p.SetDynamicTemplateData("spname", spname)
+	p.SetDynamicTemplateData("address", spaddress)
+	p.SetDynamicTemplateData("phone", spphone)
+	p.SetDynamicTemplateData("comments", comments)
+	mailSetup.AddPersonalizations(p)
+	request := sendgrid.GetRequest(os.Getenv("SENDGRID_API_KEY"), "/v3/mail/send", "https://api.sendgrid.com")
+	request.Method = "POST"
+	var Body = mail.GetRequestBody(mailSetup)
+	request.Body = Body
+	_, err := sendgrid.API(request)
 	if err != nil {
 		return err
 	}

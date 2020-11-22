@@ -9,4 +9,5 @@ const (
 	RESPONSDE_JSON_ERROR string = "error"
 	SD_REFERRAL_BUCKET          = "superdentist-referrals"
 	SD_ADMIN_EMAIL              = "superdentist.admin@superdentist.io"
+	SD_PATIENT_REF_CONF			= "d-0cb214d233c0499691bfba7a42689ac7"
 )
