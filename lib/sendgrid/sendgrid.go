@@ -87,7 +87,7 @@ func (sgc *ClientSendGrid) SendEmailNotificationSpecialist(spemail string,
 	p.SetDynamicTemplateData("pname", pname)
 	p.SetDynamicTemplateData("refid", refid)
 	p.SetDynamicTemplateData("spname", spname)
-	p.SetDynamicTemplateData("phone", pphone)
+	p.SetDynamicTemplateData("pphone", pphone)
 	p.SetDynamicTemplateData("rdate", rdate)
 	p.SetDynamicTemplateData("comments", comments)
 	mailSetup.AddPersonalizations(p)

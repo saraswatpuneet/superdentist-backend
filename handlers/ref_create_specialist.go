@@ -243,14 +243,16 @@ func CreateRefSpecialist(c *gin.Context) {
 	for _, comment := range dsReferral.Comments {
 		sendPatientComments = append(sendPatientComments, comment.Comment)
 	}
+	y, m, d := dsReferral.CreatedOn.Date()
+	dateString := fmt.Sprintf("%s-%s-%s", string(y), m.String(), string(d))
 	if dsReferral.ToEmail != "" {
 		err = sgClient.SendEmailNotificationSpecialist(dsReferral.ToEmail,
 			dsReferral.PatientFirstName+" "+dsReferral.PatientLastName, dsReferral.ToClinicName,
-			dsReferral.PatientPhone, uniqueRefID, dsReferral.CreatedOn.String(), sendPatientComments)
+			dsReferral.PatientPhone, uniqueRefID, dateString, sendPatientComments)
 	} else {
 		err = sgClient.SendEmailNotificationSpecialist(constants.SD_ADMIN_EMAIL,
 			dsReferral.PatientFirstName+" "+dsReferral.PatientLastName, dsReferral.ToClinicName,
-			dsReferral.PatientPhone, uniqueRefID, dsReferral.CreatedOn.String(), sendPatientComments)
+			dsReferral.PatientPhone, uniqueRefID, dateString, sendPatientComments)
 	}
 	if err != nil {
 		c.AbortWithStatusJSON(
