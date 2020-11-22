@@ -4,13 +4,13 @@ import "time"
 
 // Patient ....
 type Patient struct {
-	FirstName string `json:"first_name" valid:"required"`
-	LastName  string `json:"last_name" valid:"required"`
+	FirstName string `json:"firstName" valid:"required"`
+	LastName  string `json:"lastName" valid:"required"`
 	Dob       string `json:"dob"`
 	Email     string `json:"email" valid:"required"`
 	Phone     string `json:"phone" valid:"required"`
-	MemberID  string `json:"member_id"`
-	GroupID   string `json:"group_number"`
+	MemberID  string `json:"memberId"`
+	GroupID   string `json:"groupNumber"`
 }
 
 // Comment .....
