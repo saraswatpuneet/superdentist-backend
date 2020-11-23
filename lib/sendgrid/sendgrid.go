@@ -83,7 +83,7 @@ func (sgc *ClientSendGrid) SendEmailNotificationSpecialist(spemail string,
 		mail.NewEmail(spname, spemail),
 	}
 	p.AddTos(tos...)
-	p.SetDynamicTemplateData("subject", "You have recieved a New Patient Referral on SuperDentist!")
+	p.SetDynamicTemplateData("subject", "You have recieved a New Patient Referral on SuperDentist! Referral ID: "+ refid)
 	p.SetDynamicTemplateData("pname", pname)
 	p.SetDynamicTemplateData("refid", refid)
 	p.SetDynamicTemplateData("spname", spname)
@@ -119,7 +119,7 @@ func (sgc *ClientSendGrid) SendCompletionEmailToGD(gdemail string, gdname string
 		mail.NewEmail(spname, gdemail),
 	}
 	p.AddTos(tos...)
-	p.SetDynamicTemplateData("subject", "Your Patient Referral has been Completed on SuperDentist!")
+	p.SetDynamicTemplateData("subject", "Your Patient Referral has been Completed on SuperDentist! Referral ID: "+ refid)
 	p.SetDynamicTemplateData("pname", pname)
 	p.SetDynamicTemplateData("refid", refid)
 	p.SetDynamicTemplateData("spname", spname)
