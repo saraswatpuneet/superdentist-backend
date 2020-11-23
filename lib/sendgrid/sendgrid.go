@@ -47,7 +47,7 @@ func (sgc *ClientSendGrid) SendEmailNotificationPatient(pemail string,
 		mail.NewEmail(pname, pemail),
 	}
 	p.AddTos(tos...)
-	p.SetDynamicTemplateData("subject", "Your Referral to " + spname)
+	p.SetDynamicTemplateData("subject", "Your Referral to "+spname)
 	p.SetDynamicTemplateData("pname", pname)
 	p.SetDynamicTemplateData("refid", refid)
 	p.SetDynamicTemplateData("spname", spname)
@@ -89,6 +89,42 @@ func (sgc *ClientSendGrid) SendEmailNotificationSpecialist(spemail string,
 	p.SetDynamicTemplateData("spname", spname)
 	p.SetDynamicTemplateData("pphone", pphone)
 	p.SetDynamicTemplateData("rdate", rdate)
+	p.SetDynamicTemplateData("comments", comments)
+	mailSetup.AddPersonalizations(p)
+	request := sendgrid.GetRequest(os.Getenv("SENDGRID_API_KEY"), "/v3/mail/send", "https://api.sendgrid.com")
+	request.Method = "POST"
+	var Body = mail.GetRequestBody(mailSetup)
+	request.Body = Body
+	_, err := sendgrid.API(request)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// SendCompletionEmailToGD ......
+func (sgc *ClientSendGrid) SendCompletionEmailToGD(gdemail string, gdname string,
+	pname string,
+	spname string,
+	pphone string,
+	refid string,
+	cdate string,
+	comments []string) error {
+	mailSetup := mail.NewV3Mail()
+	from := mail.NewEmail("SuperDentist Admin", constants.SD_ADMIN_EMAIL)
+	mailSetup.SetFrom(from)
+	mailSetup.SetTemplateID(constants.GD_REFERRAL_COMPLETED)
+	p := mail.NewPersonalization()
+	tos := []*mail.Email{
+		mail.NewEmail(spname, gdemail),
+	}
+	p.AddTos(tos...)
+	p.SetDynamicTemplateData("subject", "Your Patient Referral has been Completed on SuperDentist!")
+	p.SetDynamicTemplateData("pname", pname)
+	p.SetDynamicTemplateData("refid", refid)
+	p.SetDynamicTemplateData("spname", spname)
+	p.SetDynamicTemplateData("pphone", pphone)
+	p.SetDynamicTemplateData("cdate", cdate)
 	p.SetDynamicTemplateData("comments", comments)
 	mailSetup.AddPersonalizations(p)
 	request := sendgrid.GetRequest(os.Getenv("SENDGRID_API_KEY"), "/v3/mail/send", "https://api.sendgrid.com")

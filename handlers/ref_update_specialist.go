@@ -5,6 +5,7 @@ import (
 	"io"
 	"mime/multipart"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -13,6 +14,7 @@ import (
 	"github.com/superdentist/superdentist-backend/constants"
 	"github.com/superdentist/superdentist-backend/contracts"
 	"github.com/superdentist/superdentist-backend/lib/datastoredb"
+	"github.com/superdentist/superdentist-backend/lib/sendgrid"
 	"github.com/superdentist/superdentist-backend/lib/storage"
 )
 
@@ -153,6 +155,28 @@ func UpdateReferralStatus(c *gin.Context) {
 			},
 		)
 		return
+	}
+	if strings.ToLower(dsReferral.Status.SPStatus) == "completed" || strings.ToLower(dsReferral.Status.SPStatus) == "complete" {
+		sgClient := sendgrid.NewSendGridClient()
+		err = sgClient.InitializeSendGridClient()
+		if err != nil {
+			c.AbortWithStatusJSON(
+				http.StatusInternalServerError,
+				gin.H{
+					constants.RESPONSE_JSON_DATA:   nil,
+					constants.RESPONSDE_JSON_ERROR: err.Error(),
+				},
+			)
+			return
+		}
+		y, m, d := dsReferral.ModifiedOn.Date()
+		dateString := fmt.Sprintf("%d-%d-%d", y, int(m), d)
+		sendPatientComments := make([]string, 0)
+		for _, comment := range dsReferral.Comments {
+			sendPatientComments = append(sendPatientComments, comment.Comment)
+		}
+		err = sgClient.SendCompletionEmailToGD(dsReferral.FromEmail, dsReferral.FromClinicName,
+			dsReferral.PatientFirstName+" "+dsReferral.PatientLastName, dsReferral.ToClinicName, dsReferral.PatientPhone, dsReferral.ReferralID, dateString, sendPatientComments)
 	}
 	c.JSON(http.StatusOK, gin.H{
 		constants.RESPONSE_JSON_DATA:   dsReferral,
