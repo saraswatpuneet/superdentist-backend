@@ -173,7 +173,9 @@ func UpdateReferralStatus(c *gin.Context) {
 		dateString := fmt.Sprintf("%d-%d-%d", y, int(m), d)
 		sendPatientComments := make([]string, 0)
 		for _, comment := range dsReferral.Comments {
-			sendPatientComments = append(sendPatientComments, comment.Comment)
+			if strings.ToLower(comment.ChatBox) == "gd" {
+				sendPatientComments = append(sendPatientComments, comment.Comment)
+			}
 		}
 		err = sgClient.SendCompletionEmailToGD(dsReferral.FromEmail, dsReferral.FromClinicName,
 			dsReferral.PatientFirstName+" "+dsReferral.PatientLastName, dsReferral.ToClinicName, dsReferral.PatientPhone, dsReferral.ReferralID, dateString, sendPatientComments)
