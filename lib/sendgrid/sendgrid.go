@@ -83,7 +83,7 @@ func (sgc *ClientSendGrid) SendEmailNotificationSpecialist(spemail string,
 		mail.NewEmail(spname, spemail),
 	}
 	p.AddTos(tos...)
-	p.SetDynamicTemplateData("subject", "You have recieved a New Patient Referral on SuperDentist! Referral ID: "+ refid)
+	p.SetDynamicTemplateData("subject", "You have recieved a New Patient Referral on SuperDentist! Referral ID: "+refid)
 	p.SetDynamicTemplateData("pname", pname)
 	p.SetDynamicTemplateData("refid", refid)
 	p.SetDynamicTemplateData("spname", spname)
@@ -119,13 +119,40 @@ func (sgc *ClientSendGrid) SendCompletionEmailToGD(gdemail string, gdname string
 		mail.NewEmail(spname, gdemail),
 	}
 	p.AddTos(tos...)
-	p.SetDynamicTemplateData("subject", "Your Patient Referral has been Completed on SuperDentist! Referral ID: "+ refid)
+	p.SetDynamicTemplateData("subject", "Your Patient Referral has been Completed on SuperDentist! Referral ID: "+refid)
 	p.SetDynamicTemplateData("pname", pname)
 	p.SetDynamicTemplateData("refid", refid)
 	p.SetDynamicTemplateData("spname", spname)
 	p.SetDynamicTemplateData("pphone", pphone)
 	p.SetDynamicTemplateData("cdate", cdate)
 	p.SetDynamicTemplateData("comments", comments)
+	mailSetup.AddPersonalizations(p)
+	request := sendgrid.GetRequest(os.Getenv("SENDGRID_API_KEY"), "/v3/mail/send", "https://api.sendgrid.com")
+	request.Method = "POST"
+	var Body = mail.GetRequestBody(mailSetup)
+	request.Body = Body
+	_, err := sendgrid.API(request)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// SendClinicNotification ....
+func (sgc *ClientSendGrid) SendClinicNotification(cemail string, cname string, pname string, refid string) error {
+	mailSetup := mail.NewV3Mail()
+	from := mail.NewEmail("SuperDentist Admin", constants.SD_ADMIN_EMAIL)
+	mailSetup.SetFrom(from)
+	mailSetup.SetTemplateID(constants.CLINIC_NOTIFICATION_NEW)
+	p := mail.NewPersonalization()
+	tos := []*mail.Email{
+		mail.NewEmail(cname, cemail),
+	}
+	p.AddTos(tos...)
+	p.SetDynamicTemplateData("subject", "You have a new notification on SuperDentist! Referral ID: "+refid)
+	p.SetDynamicTemplateData("pname", pname)
+	p.SetDynamicTemplateData("refid", refid)
+	p.SetDynamicTemplateData("cname", cname)
 	mailSetup.AddPersonalizations(p)
 	request := sendgrid.GetRequest(os.Getenv("SENDGRID_API_KEY"), "/v3/mail/send", "https://api.sendgrid.com")
 	request.Method = "POST"
