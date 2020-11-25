@@ -80,6 +80,14 @@ func (sc *Client) ZipFile(ctx context.Context, folderPath string) error {
 	}
 	currentFolder := fmt.Sprintf("%v/", folderPath)
 	storageQuery := &storage.Query{Prefix: currentFolder, Delimiter: "/"}
+
+	zipFileURI := currentFolder + "zip/zipped.zip"
+	err = currentBucket.Object(zipFileURI).Delete(ctx)
+	storageWriter := currentBucket.Object(zipFileURI).NewWriter(ctx)
+	storageWriter.ContentType = "application/zip"
+	defer storageWriter.Close()
+	zipWriter := zip.NewWriter(storageWriter)
+	// go through each file in the prefix
 	refDocsIterator := currentBucket.Objects(ctx, storageQuery)
 	objects := []*storage.ObjectAttrs{}
 
@@ -96,12 +104,6 @@ func (sc *Client) ZipFile(ctx context.Context, folderPath string) error {
 	if len(objects) < 1 {
 		return fmt.Errorf("No document is associated with current referral")
 	}
-	zipFileURI := currentFolder + "zip/zipped.zip"
-	storageWriter := currentBucket.Object(zipFileURI).NewWriter(ctx)
-	storageWriter.ContentType = "application/zip"
-	defer storageWriter.Close()
-	zipWriter := zip.NewWriter(storageWriter)
-	// go through each file in the prefix
 	for _, obj := range objects {
 		log.Printf("Packing file %v of size %v to zip file", obj.Name, obj.Size)
 

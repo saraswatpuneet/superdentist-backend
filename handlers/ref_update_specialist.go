@@ -420,7 +420,7 @@ func DownloadDocumentsAsZip(c *gin.Context) {
 	}
 	fileNameDefault := referralID + ".zip"
 	c.Header("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", fileNameDefault))
-	c.Header("Content-Type", c.GetHeader("Content-Type"))
+	c.Header("Content-Type", "application/zip")
 
 	if _, err := io.Copy(c.Writer, zipReader); err != nil {
 		c.AbortWithStatusJSON(
