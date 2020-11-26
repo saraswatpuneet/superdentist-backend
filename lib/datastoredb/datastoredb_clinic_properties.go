@@ -305,7 +305,7 @@ func (db *dsClinicMeta) GetFavoriteSpecialists(ctx context.Context, clinicEmailI
 
 		qP := datastore.NewQuery("ClinicAddress").Filter("PlaceID =", placeID)
 		_, err := db.client.GetAll(ctx, qP, &tempFav)
-		if err != nil {
+		if err != nil || len(tempFav) == 0 {
 			currentVerified.PlaceID = placeID
 			currentVerified.IsVerified = false
 			allNearbyAddresses = append(allNearbyAddresses, currentVerified)
