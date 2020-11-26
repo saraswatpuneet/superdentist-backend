@@ -154,6 +154,63 @@ paths:
           description: "Internal server error occured"
       security:
         - Bearer: []
+  /v1/clinic/addFavorites/{addressId}:
+    post:
+      tags:
+        - "Registration APIs (C & U of CRUD)"
+      summary: Add all favorite clinics by their PlaceID from google
+      description: Add all favorite clinics by their PlaceID from google
+      operationId: "AddFavoriteClinics"
+      parameters:
+      - in: "path"
+        type: string
+        name: "addressId"
+        description: "unique address id of registered clinic"
+        required: true
+      - in: "body"
+        name: "body"
+        description: "Created clinic object"
+        required: true
+        schema:
+          $ref: "#/definitions/FavoritePlaces"
+      responses:
+        '200':
+          description: "PMS have registered for the clinic"
+        '401':
+          description: "Unauthorized: Bad request or authorization details"
+        '500':
+          description: "Internal server error occured"
+      security:
+        - Bearer: []
+  /v1/clinic/removeFavorites/{addressId}:
+    post:
+      tags:
+        - "Registration APIs (C & U of CRUD)"
+      summary: Remove all favorite clinics by their PlaceID from google
+      description: Remove all favorite clinics by their PlaceID from google
+      operationId: "RemoveFavoriteClinics"
+      parameters:
+      - in: "path"
+        type: string
+        name: "addressId"
+        description: "unique address id of registered clinic"
+        required: true
+      - in: "body"
+        name: "body"
+        description: "Created clinic object"
+        required: true
+        schema:
+          $ref: "#/definitions/FavoritePlaces"
+      responses:
+        '200':
+          description: "PMS have registered for the clinic"
+        '401':
+          description: "Unauthorized: Bad request or authorization details"
+        '500':
+          description: "Internal server error occured"
+      security:
+        - Bearer: []
+
   /v1/clinic/registerPMSAuth:
     post:
       tags:
@@ -317,6 +374,30 @@ paths:
         required: true
         schema:
           $ref: "#/definitions/GetNearbySpecialist"
+      responses:
+        '200':
+          $ref: '#/responses/GetNearbyClinicsResponse'
+        '401':
+          description: "Unauthorized: Bad request or authorization details"
+        '500':
+          description: "Internal server error occured"
+      security:
+        - Bearer: []
+  /v1/clinic/getFavorites/{addressId}:
+    post:
+      tags:
+       - "Registration APIs (R of CRUD)"
+      summary: "Get all favorite clinics favorited by GD"
+      description: "Get a list of clinics nearby current admin clinic"
+      operationId: "GetFavoriteClinics"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "path"
+        type: string
+        name: "addressId"
+        description: "unique address id of registered clinic"
+        required: true
       responses:
         '200':
           $ref: '#/responses/GetNearbyClinicsResponse'
@@ -871,6 +952,13 @@ definitions:
     type: object
     properties:
       pmsNames:
+        type:  array
+        items:
+          type: string
+  FavoritePlaces:
+    type: object
+    properties:
+      placeIds:
         type:  array
         items:
           type: string
