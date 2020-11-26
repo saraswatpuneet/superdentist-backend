@@ -244,7 +244,7 @@ func GetNearbySpeialists(c *gin.Context) {
 	currentClinic, _ := clinicMetaDB.GetSingleClinic(ctx, nearbyRequest.ClinicAddessID)
 	loc := currentClinic.Location
 	currentVerifiedPlaces := make(map[string]bool)
-
+	currentFavorites := currentClinic.Favorites
 	if cursor == "" {
 		nearbyClinics, err := clinicMetaDB.GetNearbySpecialist(ctx, userEmail, userID, nearbyRequest.ClinicAddessID, dist)
 		if err != nil {
@@ -259,6 +259,9 @@ func GetNearbySpeialists(c *gin.Context) {
 		}
 		for _, clinicAdd := range nearbyClinics {
 			if clinicAdd.AddressID == nearbyRequest.ClinicAddessID || clinicAdd.Type == "General Dentist" {
+				continue
+			}
+			if Find(currentFavorites, clinicAdd.PlaceID) {
 				continue
 			}
 			var currentReturn contracts.PhysicalClinicMapDetails
@@ -301,6 +304,9 @@ func GetNearbySpeialists(c *gin.Context) {
 		)
 	}
 	for _, clinicAdd := range currentNonRegisteredNearby {
+		if Find(currentFavorites, clinicAdd.PlaceID) {
+			continue
+		}
 		var currentReturn contracts.PhysicalClinicMapDetails
 
 		currentReturn.GeneralDetails = clinicAdd
@@ -402,7 +408,95 @@ func AddFavoriteClinics(c *gin.Context) {
 
 // GetFavoriteClinics ...
 func GetFavoriteClinics(c *gin.Context) {
+	log.Infof("Get specialists clinic in nearby give clinic")
+	ctx := c.Request.Context()
+	ctx, span := trace.StartSpan(ctx, "Get all clinics favorited by current clinic")
+	defer span.End()
+	addressID := c.Param("addressId")
+	if addressID == "" {
+		c.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: fmt.Errorf("Missing clinic address id"),
+			},
+		)
+		return
+	}
+	userEmail, userID, gproject, err := getUserDetails(ctx, c.Request)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	defer span.End()
+	clinicMetaDB := datastoredb.NewClinicMetaHandler()
+	err = clinicMetaDB.InitializeDataBase(ctx, gproject)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	mapClient := gmaps.NewMapsHandler()
+	err = mapClient.InitializeGoogleMapsAPIClient(ctx, gproject)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+	}
+	collectClinics := make([]contracts.PhysicalClinicMapDetails, 0)
+	currentClinic, _ := clinicMetaDB.GetSingleClinic(ctx, addressID)
+	currentFavorites := currentClinic.Favorites
+	favoriteClinics, err := clinicMetaDB.GetFavoriteSpecialists(ctx, userEmail, userID, currentFavorites)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	for _, clinicAdd := range favoriteClinics {
+		var currentReturn contracts.PhysicalClinicMapDetails
+		getClinicSearchLoc, err := mapClient.FindPlaceFromID(clinicAdd.PlaceID)
+		if err != nil {
+			c.AbortWithStatusJSON(
+				http.StatusInternalServerError,
+				gin.H{
+					constants.RESPONSE_JSON_DATA:   nil,
+					constants.RESPONSDE_JSON_ERROR: err.Error(),
+				},
+			)
+		}
+		currentReturn.GeneralDetails = *getClinicSearchLoc
+		currentReturn.VerifiedDetails = clinicAdd
+		collectClinics = append(collectClinics, currentReturn)
 
+	}
+
+	var responseData contracts.GetFavClinics
+	responseData.ClinicAddresses = collectClinics
+	c.JSON(http.StatusOK, gin.H{
+		constants.RESPONSE_JSON_DATA:   responseData,
+		constants.RESPONSDE_JSON_ERROR: nil,
+	})
+	clinicMetaDB.Close()
 }
 
 // RemoveFavoriteClinics ...

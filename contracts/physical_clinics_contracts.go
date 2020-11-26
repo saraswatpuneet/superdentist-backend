@@ -51,6 +51,11 @@ type GetNearbyClinics struct {
 	Cursor          string                     `json:"cursor"`
 }
 
+// GetFavClinics ....
+type GetFavClinics struct {
+	ClinicAddresses []PhysicalClinicMapDetails `json:"clinicAddresses" valid:"required"`
+}
+
 // ClinicDoctorRegistration ...
 type ClinicDoctorRegistration struct {
 	AddressID    string   `json:"addressId"`

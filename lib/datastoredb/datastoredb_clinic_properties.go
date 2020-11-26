@@ -294,6 +294,30 @@ func (db *dsClinicMeta) GetNearbySpecialist(ctx context.Context, clinicEmailID s
 	return allNearbyAddresses, nil
 }
 
+// GetFavoriteSpecialists ....
+func (db *dsClinicMeta) GetFavoriteSpecialists(ctx context.Context, clinicEmailID string, clinicFBID string, currentFavorites []string) ([]contracts.PhysicalClinicMapLocation, error) {
+
+	allNearbyAddresses := make([]contracts.PhysicalClinicMapLocation, 0)
+
+	for _, placeID := range currentFavorites {
+		var currentVerified contracts.PhysicalClinicMapLocation
+		tempFav := make([]contracts.PhysicalClinicMapLocation, 0)
+
+		qP := datastore.NewQuery("ClinicAddress").Filter("PlaceID =", placeID)
+		_, err := db.client.GetAll(ctx, qP, &tempFav)
+		if err != nil {
+			currentVerified.PlaceID = placeID
+			currentVerified.IsVerified = false
+			allNearbyAddresses = append(allNearbyAddresses, currentVerified)
+			continue
+		}
+		currentVerified = tempFav[0]
+		currentVerified.IsVerified = true
+		allNearbyAddresses = append(allNearbyAddresses, currentVerified)
+	}
+	return allNearbyAddresses, nil
+}
+
 // Close closes the database.
 func (db *dsClinicMeta) Close() error {
 	return db.client.Close()
