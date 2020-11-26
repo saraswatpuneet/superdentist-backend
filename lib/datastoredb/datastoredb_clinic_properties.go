@@ -58,6 +58,7 @@ func (db *dsClinicMeta) InitializeDataBase(ctx context.Context, projectID string
 	return nil
 }
 
+// AddPhysicalAddessressToClinic ...
 func (db dsClinicMeta) AddPhysicalAddessressToClinic(ctx context.Context, clinicEmailID string, clinicFBID string, addresses []contracts.PhysicalClinicsRegistration, mapsClient *gmaps.ClientGMaps) ([]contracts.PhysicalClinicsRegistration, error) {
 	parentKey := datastore.NameKey("ClinicAdmin", clinicFBID, nil)
 	primaryKey := datastore.NameKey("ClinicAdmin", clinicEmailID, parentKey)
@@ -96,6 +97,18 @@ func (db dsClinicMeta) AddPhysicalAddessressToClinic(ctx context.Context, clinic
 		returnedAddress = append(returnedAddress, address)
 	}
 	return returnedAddress, nil
+}
+
+// UpdatePhysicalAddessressToClinic
+func (db dsClinicMeta) UpdatePhysicalAddessressToClinic(ctx context.Context, clinicFBID string, clinicUpdated contracts.PhysicalClinicMapLocation) error {
+	parentKey := datastore.NameKey("ClinicAdmin", clinicFBID, nil)
+	primaryKey := datastore.NameKey("ClinicAdmin", clinicUpdated.EmailAddress, parentKey)
+	addressKey := datastore.NameKey("ClinicAddress", clinicUpdated.AddressID, primaryKey)
+	_, err := db.client.Put(ctx, addressKey, &clinicUpdated)
+	if err != nil {
+		return fmt.Errorf("update clinic failed: %v", err)
+	}
+	return nil
 }
 
 // AddDoctorsToPhysicalClincs ....

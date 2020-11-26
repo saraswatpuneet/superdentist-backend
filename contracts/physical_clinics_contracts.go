@@ -16,6 +16,7 @@ type PhysicalClinicsRegistration struct {
 	EmailAddress string   `json:"emailAddress" valid:"required"`
 	PhoneNumber  string   `json:"phoneNumber" valid:"required"`
 	Speciality   []string `json:"speciality"`
+	Favorites    []string `json:"favorites"`
 }
 
 //ClinicAddressResponse ....
@@ -30,7 +31,7 @@ type PhysicalClinicMapLocation struct {
 	IsVerified bool
 	Geohash    string `json:"-"`
 	Precision  int    `json:"-"`
-	PlaceID    string `json:"-"`
+	PlaceID    string
 }
 
 // PhysicalClinicMapDetails ....

@@ -18,6 +18,11 @@ type GetNearbySpecialists struct {
 	Cursor         string `json:"cursor"`
 }
 
+// AddFavoriteClinics ...
+type AddFavoriteClinics struct {
+	PlaceIDs []string `json:"placeIds" valid:"required"`
+}
+
 // ClinicVerificationData ...
 type ClinicVerificationData struct {
 	IsVerified bool `json:"isVerified" valid:"required"`
