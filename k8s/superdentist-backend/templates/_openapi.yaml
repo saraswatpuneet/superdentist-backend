@@ -607,14 +607,25 @@ definitions:
                 type: string
               chatBox:
                 type: string
-                default: "either GD/Patient"
+                default: "gd"
+                enum:
+                  - "gd"
+                  - "patient"
         status:
           type: object
           properties:
             gdStatus:
               type: string
+              enum:
+                - "Ongoing"
+                - "Scheduled"
+                - "Completed"
             spStatus:
               type: string
+              enum:
+                - "Referred"
+                - "Scheduled"
+                - "Completed"
         reasons:
           type: array
           items:
@@ -654,8 +665,16 @@ definitions:
         properties:
           gdStatus:
             type: string
+            enum:
+              - "Ongoing"
+              - "Scheduled"
+              - "Completed"
           spStatus:
             type: string
+            enum:
+              - "Referred"
+              - "Scheduled"
+              - "Completed"
   ReferralComments:
     type: object
     properties:
@@ -672,7 +691,10 @@ definitions:
               type: string
             chatBox:
               type: string
-              default: "either GD/Patient"
+              default: "gd"
+              enum:
+                - "gd"
+                - "patient"
   ReferralResponse:
     type: object
     properties:
@@ -707,14 +729,25 @@ definitions:
               type: string
             chatBox:
               type: string
-              default: "either GD/Patient"
+              default: "gd"
+              enum:
+                - "gd"
+                - "patient"
       status:
         type: object
         properties:
           gdStatus:
             type: string
+            enum:
+              - "Ongoing"
+              - "Scheduled"
+              - "Completed"
           spStatus:
             type: string
+            enum:
+              - "Referred"
+              - "Scheduled"
+              - "Completed"
       reasons:
         type: array
         items:
@@ -771,8 +804,16 @@ definitions:
         properties:
           gdStatus:
             type: string
+            enum:
+              - "Ongoing"
+              - "Scheduled"
+              - "Completed"
           spStatus:
             type: string
+            enum:
+              - "Referred"
+              - "Scheduled"
+              - "Completed"
       comments:
         type: array
         items:
@@ -786,7 +827,10 @@ definitions:
               type: string
             chatBox:
               type: string
-              default: "either GD/Patient"
+              default: "gd"
+              enum:
+                - "gd"
+                - "patient"
       reasons:
         type: array
         items:
@@ -875,6 +919,9 @@ definitions:
           properties:
             type:
               type: "string"
+              enum:
+                - "Specialist"
+                - "General Dentist"
             name:
               type: string
             address:
@@ -944,6 +991,9 @@ definitions:
           properties:
             type:
               type: string
+              enum:
+               - "Specialist"
+               - "General Dentist"
             addressId:
               type: string
             name:
