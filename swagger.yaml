@@ -383,7 +383,7 @@ paths:
       security:
         - Bearer: []
   /v1/clinic/getFavorites/{addressId}:
-    post:
+    get:
       tags:
        - "Registration APIs (R of CRUD)"
       summary: "Get all favorite clinics favorited by GD"
