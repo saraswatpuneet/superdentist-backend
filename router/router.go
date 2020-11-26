@@ -52,6 +52,9 @@ func SDRouter() (*gin.Engine, error) {
 		clinicGroup.GET("/getDoctors/:addressId", handlers.GetClinicDoctors)
 		clinicGroup.GET("/getAllDoctors", handlers.GetAllDoctors)
 		clinicGroup.POST("/getNearbySpecialists", handlers.GetNearbySpeialists)
+		clinicGroup.POST("/addFavorite", handlers.AddFavoriteClinics)
+		clinicGroup.POST("/getFavorites", handlers.GetFavoriteClinics)
+		clinicGroup.POST("/removeFavorite", handlers.RemoveFavoriteClinics)
 
 	}
 	referralGroup := version1.Group("/referral")
@@ -73,8 +76,8 @@ func SDRouter() (*gin.Engine, error) {
 		clinicGroup.GET("/queryAddress", func(c *gin.Context) {
 			handlers.QueryAddressHandlerWebsocket(poolConnections, c)
 		})
-		
-		clinicGroup.GET("/getAddressList",handlers.GetAddressListRest)
+
+		clinicGroup.GET("/getAddressList", handlers.GetAddressListRest)
 	}
 	// Derive groups from version group to consolidate our APIs in a better way
 	return restRouter, nil

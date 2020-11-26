@@ -318,3 +318,18 @@ func GetNearbySpeialists(c *gin.Context) {
 	})
 	clinicMetaDB.Close()
 }
+
+// AddFavoriteClinics ...
+func AddFavoriteClinics(c *gin.Context) {
+
+}
+
+// GetFavoriteClinics ...
+func GetFavoriteClinics(c *gin.Context) {
+
+}
+
+// RemoveFavoriteClinics ...
+func RemoveFavoriteClinics(c *gin.Context) {
+
+}
