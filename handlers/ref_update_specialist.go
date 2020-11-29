@@ -575,13 +575,22 @@ func GetOneReferral(c *gin.Context) {
 // ReceiveReferralMail ...
 func ReceiveReferralMail(c *gin.Context) {
 	log.Infof("Referral Email Receieved")
-	from := c.Request.Form.Get("from")
-	to   := c.Request.Form.Get("to")
-	subject := c.Request.Form.Get("subject")
-	text := c.Request.Form.Get("text")
-	log.Println(from + " "+ to +" "+ subject+ " "+ text)
+	parsedEmail := Parse(c.Request)
+	log.Infof("parsedEmail: %v", parsedEmail)
 	c.JSON(http.StatusOK, gin.H{
 		constants.RESPONSE_JSON_DATA:   nil,
 		constants.RESPONSDE_JSON_ERROR: nil,
 	})
+}
+
+// Parse ..... ..
+func Parse(request *http.Request) *contracts.ParsedEmail {
+	result := contracts.ParsedEmail{
+		Headers:     make(map[string]string),
+		Body:        make(map[string]string),
+		Attachments: make(map[string][]byte),
+		RawRequest:  request,
+	}
+	result.Parse()
+	return &result
 }
