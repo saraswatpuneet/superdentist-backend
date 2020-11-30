@@ -98,10 +98,10 @@ type ParsedEmail struct {
 }
 
 // Parse ....
-func (email *ParsedEmail) Parse() {
+func (email *ParsedEmail) Parse() error {
 	err := email.RawRequest.ParseMultipartForm(0)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	emails := email.RawRequest.MultipartForm.Value["email"]
 	headers := email.RawRequest.MultipartForm.Value["headers"]
@@ -111,6 +111,7 @@ func (email *ParsedEmail) Parse() {
 	if len(emails) > 0 {
 		email.parseRawEmail(emails[0])
 	}
+	return nil
 }
 
 func (email *ParsedEmail) parseRawEmail(rawEmail string) {
