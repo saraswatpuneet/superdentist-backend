@@ -173,7 +173,7 @@ func UpdateReferralStatus(c *gin.Context) {
 		dateString := fmt.Sprintf("%d-%d-%d", y, int(m), d)
 		sendPatientComments := make([]string, 0)
 		for _, comment := range dsReferral.Comments {
-			if strings.ToLower(comment.ChatBox) == "gd" {
+			if comment.ChatBox == contracts.GDCBox {
 				sendPatientComments = append(sendPatientComments, comment.Comment)
 			}
 		}

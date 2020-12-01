@@ -22,12 +22,23 @@ type Patient struct {
 	GroupID   string `json:"groupNumber"`
 }
 
+// ChatBox ....
+type ChatBox string
+
+// GDCBox ....
+const GDCBox ChatBox = "gd"
+
+// SPCBox ....
+const SPCBox ChatBox = "sp"
+
+// PTCBOX ....
+const PTCBOX ChatBox = "patient"
+
 // Comment .....
 type Comment struct {
-	Time      string `json:"time" valid:"required"`
-	Comment   string `json:"comment" valid:"required"`
-	CreatedBy string `json:"createdBy" valid:"required"`
-	ChatBox   string `json:"chatBox" valid:"required"`
+	Time    int64   `json:"time"`
+	Comment string  `json:"comment" valid:"required"`
+	ChatBox ChatBox `json:"chatBox" valid:"required"`
 }
 
 // Status ....

@@ -681,16 +681,15 @@ definitions:
             type: object
             properties:
               time:
-                type: string
+                type: number
               comment:
-                type: string
-              createdBy:
                 type: string
               chatBox:
                 type: string
                 default: "gd"
                 enum:
                   - "gd"
+                  - "sp"
                   - "patient"
         status:
           type: object
@@ -765,16 +764,15 @@ definitions:
           type: object
           properties:
             time:
-              type: string
+              type: number
             comment:
-              type: string
-            createdBy:
               type: string
             chatBox:
               type: string
               default: "gd"
               enum:
                 - "gd"
+                - "sp"
                 - "patient"
   ReferralResponse:
     type: object
@@ -803,16 +801,15 @@ definitions:
           type: object
           properties:
             time:
-              type: string
+              type: number
             comment:
-              type: string
-            createdBy:
               type: string
             chatBox:
               type: string
               default: "gd"
               enum:
                 - "gd"
+                - "sp"
                 - "patient"
       status:
         type: object
@@ -901,16 +898,15 @@ definitions:
           type: object
           properties:
             time:
-              type: string
+              type: number
             comment:
-              type: string
-            createdBy:
               type: string
             chatBox:
               type: string
               default: "gd"
               enum:
                 - "gd"
+                - "sp"
                 - "patient"
       reasons:
         type: array
