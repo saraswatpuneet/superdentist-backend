@@ -719,7 +719,7 @@ func ReceiveReferralMail(c *gin.Context) {
 // TextRecievedPatient ...
 func TextRecievedPatient(c *gin.Context) {
 	log.Infof("Processing incoming text")
-	var smsDetails contracts.SMS
+	smsDetails := make(map[string]interface{})
 	if err := c.ShouldBindWith(&smsDetails, binding.JSON); err != nil {
 		log.Errorf("Bad sms received: %v", err.Error())
 	}
