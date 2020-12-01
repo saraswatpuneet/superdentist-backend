@@ -2,8 +2,10 @@ package handlers
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"mime/multipart"
 	"net/http"
 	"strings"
@@ -720,7 +722,8 @@ func ReceiveReferralMail(c *gin.Context) {
 func TextRecievedPatient(c *gin.Context) {
 	log.Infof("Processing incoming text")
 	smsDetails := make(map[string]interface{})
-	if err := c.ShouldBindWith(&smsDetails, binding.JSON); err != nil {
+	bytesSms, _:= ioutil.ReadAll(c.Request.Body)
+	if err := json.Unmarshal(bytesSms, &smsDetails); err != nil {
 		log.Errorf("Bad sms received: %v", err.Error())
 	}
 	log.Infof("incoming sms: %v", smsDetails)
