@@ -722,7 +722,13 @@ func ReceiveReferralMail(c *gin.Context) {
 func TextRecievedPatient(c *gin.Context) {
 	log.Infof("Processing incoming text")
 	smsDetails := make(map[string]interface{})
+	for key, value := range c.Request.Header{
+		log.Infof("key: %v", key)
+		log.Infof("value: %v", value)
+
+	}
 	bytesSms, _:= ioutil.ReadAll(c.Request.Body)
+	log.Infof("bytes: %v", string(bytesSms))
 	if err := json.Unmarshal(bytesSms, &smsDetails); err != nil {
 		log.Errorf("Bad sms received: %v", err.Error())
 	}
