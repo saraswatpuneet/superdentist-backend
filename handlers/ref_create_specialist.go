@@ -250,7 +250,7 @@ func CreateRefSpecialist(c *gin.Context) {
 			dsReferral.PatientFirstName+" "+dsReferral.PatientLastName, dsReferral.ToClinicName,
 			dsReferral.PatientPhone, uniqueRefID, dateString, sendPatientComments)
 	} else {
-		err = sgClient.SendEmailNotificationSpecialist(constants.SD_MAIN_EMAIL,
+		err = sgClient.SendEmailNotificationSpecialist(constants.SD_ADMIN_EMAIL,
 			dsReferral.PatientFirstName+" "+dsReferral.PatientLastName, dsReferral.ToClinicName,
 			dsReferral.PatientPhone, uniqueRefID, dateString, sendPatientComments)
 	}

@@ -30,7 +30,7 @@ func AddCommentsToReferral(c *gin.Context) {
 	referralID := c.Param("id")
 
 	var referralDetails contracts.ReferralComments
-	_, _, gproject, err := getUserDetails(ctx, c.Request)
+	userEmail, _, gproject, err := getUserDetails(ctx, c.Request)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
@@ -87,6 +87,36 @@ func AddCommentsToReferral(c *gin.Context) {
 			},
 		)
 		return
+	}
+	sgClient := sendgrid.NewSendGridClient()
+	err = sgClient.InitializeSendGridClient()
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	for _, comm := range referralDetails.Comments {
+		if comm.ChatBox == contracts.SPCBox {
+			if dsReferral.ToEmail != "" {
+				sgClient.SendClinicNotification(dsReferral.ToEmail, dsReferral.ToClinicName,
+					dsReferral.PatientFirstName+" "+dsReferral.PatientLastName, dsReferral.ReferralID)
+
+			} else {
+				sgClient.SendClinicNotification(constants.SD_ADMIN_EMAIL, dsReferral.ToClinicName,
+					dsReferral.PatientFirstName+" "+dsReferral.PatientLastName, dsReferral.ReferralID)
+			}
+		} else if comm.ChatBox == contracts.GDCBox {
+			if dsReferral.FromEmail != "" {
+				sgClient.SendClinicNotification(dsReferral.FromEmail, dsReferral.FromClinicName,
+					dsReferral.PatientFirstName+" "+dsReferral.PatientLastName, dsReferral.ReferralID)
+
+			}
+		}
 	}
 	c.JSON(http.StatusOK, gin.H{
 		constants.RESPONSE_JSON_DATA:   dsReferral,
