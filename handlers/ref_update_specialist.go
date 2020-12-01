@@ -6,7 +6,6 @@ import (
 	"io"
 	"mime/multipart"
 	"net/http"
-	"strconv"
 	"strings"
 	"time"
 
@@ -596,10 +595,7 @@ func ReceiveReferralMail(c *gin.Context) {
 			text = strings.ReplaceAll(text, "***Enter your message related to appointment,available date, questions etc.***", "")
 			text = strings.ReplaceAll(text, "\n", "")
 			text = strings.TrimSpace(text)
-			finalText := strings.Split(text, " ")
-			for i, t := range finalText {
-				bodyCleaned[strconv.Itoa(i)] = t
-			}
+			bodyCleaned[key] = text
 		}
 	}
 	parsedEmail.Body = bodyCleaned
