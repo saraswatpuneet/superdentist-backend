@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"mime/multipart"
@@ -14,6 +15,7 @@ import (
 	"github.com/superdentist/superdentist-backend/constants"
 	"github.com/superdentist/superdentist-backend/contracts"
 	"github.com/superdentist/superdentist-backend/lib/datastoredb"
+	"github.com/superdentist/superdentist-backend/lib/googleprojectlib"
 	"github.com/superdentist/superdentist-backend/lib/sendgrid"
 	"github.com/superdentist/superdentist-backend/lib/storage"
 )
@@ -583,99 +585,96 @@ func ReceiveReferralMail(c *gin.Context) {
 	if toEmail != "referrals@mailer.superdentist.io" {
 		log.Errorf("Email sent to bad actor" + " " + fromEmail + " " + subject)
 	}
-	log.Infof("lookabove")
-	log.Infof(fromEmail)
-	log.Infof(toEmail)
-	log.Infof(subject)
-	log.Infof("body: %v", parsedEmail.Body)
-	log.Infof("attach: %v", parsedEmail.Attachments)
-	log.Infof("lookdown")
+	bodyCleaned := make(map[string]string, 0)
+	for key, text := range parsedEmail.Body {
+		bodyCleaned[key] = strings.ReplaceAll(text, "***Enter your message related to appointment,available date, questions etc.***", "")
+	}
+	parsedEmail.Body = bodyCleaned
+	ctx := c.Request.Context()
+	gproject := googleprojectlib.GetGoogleProjectID()
+	dsRefC := datastoredb.NewReferralHandler()
+	err := dsRefC.InitializeDataBase(ctx, gproject)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	dsReferral, err := dsRefC.GetReferral(ctx, subject)
+	if err != nil {
+		dsReferral, err = dsRefC.GetReferralFromEmail(ctx, fromEmail)
+		if err != nil {
+			log.Errorf("Error processing email"+" "+fromEmail+" "+subject+" error:%v ", err.Error())
+		}
+	}
+	currentBody := parsedEmail.Body
+	currentComments := make([]contracts.Comment, 0)
+	docIDNames := make([]string, 0)
+	// Stage 2 Upload files from
+	// parse request
+	storageC := storage.NewStorageHandler()
+	err = storageC.InitializeStorageClient(ctx, gproject)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	for fileName, fileBytes := range parsedEmail.Attachments {
+		bucketPath := dsReferral.ReferralID + "/" + fileName
+		buckerW, err := storageC.UploadToGCS(ctx, bucketPath)
+		if err != nil {
+			c.AbortWithStatusJSON(
+				http.StatusInternalServerError,
+				gin.H{
+					constants.RESPONSE_JSON_DATA:   nil,
+					constants.RESPONSDE_JSON_ERROR: err.Error(),
+				},
+			)
+			return
+		}
+		_, err = io.Copy(buckerW, bytes.NewReader(fileBytes))
+		if err != nil {
+			log.Errorf("Error processing email"+" "+fromEmail+" "+subject+" error:%v ", err.Error())
+		}
+		buckerW.Close()
+		docIDNames = append(docIDNames, fileName)
+	}
+	if len(docIDNames) > 0 {
+		var uploadComment contracts.Comment
+		uploadComment.ChatBox = contracts.PTCBOX
+		uploadComment.Comment = "New documents are uploaded by " + dsReferral.PatientFirstName + " " + dsReferral.PatientLastName
+		uploadComment.Time = time.Now().Unix()
+		currentComments = append(currentComments, uploadComment)
+	}
+	err = storageC.ZipFile(ctx, dsReferral.ReferralID)
+	if err != nil {
+		log.Errorf("Error processing email"+" "+fromEmail+" "+subject+" error:%v ", err.Error())
+	}
 
-	// ctx := c.Request.Context()
-	// gproject := googleprojectlib.GetGoogleProjectID()
-	// dsRefC := datastoredb.NewReferralHandler()
-	// err := dsRefC.InitializeDataBase(ctx, gproject)
-	// if err != nil {
-	// 	c.AbortWithStatusJSON(
-	// 		http.StatusInternalServerError,
-	// 		gin.H{
-	// 			constants.RESPONSE_JSON_DATA:   nil,
-	// 			constants.RESPONSDE_JSON_ERROR: err.Error(),
-	// 		},
-	// 	)
-	// 	return
-	// }
-	// dsReferral, err := dsRefC.GetReferral(ctx, subject)
-	// if err != nil {
-	// 	dsReferral, err = dsRefC.GetReferralFromEmail(ctx, fromEmail)
-	// 	if err != nil {
-	// 		log.Errorf("Error processing email"+" "+fromEmail+" "+subject+" error:%v ", err.Error())
-	// 	}
-	// }
-	// currentBody := parsedEmail.Body
-	// currentComments := make([]contracts.Comment, 0)
-	// docIDNames := make([]string, 0)
-	// // Stage 2 Upload files from
-	// // parse request
-	// storageC := storage.NewStorageHandler()
-	// err = storageC.InitializeStorageClient(ctx, gproject)
-	// if err != nil {
-	// 	c.AbortWithStatusJSON(
-	// 		http.StatusInternalServerError,
-	// 		gin.H{
-	// 			constants.RESPONSE_JSON_DATA:   nil,
-	// 			constants.RESPONSDE_JSON_ERROR: err.Error(),
-	// 		},
-	// 	)
-	// 	return
-	// }
-	// for fileName, fileBytes := range parsedEmail.Attachments {
-	// 	bucketPath := dsReferral.ReferralID + "/" + fileName
-	// 	buckerW, err := storageC.UploadToGCS(ctx, bucketPath)
-	// 	if err != nil {
-	// 		c.AbortWithStatusJSON(
-	// 			http.StatusInternalServerError,
-	// 			gin.H{
-	// 				constants.RESPONSE_JSON_DATA:   nil,
-	// 				constants.RESPONSDE_JSON_ERROR: err.Error(),
-	// 			},
-	// 		)
-	// 		return
-	// 	}
-	// 	_, err = io.Copy(buckerW, bytes.NewReader(fileBytes))
-	// 	if err != nil {
-	// 		log.Errorf("Error processing email"+" "+fromEmail+" "+subject+" error:%v ", err.Error())
-	// 	}
-	// 	buckerW.Close()
-	// 	docIDNames = append(docIDNames, fileName)
-	// }
-	// if len(docIDNames) > 0 {
-	// 	var uploadComment contracts.Comment
-	// 	uploadComment.ChatBox = contracts.PTCBOX
-	// 	uploadComment.Comment = "New documents are uploaded by " + dsReferral.PatientFirstName + " " + dsReferral.PatientLastName
-	// 	uploadComment.Time = time.Now().Unix()
-	// 	currentComments = append(currentComments, uploadComment)
-	// }
-	// err = storageC.ZipFile(ctx, dsReferral.ReferralID)
-	// if err != nil {
-	// 	log.Errorf("Error processing email"+" "+fromEmail+" "+subject+" error:%v ", err.Error())
-	// }
+	dsReferral.Documents = append(dsReferral.Documents, docIDNames...)
+	for _, text := range currentBody {
+		var comm contracts.Comment
+		comm.ChatBox = contracts.PTCBOX
+		comm.Comment = text
+		comm.Time = time.Now().Unix()
+		currentComments = append(currentComments, comm)
+	}
+	dsReferral.Comments = append(dsReferral.Comments, currentComments...)
+	dsReferral.ModifiedOn = time.Now()
 
-	// dsReferral.Documents = append(dsReferral.Documents, docIDNames...)
-	// for _, text := range currentBody {
-	// 	var comm contracts.Comment
-	// 	comm.ChatBox = contracts.PTCBOX
-	// 	comm.Comment = text
-	// 	comm.Time = time.Now().Unix()
-	// 	currentComments = append(currentComments, comm)
-	// }
-	// dsReferral.Comments = append(dsReferral.Comments, currentComments...)
-	// dsReferral.ModifiedOn = time.Now()
-
-	// err = dsRefC.CreateReferral(ctx, *dsReferral)
-	// if err != nil {
-	// 	log.Errorf("Error processing email"+" "+fromEmail+" "+subject+" error:%v ", err.Error())
-	// }
+	err = dsRefC.CreateReferral(ctx, *dsReferral)
+	if err != nil {
+		log.Errorf("Error processing email"+" "+fromEmail+" "+subject+" error:%v ", err.Error())
+	}
 }
 
 // Parse ..... ..
