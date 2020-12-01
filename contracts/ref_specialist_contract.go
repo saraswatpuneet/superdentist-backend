@@ -100,6 +100,24 @@ type DSReferral struct {
 	IsDirty           bool      `json:"isDirty" valid:"required"`
 }
 
+// SMS is returned after a text/sms message is posted to Twilio
+type SMS struct {
+	Sid         string  `json:"sid"`
+	DateCreated string  `json:"date_created"`
+	DateUpdate  string  `json:"date_updated"`
+	DateSent    string  `json:"date_sent"`
+	AccountSid  string  `json:"account_sid"`
+	To          string  `json:"to"`
+	From        string  `json:"from"`
+	NumMedia    string  `json:"num_media"`
+	Body        string  `json:"body"`
+	Status      string  `json:"status"`
+	Direction   string  `json:"direction"`
+	APIVersion  string  `json:"api_version"`
+	Price       *string `json:"price,omitempty"`
+	URL         string  `json:"uri"`
+}
+
 // ParsedEmail ...
 type ParsedEmail struct {
 	Headers     map[string]string
