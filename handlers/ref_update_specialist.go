@@ -575,6 +575,8 @@ func GetOneReferral(c *gin.Context) {
 // ReceiveReferralMail ...
 func ReceiveReferralMail(c *gin.Context) {
 	log.Infof("Referral Email Receieved")
+	parsedEmail := Parse(c.Request)
+	log.Infof("parsedEMail: %v", parsedEmail.Headers)
 	c.JSON(http.StatusOK, gin.H{
 		constants.RESPONSE_JSON_DATA:   nil,
 		constants.RESPONSDE_JSON_ERROR: nil,
