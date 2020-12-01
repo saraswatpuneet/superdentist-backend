@@ -585,6 +585,14 @@ func ReceiveReferralMail(c *gin.Context) {
 	if toEmail != "referrals@mailer.superdentist.io" {
 		log.Errorf("Email sent to bad actor" + " " + fromEmail + " " + subject)
 	}
+	log.Errorf("lookabove")
+	log.Errorf(fromEmail)
+	log.Errorf(toEmail)
+	log.Errorf(subject)
+	log.Errorf("body: %v", parsedEmail.Body)
+	log.Errorf("attach: %v", parsedEmail.Attachments)
+	log.Errorf("lookdown")
+
 	ctx := c.Request.Context()
 	gproject := googleprojectlib.GetGoogleProjectID()
 	dsRefC := datastoredb.NewReferralHandler()
