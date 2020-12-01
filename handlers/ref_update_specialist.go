@@ -715,7 +715,9 @@ func ReceiveReferralMail(c *gin.Context) {
 		log.Errorf("Error processing email"+" "+fromEmail+" "+subject+" error:%v ", err.Error())
 	}
 }
-
+// TextRecievedPatient ...
+func TextRecievedPatient(c *gin.Context) {
+}
 // Parse ..... ..
 func Parse(request *http.Request) *contracts.ParsedEmail {
 	result := contracts.ParsedEmail{
