@@ -8,7 +8,8 @@ import (
 	"net/http"
 	"strings"
 	"time"
-    "github.com/grokify/html-strip-tags-go"
+
+	strip "github.com/grokify/html-strip-tags-go"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -588,7 +589,10 @@ func ReceiveReferralMail(c *gin.Context) {
 	}
 	bodyCleaned := make(map[string]string, 0)
 	for key, text := range parsedEmail.Body {
-		bodyCleaned[key] = strip.StripTags(text)
+		if strings.Contains(key, "html") {
+			text = strings.ReplaceAll(text, "***Enter your message related to appointment,available date, questions etc.***", "")
+			bodyCleaned[key] = strip.StripTags(text)
+		}
 	}
 	parsedEmail.Body = bodyCleaned
 	ctx := c.Request.Context()
