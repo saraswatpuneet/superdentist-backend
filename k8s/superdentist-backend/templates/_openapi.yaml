@@ -1004,8 +1004,8 @@ definitions:
             type:
               type: "string"
               enum:
-                - "Specialist"
-                - "General Dentist"
+                - "specialist"
+                - "dentist"
             name:
               type: string
             address:
@@ -1076,8 +1076,8 @@ definitions:
             type:
               type: string
               enum:
-               - "Specialist"
-               - "General Dentist"
+               - "specialist"
+               - "dentist"
             addressId:
               type: string
             name:

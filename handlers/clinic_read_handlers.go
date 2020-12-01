@@ -258,7 +258,7 @@ func GetNearbySpeialists(c *gin.Context) {
 			return
 		}
 		for _, clinicAdd := range nearbyClinics {
-			if clinicAdd.AddressID == nearbyRequest.ClinicAddessID || clinicAdd.Type == "General Dentist" {
+			if clinicAdd.AddressID == nearbyRequest.ClinicAddessID || clinicAdd.Type == "dentist" {
 				continue
 			}
 			if Find(currentFavorites, clinicAdd.PlaceID) {
@@ -290,7 +290,7 @@ func GetNearbySpeialists(c *gin.Context) {
 	}
 	currentSpeciality := nearbyRequest.Specialities
 	if currentSpeciality == "" {
-		currentSpeciality = "Specialist"
+		currentSpeciality = "specialist"
 	}
 	currentRadius := uint(dist * 1609.34) // in meters
 	currentNonRegisteredNearby, pToken, err := mapClient.FindNearbyPlacesFromLocation(currentMapLocation, currentRadius, currentSpeciality, cursor, currentVerifiedPlaces)
