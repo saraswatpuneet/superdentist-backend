@@ -590,6 +590,7 @@ func ReceiveReferralMail(c *gin.Context) {
 	bodyCleaned := make(map[string]string, 0)
 	for key, text := range parsedEmail.Body {
 		if strings.Contains(key, "html") {
+			text = strings.ReplaceAll(text, ">", "> ")
 			text = strings.ReplaceAll(text, "***Enter your message related to appointment,available date, questions etc.***", "")
 			bodyCleaned[key] = strip.StripTags(text)
 		}
