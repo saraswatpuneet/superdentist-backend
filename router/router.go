@@ -59,7 +59,7 @@ func SDRouter() (*gin.Engine, error) {
 	}
 	referralGroup := version1.Group("/referral")
 	{
-		// referralGroup.POST("/mail", handlers.ReceiveReferralMail)
+		referralGroup.POST("/mail", handlers.ReceiveReferralMail)
 		referralGroup.POST("/create", handlers.CreateRefSpecialist)
 		referralGroup.POST("/addComments/:id", handlers.AddCommentsToReferral)
 		referralGroup.POST("/updateStatus/:id", handlers.UpdateReferralStatus)
