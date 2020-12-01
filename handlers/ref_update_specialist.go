@@ -587,6 +587,7 @@ func ReceiveReferralMail(c *gin.Context) {
 		log.Errorf("Email sent to bad actor" + " " + fromEmail + " " + subject)
 	}
 	bodyCleaned := make(map[string]string, 0)
+	log.Errorf("bodymap: %v", parsedEmail.Body)
 	for key, text := range parsedEmail.Body {
 		if strings.Contains(text, "***Enter your message") {
 			continue
