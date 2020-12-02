@@ -6,6 +6,7 @@ import (
 	"io"
 	"mime/multipart"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -19,6 +20,7 @@ import (
 	"github.com/superdentist/superdentist-backend/lib/datastoredb"
 	"github.com/superdentist/superdentist-backend/lib/googleprojectlib"
 	"github.com/superdentist/superdentist-backend/lib/sendgrid"
+	"github.com/superdentist/superdentist-backend/lib/sms"
 	"github.com/superdentist/superdentist-backend/lib/storage"
 )
 
@@ -115,6 +117,36 @@ func AddCommentsToReferral(c *gin.Context) {
 				sgClient.SendClinicNotification(dsReferral.FromEmail, dsReferral.FromClinicName,
 					dsReferral.PatientFirstName+" "+dsReferral.PatientLastName, dsReferral.ReferralID)
 
+			}
+		} else if comm.ChatBox == contracts.PTCBOX {
+			clientSMS := sms.NewSMSClient()
+			err = clientSMS.InitializeSMSClient()
+			if err != nil {
+				c.AbortWithStatusJSON(
+					http.StatusInternalServerError,
+					gin.H{
+						constants.RESPONSE_JSON_DATA:   nil,
+						constants.RESPONSDE_JSON_ERROR: err.Error(),
+					},
+				)
+				return
+			}
+			message := fmt.Sprintf(constants.PATIENT_MESSAGE_NOTICE, dsReferral.PatientFirstName+" "+dsReferral.PatientLastName,
+				dsReferral.ToClinicName, comm.Comment)
+			clientSMS.SendSMS(constants.SD_REFERRAL_PHONE, dsReferral.PatientPhone, message)
+			if dsReferral.PatientEmail != "" {
+				err = sgClient.SendCommentNotificationPatient(dsReferral.PatientFirstName+" "+dsReferral.PatientLastName,
+					dsReferral.PatientEmail, comm.Comment, dsReferral.ToClinicName, dsReferral.ReferralID)
+				if err != nil {
+					c.AbortWithStatusJSON(
+						http.StatusInternalServerError,
+						gin.H{
+							constants.RESPONSE_JSON_DATA:   nil,
+							constants.RESPONSDE_JSON_ERROR: err.Error(),
+						},
+					)
+					return
+				}
 			}
 		}
 	}
@@ -714,6 +746,19 @@ func ReceiveReferralMail(c *gin.Context) {
 	if err != nil {
 		log.Errorf("Error processing email"+" "+fromEmail+" "+subject+" error:%v ", err.Error())
 	}
+	sgClient := sendgrid.NewSendGridClient()
+	err = sgClient.InitializeSendGridClient()
+	if err != nil {
+		log.Errorf("Error processing sms error:%v ", err.Error())
+	}
+	if dsReferral.ToEmail != "" {
+		sgClient.SendClinicNotification(dsReferral.ToEmail, dsReferral.ToClinicName,
+			dsReferral.PatientFirstName+" "+dsReferral.PatientLastName, dsReferral.ReferralID)
+
+	} else {
+		sgClient.SendClinicNotification(constants.SD_ADMIN_EMAIL, dsReferral.ToClinicName,
+			dsReferral.PatientFirstName+" "+dsReferral.PatientLastName, dsReferral.ReferralID)
+	}
 }
 
 // TextRecievedPatient ...
@@ -723,7 +768,107 @@ func TextRecievedPatient(c *gin.Context) {
 	if err != nil {
 		log.Errorf("Error parsing text recieve: %v", err.Error())
 	}
-	log.Errorf("checkForm: %v", c.Request.Form)
+	ctx := c.Request.Context()
+	clientSMS := sms.NewSMSClient()
+	err = clientSMS.InitializeSMSClient()
+	if err != nil {
+		log.Errorf("Error parsing text recieve: %v", err.Error())
+	}
+	form := c.Request.Form
+	incomingPhone := form["From"][0]
+	incomingText := ""
+	if text, ok := form["Body"]; ok {
+		incomingText = text[0]
+	}
+	filePatients := make(map[string]*io.ReadCloser)
+	for key, formValue := range form {
+		if strings.Contains(key, "MediaUrl") {
+			currentURL := formValue[0]
+			fileName, reader, err := clientSMS.GetMedia(ctx, currentURL)
+			if err != nil {
+				log.Errorf("Error parsing text recieve: %v", err.Error())
+			}
+			filePatients[fileName] = reader
+		}
+	}
+	gproject := googleprojectlib.GetGoogleProjectID()
+	if err != nil {
+		log.Errorf("Error parsing text recieve: %v", err.Error())
+	}
+	dsRefC := datastoredb.NewReferralHandler()
+	err = dsRefC.InitializeDataBase(ctx, gproject)
+	if err != nil {
+		log.Errorf("Error parsing text recieve: %v", err.Error())
+	}
+	dsReferral, err := dsRefC.ReferralFromPatientPhone(ctx, incomingPhone)
+	if err != nil {
+		log.Errorf("Referral not gound: %v", err.Error())
+	}
+	if incomingText != "" {
+		var commText contracts.Comment
+		commText.ChatBox = contracts.PTCBOX
+		commText.Comment = incomingText
+		commText.Time = time.Now().Unix()
+		dsReferral.Comments = append(dsReferral.Comments, commText)
+	}
+	docIDNames := make([]string, 0)
+
+	if len(filePatients) > 0 {
+		var commText contracts.Comment
+		commText.ChatBox = contracts.PTCBOX
+		commText.Comment = "New documents uploaded by " + dsReferral.PatientFirstName + " " + dsReferral.PatientLastName
+		commText.Time = time.Now().Unix()
+		dsReferral.Comments = append(dsReferral.Comments, commText)
+		storageC := storage.NewStorageHandler()
+		err = storageC.InitializeStorageClient(ctx, gproject)
+		if err != nil {
+			log.Errorf("Referral not gound: %v", err.Error())
+		}
+		var counter int64
+		for fileName, fileBytes := range filePatients {
+			counter++
+			extension := strings.Split(fileName, ".")[1]
+			fileName = dsReferral.PatientFirstName + strconv.Itoa(int(time.Now().Unix()+counter)) + "." + extension
+			bucketPath := dsReferral.ReferralID + "/" + fileName
+			buckerW, err := storageC.UploadToGCS(ctx, bucketPath)
+			if err != nil {
+				c.AbortWithStatusJSON(
+					http.StatusInternalServerError,
+					gin.H{
+						constants.RESPONSE_JSON_DATA:   nil,
+						constants.RESPONSDE_JSON_ERROR: err.Error(),
+					},
+				)
+				return
+			}
+			_, err = io.Copy(buckerW, *fileBytes)
+			if err != nil {
+				log.Errorf("Error processing sms error:%v ", err.Error())
+			}
+			buckerW.Close()
+			(*fileBytes).Close()
+			docIDNames = append(docIDNames, fileName)
+		}
+	}
+	dsReferral.ModifiedOn = time.Now()
+
+	err = dsRefC.CreateReferral(ctx, *dsReferral)
+	if err != nil {
+		log.Errorf("Error processing sms error:%v ", err.Error())
+	}
+	sgClient := sendgrid.NewSendGridClient()
+	err = sgClient.InitializeSendGridClient()
+	if err != nil {
+		log.Errorf("Error processing sms error:%v ", err.Error())
+	}
+	if dsReferral.ToEmail != "" {
+		sgClient.SendClinicNotification(dsReferral.ToEmail, dsReferral.ToClinicName,
+			dsReferral.PatientFirstName+" "+dsReferral.PatientLastName, dsReferral.ReferralID)
+
+	} else {
+		sgClient.SendClinicNotification(constants.SD_ADMIN_EMAIL, dsReferral.ToClinicName,
+			dsReferral.PatientFirstName+" "+dsReferral.PatientLastName, dsReferral.ReferralID)
+	}
 }
 
 // Parse ..... ..

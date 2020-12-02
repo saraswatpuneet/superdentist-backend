@@ -16,6 +16,7 @@ import (
 	"github.com/superdentist/superdentist-backend/lib/datastoredb"
 	"github.com/superdentist/superdentist-backend/lib/gmaps"
 	"github.com/superdentist/superdentist-backend/lib/sendgrid"
+	"github.com/superdentist/superdentist-backend/lib/sms"
 	"github.com/superdentist/superdentist-backend/lib/storage"
 	"go.opencensus.io/trace"
 )
@@ -264,9 +265,23 @@ func CreateRefSpecialist(c *gin.Context) {
 		)
 		return
 	}
-	err = sgClient.SendEmailNotificationPatient(dsReferral.PatientEmail,
-		dsReferral.PatientFirstName+" "+dsReferral.PatientLastName, dsReferral.ToClinicName,
-		dsReferral.ToClinicPhone, uniqueRefID, dsReferral.ToClinicAddress, sendPatientComments)
+	if dsReferral.PatientEmail != "" {
+		err = sgClient.SendEmailNotificationPatient(dsReferral.PatientEmail,
+			dsReferral.PatientFirstName+" "+dsReferral.PatientLastName, dsReferral.ToClinicName,
+			dsReferral.ToClinicPhone, uniqueRefID, dsReferral.ToClinicAddress, sendPatientComments)
+		if err != nil {
+			c.AbortWithStatusJSON(
+				http.StatusInternalServerError,
+				gin.H{
+					constants.RESPONSE_JSON_DATA:   nil,
+					constants.RESPONSDE_JSON_ERROR: err.Error(),
+				},
+			)
+			return
+		}
+	}
+	clientSMS := sms.NewSMSClient()
+	err = clientSMS.InitializeSMSClient()
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
@@ -277,6 +292,9 @@ func CreateRefSpecialist(c *gin.Context) {
 		)
 		return
 	}
+	message := fmt.Sprintf(constants.PATIENT_MESSAGE, dsReferral.PatientFirstName+" "+dsReferral.PatientLastName,
+		dsReferral.ToClinicName, dsReferral.ToClinicAddress, dsReferral.ToClinicPhone)
+	err = clientSMS.SendSMS(constants.SD_REFERRAL_PHONE, dsReferral.PatientPhone, message)
 	c.JSON(http.StatusOK, gin.H{
 		constants.RESPONSE_JSON_DATA:   dsReferral,
 		constants.RESPONSDE_JSON_ERROR: nil,

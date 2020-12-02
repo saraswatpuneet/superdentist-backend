@@ -65,7 +65,37 @@ func (sgc *ClientSendGrid) SendEmailNotificationPatient(pemail string,
 	}
 	return nil
 }
-
+// SendCommentNotificationPatient ......
+func (sgc *ClientSendGrid) SendCommentNotificationPatient(pname string,
+	pemail string,
+	comments string,
+	spname string,
+	refid string) error {
+	mailSetup := mail.NewV3Mail()
+	from := mail.NewEmail("SuperDentist Admin", constants.SD_ADMIN_EMAIL)
+	mailSetup.SetFrom(from)
+	mailSetup.SetTemplateID(constants.PATINET_EMAIL_NOTIFICATION)
+	p := mail.NewPersonalization()
+	tos := []*mail.Email{
+		mail.NewEmail(pname, pemail),
+	}
+	p.AddTos(tos...)
+	p.SetDynamicTemplateData("subject", "Your Referral to "+spname)
+	p.SetDynamicTemplateData("pname", pname)
+	p.SetDynamicTemplateData("refid", refid)
+	p.SetDynamicTemplateData("cname", spname)
+	p.SetDynamicTemplateData("comments", comments)
+	mailSetup.AddPersonalizations(p)
+	request := sendgrid.GetRequest(os.Getenv("SENDGRID_API_KEY"), "/v3/mail/send", "https://api.sendgrid.com")
+	request.Method = "POST"
+	var Body = mail.GetRequestBody(mailSetup)
+	request.Body = Body
+	_, err := sendgrid.API(request)
+	if err != nil {
+		return err
+	}
+	return nil
+}
 // SendEmailNotificationSpecialist ......
 func (sgc *ClientSendGrid) SendEmailNotificationSpecialist(spemail string,
 	pname string,
