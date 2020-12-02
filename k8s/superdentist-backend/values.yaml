@@ -47,6 +47,12 @@ sdAPISecret:
 sgAPISecret:
   name: sg-api-key
   secret: SENDGRID_API_KEY
+twiSIDSecret:
+  name: twi-sd-sid
+  secret: TWI_SID
+twiAuthSecret:
+  name: twi-sd-auth
+  secret: TWI_AUTH
 service:
   type: ClusterIP
   port: 80

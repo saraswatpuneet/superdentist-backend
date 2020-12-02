@@ -73,6 +73,16 @@ spec:
               secretKeyRef:
                 name: {{.Values.sgAPISecret.name}}
                 key : {{.Values.sgAPISecret.secret}}
+          - name: TWI_SID
+            valueFrom:
+              secretKeyRef:
+                name: {{.Values.twiSIDSecret.name}}
+                key : {{.Values.twiSIDSecret.secret}}
+          - name: TWI_AUTH
+            valueFrom:
+              secretKeyRef:
+                name: {{.Values.twiAuthSecret.name}}
+                key : {{.Values.twiAuthSecret.secret}}
       volumes:
       - name: superdentist-backend
         secret:
