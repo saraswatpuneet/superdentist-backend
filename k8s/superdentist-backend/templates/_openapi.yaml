@@ -680,17 +680,19 @@ definitions:
           items:
             type: object
             properties:
-              time:
+              userId:
+                type: string
+                default: "xyz@abc.com"
+              timeStamp:
                 type: number
-              comment:
+              text:
                 type: string
-              chatBox:
+              channel:
                 type: string
-                default: "gd"
+                default: "c2c"
                 enum:
-                  - "gd"
-                  - "sp"
-                  - "patient"
+                  - "c2c"
+                  - "c2p"
         status:
           type: object
           properties:
@@ -758,22 +760,24 @@ definitions:
   ReferralComments:
     type: object
     properties:
-      comments:
-        type: array
-        items:
-          type: object
-          properties:
-            time:
-              type: number
-            comment:
-              type: string
-            chatBox:
-              type: string
-              default: "gd"
-              enum:
-                - "gd"
-                - "sp"
-                - "patient"
+        comments:
+          type: array
+          items:
+            type: object
+            properties:
+              userId:
+                type: string
+                default: "xyz@abc.com"
+              timeStamp:
+                type: number
+              text:
+                type: string
+              channel:
+                type: string
+                default: "c2c"
+                enum:
+                  - "c2c"
+                  - "c2p"
   ReferralResponse:
     type: object
     properties:
@@ -800,17 +804,19 @@ definitions:
         items:
           type: object
           properties:
-            time:
+            userId:
+              type: string
+              default: "xyz@abc.com"
+            timeStamp:
               type: number
-            comment:
+            text:
               type: string
-            chatBox:
+            channel:
               type: string
-              default: "gd"
+              default: "c2c"
               enum:
-                - "gd"
-                - "sp"
-                - "patient"
+                - "c2c"
+                - "c2p"
       status:
         type: object
         properties:
@@ -892,22 +898,24 @@ definitions:
               - "Referred"
               - "Scheduled"
               - "Completed"
-      comments:
-        type: array
-        items:
-          type: object
-          properties:
-            time:
-              type: number
-            comment:
-              type: string
-            chatBox:
-              type: string
-              default: "gd"
-              enum:
-                - "gd"
-                - "sp"
-                - "patient"
+          comments:
+            type: array
+            items:
+              type: object
+              properties:
+                userId:
+                  type: string
+                  default: "xyz@abc.com"
+                timeStamp:
+                  type: number
+                text:
+                  type: string
+                channel:
+                  type: string
+                  default: "c2c"
+                  enum:
+                    - "c2c"
+                    - "c2p"
       reasons:
         type: array
         items:
