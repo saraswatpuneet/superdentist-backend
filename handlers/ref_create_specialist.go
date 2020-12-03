@@ -159,7 +159,14 @@ func CreateRefSpecialist(c *gin.Context) {
 	dsReferral.Reasons = referralDetails.Reasons
 	dsReferral.Status = referralDetails.Status
 	dsReferral.History = referralDetails.History
-	dsReferral.Comments = referralDetails.Comments
+	updatedComm := make([]contracts.Comment, 0)
+	for _, comm := range referralDetails.Comments {
+		comm.TimeStamp = time.Now().Unix()
+		currentID, _ := uuid.NewUUID()
+		comm.MessageID = currentID.String()
+		updatedComm = append(updatedComm, comm)
+	}
+	dsReferral.Comments = append(dsReferral.Comments, updatedComm...)
 	dsReferral.Tooth = referralDetails.Tooth
 	dsReferral.PatientEmail = referralDetails.Patient.Email
 	dsReferral.PatientFirstName = referralDetails.Patient.FirstName
@@ -242,7 +249,7 @@ func CreateRefSpecialist(c *gin.Context) {
 	}
 	sendPatientComments := make([]string, 0)
 	for _, comment := range dsReferral.Comments {
-		sendPatientComments = append(sendPatientComments, comment.Comment)
+		sendPatientComments = append(sendPatientComments, comment.Text)
 	}
 	y, m, d := dsReferral.CreatedOn.Date()
 	dateString := fmt.Sprintf("%d-%d-%d", y, int(m), d)

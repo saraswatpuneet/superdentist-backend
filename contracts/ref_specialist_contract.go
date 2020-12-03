@@ -26,19 +26,18 @@ type Patient struct {
 type ChatBox string
 
 // GDCBox ....
-const GDCBox ChatBox = "gd"
+const GDCBox ChatBox = "c2c"
 
 // SPCBox ....
-const SPCBox ChatBox = "sp"
-
-// PTCBOX ....
-const PTCBOX ChatBox = "patient"
+const SPCBox ChatBox = "c2p"
 
 // Comment .....
 type Comment struct {
-	Time    int64   `json:"time"`
-	Comment string  `json:"comment" valid:"required"`
-	ChatBox ChatBox `json:"chatBox" valid:"required"`
+	MessageID string  `json:"messageId"`
+	TimeStamp int64   `json:"timeStamp"`
+	Text      string  `json:"text" valid:"required"`
+	Channel   ChatBox `json:"channel" valid:"required"`
+	UserID    string  `json:"userId" valid:"required"`
 }
 
 // Status ....

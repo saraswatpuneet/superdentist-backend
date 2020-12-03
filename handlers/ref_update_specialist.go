@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/google/uuid"
 	strip "github.com/grokify/html-strip-tags-go"
 
 	"github.com/gin-gonic/gin"
@@ -77,7 +78,14 @@ func AddCommentsToReferral(c *gin.Context) {
 		)
 		return
 	}
-	dsReferral.Comments = append(dsReferral.Comments, referralDetails.Comments...)
+	updatedComm := make([]contracts.Comment, 0)
+	for _, comm := range referralDetails.Comments {
+		comm.TimeStamp = time.Now().Unix()
+		currentID, _ := uuid.NewUUID()
+		comm.MessageID = currentID.String()
+		updatedComm = append(updatedComm, comm)
+	}
+	dsReferral.Comments = append(dsReferral.Comments, updatedComm...)
 	dsReferral.ModifiedOn = time.Now()
 	err = dsRefC.CreateReferral(ctx, *dsReferral)
 	if err != nil {
@@ -103,22 +111,19 @@ func AddCommentsToReferral(c *gin.Context) {
 		return
 	}
 	for _, comm := range referralDetails.Comments {
-		if comm.ChatBox == contracts.SPCBox {
-			if dsReferral.ToEmail != "" {
+		if comm.Channel == contracts.GDCBox {
+			if dsReferral.ToEmail != "" && comm.UserID == dsReferral.FromEmail {
 				sgClient.SendClinicNotification(dsReferral.ToEmail, dsReferral.ToClinicName,
 					dsReferral.PatientFirstName+" "+dsReferral.PatientLastName, dsReferral.ReferralID)
 
+			} else if dsReferral.ToEmail != "" && comm.UserID == dsReferral.ToEmail {
+				sgClient.SendClinicNotification(dsReferral.FromEmail, dsReferral.FromClinicName,
+					dsReferral.PatientFirstName+" "+dsReferral.PatientLastName, dsReferral.ReferralID)
 			} else {
 				sgClient.SendClinicNotification(constants.SD_ADMIN_EMAIL, dsReferral.ToClinicName,
 					dsReferral.PatientFirstName+" "+dsReferral.PatientLastName, dsReferral.ReferralID)
 			}
-		} else if comm.ChatBox == contracts.GDCBox {
-			if dsReferral.FromEmail != "" {
-				sgClient.SendClinicNotification(dsReferral.FromEmail, dsReferral.FromClinicName,
-					dsReferral.PatientFirstName+" "+dsReferral.PatientLastName, dsReferral.ReferralID)
-
-			}
-		} else if comm.ChatBox == contracts.PTCBOX {
+		} else if comm.Channel == contracts.SPCBox {
 			clientSMS := sms.NewSMSClient()
 			err = clientSMS.InitializeSMSClient()
 			if err != nil {
@@ -132,11 +137,11 @@ func AddCommentsToReferral(c *gin.Context) {
 				return
 			}
 			message := fmt.Sprintf(constants.PATIENT_MESSAGE_NOTICE, dsReferral.PatientFirstName+" "+dsReferral.PatientLastName,
-				dsReferral.ToClinicName, comm.Comment)
+				dsReferral.ToClinicName, comm.Text)
 			clientSMS.SendSMS(constants.SD_REFERRAL_PHONE, dsReferral.PatientPhone, message)
 			if dsReferral.PatientEmail != "" {
 				err = sgClient.SendCommentNotificationPatient(dsReferral.PatientFirstName+" "+dsReferral.PatientLastName,
-					dsReferral.PatientEmail, comm.Comment, dsReferral.ToClinicName, dsReferral.ReferralID)
+					dsReferral.PatientEmail, comm.Text, dsReferral.ToClinicName, dsReferral.ReferralID)
 				if err != nil {
 					c.AbortWithStatusJSON(
 						http.StatusInternalServerError,
@@ -239,8 +244,8 @@ func UpdateReferralStatus(c *gin.Context) {
 		dateString := fmt.Sprintf("%d-%d-%d", y, int(m), d)
 		sendPatientComments := make([]string, 0)
 		for _, comment := range dsReferral.Comments {
-			if comment.ChatBox == contracts.GDCBox {
-				sendPatientComments = append(sendPatientComments, comment.Comment)
+			if comment.Channel == contracts.GDCBox && dsReferral.ToEmail != "" && comment.UserID == dsReferral.ToEmail {
+				sendPatientComments = append(sendPatientComments, comment.Text)
 			}
 		}
 		err = sgClient.SendCompletionEmailToGD(dsReferral.FromEmail, dsReferral.FromClinicName,
@@ -721,9 +726,12 @@ func ReceiveReferralMail(c *gin.Context) {
 	}
 	if len(docIDNames) > 0 {
 		var uploadComment contracts.Comment
-		uploadComment.ChatBox = contracts.PTCBOX
-		uploadComment.Comment = "New documents are uploaded by " + dsReferral.PatientFirstName + " " + dsReferral.PatientLastName
-		uploadComment.Time = time.Now().Unix()
+		uploadComment.Channel = contracts.SPCBox
+		uploadComment.UserID = dsReferral.PatientEmail
+		id, _ := uuid.NewUUID()
+		uploadComment.MessageID = id.String()
+		uploadComment.Text = "New documents are uploaded by " + dsReferral.PatientFirstName + " " + dsReferral.PatientLastName
+		uploadComment.TimeStamp = time.Now().Unix()
 		currentComments = append(currentComments, uploadComment)
 	}
 	err = storageC.ZipFile(ctx, dsReferral.ReferralID)
@@ -734,9 +742,12 @@ func ReceiveReferralMail(c *gin.Context) {
 	dsReferral.Documents = append(dsReferral.Documents, docIDNames...)
 	for _, text := range currentBody {
 		var comm contracts.Comment
-		comm.ChatBox = contracts.PTCBOX
-		comm.Comment = text
-		comm.Time = time.Now().Unix()
+		id, _ := uuid.NewUUID()
+		comm.MessageID = id.String()
+		comm.Channel = contracts.SPCBox
+		comm.UserID = dsReferral.PatientEmail
+		comm.Text = text
+		comm.TimeStamp = time.Now().Unix()
 		currentComments = append(currentComments, comm)
 	}
 	dsReferral.Comments = append(dsReferral.Comments, currentComments...)
@@ -806,18 +817,24 @@ func TextRecievedPatient(c *gin.Context) {
 	}
 	if incomingText != "" {
 		var commText contracts.Comment
-		commText.ChatBox = contracts.PTCBOX
-		commText.Comment = incomingText
-		commText.Time = time.Now().Unix()
+		commText.UserID = dsReferral.PatientEmail
+		commText.Channel = contracts.SPCBox
+		commText.Text = incomingText
+		commText.TimeStamp = time.Now().Unix()
+		id, _ := uuid.NewUUID()
+		commText.MessageID = id.String()
 		dsReferral.Comments = append(dsReferral.Comments, commText)
 	}
 	docIDNames := make([]string, 0)
 
 	if len(filePatients) > 0 {
 		var commText contracts.Comment
-		commText.ChatBox = contracts.PTCBOX
-		commText.Comment = "New documents uploaded by " + dsReferral.PatientFirstName + " " + dsReferral.PatientLastName
-		commText.Time = time.Now().Unix()
+		commText.Channel = contracts.SPCBox
+		commText.Text = "New documents uploaded by " + dsReferral.PatientFirstName + " " + dsReferral.PatientLastName
+		commText.TimeStamp = time.Now().Unix()
+		id, _ := uuid.NewUUID()
+		commText.MessageID = id.String()
+		commText.UserID = dsReferral.PatientEmail
 		dsReferral.Comments = append(dsReferral.Comments, commText)
 		storageC := storage.NewStorageHandler()
 		err = storageC.InitializeStorageClient(ctx, gproject)
