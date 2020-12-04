@@ -70,7 +70,7 @@ func (gm *ClientGMaps) FindNearbyPlacesFromLocation(location maps.LatLng, radius
 
 	placesFromTextReq := maps.NearbySearchRequest{
 		Location: &location,
-		Radius:   radius,
+		RankBy:   maps.RankByDistance,
 		Keyword:  keyword,
 		Type:     maps.PlaceTypeDentist,
 	}
@@ -88,7 +88,7 @@ func (gm *ClientGMaps) FindNearbyPlacesFromLocation(location maps.LatLng, radius
 }
 
 // FindPlaceFromID ...
-func (gm *ClientGMaps) FindPlaceFromID(placeID string)(*maps.PlaceDetailsResult, error) {
+func (gm *ClientGMaps) FindPlaceFromID(placeID string) (*maps.PlaceDetailsResult, error) {
 	ctx := context.Background()
 	placeDetail := maps.PlaceDetailsRequest{
 		PlaceID: placeID,
