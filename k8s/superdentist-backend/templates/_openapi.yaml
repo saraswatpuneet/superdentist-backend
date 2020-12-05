@@ -572,7 +572,7 @@ paths:
         - Bearer: []
 
   /v1/referrals/{referralId}/status:
-    post:
+    put:
       tags:
        - "Referrals"
       summary: "Update status of a referral"
