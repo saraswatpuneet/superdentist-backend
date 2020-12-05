@@ -435,6 +435,30 @@ paths:
       security:
         - Bearer: []
   /v1/referrals/{referralId}:
+    get:
+      tags:
+       - "Referrals"
+      summary: "Get referral with given referral id"
+      description:  "Get referral with given referral id"
+      operationId: "GetOneReferral"
+      consumes:
+         - application/json
+      produces:
+      - "application/json"
+      parameters:
+      - in: "path"
+        name: "referralId"
+        type: string
+        required: true
+      responses:
+        '200':
+          $ref: '#/responses/GetReferralListResponse'
+        '401':
+          description: "Unauthorized: Bad request or authorization details"
+        '500':
+          description: "Internal server error occured"
+      security:
+        - Bearer: []
     delete:
       tags:
        - "Referrals"
@@ -676,31 +700,6 @@ paths:
           description: "Internal server error occured"
       security:
         - Bearer: []
-  /v1/referrals/getOne/{id}:
-    get:
-      tags:
-       - "Referrals"
-      summary: "Get referral with given referral id"
-      description:  "Get referral with given referral id"
-      operationId: "GetOneReferral"
-      consumes:
-         - application/json
-      produces:
-      - "application/json"
-      parameters:
-      - in: "path"
-        name: "id"
-        type: string
-        required: true
-      responses:
-        '200':
-          $ref: '#/responses/GetReferralListResponse'
-        '401':
-          description: "Unauthorized: Bad request or authorization details"
-        '500':
-          description: "Internal server error occured"
-      security:
-        - Bearer: []
 
 securityDefinitions:
   Bearer:
@@ -755,24 +754,6 @@ definitions:
           type: string
         toClinicAddress:
           type: string
-        comments:
-          type: array
-          items:
-            type: object
-            properties:
-              userId:
-                type: string
-                default: "xyz@abc.com"
-              timeStamp:
-                type: number
-              text:
-                type: string
-              channel:
-                type: string
-                default: "c2c"
-                enum:
-                  - "c2c"
-                  - "c2p"
         status:
           type: object
           properties:
@@ -879,24 +860,6 @@ definitions:
         type: string
       toClinicAddress:
         type: string
-      comments:
-        type: array
-        items:
-          type: object
-          properties:
-            userId:
-              type: string
-              default: "xyz@abc.com"
-            timeStamp:
-              type: number
-            text:
-              type: string
-            channel:
-              type: string
-              default: "c2c"
-              enum:
-                - "c2c"
-                - "c2p"
       status:
         type: object
         properties:
@@ -978,24 +941,6 @@ definitions:
               - "Referred"
               - "Scheduled"
               - "Completed"
-          comments:
-            type: array
-            items:
-              type: object
-              properties:
-                userId:
-                  type: string
-                  default: "xyz@abc.com"
-                timeStamp:
-                  type: number
-                text:
-                  type: string
-                channel:
-                  type: string
-                  default: "c2c"
-                  enum:
-                    - "c2c"
-                    - "c2p"
       reasons:
         type: array
         items:
