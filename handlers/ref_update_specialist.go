@@ -269,7 +269,7 @@ func GetOneMessage(c *gin.Context) {
 		)
 		return
 	}
-	oneComment, err := dsRefC.GetMessagesAllWithChannel(ctx, referralID, messageID)
+	oneComment, err := dsRefC.GetOneMessage(ctx, referralID, messageID)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
