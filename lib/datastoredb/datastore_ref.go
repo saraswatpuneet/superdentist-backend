@@ -192,10 +192,10 @@ func (db *DSReferral) GetMessagesAllWithChannel(ctx context.Context, referralID 
 func (db *DSReferral) GetOneMessage(ctx context.Context, referralID string, messageID string) (*contracts.Comment, error) {
 	pKey := datastore.NameKey("ReferralMessages", referralID, nil)
 	mainKey := datastore.NameKey("ReferralMessages", messageID, pKey)
-	returnedComments := make([]contracts.Comment, 0)
-	err := db.client.Get(ctx, mainKey, returnedComments)
+	var returnedComments contracts.Comment
+	err := db.client.Get(ctx, mainKey, &returnedComments)
 	if err != nil {
 		return nil, fmt.Errorf("no comments found: %v", err)
 	}
-	return &returnedComments[0], nil
+	return &returnedComments, nil
 }
