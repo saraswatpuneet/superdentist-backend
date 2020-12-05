@@ -30,7 +30,7 @@ func AddCommentsToReferral(c *gin.Context) {
 	// Stage 1  Load the incoming request
 	log.Infof("Add comments to Referral")
 	ctx := c.Request.Context()
-	referralID := c.Param("id")
+	referralID := c.Param("referralId")
 
 	var referralDetails contracts.ReferralComments
 	_, _, gproject, err := getUserDetails(ctx, c.Request)
@@ -84,8 +84,19 @@ func AddCommentsToReferral(c *gin.Context) {
 		currentID, _ := uuid.NewUUID()
 		comm.MessageID = currentID.String()
 		updatedComm = append(updatedComm, comm)
+
 	}
-	dsReferral.Comments = append(dsReferral.Comments, updatedComm...)
+	err = dsRefC.CreateMessage(ctx, *dsReferral, updatedComm)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
 	dsReferral.ModifiedOn = time.Now()
 	err = dsRefC.CreateReferral(ctx, *dsReferral)
 	if err != nil {
@@ -161,12 +172,126 @@ func AddCommentsToReferral(c *gin.Context) {
 	})
 }
 
+// GetAllMessages ....
+func GetAllMessages(c *gin.Context) {
+	// Stage 1  Load the incoming request
+	log.Infof("Add comments to Referral")
+	ctx := c.Request.Context()
+	referralID := c.Param("referralId")
+	channel := c.Query("channel")
+	if referralID == "" {
+		c.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: fmt.Errorf("Missing referral ID"),
+			},
+		)
+		return
+	}
+	_, _, gproject, err := getUserDetails(ctx, c.Request)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	dsRefC := datastoredb.NewReferralHandler()
+	err = dsRefC.InitializeDataBase(ctx, gproject)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	allComments, err := dsRefC.GetMessagesAllWithChannel(ctx, referralID, channel)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		constants.RESPONSE_JSON_DATA:   allComments,
+		constants.RESPONSDE_JSON_ERROR: nil,
+	})
+}
+
+// GetOneMessage ....
+func GetOneMessage(c *gin.Context) {
+	// Stage 1  Load the incoming request
+	log.Infof("Update Referral Status")
+	ctx := c.Request.Context()
+	referralID := c.Param("referralId")
+	messageID := c.Param("messageId")
+	if referralID == "" || messageID == "" {
+		c.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: fmt.Errorf("Missing referral/message ID"),
+			},
+		)
+		return
+	}
+	_, _, gproject, err := getUserDetails(ctx, c.Request)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	dsRefC := datastoredb.NewReferralHandler()
+	err = dsRefC.InitializeDataBase(ctx, gproject)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	oneComment, err := dsRefC.GetMessagesAllWithChannel(ctx, referralID, messageID)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		constants.RESPONSE_JSON_DATA:   oneComment,
+		constants.RESPONSDE_JSON_ERROR: nil,
+	})
+}
+
 // UpdateReferralStatus ...
 func UpdateReferralStatus(c *gin.Context) {
 	// Stage 1  Load the incoming request
 	log.Infof("Update Referral Status")
 	ctx := c.Request.Context()
-	referralID := c.Param("id")
+	referralID := c.Param("referralId")
 
 	var referralDetails contracts.ReferralStatus
 	_, _, gproject, err := getUserDetails(ctx, c.Request)
@@ -243,7 +368,18 @@ func UpdateReferralStatus(c *gin.Context) {
 		y, m, d := dsReferral.ModifiedOn.Date()
 		dateString := fmt.Sprintf("%d-%d-%d", y, int(m), d)
 		sendPatientComments := make([]string, 0)
-		for _, comment := range dsReferral.Comments {
+		comments, err := dsRefC.GetMessagesAll(ctx, dsReferral.ReferralID)
+		if err != nil {
+			c.AbortWithStatusJSON(
+				http.StatusInternalServerError,
+				gin.H{
+					constants.RESPONSE_JSON_DATA:   nil,
+					constants.RESPONSDE_JSON_ERROR: err.Error(),
+				},
+			)
+			return
+		}
+		for _, comment := range comments {
 			if comment.Channel == contracts.GDCBox && dsReferral.ToEmail != "" && comment.UserID == dsReferral.ToEmail {
 				sendPatientComments = append(sendPatientComments, comment.Text)
 			}
@@ -262,7 +398,7 @@ func DeleteReferral(c *gin.Context) {
 	// Stage 1  Load the incoming request
 	log.Infof("Delete Referral")
 	ctx := c.Request.Context()
-	referralID := c.Param("id")
+	referralID := c.Param("referralId")
 
 	_, _, gproject, err := getUserDetails(ctx, c.Request)
 	if err != nil {
@@ -323,7 +459,7 @@ func UploadDocuments(c *gin.Context) {
 	// Stage 1  Load the incoming request
 	log.Infof("Update Referral Documents")
 	ctx := c.Request.Context()
-	referralID := c.Param("id")
+	referralID := c.Param("referralId")
 	_, _, gproject, err := getUserDetails(ctx, c.Request)
 	if err != nil {
 		c.AbortWithStatusJSON(
@@ -454,7 +590,7 @@ func UploadDocuments(c *gin.Context) {
 func DownloadDocumentsAsZip(c *gin.Context) {
 	log.Infof("Download Referral Documents")
 	ctx := c.Request.Context()
-	referralID := c.Param("id")
+	referralID := c.Param("referralId")
 	_, _, gproject, err := getUserDetails(ctx, c.Request)
 	if err != nil {
 		c.AbortWithStatusJSON(
@@ -601,7 +737,7 @@ func GetAllReferralsSP(c *gin.Context) {
 func GetOneReferral(c *gin.Context) {
 	log.Infof("Get all referrals")
 
-	referralID := c.Param("id")
+	referralID := c.Param("referralId")
 	ctx := c.Request.Context()
 	_, _, gproject, err := getUserDetails(ctx, c.Request)
 	if err != nil {
@@ -750,7 +886,10 @@ func ReceiveReferralMail(c *gin.Context) {
 		comm.TimeStamp = time.Now().Unix()
 		currentComments = append(currentComments, comm)
 	}
-	dsReferral.Comments = append(dsReferral.Comments, currentComments...)
+	err = dsRefC.CreateMessage(ctx, *dsReferral, currentComments)
+	if err != nil {
+		log.Errorf("Error processing email"+" "+fromEmail+" "+subject+" error:%v ", err.Error())
+	}
 	dsReferral.ModifiedOn = time.Now()
 
 	err = dsRefC.CreateReferral(ctx, *dsReferral)
@@ -823,7 +962,10 @@ func TextRecievedPatient(c *gin.Context) {
 		commText.TimeStamp = time.Now().Unix()
 		id, _ := uuid.NewUUID()
 		commText.MessageID = id.String()
-		dsReferral.Comments = append(dsReferral.Comments, commText)
+		err = dsRefC.CreateMessage(ctx, *dsReferral, []contracts.Comment{commText})
+		if err != nil {
+			log.Errorf("Error processing sms error:%v ", err.Error())
+		}
 	}
 	docIDNames := make([]string, 0)
 
@@ -835,7 +977,10 @@ func TextRecievedPatient(c *gin.Context) {
 		id, _ := uuid.NewUUID()
 		commText.MessageID = id.String()
 		commText.UserID = dsReferral.PatientEmail
-		dsReferral.Comments = append(dsReferral.Comments, commText)
+		err = dsRefC.CreateMessage(ctx, *dsReferral, []contracts.Comment{commText})
+		if err != nil {
+			log.Errorf("Error processing sms error:%v ", err.Error())
+		}
 		storageC := storage.NewStorageHandler()
 		err = storageC.InitializeStorageClient(ctx, gproject)
 		if err != nil {

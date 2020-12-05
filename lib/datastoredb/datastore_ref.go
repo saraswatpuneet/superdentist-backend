@@ -100,6 +100,7 @@ func (db *DSReferral) ReferralFromPatientPhone(ctx context.Context, patientPhone
 	}
 	return &returnedReferrals[0], nil
 }
+
 // GetAllReferralsGD .....
 func (db *DSReferral) GetAllReferralsGD(ctx context.Context, addressID string) ([]contracts.DSReferral, error) {
 	returnedReferrals := make([]contracts.DSReferral, 0)
@@ -143,4 +144,58 @@ func (db *DSReferral) DeleteReferral(ctx context.Context, refID string) (*contra
 		return nil, err
 	}
 	return &referral, nil
+}
+
+// CreateMessage .....
+func (db *DSReferral) CreateMessage(ctx context.Context, referral contracts.DSReferral, comms []contracts.Comment) error {
+	primaryKey := datastore.NameKey("ReferralMessages", referral.ReferralID, nil)
+	for _, comment := range comms {
+		secondarKey := datastore.NameKey("ReferralMessages", comment.MessageID, primaryKey)
+		_, err := db.client.Put(ctx, secondarKey, &comment)
+		if err != nil {
+			return fmt.Errorf("cannot register clinic with sd: %v", err)
+		}
+	}
+	return nil
+}
+
+// GetMessagesAll .....
+func (db *DSReferral) GetMessagesAll(ctx context.Context, referralID string) ([]contracts.Comment, error) {
+	ancKey := datastore.NameKey("ReferralMessages", referralID, nil)
+
+	returnedComments := make([]contracts.Comment, 0)
+	qP := datastore.NewQuery("ReferralMessages").Ancestor(ancKey)
+	keysClinics, err := db.client.GetAll(ctx, qP, &returnedComments)
+	if err != nil || len(keysClinics) <= 0 {
+		return nil, fmt.Errorf("no comments found: %v", err)
+	}
+	return returnedComments, nil
+}
+
+// GetMessagesAllWithChannel .....
+func (db *DSReferral) GetMessagesAllWithChannel(ctx context.Context, referralID string, channel string) ([]contracts.Comment, error) {
+	ancKey := datastore.NameKey("ReferralMessages", referralID, nil)
+
+	returnedComments := make([]contracts.Comment, 0)
+	qP := datastore.NewQuery("ReferralMessages").Ancestor(ancKey)
+	if channel != "" {
+		qP = qP.Filter("Channel =", channel)
+	}
+	keysClinics, err := db.client.GetAll(ctx, qP, &returnedComments)
+	if err != nil || len(keysClinics) <= 0 {
+		return nil, fmt.Errorf("no comments found: %v", err)
+	}
+	return returnedComments, nil
+}
+
+// GetOneMessage .....
+func (db *DSReferral) GetOneMessage(ctx context.Context, referralID string, messageID string) (*contracts.Comment, error) {
+	pKey := datastore.NameKey("ReferralMessages", referralID, nil)
+	mainKey := datastore.NameKey("ReferralMessages", messageID, pKey)
+	returnedComments := make([]contracts.Comment, 0)
+	err := db.client.Get(ctx, mainKey, returnedComments)
+	if err != nil {
+		return nil, fmt.Errorf("no comments found: %v", err)
+	}
+	return &returnedComments[0], nil
 }

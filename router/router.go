@@ -57,19 +57,21 @@ func SDRouter() (*gin.Engine, error) {
 		clinicGroup.POST("/removeFavorites/:addressId", handlers.RemoveFavoriteClinics)
 
 	}
-	referralGroup := version1.Group("/referral")
+	referralGroup := version1.Group("/")
 	{
-		referralGroup.POST("/mail", handlers.ReceiveReferralMail)
-		referralGroup.POST("/sms", handlers.TextRecievedPatient)
-		referralGroup.POST("/create", handlers.CreateRefSpecialist)
-		referralGroup.POST("/addComments/:id", handlers.AddCommentsToReferral)
-		referralGroup.POST("/updateStatus/:id", handlers.UpdateReferralStatus)
-		referralGroup.DELETE("/delete/:id", handlers.DeleteReferral)
-		referralGroup.POST("/uploadDocuments/:id", handlers.UploadDocuments)
-		referralGroup.GET("/downloadDocuments/:id", handlers.DownloadDocumentsAsZip)
-		referralGroup.GET("/gdReferrals", handlers.GetAllReferralsGD)
-		referralGroup.GET("/spReferrals", handlers.GetAllReferralsSP)
-		referralGroup.GET("/getOne/:id", handlers.GetOneReferral)
+		referralGroup.POST("/referral/mail", handlers.ReceiveReferralMail)
+		referralGroup.POST("/referral/sms", handlers.TextRecievedPatient)
+		referralGroup.POST("/referrals", handlers.CreateRefSpecialist)
+		referralGroup.POST("/referrals/:referralId/messages", handlers.AddCommentsToReferral)
+		referralGroup.GET("/referrals/:referralId/messages", handlers.GetAllMessages)
+		referralGroup.GET("/referrals/:referralId/messages/:messageId", handlers.GetOneMessage)
+		referralGroup.PUT("/referrals/:referralId/status", handlers.UpdateReferralStatus)
+		referralGroup.DELETE("/referrals/:referralId", handlers.DeleteReferral)
+		referralGroup.POST("/referrals/:referralId/documents", handlers.UploadDocuments)
+		referralGroup.GET("/referrals/:referralId/documents", handlers.DownloadDocumentsAsZip)
+		referralGroup.GET("/referrals-by-clinic/dentist", handlers.GetAllReferralsGD)
+		referralGroup.GET("/referrals-by-clinic/specialist", handlers.GetAllReferralsSP)
+		referralGroup.GET("/referrals/:referralId", handlers.GetOneReferral)
 
 	}
 	{

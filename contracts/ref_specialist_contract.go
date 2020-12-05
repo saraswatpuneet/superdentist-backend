@@ -81,7 +81,6 @@ type DSReferral struct {
 	ToClinicAddress   string    `json:"toClinicAddress" valid:"required"`
 	FromAddressID     string    `json:"fromAddressId" valid:"required"`
 	ToAddressID       string    `json:"toAddressId" valid:"required"`
-	Comments          []Comment `json:"comments"`
 	Status            Status    `json:"status" valid:"required"`
 	Reasons           []string  `json:"reasons"`
 	History           []string  `json:"history"`

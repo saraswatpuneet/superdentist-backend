@@ -166,7 +166,6 @@ func CreateRefSpecialist(c *gin.Context) {
 		comm.MessageID = currentID.String()
 		updatedComm = append(updatedComm, comm)
 	}
-	dsReferral.Comments = append(dsReferral.Comments, updatedComm...)
 	dsReferral.Tooth = referralDetails.Tooth
 	dsReferral.PatientEmail = referralDetails.Patient.Email
 	dsReferral.PatientFirstName = referralDetails.Patient.FirstName
@@ -248,9 +247,11 @@ func CreateRefSpecialist(c *gin.Context) {
 		return
 	}
 	sendPatientComments := make([]string, 0)
-	for _, comment := range dsReferral.Comments {
-		sendPatientComments = append(sendPatientComments, comment.Text)
-	}
+	var comment1  contracts.Comment
+	comment1.Text = "New Referral has been created for "+ dsReferral.ToClinicName
+	var comment2  contracts.Comment
+	comment2.Text = "New Referral has been created for "+ dsReferral.PatientFirstName+ " "+ dsReferral.PatientFirstName
+	sendPatientComments = append(sendPatientComments, comment1.Text, comment2.Text)
 	y, m, d := dsReferral.CreatedOn.Date()
 	dateString := fmt.Sprintf("%d-%d-%d", y, int(m), d)
 	if dsReferral.ToEmail != "" {
