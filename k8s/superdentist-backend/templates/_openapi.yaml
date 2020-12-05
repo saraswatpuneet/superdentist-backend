@@ -407,7 +407,7 @@ paths:
           description: "Internal server error occured"
       security:
         - Bearer: []
-  /v1/referral/create:
+  /v1/referrals:
     post:
       tags:
        - "Referrals"
@@ -435,7 +435,7 @@ paths:
           description: "Internal server error occured"
       security:
         - Bearer: []
-  /v1/referral/delete/{id}:
+  /v1/referrals/{referralId}:
     delete:
       tags:
        - "Referrals"
@@ -447,7 +447,7 @@ paths:
       parameters:
       - in: "path"
         type: string
-        name: "id"
+        name: "referralId"
         description: "unique address id of registered clinic"
         required: true
       responses:
@@ -459,7 +459,7 @@ paths:
           description: "Internal server error occured"
       security:
         - Bearer: []
-  /v1/referral/addComments/{id}:
+  /v1/referrals/{referralId}/messages:
     post:
       tags:
        - "Referrals"
@@ -471,7 +471,7 @@ paths:
       parameters:
       - in: "path"
         type: string
-        name: "id"
+        name: "referralId"
         description: "unique address id of registered clinic"
         required: true
       - in: "body"
@@ -489,7 +489,65 @@ paths:
           description: "Internal server error occured"
       security:
         - Bearer: []
-  /v1/referral/updateStatus/{id}:
+    get:
+      tags:
+       - "Referrals"
+      summary: "Get comments to existing referral"
+      description: "Get comments to referral"
+      operationId: "GetAllMessages"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "path"
+        type: string
+        name: "referralId"
+        description: "unique address id of registered clinic"
+        required: true
+      - in: "query"
+        type: string
+        name: "channel"
+        description: "unique address id of registered clinic"
+        required: false
+      responses:
+        '200':
+          $ref: '#/responses/GetAllMessages'
+        '401':
+          description: "Unauthorized: Bad request or authorization details"
+        '500':
+          description: "Internal server error occured"
+      security:
+        - Bearer: []
+  /v1/referrals/{referralId}/messages/{messageId}:
+    get:
+      tags:
+       - "Referrals"
+      summary: "Get comments to existing referral"
+      description: "Get comments to referral"
+      operationId: "GetOneMessage"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "path"
+        type: string
+        name: "referralId"
+        description: "unique address id of registered clinic"
+        required: true
+      - in: "path"
+        type: string
+        name: "messageId"
+        description: "unique messageId of comment"
+        required: true
+      responses:
+        '200':
+          $ref: '#/definitions/ReferralComments'
+        '401':
+          description: "Unauthorized: Bad request or authorization details"
+        '500':
+          description: "Internal server error occured"
+      security:
+        - Bearer: []
+
+  /v1/referrals/{referralId}/status:
     post:
       tags:
        - "Referrals"
@@ -501,7 +559,7 @@ paths:
       parameters:
       - in: "path"
         type: string
-        name: "id"
+        name: "referralId"
         description: "unique address id of registered clinic"
         required: true
       - in: "body"
@@ -519,7 +577,7 @@ paths:
           description: "Internal server error occured"
       security:
         - Bearer: []
-  /v1/referral/uploadDocuments/{id}:
+  /v1/referrals/{referralId}/documents:
     post:
       tags:
        - "Referrals"
@@ -533,7 +591,7 @@ paths:
       parameters:
       - in: "path"
         type: string
-        name: "id"
+        name: "referralId"
         description: "unique address id of registered clinic"
         required: true
       responses:
@@ -545,7 +603,31 @@ paths:
           description: "Internal server error occured"
       security:
         - Bearer: []
-  /v1/referral/gdReferrals:
+    get:
+      tags:
+       - "Referrals"
+      summary: "Download all associated documents as zip file"
+      description:  "Download all associated documents as zip file"
+      operationId: "DownloadDocumentsAsZip"
+      consumes:
+         - application/json
+      produces:
+      - "application/json"
+      parameters:
+      - in: "path"
+        name: "referralId"
+        type: string
+        required: true
+      responses:
+        '200':
+          description: "response if type Content-Disposition, streaming file data to local download"
+        '401':
+          description: "Unauthorized: Bad request or authorization details"
+        '500':
+          description: "Internal server error occured"
+      security:
+        - Bearer: []
+  /v1/referrals-by-clinic/dentist:
     get:
       tags:
        - "Referrals"
@@ -570,7 +652,7 @@ paths:
           description: "Internal server error occured"
       security:
         - Bearer: []
-  /v1/referral/spReferrals:
+  /v1/referrals-by-clinic/specialist:
     get:
       tags:
        - "Referrals"
@@ -595,7 +677,7 @@ paths:
           description: "Internal server error occured"
       security:
         - Bearer: []
-  /v1/referral/getOne/{id}:
+  /v1/referrals/getOne/{id}:
     get:
       tags:
        - "Referrals"
@@ -620,31 +702,7 @@ paths:
           description: "Internal server error occured"
       security:
         - Bearer: []
-  /v1/referral/downloadDocuments/{id}:
-    get:
-      tags:
-       - "Referrals"
-      summary: "Download all associated documents as zip file"
-      description:  "Download all associated documents as zip file"
-      operationId: "DownloadDocumentsAsZip"
-      consumes:
-         - application/json
-      produces:
-      - "application/json"
-      parameters:
-      - in: "path"
-        name: "id"
-        type: string
-        required: true
-      responses:
-        '200':
-          description: "response if type Content-Disposition, streaming file data to local download"
-        '401':
-          description: "Unauthorized: Bad request or authorization details"
-        '500':
-          description: "Internal server error occured"
-      security:
-        - Bearer: []
+
 securityDefinitions:
   Bearer:
     type: "apiKey"
@@ -652,6 +710,29 @@ securityDefinitions:
     in: "header"
 
 definitions:
+  CommentsList:
+    type: array
+    items:
+      type: object
+      properties:
+        comments:
+          type: array
+          items:
+            type: object
+            properties:
+              userId:
+                type: string
+                default: "xyz@abc.com"
+              timeStamp:
+                type: number
+              text:
+                type: string
+              channel:
+                type: string
+                default: "c2c"
+                enum:
+                  - "c2c"
+                  - "c2p"
   GetReferralList:
     type: array
     items:
@@ -1198,4 +1279,8 @@ responses:
     description: On successful referral creation payload containing unique referral id is returned and emails are send to patient and clinic for whom referral is created
     schema:
       $ref: '#/definitions/ReferralResponse'
+  GetAllMessages:
+    description: On successful referral creation payload containing unique referral id is returned and emails are send to patient and clinic for whom referral is created
+    schema:
+      $ref: '#/definitions/CommentsList'
 {{ end }}
