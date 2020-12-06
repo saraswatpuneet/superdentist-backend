@@ -1,7 +1,7 @@
 package gmaps
 
-// SPECIALITIES
-var SPECIALITIES = [] string {
+// SPECIALITIES ....
+var SPECIALITIES = []string{
 	"Orthodontist",
 	"Orthodontics",
 	"Oral and Maxillofacial Surgeon",
@@ -17,4 +17,15 @@ var SPECIALITIES = [] string {
 	"Periodontist",
 	"Prosthodontics",
 	"Prosthodontist",
+}
+
+// SPECIALITYMAP ....
+var SPECIALITYMAP = map[string]string{
+	"ortho":  "Orthodontist",
+	"maxi":   "Oral and Maxillofacial",
+	"oral":   "Oral Surgeon",
+	"pedia":  "Perdiatric Dentistry",
+	"endo":   "Endodontist",
+	"perio":  "Periodontist",
+	"prosth": "Prosthodontist",
 }
