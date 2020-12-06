@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -317,6 +318,15 @@ func GetNearbySpeialists(c *gin.Context) {
 	}
 	var responseData contracts.GetNearbyClinics
 	responseData.ClinicAddresses = collectClinics
+	for i, clinic := range collectClinics {
+		for key, value := range gmaps.SPECIALITYMAP {
+			if strings.Contains(strings.ToLower(clinic.GeneralDetails.Name), key) {
+				clinic.GeneralDetails.Types[0] = value
+				break
+			}
+		}
+		collectClinics[i] = clinic
+	}
 	responseData.Cursor = pToken
 	c.JSON(http.StatusOK, gin.H{
 		constants.RESPONSE_JSON_DATA:   responseData,

@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"strings"
 
 	"googlemaps.github.io/maps"
 )
@@ -81,12 +80,6 @@ func (gm *ClientGMaps) FindNearbyPlacesFromLocation(location maps.LatLng, radius
 	}
 	for _, place := range placesSearchResponse.Results {
 		if _, ok := ignorePlaces[place.PlaceID]; !ok {
-			for key, value := range SPECIALITYMAP {
-				if strings.Contains(strings.ToLower(place.Name), key) {
-					place.Types[0] = value
-					break
-				}
-			}
 			currentPlace, _ := gm.FindPlaceFromID(place.PlaceID)
 			nearbyClinicsMap[place.PlaceID] = *currentPlace
 		}
