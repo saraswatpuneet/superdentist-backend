@@ -167,7 +167,7 @@ func AddCommentsToReferral(c *gin.Context) {
 		}
 	}
 	c.JSON(http.StatusOK, gin.H{
-		constants.RESPONSE_JSON_DATA:   dsReferral,
+		constants.RESPONSE_JSON_DATA:   updatedComm,
 		constants.RESPONSDE_JSON_ERROR: nil,
 	})
 }
