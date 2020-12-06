@@ -278,6 +278,11 @@ func GetNearbySpeialists(c *gin.Context) {
 			}
 
 			currentReturn.GeneralDetails = *getClinicSearchLoc
+			if clinicAdd.Speciality != nil {
+				for _, sp := range clinicAdd.Speciality {
+					currentReturn.GeneralDetails.Types = append(currentReturn.GeneralDetails.Types, sp)
+				}
+			}
 			currentVerifiedPlaces[currentReturn.GeneralDetails.PlaceID] = true
 			clinicAdd.IsVerified = true
 			currentReturn.VerifiedDetails = clinicAdd
