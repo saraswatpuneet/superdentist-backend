@@ -166,8 +166,10 @@ func AddCommentsToReferral(c *gin.Context) {
 			}
 		}
 	}
+	var commentResponse contracts.ReferralComments
+	commentResponse.Comments = updatedComm
 	c.JSON(http.StatusOK, gin.H{
-		constants.RESPONSE_JSON_DATA:   updatedComm,
+		constants.RESPONSE_JSON_DATA:   commentResponse,
 		constants.RESPONSDE_JSON_ERROR: nil,
 	})
 }
