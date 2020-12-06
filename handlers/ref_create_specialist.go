@@ -209,31 +209,40 @@ func CreateRefSpecialist(c *gin.Context) {
 		dsReferral.ToEmail = toClinic.EmailAddress
 		dsReferral.ToClinicPhone = toClinic.PhoneNumber
 	} else {
-		mapClient := gmaps.NewMapsHandler()
-		err = mapClient.InitializeGoogleMapsAPIClient(ctx, gproject)
-		if err != nil {
-			c.AbortWithStatusJSON(
-				http.StatusInternalServerError,
-				gin.H{
-					constants.RESPONSE_JSON_DATA:   nil,
-					constants.RESPONSDE_JSON_ERROR: err.Error(),
-				},
-			)
+		toClinic, err := clinicDB.GetSingleClinicViaPlace(ctx, referralDetails.ToAddressID)
+		if err == nil && toClinic.IsVerified {
+			dsReferral.ToPlaceID = toClinic.PlaceID
+			dsReferral.ToClinicName = toClinic.Name
+			dsReferral.ToClinicAddress = toClinic.Address
+			dsReferral.ToEmail = toClinic.EmailAddress
+			dsReferral.ToClinicPhone = toClinic.PhoneNumber
+		} else {
+			mapClient := gmaps.NewMapsHandler()
+			err = mapClient.InitializeGoogleMapsAPIClient(ctx, gproject)
+			if err != nil {
+				c.AbortWithStatusJSON(
+					http.StatusInternalServerError,
+					gin.H{
+						constants.RESPONSE_JSON_DATA:   nil,
+						constants.RESPONSDE_JSON_ERROR: err.Error(),
+					},
+				)
+			}
+			details, err := mapClient.FindPlaceFromID(referralDetails.ToPlaceID)
+			if err != nil {
+				c.AbortWithStatusJSON(
+					http.StatusInternalServerError,
+					gin.H{
+						constants.RESPONSE_JSON_DATA:   nil,
+						constants.RESPONSDE_JSON_ERROR: err.Error(),
+					},
+				)
+			}
+			dsReferral.ToClinicAddress = details.FormattedAddress
+			dsReferral.ToPlaceID = details.PlaceID
+			dsReferral.ToClinicName = details.Name
+			dsReferral.ToClinicPhone = details.FormattedPhoneNumber
 		}
-		details, err := mapClient.FindPlaceFromID(referralDetails.ToPlaceID)
-		if err != nil {
-			c.AbortWithStatusJSON(
-				http.StatusInternalServerError,
-				gin.H{
-					constants.RESPONSE_JSON_DATA:   nil,
-					constants.RESPONSDE_JSON_ERROR: err.Error(),
-				},
-			)
-		}
-		dsReferral.ToClinicAddress = details.FormattedAddress
-		dsReferral.ToPlaceID = details.PlaceID
-		dsReferral.ToClinicName = details.Name
-		dsReferral.ToClinicPhone = details.FormattedPhoneNumber
 	}
 	err = dsRefC.CreateReferral(ctx, dsReferral)
 	if err != nil {
