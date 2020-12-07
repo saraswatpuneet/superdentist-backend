@@ -2,28 +2,25 @@ package constants
 
 const (
 	// ENV_DEBUG ..... for debugging serverity
-	ENV_DEBUG               string = "DEBUG"
-	MAX_READ_TIMEOUT               = 50 // secs
-	MAX_WRITE_TIMEOUT              = 50 // secs
-	RESPONSE_JSON_DATA      string = "data"
-	RESPONSDE_JSON_ERROR    string = "error"
-	SD_REFERRAL_PHONE			   = "+12157745591"
-	SD_REFERRAL_BUCKET             = "superdentist-referrals"
-	SD_MAIN_EMAIL                  = "superdentist.admin@superdentist.io"
-	SD_ADMIN_EMAIL                 = "referrals@superdentist.io"
-	SD_PATIENT_REF_CONF            = "d-0cb214d233c0499691bfba7a42689ac7"
-	SD_SPECIALIZT_REF_CONF         = "d-e9288c40cc76436db70a32dc4dba6efa"
-	GD_REFERRAL_COMPLETED          = "d-5223f0628162417591e27d9810460ebc"
-	CLINIC_NOTIFICATION_NEW        = "d-7ab65eeeb1144af285bc31aa39fb6873"
-	PATINET_EMAIL_NOTIFICATION	   = "d-c2e691190e1145d58d2fdda9782257ed"
-	PATIENT_MESSAGE				   = `Hi %s 
+	ENV_DEBUG                  string = "DEBUG"
+	MAX_READ_TIMEOUT                  = 50 // secs
+	MAX_WRITE_TIMEOUT                 = 50 // secs
+	RESPONSE_JSON_DATA         string = "data"
+	RESPONSDE_JSON_ERROR       string = "error"
+	SD_REFERRAL_PHONE                 = "+12157745591"
+	SD_REFERRAL_BUCKET                = "superdentist-referrals"
+	SD_MAIN_EMAIL                     = "superdentist.admin@superdentist.io"
+	SD_ADMIN_EMAIL                    = "referrals@superdentist.io"
+	SD_PATIENT_REF_CONF               = "d-0cb214d233c0499691bfba7a42689ac7"
+	SD_SPECIALIZT_REF_CONF            = "d-e9288c40cc76436db70a32dc4dba6efa"
+	GD_REFERRAL_COMPLETED             = "d-5223f0628162417591e27d9810460ebc"
+	CLINIC_NOTIFICATION_NEW           = "d-7ab65eeeb1144af285bc31aa39fb6873"
+	PATINET_EMAIL_NOTIFICATION        = "d-c2e691190e1145d58d2fdda9782257ed"
+	PATIENT_MESSAGE                   = `Hi %s 
 	You've been referred to %s.
 	Address: %s
 	Phone: %s
-	You can directly text in this thread to communicate with your specialist and book
-	a convenient time.
-	You can also check your email, if provided, to communicate with your specialist via email.
-	Thank you for availing our services via SuperDentist!`
-	PATIENT_MESSAGE_NOTICE				   = ` Hi %s 
+	You can text directly in this thread to chat with your specialist and book a convenient appointment time. Your specialist may also message you first!`
+	PATIENT_MESSAGE_NOTICE = ` Hi %s 
 	Message from %s : %s`
 )
