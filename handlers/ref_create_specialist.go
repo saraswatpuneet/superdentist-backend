@@ -209,7 +209,7 @@ func CreateRefSpecialist(c *gin.Context) {
 		dsReferral.ToEmail = toClinic.EmailAddress
 		dsReferral.ToClinicPhone = toClinic.PhoneNumber
 	} else {
-		toClinic, err := clinicDB.GetSingleClinicViaPlace(ctx, referralDetails.ToAddressID)
+		toClinic, err := clinicDB.GetSingleClinicViaPlace(ctx, referralDetails.ToPlaceID)
 		if err == nil && toClinic.IsVerified {
 			dsReferral.ToPlaceID = toClinic.PlaceID
 			dsReferral.ToClinicName = toClinic.Name

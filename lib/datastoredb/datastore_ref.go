@@ -120,17 +120,13 @@ func (db *DSReferral) GetAllReferralsSP(ctx context.Context, addressID string) (
 	returnedReferrals := make([]contracts.DSReferral, 0)
 	qP := datastore.NewQuery("ClinicReferrals")
 	if addressID != "" {
-		qP = qP.Filter("ToAddressID =", addressID).Filter("IsDirty =", false)
+		qP = qP.Filter("ToPlaceID =", addressID).Filter("IsDirty =", false)
 	}
 	keysClinics, err := db.client.GetAll(ctx, qP, &returnedReferrals)
 	if err != nil || len(keysClinics) <= 0 {
-		qP2 := datastore.NewQuery("ClinicReferrals")
-		qP2 = qP2.Filter("ToPlaceID =", addressID).Filter("IsDirty =", false)
-		keysClinics, err := db.client.GetAll(ctx, qP2, &returnedReferrals)
 		if err != nil || len(keysClinics) <= 0 {
 			return returnedReferrals, fmt.Errorf("no referrals found: %v", err)
 		}
-		return returnedReferrals, nil
 	}
 	return returnedReferrals, nil
 }

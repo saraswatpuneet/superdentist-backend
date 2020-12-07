@@ -704,6 +704,29 @@ func GetAllReferralsSP(c *gin.Context) {
 		)
 		return
 	}
+	clinicDB := datastoredb.NewClinicMetaHandler()
+	err = clinicDB.InitializeDataBase(ctx, gproject)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	currentClinic, err := clinicDB.GetSingleClinic(ctx, addressID)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusNotFound,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
 	dsRefC := datastoredb.NewReferralHandler()
 	err = dsRefC.InitializeDataBase(ctx, gproject)
 	if err != nil {
@@ -716,7 +739,7 @@ func GetAllReferralsSP(c *gin.Context) {
 		)
 		return
 	}
-	dsReferrals, err := dsRefC.GetAllReferralsSP(ctx, addressID)
+	dsReferrals, err := dsRefC.GetAllReferralsSP(ctx, currentClinic.PlaceID)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusNotFound,
