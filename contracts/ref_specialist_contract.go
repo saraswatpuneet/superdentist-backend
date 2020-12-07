@@ -96,6 +96,7 @@ type DSReferral struct {
 	FromEmail         string    `json:"fromEmail" valid:"required"`
 	ToEmail           string    `json:"toEmail" valid:"required"`
 	IsDirty           bool      `json:"isDirty" valid:"required"`
+	IsNew             bool      `json:"-"`
 }
 
 // SMS is returned after a text/sms message is posted to Twilio

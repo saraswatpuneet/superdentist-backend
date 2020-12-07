@@ -16,7 +16,6 @@ import (
 	"github.com/superdentist/superdentist-backend/lib/datastoredb"
 	"github.com/superdentist/superdentist-backend/lib/gmaps"
 	"github.com/superdentist/superdentist-backend/lib/sendgrid"
-	"github.com/superdentist/superdentist-backend/lib/sms"
 	"github.com/superdentist/superdentist-backend/lib/storage"
 	"go.opencensus.io/trace"
 )
@@ -244,6 +243,7 @@ func CreateRefSpecialist(c *gin.Context) {
 			dsReferral.ToClinicPhone = details.FormattedPhoneNumber
 		}
 	}
+	dsReferral.IsNew = true
 	err = dsRefC.CreateReferral(ctx, dsReferral)
 	if err != nil {
 		c.AbortWithStatusJSON(
@@ -255,61 +255,7 @@ func CreateRefSpecialist(c *gin.Context) {
 		)
 		return
 	}
-	sendPatientComments := make([]string, 0)
-	var comment1 contracts.Comment
-	comment1.Text = "New Referral has been created for " + dsReferral.ToClinicName
-	sendPatientComments = append(sendPatientComments, comment1.Text)
-	y, m, d := dsReferral.CreatedOn.Date()
-	dateString := fmt.Sprintf("%d-%d-%d", y, int(m), d)
-	if dsReferral.ToEmail != "" {
-		err = sgClient.SendEmailNotificationSpecialist(dsReferral.ToEmail,
-			dsReferral.PatientFirstName+" "+dsReferral.PatientLastName, dsReferral.ToClinicName,
-			dsReferral.PatientPhone, uniqueRefID, dateString, sendPatientComments)
-	} else {
-		err = sgClient.SendEmailNotificationSpecialist(constants.SD_ADMIN_EMAIL,
-			dsReferral.PatientFirstName+" "+dsReferral.PatientLastName, dsReferral.ToClinicName,
-			dsReferral.PatientPhone, uniqueRefID, dateString, sendPatientComments)
-	}
-	if err != nil {
-		c.AbortWithStatusJSON(
-			http.StatusInternalServerError,
-			gin.H{
-				constants.RESPONSE_JSON_DATA:   nil,
-				constants.RESPONSDE_JSON_ERROR: err.Error(),
-			},
-		)
-		return
-	}
-	if dsReferral.PatientEmail != "" {
-		err = sgClient.SendEmailNotificationPatient(dsReferral.PatientEmail,
-			dsReferral.PatientFirstName+" "+dsReferral.PatientLastName, dsReferral.ToClinicName,
-			dsReferral.ToClinicPhone, uniqueRefID, dsReferral.ToClinicAddress, sendPatientComments)
-		if err != nil {
-			c.AbortWithStatusJSON(
-				http.StatusInternalServerError,
-				gin.H{
-					constants.RESPONSE_JSON_DATA:   nil,
-					constants.RESPONSDE_JSON_ERROR: err.Error(),
-				},
-			)
-			return
-		}
-	}
-	clientSMS := sms.NewSMSClient()
-	err = clientSMS.InitializeSMSClient()
-	if err != nil {
-		c.AbortWithStatusJSON(
-			http.StatusInternalServerError,
-			gin.H{
-				constants.RESPONSE_JSON_DATA:   nil,
-				constants.RESPONSDE_JSON_ERROR: err.Error(),
-			},
-		)
-		return
-	}
-	message := fmt.Sprintf(constants.PATIENT_MESSAGE, dsReferral.PatientFirstName+" "+dsReferral.PatientLastName,
-		dsReferral.ToClinicName, dsReferral.ToClinicAddress, dsReferral.ToClinicPhone)
-	err = clientSMS.SendSMS(constants.SD_REFERRAL_PHONE, dsReferral.PatientPhone, message)
+
 	c.JSON(http.StatusOK, gin.H{
 		constants.RESPONSE_JSON_DATA:   dsReferral,
 		constants.RESPONSDE_JSON_ERROR: nil,
