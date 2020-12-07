@@ -146,7 +146,7 @@ func AddCommentsToReferral(c *gin.Context) {
 			log.Errorf("Failed to send SMS: %v", err.Error())
 		}
 		message := fmt.Sprintf(constants.PATIENT_MESSAGE, dsReferral.PatientFirstName+" "+dsReferral.PatientLastName,
-			dsReferral.ToClinicName, dsReferral.ToClinicAddress, dsReferral.ToClinicPhone)
+			dsReferral.ToClinicName, dsReferral.ToClinicAddress, dsReferral.ToClinicPhone,sendPatientComments)
 		err = clientSMS.SendSMS(constants.SD_REFERRAL_PHONE, dsReferral.PatientPhone, message)
 
 	}

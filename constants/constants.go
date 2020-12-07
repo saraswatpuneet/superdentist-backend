@@ -20,6 +20,7 @@ const (
 	You've been referred to %s.
 	Address: %s
 	Phone: %s
+	Comments: %s
 	You can text directly in this thread to chat with your specialist and book a convenient appointment time. Your specialist may also message you first!`
 	PATIENT_MESSAGE_NOTICE = ` Hi %s 
 	Message from %s : %s`
