@@ -241,7 +241,6 @@ func (db *dsClinicMeta) GetSingleClinicViaPlace(ctx context.Context, placeID str
 	return &returnedAddresses[0], nil
 }
 
-
 // GetNearbyClinics ....
 func (db *dsClinicMeta) GetNearbyClinics(ctx context.Context, clinicEmailID string, clinicFBID string, addressID string, distance float64) ([]contracts.PhysicalClinicMapLocation, *contracts.ClinicLocation, error) {
 	parentKey := datastore.NameKey("ClinicAdmin", clinicFBID, nil)
@@ -290,16 +289,9 @@ func (db *dsClinicMeta) GetNearbySpecialist(ctx context.Context, clinicEmailID s
 		return nil, fmt.Errorf("no doctors have been found for the given clinic address: %v", err)
 	}
 	returnedAddress := returnedAddresses[0]
-	currentLatLong := returnedAddress.Location
-	lat := 0.0144927536231884 // degrees latitude per mile
-	lon := 0.0181818181818182 // degrees longitude per mile
-	lowerLat := currentLatLong.Lat - lat*distance
-	lowerLon := currentLatLong.Long - lon*distance
-
-	upperLat := currentLatLong.Lat + lat*distance
-	upperLon := currentLatLong.Long + lon*distance
-	lowerHash := geohash.Encode(lowerLat, lowerLon, returnedAddress.Precision)
-	upperHash := geohash.Encode(upperLat, upperLon, returnedAddress.Precision)
+	currentHash := returnedAddress.Geohash
+	lowerHash := string(currentHash[0:4])
+	upperHash := lowerHash + "~"
 	qPNearest := datastore.NewQuery("ClinicAddress")
 	qPNearest = qPNearest.Filter("Geohash >=", lowerHash).Filter("Geohash <=", upperHash)
 	allNearbyAddresses := make([]contracts.PhysicalClinicMapLocation, 0)

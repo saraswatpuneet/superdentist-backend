@@ -247,16 +247,10 @@ func GetNearbySpeialists(c *gin.Context) {
 	currentVerifiedPlaces := make(map[string]bool)
 	currentFavorites := currentClinic.Favorites
 	if cursor == "" {
-		nearbyClinics, err := clinicMetaDB.GetNearbySpecialist(ctx, userEmail, userID, nearbyRequest.ClinicAddessID, dist)
+		nearbyClinics := make([]contracts.PhysicalClinicMapLocation, 0)
+		nearbyClinics, err = clinicMetaDB.GetNearbySpecialist(ctx, userEmail, userID, nearbyRequest.ClinicAddessID, dist)
 		if err != nil {
-			c.AbortWithStatusJSON(
-				http.StatusInternalServerError,
-				gin.H{
-					constants.RESPONSE_JSON_DATA:   nil,
-					constants.RESPONSDE_JSON_ERROR: err.Error(),
-				},
-			)
-			return
+			log.Infof("no nearby clinics found: %v", err.Error())
 		}
 		for _, clinicAdd := range nearbyClinics {
 			if clinicAdd.AddressID == nearbyRequest.ClinicAddessID || clinicAdd.Type == "dentist" {
@@ -287,7 +281,6 @@ func GetNearbySpeialists(c *gin.Context) {
 			clinicAdd.IsVerified = true
 			currentReturn.VerifiedDetails = clinicAdd
 			collectClinics = append(collectClinics, currentReturn)
-
 		}
 	}
 	currentMapLocation := maps.LatLng{
