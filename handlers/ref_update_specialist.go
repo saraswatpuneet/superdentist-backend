@@ -691,7 +691,7 @@ func GetAllReferralsGD(c *gin.Context) {
 func GetAllReferralsSP(c *gin.Context) {
 	log.Infof("Get all referrals")
 
-	addressID := c.Query("addressId")
+	addressID := c.Query("placeId")
 	ctx := c.Request.Context()
 	_, _, gproject, err := getUserDetails(ctx, c.Request)
 	if err != nil {
