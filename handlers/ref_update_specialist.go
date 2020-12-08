@@ -873,10 +873,10 @@ func ReceiveReferralMail(c *gin.Context) {
 			text = strings.ReplaceAll(text, "***Enter your message related to appointment,available date, questions etc.***", "")
 			text = strings.ReplaceAll(text, "\n", "")
 			text = strings.TrimSpace(text)
+			text = strings.Split(text, "SuperDentist Admin")[0]
 			bodyCleaned[key] = text
 		}
 	}
-	log.Infof("Body: %v", bodyCleaned)
 	parsedEmail.Body = bodyCleaned
 	ctx := c.Request.Context()
 	gproject := googleprojectlib.GetGoogleProjectID()
@@ -950,7 +950,6 @@ func ReceiveReferralMail(c *gin.Context) {
 			log.Errorf("Error processing email"+" "+fromEmail+" "+subject+" error:%v ", err.Error())
 		}
 	}
-
 
 	dsReferral.Documents = append(dsReferral.Documents, docIDNames...)
 	for _, text := range currentBody {
