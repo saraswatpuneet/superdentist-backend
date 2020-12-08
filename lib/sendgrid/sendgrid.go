@@ -40,7 +40,9 @@ func (sgc *ClientSendGrid) SendEmailNotificationPatient(pemail string,
 	comments []string) error {
 	mailSetup := mail.NewV3Mail()
 	from := mail.NewEmail("SuperDentist Admin", constants.SD_ADMIN_EMAIL)
+	replyTo := mail.NewEmail("Referral Manager", constants.SD_ADMIN_EMAIL_REPLYTO)
 	mailSetup.SetFrom(from)
+	mailSetup.SetReplyTo(replyTo)
 	mailSetup.SetTemplateID(constants.SD_PATIENT_REF_CONF)
 	p := mail.NewPersonalization()
 	tos := []*mail.Email{
