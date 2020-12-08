@@ -876,6 +876,7 @@ func ReceiveReferralMail(c *gin.Context) {
 			bodyCleaned[key] = text
 		}
 	}
+	log.Infof("Body: %v", bodyCleaned)
 	parsedEmail.Body = bodyCleaned
 	ctx := c.Request.Context()
 	gproject := googleprojectlib.GetGoogleProjectID()
@@ -944,11 +945,12 @@ func ReceiveReferralMail(c *gin.Context) {
 		uploadComment.Text = "New documents are uploaded by " + dsReferral.PatientFirstName + " " + dsReferral.PatientLastName
 		uploadComment.TimeStamp = time.Now().Unix()
 		currentComments = append(currentComments, uploadComment)
+		err = storageC.ZipFile(ctx, dsReferral.ReferralID)
+		if err != nil {
+			log.Errorf("Error processing email"+" "+fromEmail+" "+subject+" error:%v ", err.Error())
+		}
 	}
-	err = storageC.ZipFile(ctx, dsReferral.ReferralID)
-	if err != nil {
-		log.Errorf("Error processing email"+" "+fromEmail+" "+subject+" error:%v ", err.Error())
-	}
+
 
 	dsReferral.Documents = append(dsReferral.Documents, docIDNames...)
 	for _, text := range currentBody {
