@@ -854,6 +854,9 @@ func ReceiveReferralMail(c *gin.Context) {
 	fromEmail := parsedEmail.Headers["From"]
 	toEmail := parsedEmail.Headers["To"]
 	subject := parsedEmail.Headers["Subject"]
+	log.Infof("FROM: %v", fromEmail)
+	log.Infof("TO: %v", toEmail)
+	log.Infof("Sub: %v", subject)
 
 	if toEmail != "referrals@mailer.superdentist.io" {
 		log.Errorf("Email sent to bad actor" + " " + fromEmail + " " + subject)

@@ -78,7 +78,7 @@ func (db *DSReferral) GetReferralFromEmail(ctx context.Context, emailID string) 
 	returnedReferrals := make([]contracts.DSReferral, 0)
 	qP := datastore.NewQuery("ClinicReferrals")
 	if emailID != "" {
-		qP = qP.Filter("PatientEmail =", emailID).Filter("IsDirty =", false)
+		qP = qP.Filter("PatientEmail =", emailID)
 	}
 	keysClinics, err := db.client.GetAll(ctx, qP, &returnedReferrals)
 	if err != nil || len(keysClinics) <= 0 {
