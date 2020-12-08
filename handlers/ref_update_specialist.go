@@ -6,6 +6,7 @@ import (
 	"io"
 	"mime/multipart"
 	"net/http"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -146,7 +147,7 @@ func AddCommentsToReferral(c *gin.Context) {
 			log.Errorf("Failed to send SMS: %v", err.Error())
 		}
 		message := fmt.Sprintf(constants.PATIENT_MESSAGE, dsReferral.PatientFirstName+" "+dsReferral.PatientLastName,
-			dsReferral.ToClinicName, dsReferral.ToClinicAddress, dsReferral.ToClinicPhone,sendPatientComments)
+			dsReferral.ToClinicName, dsReferral.ToClinicAddress, dsReferral.ToClinicPhone, sendPatientComments)
 		err = clientSMS.SendSMS(constants.SD_REFERRAL_PHONE, dsReferral.PatientPhone, message)
 
 	}
@@ -854,10 +855,13 @@ func ReceiveReferralMail(c *gin.Context) {
 	fromEmail := parsedEmail.Headers["From"]
 	toEmail := parsedEmail.Headers["To"]
 	subject := parsedEmail.Headers["Subject"]
-	log.Infof("FROM: %v", fromEmail)
-	log.Infof("TO: %v", toEmail)
-	log.Infof("Sub: %v", subject)
-
+	re := regexp.MustCompile(`\<.*?\>`)
+	fromSub := re.FindAllString(fromEmail, -1)[0]
+	fromEmail = strings.Trim(fromSub, "<")
+	fromEmail = strings.Trim(fromEmail, ">")
+	toSub := re.FindAllString(toEmail, -1)[0]
+	toEmail = strings.Trim(toSub, "<")
+	toEmail = strings.Trim(toEmail, ">")
 	if toEmail != "referrals@mailer.superdentist.io" {
 		log.Errorf("Email sent to bad actor" + " " + fromEmail + " " + subject)
 	}
