@@ -2,6 +2,7 @@ package sms
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -41,7 +42,12 @@ func (twiC *ClientSMS) InitializeSMSClient() error {
 	twiC.httpClient = &http.Client{
 		Timeout: defaultTimeout,
 		CheckRedirect: func(req *http.Request, via []*http.Request) error {
-			return http.ErrUseLastResponse
+			// Go's http.DefaultClient allows 10 redirects before returning an
+			// an error. We have mimicked this default behavior.s
+			if len(via) >= 10 {
+				return errors.New("stopped after 10 redirects")
+			}
+			return nil
 		},
 	}
 	return nil
