@@ -10,6 +10,11 @@ type ClinicRegistrationData struct {
 	IsVerified bool   `json:"isVerified" valid:"required"`
 }
 
+// PasswordResetData ...
+type PasswordResetData struct {
+	EmailID string `json:"emailId" valid:"required"`
+}
+
 // GetNearbySpecialists .....
 type GetNearbySpecialists struct {
 	ClinicAddessID string `json:"addressId" valid:"required"`

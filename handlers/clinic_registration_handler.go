@@ -191,6 +191,76 @@ func AdminVerificationHandler(c *gin.Context) {
 	clinicDB.Close()
 }
 
+// AdminPasswordReset ...
+func AdminPasswordReset(c *gin.Context) {
+	log.Infof("Registering clinic with SD database")
+	ctx := c.Request.Context()
+	var clinicRegistrationReq contracts.PasswordResetData
+	gproject := googleprojectlib.GetGoogleProjectID()
+	ctx, span := trace.StartSpan(ctx, "Register incoming request for clinic")
+	defer span.End()
+	if err := c.ShouldBindWith(&clinicRegistrationReq, binding.JSON); err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: fmt.Errorf("Bad data sent to backened"),
+			},
+		)
+		return
+	}
+
+	sgClient := sendgrid.NewSendGridClient()
+	err := sgClient.InitializeSendGridClient()
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	idAuth, err := identity.NewIDPEP(ctx, gproject)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	veriURL, err := idAuth.GetResetPasswordURL(ctx, clinicRegistrationReq.EmailID)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	err = sgClient.SendPasswordResetEmail(clinicRegistrationReq.EmailID, veriURL)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		constants.RESPONSE_JSON_DATA:   "password reset in progress",
+		constants.RESPONSDE_JSON_ERROR: nil,
+	})
+}
+
 // AddPhysicalClinicsHandler ... after registering clinic main account we add multiple locations etc.
 func AddPhysicalClinicsHandler(c *gin.Context) {
 	log.Infof("Adding physical addresses to database for logged in clinic")

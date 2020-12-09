@@ -82,3 +82,12 @@ func (id *IDP) GetVerificationURL(ctx context.Context, email string) (string, er
 	}
 	return verifyLink, nil
 }
+
+// GetResetPasswordURL ...
+func (id *IDP) GetResetPasswordURL(ctx context.Context, email string) (string, error) {
+	verifyLink, err := id.client.PasswordResetLink(ctx, email)
+	if err != nil {
+		return "", err
+	}
+	return verifyLink, nil
+}

@@ -224,3 +224,29 @@ func (sgc *ClientSendGrid) SendVerificationEmail(
 	}
 	return nil
 }
+
+// SendPasswordResetEmail ......
+func (sgc *ClientSendGrid) SendPasswordResetEmail(
+	pemail string,
+	verifyURL string) error {
+	mailSetup := mail.NewV3Mail()
+	from := mail.NewEmail("SuperDentist Admin", "noreply@superdentist.io")
+	mailSetup.SetFrom(from)
+	mailSetup.SetTemplateID(constants.PASSWORD_RESET_EMAIL)
+	p := mail.NewPersonalization()
+	tos := []*mail.Email{
+		mail.NewEmail(pemail, pemail),
+	}
+	p.AddTos(tos...)
+	p.SetDynamicTemplateData("verify_url", verifyURL)
+	mailSetup.AddPersonalizations(p)
+	request := sendgrid.GetRequest(os.Getenv("SENDGRID_API_KEY"), "/v3/mail/send", "https://api.sendgrid.com")
+	request.Method = "POST"
+	var Body = mail.GetRequestBody(mailSetup)
+	request.Body = Body
+	_, err := sendgrid.API(request)
+	if err != nil {
+		return err
+	}
+	return nil
+}
