@@ -76,7 +76,10 @@ func (id *IDP) GetUserByPhone(ctx context.Context, phone string) (*auth.UserReco
 
 // GetVerificationURL ...
 func (id *IDP) GetVerificationURL(ctx context.Context, email string) (string, error) {
-	verifyLink, err := id.client.EmailVerificationLink(ctx, email)
+	actionCode := auth.ActionCodeSettings{
+		URL: "https://superdentist.io/login",
+	}
+	verifyLink, err := id.client.EmailVerificationLinkWithSettings(ctx, email, &actionCode)
 	if err != nil {
 		return "", err
 	}
@@ -85,7 +88,10 @@ func (id *IDP) GetVerificationURL(ctx context.Context, email string) (string, er
 
 // GetResetPasswordURL ...
 func (id *IDP) GetResetPasswordURL(ctx context.Context, email string) (string, error) {
-	verifyLink, err := id.client.PasswordResetLink(ctx, email)
+	actionCode := auth.ActionCodeSettings{
+		URL: "https://superdentist.io/login",
+	}
+	verifyLink, err := id.client.PasswordResetLinkWithSettings(ctx, email, &actionCode)
 	if err != nil {
 		return "", err
 	}
