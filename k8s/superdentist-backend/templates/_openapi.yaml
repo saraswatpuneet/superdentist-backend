@@ -56,6 +56,30 @@ paths:
           description: "Internal server error occured"
       security:
         - Bearer: []
+  /v1/clinic/passwordReset:
+    put:
+      tags:
+      - "Registration APIs (C & U of CRUD)"
+      summary: "Register clinic"
+      operationId: "AdminPasswordReset"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Created clinic object"
+        required: true
+        schema:
+          $ref: "#/definitions/PasswordResetData"
+      responses:
+        '200':
+          $ref: '#/responses/PostClinicRegistrationResponse'
+        '401':
+          description: "Unauthorized: Bad request or authorization details"
+        '500':
+          description: "Internal server error occured"
+      security:
+        - Bearer: []
   /v1/clinic/verifyAdmin:
     post:
       tags:
@@ -1014,6 +1038,11 @@ definitions:
         default: false
     xml:
       name: "Clinic"
+  PasswordResetData:
+    type: "object"
+    properties:
+      emailId:
+        type: "string"
   ClinicVerificationData:
     type: object
     properties:
