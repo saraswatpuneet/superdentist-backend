@@ -1087,7 +1087,7 @@ func TextRecievedPatient(c *gin.Context) {
 		}
 	}
 	dsReferral.ModifiedOn = time.Now()
-
+	dsReferral.Documents = append(dsReferral.Documents, docIDNames...)
 	err = dsRefC.CreateReferral(ctx, *dsReferral)
 	if err != nil {
 		log.Errorf("Error processing sms error:%v ", err.Error())
