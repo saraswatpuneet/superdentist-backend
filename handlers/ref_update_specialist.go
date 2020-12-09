@@ -992,13 +992,13 @@ func TextRecievedPatient(c *gin.Context) {
 	log.Infof("Processing incoming text")
 	err := c.Request.ParseForm()
 	if err != nil {
-		log.Errorf("Error parsing text recieve: %v", err.Error())
+		log.Errorf("Error parsing text recieve 1: %v", err.Error())
 	}
 	ctx := c.Request.Context()
 	clientSMS := sms.NewSMSClient()
 	err = clientSMS.InitializeSMSClient()
 	if err != nil {
-		log.Errorf("Error parsing text recieve: %v", err.Error())
+		log.Errorf("Error parsing text recieve 2: %v", err.Error())
 	}
 	form := c.Request.Form
 	incomingPhone := form["From"][0]
@@ -1012,14 +1012,14 @@ func TextRecievedPatient(c *gin.Context) {
 			currentURL := formValue[0]
 			fileName, reader, err := clientSMS.GetMedia(ctx, currentURL)
 			if err != nil {
-				log.Errorf("Error parsing text recieve: %v", err.Error())
+				log.Errorf("Error parsing text recieve 3: %v", err.Error())
 			}
 			filePatients[fileName] = reader
 		}
 	}
 	gproject := googleprojectlib.GetGoogleProjectID()
 	if err != nil {
-		log.Errorf("Error parsing text recieve: %v", err.Error())
+		log.Errorf("Error parsing text recieve 4: %v", err.Error())
 	}
 	dsRefC := datastoredb.NewReferralHandler()
 	err = dsRefC.InitializeDataBase(ctx, gproject)
