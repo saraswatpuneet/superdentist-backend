@@ -1010,6 +1010,7 @@ func TextRecievedPatient(c *gin.Context) {
 	for key, formValue := range form {
 		if strings.Contains(strings.ToLower(key), "mediaurl") {
 			currentURL := formValue[0]
+			log.Infof(currentURL)
 			fileName, reader, err := clientSMS.GetMedia(ctx, currentURL)
 			if err != nil {
 				log.Errorf("Error parsing text recieve 3: %v", err.Error())
@@ -1071,14 +1072,7 @@ func TextRecievedPatient(c *gin.Context) {
 			bucketPath := dsReferral.ReferralID + "/" + fileName
 			buckerW, err := storageC.UploadToGCS(ctx, bucketPath)
 			if err != nil {
-				c.AbortWithStatusJSON(
-					http.StatusInternalServerError,
-					gin.H{
-						constants.RESPONSE_JSON_DATA:   nil,
-						constants.RESPONSDE_JSON_ERROR: err.Error(),
-					},
-				)
-				return
+				log.Errorf("Error processing uploading text error:%v ", err.Error())
 			}
 			_, err = io.Copy(buckerW, *fileBytes)
 			if err != nil {
@@ -1087,6 +1081,10 @@ func TextRecievedPatient(c *gin.Context) {
 			buckerW.Close()
 			(*fileBytes).Close()
 			docIDNames = append(docIDNames, fileName)
+		}
+		err = storageC.ZipFile(ctx, dsReferral.ReferralID)
+		if err != nil {
+			log.Errorf("Error processing zipping text error:%v ", err.Error())
 		}
 	}
 	dsReferral.ModifiedOn = time.Now()
