@@ -1008,11 +1008,12 @@ func TextRecievedPatient(c *gin.Context) {
 	}
 	filePatients := make(map[string]*io.ReadCloser)
 	for key, formValue := range form {
-		if strings.Contains(key, "MediaUrl") {
+		if strings.Contains(strings.ToLower(key), "mediaurl") {
 			currentURL := formValue[0]
 			fileName, reader, err := clientSMS.GetMedia(ctx, currentURL)
 			if err != nil {
 				log.Errorf("Error parsing text recieve 3: %v", err.Error())
+				continue
 			}
 			filePatients[fileName] = reader
 		}
