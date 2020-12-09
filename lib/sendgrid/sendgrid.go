@@ -67,6 +67,7 @@ func (sgc *ClientSendGrid) SendEmailNotificationPatient(pemail string,
 	}
 	return nil
 }
+
 // SendCommentNotificationPatient ......
 func (sgc *ClientSendGrid) SendCommentNotificationPatient(pname string,
 	pemail string,
@@ -98,6 +99,7 @@ func (sgc *ClientSendGrid) SendCommentNotificationPatient(pname string,
 	}
 	return nil
 }
+
 // SendEmailNotificationSpecialist ......
 func (sgc *ClientSendGrid) SendEmailNotificationSpecialist(spemail string,
 	pname string,
@@ -185,6 +187,32 @@ func (sgc *ClientSendGrid) SendClinicNotification(cemail string, cname string, p
 	p.SetDynamicTemplateData("pname", pname)
 	p.SetDynamicTemplateData("refid", refid)
 	p.SetDynamicTemplateData("cname", cname)
+	mailSetup.AddPersonalizations(p)
+	request := sendgrid.GetRequest(os.Getenv("SENDGRID_API_KEY"), "/v3/mail/send", "https://api.sendgrid.com")
+	request.Method = "POST"
+	var Body = mail.GetRequestBody(mailSetup)
+	request.Body = Body
+	_, err := sendgrid.API(request)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// SendVerificationEmail ......
+func (sgc *ClientSendGrid) SendVerificationEmail(
+	pemail string,
+	verifyURL string) error {
+	mailSetup := mail.NewV3Mail()
+	from := mail.NewEmail("SuperDentist Admin", "noreply@superdentist.io")
+	mailSetup.SetFrom(from)
+	mailSetup.SetTemplateID(constants.VERIFICATION_EMAIL_NEW)
+	p := mail.NewPersonalization()
+	tos := []*mail.Email{
+		mail.NewEmail(pemail, pemail),
+	}
+	p.AddTos(tos...)
+	p.SetDynamicTemplateData("verify_url", verifyURL)
 	mailSetup.AddPersonalizations(p)
 	request := sendgrid.GetRequest(os.Getenv("SENDGRID_API_KEY"), "/v3/mail/send", "https://api.sendgrid.com")
 	request.Method = "POST"

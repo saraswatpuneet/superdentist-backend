@@ -72,3 +72,13 @@ func (id *IDP) GetUserByPhone(ctx context.Context, phone string) (*auth.UserReco
 	}
 	return currentUser, nil
 }
+
+
+// GetVerificationURL ...
+func (id *IDP) GetVerificationURL(ctx context.Context, email string) (string, error) {
+	verifyLink, err := id.client.EmailVerificationLink(ctx, email)
+	if err != nil {
+		return "", err
+	}
+	return verifyLink, nil
+}

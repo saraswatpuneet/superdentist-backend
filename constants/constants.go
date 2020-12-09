@@ -16,6 +16,7 @@ const (
 	SD_SPECIALIZT_REF_CONF            = "d-e9288c40cc76436db70a32dc4dba6efa"
 	GD_REFERRAL_COMPLETED             = "d-5223f0628162417591e27d9810460ebc"
 	CLINIC_NOTIFICATION_NEW           = "d-7ab65eeeb1144af285bc31aa39fb6873"
+	VERIFICATION_EMAIL_NEW			  = "d-2785f85539db4bb7ab9a2f763dee89b9"
 	PATINET_EMAIL_NOTIFICATION        = "d-c2e691190e1145d58d2fdda9782257ed"
 	PATIENT_MESSAGE                   = `Hi %s 
 	You've been referred to %s.

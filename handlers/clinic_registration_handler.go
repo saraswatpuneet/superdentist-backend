@@ -16,6 +16,7 @@ import (
 	"github.com/superdentist/superdentist-backend/lib/googleprojectlib"
 	"github.com/superdentist/superdentist-backend/lib/identity"
 	"github.com/superdentist/superdentist-backend/lib/jwt"
+	"github.com/superdentist/superdentist-backend/lib/sendgrid"
 	"github.com/superdentist/superdentist-backend/lib/websocket"
 	"go.opencensus.io/trace"
 )
@@ -75,6 +76,51 @@ func AdminRegistrationHandler(c *gin.Context) {
 	responseData := contracts.ClinicRegistrationResponse{
 		EmailID:    clinicRegistrationReq.EmailID,
 		IsVerified: false,
+	}
+	sgClient := sendgrid.NewSendGridClient()
+	err = sgClient.InitializeSendGridClient()
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	idAuth, err := identity.NewIDPEP(ctx, gproject)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	veriURL, err := idAuth.GetVerificationURL(ctx, clinicRegistrationReq.EmailID)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	err = sgClient.SendVerificationEmail(clinicRegistrationReq.EmailID, veriURL)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
 	}
 	c.JSON(http.StatusOK, gin.H{
 		constants.RESPONSE_JSON_DATA:   responseData,
