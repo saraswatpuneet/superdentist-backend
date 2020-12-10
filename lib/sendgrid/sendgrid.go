@@ -7,6 +7,7 @@ import (
 	"github.com/sendgrid/sendgrid-go"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
 	"github.com/superdentist/superdentist-backend/constants"
+	"github.com/superdentist/superdentist-backend/global"
 )
 
 // ClientSendGrid ....
@@ -40,10 +41,10 @@ func (sgc *ClientSendGrid) SendEmailNotificationPatient(pemail string,
 	comments []string) error {
 	mailSetup := mail.NewV3Mail()
 	from := mail.NewEmail("SuperDentist Admin", constants.SD_ADMIN_EMAIL)
-	replyTo := mail.NewEmail("Referral Manager", constants.SD_ADMIN_EMAIL_REPLYTO)
+	replyTo := mail.NewEmail("Referral Manager", global.Options.ReplyTo)
 	mailSetup.SetFrom(from)
 	mailSetup.SetReplyTo(replyTo)
-	mailSetup.SetTemplateID(constants.SD_PATIENT_REF_CONF)
+	mailSetup.SetTemplateID(global.Options.PatientConfTemp)
 	p := mail.NewPersonalization()
 	tos := []*mail.Email{
 		mail.NewEmail(pname, pemail),
@@ -77,12 +78,12 @@ func (sgc *ClientSendGrid) SendCommentNotificationPatient(pname string,
 	mailSetup := mail.NewV3Mail()
 	from := mail.NewEmail("SuperDentist Admin", constants.SD_ADMIN_EMAIL)
 	mailSetup.SetFrom(from)
-	mailSetup.SetTemplateID(constants.PATINET_EMAIL_NOTIFICATION)
+	mailSetup.SetTemplateID(global.Options.PatientNotificationNew)
 	p := mail.NewPersonalization()
 	tos := []*mail.Email{
 		mail.NewEmail(pname, pemail),
 	}
-	replyTo := mail.NewEmail("Referral Manager", constants.SD_ADMIN_EMAIL_REPLYTO)
+	replyTo := mail.NewEmail("Referral Manager", global.Options.ReplyTo)
 	mailSetup.SetReplyTo(replyTo)
 	p.AddTos(tos...)
 	p.SetDynamicTemplateData("subject", "Your Referral to "+spname)
@@ -113,7 +114,7 @@ func (sgc *ClientSendGrid) SendEmailNotificationSpecialist(spemail string,
 	mailSetup := mail.NewV3Mail()
 	from := mail.NewEmail("SuperDentist Admin", constants.SD_ADMIN_EMAIL)
 	mailSetup.SetFrom(from)
-	mailSetup.SetTemplateID(constants.SD_SPECIALIZT_REF_CONF)
+	mailSetup.SetTemplateID(global.Options.SpecialistConfTemp)
 	p := mail.NewPersonalization()
 	tos := []*mail.Email{
 		mail.NewEmail(spname, spemail),
@@ -149,7 +150,7 @@ func (sgc *ClientSendGrid) SendCompletionEmailToGD(gdemail string, gdname string
 	mailSetup := mail.NewV3Mail()
 	from := mail.NewEmail("SuperDentist Admin", constants.SD_ADMIN_EMAIL)
 	mailSetup.SetFrom(from)
-	mailSetup.SetTemplateID(constants.GD_REFERRAL_COMPLETED)
+	mailSetup.SetTemplateID(global.Options.GDReferralComp)
 	p := mail.NewPersonalization()
 	tos := []*mail.Email{
 		mail.NewEmail(spname, gdemail),
@@ -179,7 +180,7 @@ func (sgc *ClientSendGrid) SendClinicNotification(cemail string, cname string, p
 	mailSetup := mail.NewV3Mail()
 	from := mail.NewEmail("SuperDentist Admin", constants.SD_ADMIN_EMAIL)
 	mailSetup.SetFrom(from)
-	mailSetup.SetTemplateID(constants.CLINIC_NOTIFICATION_NEW)
+	mailSetup.SetTemplateID(global.Options.ClinicNotificatioNew)
 	p := mail.NewPersonalization()
 	tos := []*mail.Email{
 		mail.NewEmail(cname, cemail),

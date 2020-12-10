@@ -19,6 +19,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/superdentist/superdentist-backend/constants"
 	"github.com/superdentist/superdentist-backend/contracts"
+	"github.com/superdentist/superdentist-backend/global"
 	"github.com/superdentist/superdentist-backend/lib/datastoredb"
 	"github.com/superdentist/superdentist-backend/lib/googleprojectlib"
 	"github.com/superdentist/superdentist-backend/lib/sendgrid"
@@ -868,7 +869,7 @@ func ReceiveReferralMail(c *gin.Context) {
 		toEmail = strings.Trim(toEmail, ">")	
 	}
 
-	if toEmail != "referrals@mailer.superdentist.io" {
+	if toEmail != global.Options.ReplyTo {
 		log.Errorf("Email sent to bad actor" + " " + fromEmail + " " + subject)
 	}
 	bodyCleaned := make(map[string]string, 0)

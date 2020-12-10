@@ -59,6 +59,20 @@ spec:
             mountPath: {{ .Values.sdServiceAccount.credential.dir | quote }}
             readOnly: true
           env:
+          - name: SD_ADMIN_EMAIL_REPLYTO
+            value: referralsdev@mailer.superdentist.io
+          - name: SD_PATIENT_REF_CONF
+            value: d-789db895f1464d7ab85f3abd8ff14a90
+          - name: SD_SPECIALIZT_REF_CONF
+            value: d-6d15be1d8baf4beb98775d233988c7fd
+          - name: GD_REFERRAL_COMPLETED
+            value: d-f64251df5dc84cc598cda2e7be98d18a
+          - name: CLINIC_NOTIFICATION_NEW
+            value: d-a4a7dc5e0bf0436cb7766a3631ee803d
+          - name: PATINET_EMAIL_NOTIFICATION
+            value: d-7c54cb4262a64e10a344551c77a56ec9
+          - name: CONTINUE_URL
+            value: https://dev.superdentist.io
           - name: PORT
             value: {{ .Values.image.port | quote }}
           - name: GOOGLE_APPLICATION_CREDENTIALS
