@@ -856,12 +856,18 @@ func ReceiveReferralMail(c *gin.Context) {
 	toEmail := parsedEmail.Headers["To"]
 	subject := parsedEmail.Headers["Subject"]
 	re := regexp.MustCompile(`\<.*?\>`)
-	fromSub := re.FindAllString(fromEmail, -1)[0]
-	fromEmail = strings.Trim(fromSub, "<")
-	fromEmail = strings.Trim(fromEmail, ">")
-	toSub := re.FindAllString(toEmail, -1)[0]
-	toEmail = strings.Trim(toSub, "<")
-	toEmail = strings.Trim(toEmail, ">")
+	fromSub := re.FindAllString(fromEmail, -1)
+	if len(fromSub) > 0 {
+		fromEmail = strings.Trim(fromSub[0], "<")
+		fromEmail = strings.Trim(fromEmail, ">")
+	}
+
+	toSub := re.FindAllString(toEmail, -1)
+	if len(toSub) > 0 {
+		toEmail = strings.Trim(toSub[0], "<")
+		toEmail = strings.Trim(toEmail, ">")	
+	}
+
 	if toEmail != "referrals@mailer.superdentist.io" {
 		log.Errorf("Email sent to bad actor" + " " + fromEmail + " " + subject)
 	}
