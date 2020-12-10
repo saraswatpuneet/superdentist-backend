@@ -10,6 +10,7 @@ import (
 	"cloud.google.com/go/datastore"
 	guuid "github.com/google/uuid"
 	"github.com/superdentist/superdentist-backend/contracts"
+	"github.com/superdentist/superdentist-backend/global"
 	"github.com/superdentist/superdentist-backend/lib/geohash"
 	"github.com/superdentist/superdentist-backend/lib/gmaps"
 	"github.com/superdentist/superdentist-backend/lib/helpers"
@@ -61,7 +62,13 @@ func (db *dsClinicMeta) InitializeDataBase(ctx context.Context, projectID string
 // AddPhysicalAddessressToClinic ...
 func (db dsClinicMeta) AddPhysicalAddessressToClinic(ctx context.Context, clinicEmailID string, clinicFBID string, addresses []contracts.PhysicalClinicsRegistration, mapsClient *gmaps.ClientGMaps) ([]contracts.PhysicalClinicsRegistration, error) {
 	parentKey := datastore.NameKey("ClinicAdmin", clinicFBID, nil)
+	if global.Options.DSName != "" {
+		parentKey.Namespace = global.Options.DSName
+	}
 	primaryKey := datastore.NameKey("ClinicAdmin", clinicEmailID, parentKey)
+	if global.Options.DSName != "" {
+		primaryKey.Namespace = global.Options.DSName
+	}
 	returnedAddress := make([]contracts.PhysicalClinicsRegistration, 0)
 	for _, address := range addresses {
 		addrID, err := guuid.NewUUID()
@@ -102,7 +109,13 @@ func (db dsClinicMeta) AddPhysicalAddessressToClinic(ctx context.Context, clinic
 // UpdatePhysicalAddessressToClinic
 func (db dsClinicMeta) UpdatePhysicalAddessressToClinic(ctx context.Context, clinicFBID string, clinicUpdated contracts.PhysicalClinicMapLocation) error {
 	parentKey := datastore.NameKey("ClinicAdmin", clinicFBID, nil)
+	if global.Options.DSName != "" {
+		parentKey.Namespace = global.Options.DSName
+	}
 	primaryKey := datastore.NameKey("ClinicAdmin", clinicUpdated.EmailAddress, parentKey)
+	if global.Options.DSName != "" {
+		primaryKey.Namespace = global.Options.DSName
+	}
 	addressKey := datastore.NameKey("ClinicAddress", clinicUpdated.AddressID, primaryKey)
 	_, err := db.client.Put(ctx, addressKey, &clinicUpdated)
 	if err != nil {
@@ -114,7 +127,13 @@ func (db dsClinicMeta) UpdatePhysicalAddessressToClinic(ctx context.Context, cli
 // AddDoctorsToPhysicalClincs ....
 func (db dsClinicMeta) AddDoctorsToPhysicalClincs(ctx context.Context, clinicEmailID string, clinicFBID string, doctorsData []contracts.ClinicDoctorsDetails) error {
 	parentKey := datastore.NameKey("ClinicAdmin", clinicFBID, nil)
+	if global.Options.DSName != "" {
+		parentKey.Namespace = global.Options.DSName
+	}
 	primaryKey := datastore.NameKey("ClinicAdmin", clinicEmailID, parentKey)
+	if global.Options.DSName != "" {
+		primaryKey.Namespace = global.Options.DSName
+	}
 	for _, doctor := range doctorsData {
 		for _, doc := range doctor.Doctors {
 			docID, err := guuid.NewUUID()
@@ -135,7 +154,13 @@ func (db dsClinicMeta) AddDoctorsToPhysicalClincs(ctx context.Context, clinicEma
 // AddPMSUsedByClinics ......
 func (db *dsClinicMeta) AddPMSUsedByClinics(ctx context.Context, clinicEmailID string, clinicFBID string, pmsData []string) error {
 	parentKey := datastore.NameKey("ClinicAdmin", clinicFBID, nil)
+	if global.Options.DSName != "" {
+		parentKey.Namespace = global.Options.DSName
+	}
 	primaryKey := datastore.NameKey("ClinicAdmin", clinicEmailID, parentKey)
+	if global.Options.DSName != "" {
+		primaryKey.Namespace = global.Options.DSName
+	}
 	clinicPMSKey := datastore.IncompleteKey("ClinicPMS", primaryKey)
 	currentPMSStruct := contracts.PostPMSDetails{
 		PMSNames: pmsData,
@@ -150,7 +175,13 @@ func (db *dsClinicMeta) AddPMSUsedByClinics(ctx context.Context, clinicEmailID s
 // AddPMSAuthDetails ......
 func (db *dsClinicMeta) AddPMSAuthDetails(ctx context.Context, clinicEmailID string, clinicFBID string, pmsInformation contracts.PostPMSAuthDetails) error {
 	parentKey := datastore.NameKey("ClinicAdmin", clinicFBID, nil)
+	if global.Options.DSName != "" {
+		parentKey.Namespace = global.Options.DSName
+	}
 	primaryKey := datastore.NameKey("ClinicAdmin", clinicEmailID, parentKey)
+	if global.Options.DSName != "" {
+		primaryKey.Namespace = global.Options.DSName
+	}
 	for _, pmsData := range pmsInformation.PMSAuthData {
 		clinicPMSKey := datastore.NameKey("ClinicPMSAuth", pmsData.PMSName, primaryKey)
 		bytesSafe, _ := json.Marshal(pmsData)
@@ -170,7 +201,13 @@ func (db *dsClinicMeta) AddPMSAuthDetails(ctx context.Context, clinicEmailID str
 // AddServicesForClinic .....
 func (db *dsClinicMeta) AddServicesForClinic(ctx context.Context, clinicEmailID string, clinicFBID string, serviceData []contracts.ServiceObject) error {
 	parentKey := datastore.NameKey("ClinicAdmin", clinicFBID, nil)
+	if global.Options.DSName != "" {
+		parentKey.Namespace = global.Options.DSName
+	}
 	primaryKey := datastore.NameKey("ClinicAdmin", clinicEmailID, parentKey)
+	if global.Options.DSName != "" {
+		primaryKey.Namespace = global.Options.DSName
+	}
 	for _, serObj := range serviceData {
 		clinicPMSKey := datastore.IncompleteKey("ClinicServices", primaryKey)
 		_, err := db.client.Put(ctx, clinicPMSKey, &serObj)
@@ -185,7 +222,13 @@ func (db *dsClinicMeta) AddServicesForClinic(ctx context.Context, clinicEmailID 
 // GetAllClinics ....
 func (db *dsClinicMeta) GetAllClinics(ctx context.Context, clinicEmailID string, clinicFBID string) ([]contracts.PhysicalClinicMapLocation, error) {
 	parentKey := datastore.NameKey("ClinicAdmin", clinicFBID, nil)
+	if global.Options.DSName != "" {
+		parentKey.Namespace = global.Options.DSName
+	}
 	primaryKey := datastore.NameKey("ClinicAdmin", clinicEmailID, parentKey)
+	if global.Options.DSName != "" {
+		primaryKey.Namespace = global.Options.DSName
+	}
 	returnedAddress := make([]contracts.PhysicalClinicMapLocation, 0)
 	qP := datastore.NewQuery("ClinicAddress").Ancestor(primaryKey)
 	keysClinics, err := db.client.GetAll(ctx, qP, &returnedAddress)
@@ -198,7 +241,13 @@ func (db *dsClinicMeta) GetAllClinics(ctx context.Context, clinicEmailID string,
 // GetClinicDoctors ....
 func (db *dsClinicMeta) GetClinicDoctors(ctx context.Context, clinicEmailID string, clinicFBID string, addressID string) ([]contracts.ClinicDoctorRegistration, error) {
 	parentKey := datastore.NameKey("ClinicAdmin", clinicFBID, nil)
+	if global.Options.DSName != "" {
+		parentKey.Namespace = global.Options.DSName
+	}
 	primaryKey := datastore.NameKey("ClinicAdmin", clinicEmailID, parentKey)
+	if global.Options.DSName != "" {
+		primaryKey.Namespace = global.Options.DSName
+	}
 	returnedDoctors := make([]contracts.ClinicDoctorRegistration, 0)
 	qP := datastore.NewQuery("ClinicDoctors").Ancestor(primaryKey)
 	if addressID != "" {
@@ -219,6 +268,9 @@ func (db *dsClinicMeta) GetSingleClinic(ctx context.Context, addressID string) (
 	if addressID != "" {
 		qP = qP.Filter("AddressID =", addressID)
 	}
+	if global.Options.DSName != "" {
+		qP = qP.Namespace(global.Options.DSName)
+	}
 	keysClinics, err := db.client.GetAll(ctx, qP, &returnedAddresses)
 	if err != nil || len(keysClinics) <= 0 {
 		return nil, fmt.Errorf("clinic with given address id not found: %v", err)
@@ -234,6 +286,9 @@ func (db *dsClinicMeta) GetSingleClinicViaPlace(ctx context.Context, placeID str
 	if placeID != "" {
 		qP = qP.Filter("PlaceID =", placeID)
 	}
+	if global.Options.DSName != "" {
+		qP = qP.Namespace(global.Options.DSName)
+	}
 	keysClinics, err := db.client.GetAll(ctx, qP, &returnedAddresses)
 	if err != nil || len(keysClinics) <= 0 {
 		return nil, fmt.Errorf("clinic with given address id not found: %v", err)
@@ -244,11 +299,20 @@ func (db *dsClinicMeta) GetSingleClinicViaPlace(ctx context.Context, placeID str
 // GetNearbyClinics ....
 func (db *dsClinicMeta) GetNearbyClinics(ctx context.Context, clinicEmailID string, clinicFBID string, addressID string, distance float64) ([]contracts.PhysicalClinicMapLocation, *contracts.ClinicLocation, error) {
 	parentKey := datastore.NameKey("ClinicAdmin", clinicFBID, nil)
+	if global.Options.DSName != "" {
+		parentKey.Namespace = global.Options.DSName
+	}
 	primaryKey := datastore.NameKey("ClinicAdmin", clinicEmailID, parentKey)
+	if global.Options.DSName != "" {
+		primaryKey.Namespace = global.Options.DSName
+	}
 	returnedAddresses := make([]contracts.PhysicalClinicMapLocation, 0)
 	qP := datastore.NewQuery("ClinicAddress").Ancestor(primaryKey)
 	if addressID != "" {
 		qP = qP.Filter("AddressID =", addressID)
+	}
+	if global.Options.DSName != "" {
+		qP = qP.Namespace(global.Options.DSName)
 	}
 	keysClinics, err := db.client.GetAll(ctx, qP, &returnedAddresses)
 	if err != nil || len(keysClinics) <= 0 {
@@ -268,6 +332,9 @@ func (db *dsClinicMeta) GetNearbyClinics(ctx context.Context, clinicEmailID stri
 	qPNearest := datastore.NewQuery("ClinicAddress").Ancestor(primaryKey)
 	qPNearest.Filter("Geohash >=", lowerHash).Filter("Geohash <=", upperHash).Filter("AddressID !=", addressID)
 	allNearbyAddresses := make([]contracts.PhysicalClinicMapLocation, 0)
+	if global.Options.DSName != "" {
+		qPNearest = qPNearest.Namespace(global.Options.DSName)
+	}
 	keysClinics, err = db.client.GetAll(ctx, qPNearest, &allNearbyAddresses)
 	if err != nil || len(keysClinics) <= 0 {
 		return nil, nil, fmt.Errorf("no clinics have been found for the admin error: %v", err)
@@ -278,11 +345,20 @@ func (db *dsClinicMeta) GetNearbyClinics(ctx context.Context, clinicEmailID stri
 // GetNearbySpecialist ....
 func (db *dsClinicMeta) GetNearbySpecialist(ctx context.Context, clinicEmailID string, clinicFBID string, addressID string, distance float64) ([]contracts.PhysicalClinicMapLocation, error) {
 	parentKey := datastore.NameKey("ClinicAdmin", clinicFBID, nil)
+	if global.Options.DSName != "" {
+		parentKey.Namespace = global.Options.DSName
+	}
 	primaryKey := datastore.NameKey("ClinicAdmin", clinicEmailID, parentKey)
+	if global.Options.DSName != "" {
+		primaryKey.Namespace = global.Options.DSName
+	}
 	returnedAddresses := make([]contracts.PhysicalClinicMapLocation, 0)
 	qP := datastore.NewQuery("ClinicAddress").Ancestor(primaryKey)
 	if addressID != "" {
 		qP = qP.Filter("AddressID =", addressID)
+	}
+	if global.Options.DSName != "" {
+		qP = qP.Namespace(global.Options.DSName)
 	}
 	keysClinics, err := db.client.GetAll(ctx, qP, &returnedAddresses)
 	if err != nil || len(keysClinics) <= 0 {
@@ -295,6 +371,9 @@ func (db *dsClinicMeta) GetNearbySpecialist(ctx context.Context, clinicEmailID s
 	qPNearest := datastore.NewQuery("ClinicAddress")
 	qPNearest = qPNearest.Filter("Geohash >=", lowerHash).Filter("Geohash <=", upperHash)
 	allNearbyAddresses := make([]contracts.PhysicalClinicMapLocation, 0)
+	if global.Options.DSName != "" {
+		qPNearest = qPNearest.Namespace(global.Options.DSName)
+	}
 	keysClinics, err = db.client.GetAll(ctx, qPNearest, &allNearbyAddresses)
 	if err != nil {
 		return nil, fmt.Errorf("no clinics have been found for the admin error: %v", err)
@@ -312,6 +391,9 @@ func (db *dsClinicMeta) GetFavoriteSpecialists(ctx context.Context, clinicEmailI
 		tempFav := make([]contracts.PhysicalClinicMapLocation, 0)
 
 		qP := datastore.NewQuery("ClinicAddress").Filter("PlaceID =", placeID)
+		if global.Options.DSName != "" {
+			qP = qP.Namespace(global.Options.DSName)
+		}
 		_, err := db.client.GetAll(ctx, qP, &tempFav)
 		if err != nil || len(tempFav) == 0 {
 			currentVerified.PlaceID = placeID

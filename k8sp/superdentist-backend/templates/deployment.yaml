@@ -1,0 +1,91 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "superdentist-backend.fullname" . }}
+  labels:
+    app: {{ template "superdentist-backend.name" . }}
+    chart: {{ template "superdentist-backend.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  strategy:
+    rollingUpdate:
+      maxSurge: {{ .Values.maxSurge }}
+  selector:
+    matchLabels:
+      app: {{ template "superdentist-backend.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "superdentist-backend.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        {{ $sdbcred := printf "%s/%s" .Values.sdServiceAccount.credential.dir .Values.sdServiceAccount.credential.file }}
+        - name: {{ .Chart.Name }}-asp
+          image: "{{ .Values.asp.repository }}:{{ .Values.asp.tag }}"
+          imagePullPolicy: {{ .Values.asp.pullPolicy }}
+          args: [
+            "--port={{ .Values.asp.port }}",
+            "--backend=http://127.0.0.1:{{ .Values.image.port }}",
+            "--mode={{ .Values.asp.arg.mode }}",
+          ]
+          volumeMounts:
+          - name: superdentist-backend      
+            mountPath: {{ .Values.sdServiceAccount.credential.dir | quote }}
+            readOnly: true
+          env:
+          - name: GOOGLE_APPLICATION_CREDENTIALS
+            value: {{ $sdbcred }}
+          ports:
+            - name: http-server
+              containerPort: {{ .Values.asp.port }}
+              protocol: TCP
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.image.port }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.image.health }}
+              port: {{ .Values.image.port }}
+            initialDelaySeconds: 5
+            timeoutSeconds: 1      
+          volumeMounts:
+          - name: superdentist-backend
+            mountPath: {{ .Values.sdServiceAccount.credential.dir | quote }}
+            readOnly: true
+          env:
+          - name: DS_NAMESPACE
+            value: sdprod
+          - name: PORT
+            value: {{ .Values.image.port | quote }}
+          - name: GOOGLE_APPLICATION_CREDENTIALS
+            value: {{ $sdbcred }}
+          - name: GCP_API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: {{.Values.sdAPISecret.name}}
+                key : {{.Values.sdAPISecret.secret}}
+          - name: SENDGRID_API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: {{.Values.sgAPISecret.name}}
+                key : {{.Values.sgAPISecret.secret}}
+          - name: TWI_SID
+            valueFrom:
+              secretKeyRef:
+                name: {{.Values.twiSIDSecret.name}}
+                key : {{.Values.twiSIDSecret.secret}}
+          - name: TWI_AUTH
+            valueFrom:
+              secretKeyRef:
+                name: {{.Values.twiAuthSecret.name}}
+                key : {{.Values.twiAuthSecret.secret}}
+      volumes:
+      - name: superdentist-backend
+        secret:
+          secretName: {{ .Values.sdServiceAccount.secret }}
