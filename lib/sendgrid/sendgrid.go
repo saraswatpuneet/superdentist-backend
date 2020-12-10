@@ -82,6 +82,8 @@ func (sgc *ClientSendGrid) SendCommentNotificationPatient(pname string,
 	tos := []*mail.Email{
 		mail.NewEmail(pname, pemail),
 	}
+	replyTo := mail.NewEmail("Referral Manager", constants.SD_ADMIN_EMAIL_REPLYTO)
+	mailSetup.SetReplyTo(replyTo)
 	p.AddTos(tos...)
 	p.SetDynamicTemplateData("subject", "Your Referral to "+spname)
 	p.SetDynamicTemplateData("pname", pname)
