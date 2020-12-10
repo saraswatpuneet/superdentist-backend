@@ -20,11 +20,17 @@ const (
 	PASSWORD_RESET_EMAIL              = "d-5f1d97747dd249fbb576c5daa543f430"
 	PATINET_EMAIL_NOTIFICATION        = "d-c2e691190e1145d58d2fdda9782257ed"
 	PATIENT_MESSAGE                   = `Hi %s 
+	
 	You've been referred to %s.
+	
 	Address: %s
+	
 	Phone: %s
+	
 	Comments: %s
+	
 	You can text directly in this thread to chat with your specialist and book a convenient appointment time. Your specialist may also message you first!`
 	PATIENT_MESSAGE_NOTICE = ` Hi %s 
+	
 	Message from %s : %s`
 )
