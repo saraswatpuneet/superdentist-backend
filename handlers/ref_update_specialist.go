@@ -866,11 +866,12 @@ func ReceiveReferralMail(c *gin.Context) {
 	toSub := re.FindAllString(toEmail, -1)
 	if len(toSub) > 0 {
 		toEmail = strings.Trim(toSub[0], "<")
-		toEmail = strings.Trim(toEmail, ">")	
+		toEmail = strings.Trim(toEmail, ">")
 	}
 
 	if toEmail != global.Options.ReplyTo {
 		log.Errorf("Email sent to bad actor" + " " + fromEmail + " " + subject)
+		return
 	}
 	bodyCleaned := make(map[string]string, 0)
 	for key, text := range parsedEmail.Body {
