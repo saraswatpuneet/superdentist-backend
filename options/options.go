@@ -12,14 +12,14 @@ type Options struct {
 	DSName                 string `json:"dsname,omitempty"`
 	MaxPayloadSize         int64  `json:"max_payload_size,omitempty"`
 	MaxHeaderSize          int    `json:"max_header_size,omitempty"`
-	ReplyTo                string
-	PatientConfTemp        string
-	SpecialistConfTemp     string
-	GDReferralComp         string
-	ClinicNotificatioNew   string
-	PatientNotificationNew string
-	ContinueURL            string
-	ReferralPhone          string
+	ReplyTo                string `json:"rto,omitempty"`
+	PatientConfTemp        string `json:"pct,omitempty"`
+	SpecialistConfTemp     string `json:"sct,omitempty"`
+	GDReferralComp         string `json:"gdc,omitempty"`
+	ClinicNotificatioNew   string `json:"cnn,omitempty"`
+	PatientNotificationNew string `json:"pnn,omitempty"`
+	ContinueURL            string `json:"curi,omitempty"`
+	ReferralPhone          string `json:"refphone,omitempty"`
 }
 
 // New .. create a new instance
