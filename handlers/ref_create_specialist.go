@@ -5,11 +5,13 @@ import (
 	"io"
 	"mime/multipart"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/google/uuid"
+	"github.com/nyaruka/phonenumbers"
 	log "github.com/sirupsen/logrus"
 	"github.com/superdentist/superdentist-backend/constants"
 	"github.com/superdentist/superdentist-backend/contracts"
@@ -151,6 +153,14 @@ func CreateRefSpecialist(c *gin.Context) {
 		}
 	}
 	var dsReferral contracts.DSReferral
+	currentPhone := referralDetails.Patient.Phone
+	pnum, _ := phonenumbers.Parse(currentPhone, "US")
+	countryCode := "+1"
+	if pnum.CountryCode != nil {
+		countryCode = "+" + strconv.Itoa(int(*pnum.CountryCode))
+	}
+	dsReferral.PatientPhone = countryCode + strconv.Itoa(int(*pnum.NationalNumber))
+
 	dsReferral.Documents = docIDNames
 	dsReferral.CreatedOn = time.Now()
 	dsReferral.ModifiedOn = time.Now()
@@ -169,7 +179,6 @@ func CreateRefSpecialist(c *gin.Context) {
 	dsReferral.PatientEmail = referralDetails.Patient.Email
 	dsReferral.PatientFirstName = referralDetails.Patient.FirstName
 	dsReferral.PatientLastName = referralDetails.Patient.LastName
-	dsReferral.PatientPhone = referralDetails.Patient.Phone
 	dsReferral.IsDirty = false
 	dsReferral.FromAddressID = referralDetails.FromAddressID
 	dsReferral.ToAddressID = referralDetails.ToAddressID

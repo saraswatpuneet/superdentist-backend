@@ -21,11 +21,11 @@ require (
 	github.com/kevinburke/rest v0.0.0-20200429221318-0d2892b400f8 // indirect
 	github.com/kevinburke/twilio-go v0.0.0-20200810163702-320748330fac
 	github.com/mattn/go-colorable v0.1.8 // indirect
+	github.com/nyaruka/phonenumbers v1.0.60
 	github.com/sendgrid/rest v2.6.2+incompatible // indirect
 	github.com/sendgrid/sendgrid-go v3.7.1+incompatible
 	github.com/sirupsen/logrus v1.7.0
 	github.com/stretchr/testify v1.6.1
-	github.com/kevinburke/twilio-go v0.0.0-20200810163702-320748330fac
 	github.com/ttacon/builder v0.0.0-20170518171403-c099f663e1c2 // indirect
 	github.com/ttacon/libphonenumber v1.1.0 // indirect
 	go.opencensus.io v0.22.4
