@@ -59,6 +59,8 @@ spec:
             mountPath: {{ .Values.sdServiceAccount.credential.dir | quote }}
             readOnly: true
           env:
+          - name: SD_REFERRAL_PHONE
+            value: '+12157745591'
           - name: DS_NAMESPACE
             value: sdprod
           - name: SD_ADMIN_EMAIL_REPLYTO

@@ -59,6 +59,8 @@ spec:
             mountPath: {{ .Values.sdServiceAccount.credential.dir | quote }}
             readOnly: true
           env:
+          - name: SD_REFERRAL_PHONE
+            value: '+17373772180'
           - name: SD_ADMIN_EMAIL_REPLYTO
             value: referralsdev@mailer.superdentist.io
           - name: SD_PATIENT_REF_CONF

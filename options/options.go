@@ -12,13 +12,14 @@ type Options struct {
 	DSName                 string `json:"dsname,omitempty"`
 	MaxPayloadSize         int64  `json:"max_payload_size,omitempty"`
 	MaxHeaderSize          int    `json:"max_header_size,omitempty"`
-	ReplyTo                string `json:"rto,omitempty"`
-	PatientConfTemp        string `json:"pct,omitempty"`
-	SpecialistConfTemp     string `json:"sct,omitempty"`
-	GDReferralComp         string `json:"gdc,omitempty"`
-	ClinicNotificatioNew   string `json:"cnn,omitempty"`
-	PatientNotificationNew string `json:"pnn,omitempty"`
-	ContinueURL            string `json:"curi,omitempty"`
+	ReplyTo                string `json:"rto",omitempty"`
+	PatientConfTemp        string `json:"pct",omitempty"`
+	SpecialistConfTemp     string `json:"sct",omitempty"`
+	GDReferralComp         string `json:"gdc",omitempty"`
+	ClinicNotificatioNew   string `json:"cnn",omitempty"`
+	PatientNotificationNew string `json:"pnn",omitempty"`
+	ContinueURL            string `json:"curi",omitempty"`
+	ReferralPhone          string `json:"refphone",omitempty`
 }
 
 // New .. create a new instance
@@ -41,5 +42,6 @@ func InitOptions() (*Options, error) {
 	options.ClinicNotificatioNew = os.Getenv("CLINIC_NOTIFICATION_NEW")
 	options.PatientNotificationNew = os.Getenv("PATINET_EMAIL_NOTIFICATION")
 	options.ContinueURL = os.Getenv("CONTINUE_URL")
+	options.ReferralPhone = os.Getenv("SD_REFERRAL_PHONE")
 	return options, nil
 }

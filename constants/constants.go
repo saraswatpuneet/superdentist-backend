@@ -7,7 +7,6 @@ const (
 	MAX_WRITE_TIMEOUT           = 50 // secs
 	RESPONSE_JSON_DATA   string = "data"
 	RESPONSDE_JSON_ERROR string = "error"
-	SD_REFERRAL_PHONE           = "+12157745591"
 	SD_REFERRAL_BUCKET          = "superdentist-referrals"
 	SD_ADMIN_EMAIL              = "referrals@superdentist.io"
 	//SD_ADMIN_EMAIL_REPLYTO            = "referrals@mailer.superdentist.io"
