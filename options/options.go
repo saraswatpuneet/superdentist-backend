@@ -33,8 +33,7 @@ func InitOptions() (*Options, error) {
 	if err := json.Unmarshal(Default, options); err != nil {
 		return nil, fmt.Errorf("Options initialization unmarshal error: %v", err)
 	}
-	options.Debug = false
-	if options.ReplyTo == "" {
+	if !options.Debug {
 		options.DSName = os.Getenv("DS_NAMESPACE")
 		options.ReplyTo = os.Getenv("SD_ADMIN_EMAIL_REPLYTO")
 		options.PatientConfTemp = os.Getenv("SD_PATIENT_REF_CONF")
