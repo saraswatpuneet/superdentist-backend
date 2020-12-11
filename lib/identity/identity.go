@@ -18,6 +18,7 @@ import (
 type IDP struct {
 	projectID string
 	client    *auth.Client
+	tClient   *auth.TenantClient
 	fireApp   *firebase.App
 }
 
@@ -38,17 +39,35 @@ func NewIDPEP(ctx context.Context, projectID string) (*IDP, error) {
 		return nil, fmt.Errorf("Failed to initialize identity client")
 	}
 	currentClient, err := app.Auth(ctx)
+	var tenantClient *auth.TenantClient
+	if global.Options.DSName != "" {
+		tenantClient, err = currentClient.TenantManager.AuthForTenant("firebaseprodtenant")
+		if err != nil {
+			return nil, fmt.Errorf("Failed to initialize identity client")
+		}
+	} else {
+		tenantClient = nil
+	}
 	if err != nil {
 		return nil, fmt.Errorf("Failed to initialize identity client")
 	}
-	return &IDP{projectID: projectID, client: currentClient, fireApp: app}, nil
+	return &IDP{projectID: projectID, client: currentClient, fireApp: app, tClient: tenantClient}, nil
 }
 
 // ResetUserPassword ...
 func (id *IDP) ResetUserPassword(ctx context.Context, email string) error {
-	currentResetLink, err := id.client.PasswordResetLink(ctx, email)
-	if err != nil {
-		return err
+	currentResetLink := ""
+	var err error
+	if id.tClient != nil {
+		currentResetLink, err = id.tClient.PasswordResetLink(ctx, email)
+		if err != nil {
+			return err
+		}
+	} else {
+		currentResetLink, err = id.client.PasswordResetLink(ctx, email)
+		if err != nil {
+			return err
+		}
 	}
 	// TODO: Implement SMTP server from GSuite/Others to send out custom emails
 	// Would also need HTML template for the same
@@ -58,18 +77,18 @@ func (id *IDP) ResetUserPassword(ctx context.Context, email string) error {
 
 // GetUserByEmail ...
 func (id *IDP) GetUserByEmail(ctx context.Context, email string) (*auth.UserRecord, error) {
-	currentUser, err := id.client.GetUserByEmail(ctx, email)
-	if err != nil {
-		return nil, err
-	}
-	return currentUser, nil
-}
-
-// GetUserByPhone ...
-func (id *IDP) GetUserByPhone(ctx context.Context, phone string) (*auth.UserRecord, error) {
-	currentUser, err := id.client.GetUserByPhoneNumber(ctx, phone)
-	if err != nil {
-		return nil, err
+	var err error
+	var currentUser *auth.UserRecord
+	if id.tClient != nil {
+		currentUser, err = id.tClient.GetUserByEmail(ctx, email)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		currentUser, err = id.client.GetUserByEmail(ctx, email)
+		if err != nil {
+			return nil, err
+		}
 	}
 	return currentUser, nil
 }
@@ -80,9 +99,19 @@ func (id *IDP) GetVerificationURL(ctx context.Context, email string) (string, er
 	actionCode := auth.ActionCodeSettings{
 		URL: contURL,
 	}
-	verifyLink, err := id.client.EmailVerificationLinkWithSettings(ctx, email, &actionCode)
-	if err != nil {
-		return "", err
+	verifyLink := ""
+	var err error
+	if id.tClient != nil {
+		verifyLink, err = id.tClient.EmailVerificationLinkWithSettings(ctx, email, &actionCode)
+		if err != nil {
+			return "", err
+		}
+
+	} else {
+		verifyLink, err = id.client.EmailVerificationLinkWithSettings(ctx, email, &actionCode)
+		if err != nil {
+			return "", err
+		}
 	}
 	return verifyLink, nil
 }
@@ -93,9 +122,19 @@ func (id *IDP) GetResetPasswordURL(ctx context.Context, email string) (string, e
 	actionCode := auth.ActionCodeSettings{
 		URL: contURL,
 	}
-	verifyLink, err := id.client.PasswordResetLinkWithSettings(ctx, email, &actionCode)
-	if err != nil {
-		return "", err
+	verifyLink := ""
+	var err error
+	if id.tClient != nil {
+		verifyLink, err = id.tClient.PasswordResetLinkWithSettings(ctx, email, &actionCode)
+		if err != nil {
+			return "", err
+		}
+
+	} else {
+		verifyLink, err = id.client.PasswordResetLinkWithSettings(ctx, email, &actionCode)
+		if err != nil {
+			return "", err
+		}
 	}
 	return verifyLink, nil
 }
