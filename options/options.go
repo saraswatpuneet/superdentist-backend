@@ -34,14 +34,16 @@ func InitOptions() (*Options, error) {
 		return nil, fmt.Errorf("Options initialization unmarshal error: %v", err)
 	}
 	options.Debug = false
-	options.DSName = os.Getenv("DS_NAMESPACE")
-	options.ReplyTo = os.Getenv("SD_ADMIN_EMAIL_REPLYTO")
-	options.PatientConfTemp = os.Getenv("SD_PATIENT_REF_CONF")
-	options.SpecialistConfTemp = os.Getenv("SD_SPECIALIZT_REF_CONF")
-	options.GDReferralComp = os.Getenv("GD_REFERRAL_COMPLETED")
-	options.ClinicNotificatioNew = os.Getenv("CLINIC_NOTIFICATION_NEW")
-	options.PatientNotificationNew = os.Getenv("PATINET_EMAIL_NOTIFICATION")
-	options.ContinueURL = os.Getenv("CONTINUE_URL")
-	options.ReferralPhone = os.Getenv("SD_REFERRAL_PHONE")
+	if options.ReplyTo == "" {
+		options.DSName = os.Getenv("DS_NAMESPACE")
+		options.ReplyTo = os.Getenv("SD_ADMIN_EMAIL_REPLYTO")
+		options.PatientConfTemp = os.Getenv("SD_PATIENT_REF_CONF")
+		options.SpecialistConfTemp = os.Getenv("SD_SPECIALIZT_REF_CONF")
+		options.GDReferralComp = os.Getenv("GD_REFERRAL_COMPLETED")
+		options.ClinicNotificatioNew = os.Getenv("CLINIC_NOTIFICATION_NEW")
+		options.PatientNotificationNew = os.Getenv("PATINET_EMAIL_NOTIFICATION")
+		options.ContinueURL = os.Getenv("CONTINUE_URL")
+		options.ReferralPhone = os.Getenv("SD_REFERRAL_PHONE")
+	}
 	return options, nil
 }
