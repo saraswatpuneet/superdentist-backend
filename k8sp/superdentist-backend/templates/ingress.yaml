@@ -1,0 +1,127 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{  template "superdentist-backend.name" . }}-ingress
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "86400"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "86400"
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "{{ .Values.maxBodySizeMb }}m"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      server_tokens off;
+      gzip_vary off;
+
+      # By default all resources will need to revalidate cache ("no-cache" directive) on each request
+      set $cache_control_value 'no-cache, max-age=0';
+      set $expires_value '0';
+
+      set $csp_script_src_value "'self'";
+      set $csp_image_src_value "'self' data:";
+
+
+      # UI pages
+      if ($request_uri ~* {{ .Values.uiPagesRegexp }}) {
+        # UI pages specific stuff goes here
+      }
+      
+      # API calls
+      if ($request_uri ~* {{ .Values.apisRegexp }}) {
+        set $cache_control_value 'no-cache, no-store, max-age=0';
+      }
+
+      # Js, css: Cache js, css for 1 year. Cache will be revalidated when file's name is changed
+      if ($request_uri ~* ".(css|js)$") {
+        set $cache_control_value 'public, max-age=31536000';
+      }
+
+      # Images: cache images only for 1 day cause it has always the same name for the moment and approach applied for js,css is not working here
+      if ($request_uri ~* ".(jpg|png)$") {
+        set $cache_control_value 'public, max-age=86400';
+      }
+
+      # Clean CORS headers and add them in CORS section from below if needed
+      more_clear_headers 'Access-Control-Allow-Credentials';
+      more_clear_headers 'Access-Control-Allow-Origin';
+      more_clear_headers 'Access-Control-Allow-Headers';
+      more_clear_headers 'Access-Control-Allow-Methods';
+      more_clear_headers 'Access-Control-Expose-Headers';
+      more_clear_headers 'Last-Modified';
+      # To make sure Vary header is cleaned completely we need to clear it explicitely together with "gzip_vary off"
+      more_clear_headers 'Vary';
+      more_set_headers "Cache-Control: $cache_control_value";
+      more_set_headers "Expires: $expires_value";
+      more_set_headers "X-XSS-Protection: 1; mode=block";
+      more_set_headers "X-Frame-Options: sameorigin";
+      more_set_headers "X-Content-Type-Options: nosniff";
+      more_set_headers "X-Download-Options: noopen";
+      more_set_headers "Surrogate-Control: no-store";
+      more_set_headers "Referrer-Policy: no-referrer-when-downgrade";
+      more_set_headers "X-DNS-Prefetch-Control: off";
+      more_set_headers "Content-Security-Policy: default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; script-src ${csp_script_src_value}; font-src 'self' data: https://fonts.gstatic.com; img-src ${csp_image_src_value}; connect-src 'self' superdentist.firebaseapp.com https://www.googleapis.com";
+      more_set_headers "Strict-Transport-Security: max-age=15724800; includeSubDomains";
+
+      # CORS
+      if ($http_origin) {
+        set $state 'cors';
+      }
+
+      set $access 'allowed';
+      # If Origin is among HTTP headers then CORS is required
+      if ($http_origin ~* {{ .Values.cors.origins }}) {
+        set $access 'allowed';
+      }
+
+
+      set $state '${state}-${access}';
+
+      set $cors_allowed_methods {{ .Values.cors.methods | squote }};
+      set $cors_allowed_headers {{ .Values.cors.headers | squote }};
+
+      if ($request_method = 'OPTIONS') {
+        set $state '${state}-options-http-header';
+      }
+
+      if ($request_method != 'OPTIONS') {
+        set $state '${state}-non-options-http-header';
+      }
+
+      if ($state ~ 'not-allowed-options-http-header') {
+        add_header 'Content-Type' 'text/plain charset=UTF-8';
+        add_header 'Content-Length' 0;
+        return 204;
+      }
+
+      if ($state = 'cors-allowed-non-options-http-header') {
+        add_header 'Access-Control-Allow-Origin' $http_origin always;
+        add_header 'Access-Control-Allow-Credentials' 'true';
+        add_header 'Access-Control-Allow-Methods' $cors_allowed_methods always;
+        add_header 'Access-Control-Allow-Headers' $cors_allowed_headers always;
+        add_header 'Access-Control-Expose-Headers' 'Link' always;
+      }
+
+      if ($state = 'cors-allowed-options-http-header') {
+        add_header 'Access-Control-Allow-Origin' $http_origin always;
+        add_header 'Access-Control-Allow-Credentials' 'true' always;
+        add_header 'Access-Control-Allow-Methods' $cors_allowed_methods always;
+        add_header 'Access-Control-Allow-Headers' $cors_allowed_headers always;
+        add_header 'Access-Control-Expose-Headers' 'Link' always;
+
+        # Tell client that this pre-flight info is valid for 20 days
+        add_header 'Access-Control-Max-Age' 1728000;
+        add_header 'Content-Type' 'text/plain charset=UTF-8';
+        add_header 'Content-Length' 0;
+        return 204;
+      }
+spec:
+  rules:
+    - http:
+        paths:
+        {{- range .Values.routes }}
+        - path: {{ .route }}
+          backend:
+            serviceName: {{ .service }}
+            servicePort: {{ .port | default 80 }}
+        {{- end }}

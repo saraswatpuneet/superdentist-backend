@@ -19,6 +19,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/superdentist/superdentist-backend/constants"
 	"github.com/superdentist/superdentist-backend/contracts"
+	"github.com/superdentist/superdentist-backend/global"
 	"github.com/superdentist/superdentist-backend/lib/datastoredb"
 	"github.com/superdentist/superdentist-backend/lib/googleprojectlib"
 	"github.com/superdentist/superdentist-backend/lib/sendgrid"
@@ -148,7 +149,7 @@ func AddCommentsToReferral(c *gin.Context) {
 		}
 		message := fmt.Sprintf(constants.PATIENT_MESSAGE, dsReferral.PatientFirstName+" "+dsReferral.PatientLastName,
 			dsReferral.ToClinicName, dsReferral.ToClinicAddress, dsReferral.ToClinicPhone, sendPatientComments)
-		err = clientSMS.SendSMS(constants.SD_REFERRAL_PHONE, dsReferral.PatientPhone, message)
+		err = clientSMS.SendSMS(global.Options.ReferralPhone, dsReferral.PatientPhone, message)
 
 	}
 	wasNew := dsReferral.IsNew
@@ -194,7 +195,7 @@ func AddCommentsToReferral(c *gin.Context) {
 				}
 				message := fmt.Sprintf(constants.PATIENT_MESSAGE_NOTICE, dsReferral.PatientFirstName+" "+dsReferral.PatientLastName,
 					dsReferral.ToClinicName, comm.Text)
-				clientSMS.SendSMS(constants.SD_REFERRAL_PHONE, dsReferral.PatientPhone, message)
+				clientSMS.SendSMS(global.Options.ReferralPhone, dsReferral.PatientPhone, message)
 				if dsReferral.PatientEmail != "" {
 					err = sgClient.SendCommentNotificationPatient(dsReferral.PatientFirstName+" "+dsReferral.PatientLastName,
 						dsReferral.PatientEmail, comm.Text, dsReferral.ToClinicName, dsReferral.ReferralID)
@@ -865,11 +866,12 @@ func ReceiveReferralMail(c *gin.Context) {
 	toSub := re.FindAllString(toEmail, -1)
 	if len(toSub) > 0 {
 		toEmail = strings.Trim(toSub[0], "<")
-		toEmail = strings.Trim(toEmail, ">")	
+		toEmail = strings.Trim(toEmail, ">")
 	}
 
-	if toEmail != "referrals@mailer.superdentist.io" {
+	if toEmail != global.Options.ReplyTo {
 		log.Errorf("Email sent to bad actor" + " " + fromEmail + " " + subject)
+		return
 	}
 	bodyCleaned := make(map[string]string, 0)
 	for key, text := range parsedEmail.Body {

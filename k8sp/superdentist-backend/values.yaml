@@ -1,0 +1,67 @@
+# Default values for superdentist-backend.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+maxSurge: 1
+
+#Backend image details
+
+image:
+  repository: gcr.io/superdentist/superdentist-backend
+  tag: latest
+  pullPolicy: Always
+  health: /healthz
+  port: 8090
+
+
+#Authorization reverse proxy details
+asp:
+  repository: gcr.io/superdentist/superdentist-auth-proxy
+  tag: latest
+  port: 8080
+  pullPolicy: Always
+  arg:
+    mode: "authz"
+
+
+sdServiceAccount:
+  name: superdentist-backend
+  secret: superdentist-backend
+  credential:
+    dir: /var/run/secrets/superdentist-backend
+    file: super-dentist-backend.json
+sdAPISecret:
+  name: sd-api-key
+  secret: GCP_API_KEY
+sgAPISecret:
+  name: sg-api-key
+  secret: SENDGRID_API_KEY
+twiSIDSecret:
+  name: twi-sd-sid
+  secret: TWI_SID
+twiAuthSecret:
+  name: twi-sd-auth
+  secret: TWI_AUTH
+service:
+  type: ClusterIP
+  port: 80
+
+## Ingress relation values below
+
+apisRegexp: "/api/(sd|documents|settings)/"
+uiPagesRegexp: "/(workspace|login|home|dashboard)$"
+cors:
+  origins: '^no_origin_allowed$'
+  methods: 'GET, POST, DELETE, PATCH, PUT, OPTIONS'
+  headers: 'Accept,Authorization,Cache-Control,Content-Type,Keep-Alive,Origin,User-Agent'
+routes:
+  - route: /api/sd/?(.*)
+    service: superdentist-backend
+    port: 80
+  - route: /?(.*)
+    service: superdentist-ui
+    port: 80
+maxBodySizeMb: 100
+# TODO add more routes for frontend etc..
+

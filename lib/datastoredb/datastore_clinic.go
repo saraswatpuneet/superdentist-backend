@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/superdentist/superdentist-backend/contracts"
+	"github.com/superdentist/superdentist-backend/global"
 	"github.com/superdentist/superdentist-backend/lib/helpers"
 	"google.golang.org/api/option"
 
@@ -57,7 +58,13 @@ func (db *dsClinic) InitializeDataBase(ctx context.Context, projectID string) er
 // AddClinicRegistration ....
 func (db *dsClinic) AddClinicRegistration(ctx context.Context, clinic *contracts.ClinicRegistrationData, uID string) error {
 	parentKey := datastore.NameKey("ClinicAdmin", uID, nil)
+	if global.Options.DSName!= "" {
+		parentKey.Namespace = global.Options.DSName
+	}
 	primaryKey := datastore.NameKey("ClinicAdmin", clinic.EmailID, parentKey)
+	if global.Options.DSName!= "" {
+		primaryKey.Namespace = global.Options.DSName
+	}	
 	allPrimaryClinics := make([]contracts.ClinicRegistrationData, 0)
 	qP := datastore.NewQuery("ClinicAdmin").Ancestor(primaryKey)
 
@@ -78,7 +85,13 @@ func (db *dsClinic) AddClinicRegistration(ctx context.Context, clinic *contracts
 // VerifyClinicInDatastore ..
 func (db *dsClinic) VerifyClinicInDatastore(ctx context.Context, emailID string, uID string) error {
 	parentKey := datastore.NameKey("ClinicAdmin", uID, nil)
+	if global.Options.DSName!= "" {
+		parentKey.Namespace = global.Options.DSName
+	}
 	pk := datastore.NameKey("ClinicAdmin", emailID, parentKey)
+	if global.Options.DSName!= "" {
+		pk.Namespace = global.Options.DSName
+	}
 	clinic := &contracts.ClinicRegistrationData{}
 	if err := db.client.Get(ctx, pk, clinic); err != nil {
 		return fmt.Errorf("datastoredb: could not get registered cli: %v", err)

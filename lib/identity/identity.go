@@ -9,6 +9,7 @@ import (
 
 	firebase "firebase.google.com/go"
 	"firebase.google.com/go/auth"
+	"github.com/superdentist/superdentist-backend/global"
 	"github.com/superdentist/superdentist-backend/lib/helpers"
 	"google.golang.org/api/option"
 )
@@ -73,11 +74,11 @@ func (id *IDP) GetUserByPhone(ctx context.Context, phone string) (*auth.UserReco
 	return currentUser, nil
 }
 
-
 // GetVerificationURL ...
 func (id *IDP) GetVerificationURL(ctx context.Context, email string) (string, error) {
+	contURL := global.Options.ContinueURL
 	actionCode := auth.ActionCodeSettings{
-		URL: "https://superdentist.io/login",
+		URL: contURL,
 	}
 	verifyLink, err := id.client.EmailVerificationLinkWithSettings(ctx, email, &actionCode)
 	if err != nil {
@@ -88,8 +89,9 @@ func (id *IDP) GetVerificationURL(ctx context.Context, email string) (string, er
 
 // GetResetPasswordURL ...
 func (id *IDP) GetResetPasswordURL(ctx context.Context, email string) (string, error) {
+	contURL := global.Options.ContinueURL
 	actionCode := auth.ActionCodeSettings{
-		URL: "https://superdentist.io/login",
+		URL: contURL,
 	}
 	verifyLink, err := id.client.PasswordResetLinkWithSettings(ctx, email, &actionCode)
 	if err != nil {
