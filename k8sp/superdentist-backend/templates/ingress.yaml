@@ -26,13 +26,6 @@ metadata:
       if ($request_uri ~* {{ .Values.uiPagesRegexp }}) {
         # UI pages specific stuff goes here
       }
-
-      # Swagger pages
-      if ($request_uri ~* "^\/docs\/") {
-        # For swagger docs we should allow slightly more in terms of script behavior and images
-        set $csp_script_src_value "'self' 'unsafe-eval' 'unsafe-inline'";
-        set $csp_image_src_value "'self' data: https://online.swagger.io";
-      }
       
       # API calls
       if ($request_uri ~* {{ .Values.apisRegexp }}) {

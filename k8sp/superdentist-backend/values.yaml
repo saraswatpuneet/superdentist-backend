@@ -14,16 +14,6 @@ image:
   health: /healthz
   port: 8090
 
-# Swagger UI to be deployed within cluster for easy understanding
-imageswagger:
-  repository: swaggerapi/swagger-ui
-  tag: v3.32.5
-  port: 8080
-  health: /
-  pullPolicy: IfNotPresent
-  mountPathSwaggerConfig: /etc/config
-  swaggerFilePath: /etc/config/swagger.yaml
-
 
 #Authorization reverse proxy details
 asp:
@@ -60,8 +50,7 @@ service:
 ## Ingress relation values below
 
 apisRegexp: "/api/(sd|documents|settings)/"
-uiPagesRegexp: "/(workspace|login|home)$"
-swaggerPagesRegexp: "/docs/(sd|documents|settings)/"
+uiPagesRegexp: "/(workspace|login|home|dashboard)$"
 cors:
   origins: '^no_origin_allowed$'
   methods: 'GET, POST, DELETE, PATCH, PUT, OPTIONS'
@@ -69,9 +58,6 @@ cors:
 routes:
   - route: /api/sd/?(.*)
     service: superdentist-backend
-    port: 80
-  - route: /docs/sd/?(.*)
-    service: superdentist-backend-swagger
     port: 80
   - route: /?(.*)
     service: superdentist-ui
