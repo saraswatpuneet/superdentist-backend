@@ -93,7 +93,11 @@ jobs:
         curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
         chmod 700 get_helm.sh
         ./get_helm.sh
-    - name: Deploy to SuperDentist Cluster
+    - name: Deploy to SuperDentist Cluster to DEV
       run: |-
         gcloud container clusters get-credentials "$GKE_CLUSTER" --zone "$GKE_ZONE"
+        helm upgrade superdentist-backend ./k8s/superdentist-backend --set image.tag=$GITHUB_SHA --install --wait --atomic
+    - name: Deploy to SuperDentist Cluster to PROD
+      run: |-
+        gcloud container clusters get-credentials "$GKE_CLUSTER_PROD" --zone "$GKE_ZONE"
         helm upgrade superdentist-backend ./k8s/superdentist-backend --set image.tag=$GITHUB_SHA --install --wait --atomic
