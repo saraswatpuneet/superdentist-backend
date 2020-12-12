@@ -175,6 +175,9 @@ func (db *DSReferral) CreateMessage(ctx context.Context, referral contracts.DSRe
 	}
 	for _, comment := range comms {
 		secondarKey := datastore.NameKey("ReferralMessages", comment.MessageID, primaryKey)
+		if global.Options.DSName!= "" {
+			secondarKey.Namespace = global.Options.DSName
+		}
 		_, err := db.client.Put(ctx, secondarKey, &comment)
 		if err != nil {
 			return fmt.Errorf("cannot register clinic with sd: %v", err)
