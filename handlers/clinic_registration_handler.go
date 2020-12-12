@@ -37,6 +37,8 @@ func AdminRegistrationHandler(c *gin.Context) {
 		)
 		return
 	}
+	log.Infof("Registering clinic with SD database2")
+
 	ctx, span := trace.StartSpan(ctx, "Register incoming request for clinic")
 	defer span.End()
 	if err := c.ShouldBindWith(&clinicRegistrationReq, binding.JSON); err != nil {
@@ -79,6 +81,8 @@ func AdminRegistrationHandler(c *gin.Context) {
 	}
 	sgClient := sendgrid.NewSendGridClient()
 	err = sgClient.InitializeSendGridClient()
+	log.Infof("Registering clinic with SD database sendgrid")
+
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
@@ -90,6 +94,8 @@ func AdminRegistrationHandler(c *gin.Context) {
 		return
 	}
 	idAuth, err := identity.NewIDPEP(ctx, gproject)
+	log.Infof("Registering clinic with SD database idep")
+
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
@@ -101,6 +107,8 @@ func AdminRegistrationHandler(c *gin.Context) {
 		return
 	}
 	veriURL, err := idAuth.GetVerificationURL(ctx, clinicRegistrationReq.EmailID)
+	log.Infof("Registering clinic with SD database3")
+
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
@@ -112,6 +120,8 @@ func AdminRegistrationHandler(c *gin.Context) {
 		return
 	}
 	err = sgClient.SendVerificationEmail(clinicRegistrationReq.EmailID, veriURL)
+	log.Infof("Registering clinic with SD database4")
+
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
