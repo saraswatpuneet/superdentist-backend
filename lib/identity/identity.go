@@ -40,7 +40,7 @@ func NewIDPEP(ctx context.Context, projectID string) (*IDP, error) {
 	}
 	currentClient, err := app.Auth(ctx)
 	var tenantClient *auth.TenantClient
-	if global.Options.Debug {
+	if false {
 		tenantClient, err = currentClient.TenantManager.AuthForTenant("firebaseprodtenant")
 		if err != nil {
 			return nil, fmt.Errorf("Failed to initialize identity client")
