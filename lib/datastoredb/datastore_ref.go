@@ -73,6 +73,9 @@ func (db *DSReferral) GetReferral(ctx context.Context, refID string) (*contracts
 		primaryKey.Namespace = global.Options.DSName
 	}
 	var referral contracts.DSReferral
+	if global.Options.DSName != "" {
+		primaryKey.Namespace = global.Options.DSName
+	}
 	err := db.client.Get(ctx, primaryKey, &referral)
 	if err != nil {
 		return &referral, err
@@ -188,6 +191,9 @@ func (db *DSReferral) GetMessagesAll(ctx context.Context, referralID string) ([]
 	}
 	returnedComments := make([]contracts.Comment, 0)
 	qP := datastore.NewQuery("ReferralMessages").Ancestor(ancKey)
+	if global.Options.DSName != "" {
+		qP = qP.Namespace(global.Options.DSName)
+	}
 	keysClinics, err := db.client.GetAll(ctx, qP, &returnedComments)
 	if err != nil || len(keysClinics) <= 0 {
 		return nil, fmt.Errorf("no comments found: %v", err)

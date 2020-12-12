@@ -67,7 +67,9 @@ func (db *dsClinic) AddClinicRegistration(ctx context.Context, clinic *contracts
 	}	
 	allPrimaryClinics := make([]contracts.ClinicRegistrationData, 0)
 	qP := datastore.NewQuery("ClinicAdmin").Ancestor(primaryKey)
-
+	if global.Options.DSName != "" {
+		qP = qP.Namespace(global.Options.DSName)
+	}
 	keyClinics, err := db.client.GetAll(ctx, qP, allPrimaryClinics)
 	noKeys := len(keyClinics)
 	if err != nil || noKeys <= 0 {

@@ -249,6 +249,9 @@ func (db *dsClinicMeta) GetAllClinics(ctx context.Context, clinicEmailID string,
 	}
 	returnedAddress := make([]contracts.PhysicalClinicMapLocation, 0)
 	qP := datastore.NewQuery("ClinicAddress").Ancestor(primaryKey)
+	if global.Options.DSName != "" {
+		qP = qP.Namespace(global.Options.DSName)
+	}
 	keysClinics, err := db.client.GetAll(ctx, qP, &returnedAddress)
 	if err != nil || len(keysClinics) <= 0 {
 		return nil, fmt.Errorf("no clinics have been found for the admin error: %v", err)
@@ -270,6 +273,9 @@ func (db *dsClinicMeta) GetClinicDoctors(ctx context.Context, clinicEmailID stri
 	qP := datastore.NewQuery("ClinicDoctors").Ancestor(primaryKey)
 	if addressID != "" {
 		qP = qP.Filter("AddressID =", addressID)
+	}
+	if global.Options.DSName != "" {
+		qP = qP.Namespace(global.Options.DSName)
 	}
 	keysClinics, err := db.client.GetAll(ctx, qP, &returnedDoctors)
 	if err != nil || len(keysClinics) <= 0 {
