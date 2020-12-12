@@ -89,6 +89,9 @@ func (db dsClinicMeta) AddPhysicalAddessressToClinic(ctx context.Context, clinic
 			placeID = currentLocation.PlaceID
 		}
 		addressKey := datastore.NameKey("ClinicAddress", addrID.String(), primaryKey)
+		if global.Options.DSName != "" {
+			addressKey.Namespace = global.Options.DSName
+		}
 		currentHash := geohash.Encode(location.Lat, location.Long, 12)
 		currentLocWithMap := contracts.PhysicalClinicMapLocation{
 			PhysicalClinicsRegistration: address,
@@ -117,6 +120,9 @@ func (db dsClinicMeta) UpdatePhysicalAddessressToClinic(ctx context.Context, cli
 		primaryKey.Namespace = global.Options.DSName
 	}
 	addressKey := datastore.NameKey("ClinicAddress", clinicUpdated.AddressID, primaryKey)
+	if global.Options.DSName != "" {
+		addressKey.Namespace = global.Options.DSName
+	}
 	_, err := db.client.Put(ctx, addressKey, &clinicUpdated)
 	if err != nil {
 		return fmt.Errorf("update clinic failed: %v", err)
@@ -139,6 +145,9 @@ func (db dsClinicMeta) AddDoctorsToPhysicalClincs(ctx context.Context, clinicEma
 			docID, err := guuid.NewUUID()
 			doc.AddressID = doctor.AddressID
 			clinicDoctorKey := datastore.NameKey("ClinicDoctors", docID.String(), primaryKey)
+			if global.Options.DSName != "" {
+				clinicDoctorKey.Namespace = global.Options.DSName
+			}
 			if err != nil {
 				return fmt.Errorf("cannot register doctor with sd: %v", err)
 			}
@@ -162,6 +171,9 @@ func (db *dsClinicMeta) AddPMSUsedByClinics(ctx context.Context, clinicEmailID s
 		primaryKey.Namespace = global.Options.DSName
 	}
 	clinicPMSKey := datastore.IncompleteKey("ClinicPMS", primaryKey)
+	if global.Options.DSName != "" {
+		clinicPMSKey.Namespace = global.Options.DSName
+	}
 	currentPMSStruct := contracts.PostPMSDetails{
 		PMSNames: pmsData,
 	}
@@ -184,6 +196,9 @@ func (db *dsClinicMeta) AddPMSAuthDetails(ctx context.Context, clinicEmailID str
 	}
 	for _, pmsData := range pmsInformation.PMSAuthData {
 		clinicPMSKey := datastore.NameKey("ClinicPMSAuth", pmsData.PMSName, primaryKey)
+		if global.Options.DSName != "" {
+			clinicPMSKey.Namespace = global.Options.DSName
+		}
 		bytesSafe, _ := json.Marshal(pmsData)
 		var dsPMSAuth contracts.PMSAuthStructStore
 		dsPMSAuth.PMSName = pmsData.PMSName
@@ -210,6 +225,9 @@ func (db *dsClinicMeta) AddServicesForClinic(ctx context.Context, clinicEmailID 
 	}
 	for _, serObj := range serviceData {
 		clinicPMSKey := datastore.IncompleteKey("ClinicServices", primaryKey)
+		if global.Options.DSName != "" {
+			clinicPMSKey.Namespace = global.Options.DSName
+		}
 		_, err := db.client.Put(ctx, clinicPMSKey, &serObj)
 		if err != nil {
 			return fmt.Errorf("cannot register clinic with sd: %v", err)
