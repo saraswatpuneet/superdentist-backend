@@ -83,10 +83,15 @@ func (db dsClinicMeta) AddPhysicalAddessressToClinic(ctx context.Context, clinic
 		}
 		placeID := ""
 		if err == nil && len(gmapAddress.Results) > 0 {
-			currentLocation := gmapAddress.Results[0]
-			location.Lat = currentLocation.Geometry.Location.Lat
-			location.Long = currentLocation.Geometry.Location.Lng
-			placeID = currentLocation.PlaceID
+			for _, gAddress := range gmapAddress.Results {
+				if gAddress.Name == address.Name {
+					currentLocation := gmapAddress.Results[0]
+					location.Lat = currentLocation.Geometry.Location.Lat
+					location.Long = currentLocation.Geometry.Location.Lng
+					placeID = currentLocation.PlaceID
+					break
+				}
+			}
 		}
 		addressKey := datastore.NameKey("ClinicAddress", addrID.String(), primaryKey)
 		if global.Options.DSName != "" {
