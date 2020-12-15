@@ -81,6 +81,9 @@ func SDRouter() (*gin.Engine, error) {
 		clinicGroup.GET("/queryAddress", func(c *gin.Context) {
 			handlers.QueryAddressHandlerWebsocket(poolConnections, c)
 		})
+		clinicGroup.GET("/referralRefresh", func(c *gin.Context) {
+			handlers.ReferralUpdateNotifier(poolConnections, c)
+		})
 
 		clinicGroup.GET("/getAddressList", handlers.GetAddressListRest)
 	}

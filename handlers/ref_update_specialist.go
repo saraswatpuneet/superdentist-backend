@@ -21,10 +21,12 @@ import (
 	"github.com/superdentist/superdentist-backend/contracts"
 	"github.com/superdentist/superdentist-backend/global"
 	"github.com/superdentist/superdentist-backend/lib/datastoredb"
+	"github.com/superdentist/superdentist-backend/lib/gmaps"
 	"github.com/superdentist/superdentist-backend/lib/googleprojectlib"
 	"github.com/superdentist/superdentist-backend/lib/sendgrid"
 	"github.com/superdentist/superdentist-backend/lib/sms"
 	"github.com/superdentist/superdentist-backend/lib/storage"
+	"github.com/superdentist/superdentist-backend/lib/websocket"
 )
 
 // AddCommentsToReferral ...
@@ -1126,3 +1128,38 @@ func Parse(request *http.Request) *contracts.ParsedEmail {
 	result.Parse()
 	return &result
 }
+
+// ReferralUpdateNotifier ...
+func ReferralUpdateNotifier(webPool *websocket.Pool, c *gin.Context) {
+	ctx := c.Request.Context()
+	gproject := googleprojectlib.GetGoogleProjectID()
+
+	mapClient := gmaps.NewMapsHandler()
+	err := mapClient.InitializeGoogleMapsAPIClient(ctx, gproject)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	webSocketConn, err := websocket.UpgradeWebSocket(c)
+	if err != nil {
+		log.Errorf("Failed to establish websocket connection: %v", err.Error())
+	}
+	connID, _ := uuid.NewUUID()
+	client := &websocket.Client{
+		CurrentPool:   webPool,
+		CurrentConn:   webSocketConn,
+		CurrentConnID: connID.String(),
+		Send:          make(chan []byte, 1024),
+	}
+	client.CurrentPool.Register <- &websocket.RegisterChannel{
+		ClientID:  connID.String(),
+		WebClient: client,
+	}
+}
+
