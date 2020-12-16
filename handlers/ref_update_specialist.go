@@ -80,6 +80,29 @@ func AddCommentsToReferral(c *gin.Context) {
 		)
 		return
 	}
+	if dsReferral.ToAddressID == "" {
+		clinicDB := datastoredb.NewClinicMetaHandler()
+		err = clinicDB.InitializeDataBase(ctx, gproject)
+		if err != nil {
+			c.AbortWithStatusJSON(
+				http.StatusInternalServerError,
+				gin.H{
+					constants.RESPONSE_JSON_DATA:   nil,
+					constants.RESPONSDE_JSON_ERROR: err.Error(),
+				},
+			)
+			return
+		}
+		toClinic, err := clinicDB.GetSingleClinicViaPlace(ctx, dsReferral.ToPlaceID)
+		if err == nil && toClinic.IsVerified {
+			dsReferral.ToPlaceID = toClinic.PlaceID
+			dsReferral.ToClinicName = toClinic.Name
+			dsReferral.ToClinicAddress = toClinic.Address
+			dsReferral.ToEmail = toClinic.EmailAddress
+			dsReferral.ToClinicPhone = toClinic.PhoneNumber
+		}
+	}
+
 	updatedComm := make([]contracts.Comment, 0)
 	for _, comm := range referralDetails.Comments {
 		comm.TimeStamp = time.Now().Unix()
@@ -386,6 +409,28 @@ func UpdateReferralStatus(c *gin.Context) {
 		)
 		return
 	}
+	if dsReferral.ToAddressID == "" {
+		clinicDB := datastoredb.NewClinicMetaHandler()
+		err = clinicDB.InitializeDataBase(ctx, gproject)
+		if err != nil {
+			c.AbortWithStatusJSON(
+				http.StatusInternalServerError,
+				gin.H{
+					constants.RESPONSE_JSON_DATA:   nil,
+					constants.RESPONSDE_JSON_ERROR: err.Error(),
+				},
+			)
+			return
+		}
+		toClinic, err := clinicDB.GetSingleClinicViaPlace(ctx, dsReferral.ToPlaceID)
+		if err == nil && toClinic.IsVerified {
+			dsReferral.ToPlaceID = toClinic.PlaceID
+			dsReferral.ToClinicName = toClinic.Name
+			dsReferral.ToClinicAddress = toClinic.Address
+			dsReferral.ToEmail = toClinic.EmailAddress
+			dsReferral.ToClinicPhone = toClinic.PhoneNumber
+		}
+	}
 	dsReferral.Status = referralDetails.Status
 	dsReferral.ModifiedOn = time.Now()
 	err = dsRefC.CreateReferral(ctx, *dsReferral)
@@ -541,6 +586,28 @@ func UploadDocuments(c *gin.Context) {
 			},
 		)
 		return
+	}
+	if dsReferral.ToAddressID == "" {
+		clinicDB := datastoredb.NewClinicMetaHandler()
+		err = clinicDB.InitializeDataBase(ctx, gproject)
+		if err != nil {
+			c.AbortWithStatusJSON(
+				http.StatusInternalServerError,
+				gin.H{
+					constants.RESPONSE_JSON_DATA:   nil,
+					constants.RESPONSDE_JSON_ERROR: err.Error(),
+				},
+			)
+			return
+		}
+		toClinic, err := clinicDB.GetSingleClinicViaPlace(ctx, dsReferral.ToPlaceID)
+		if err == nil && toClinic.IsVerified {
+			dsReferral.ToPlaceID = toClinic.PlaceID
+			dsReferral.ToClinicName = toClinic.Name
+			dsReferral.ToClinicAddress = toClinic.Address
+			dsReferral.ToEmail = toClinic.EmailAddress
+			dsReferral.ToClinicPhone = toClinic.PhoneNumber
+		}
 	}
 	storageC := storage.NewStorageHandler()
 	err = storageC.InitializeStorageClient(ctx, gproject)
