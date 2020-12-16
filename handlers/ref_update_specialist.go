@@ -94,7 +94,7 @@ func AddCommentsToReferral(c *gin.Context) {
 			return
 		}
 		toClinic, err := clinicDB.GetSingleClinicViaPlace(ctx, dsReferral.ToPlaceID)
-		if err == nil && toClinic.IsVerified {
+		if err == nil && toClinic.AddressID!="" {
 			dsReferral.ToPlaceID = toClinic.PlaceID
 			dsReferral.ToClinicName = toClinic.Name
 			dsReferral.ToClinicAddress = toClinic.Address
@@ -424,7 +424,7 @@ func UpdateReferralStatus(c *gin.Context) {
 			return
 		}
 		toClinic, err := clinicDB.GetSingleClinicViaPlace(ctx, dsReferral.ToPlaceID)
-		if err == nil && toClinic.IsVerified {
+		if err == nil && toClinic.AddressID!="" {
 			dsReferral.ToPlaceID = toClinic.PlaceID
 			dsReferral.ToClinicName = toClinic.Name
 			dsReferral.ToClinicAddress = toClinic.Address
@@ -603,7 +603,7 @@ func UploadDocuments(c *gin.Context) {
 			return
 		}
 		toClinic, err := clinicDB.GetSingleClinicViaPlace(ctx, dsReferral.ToPlaceID)
-		if err == nil && toClinic.IsVerified {
+		if err == nil && toClinic.AddressID!="" {
 			dsReferral.ToPlaceID = toClinic.PlaceID
 			dsReferral.ToClinicName = toClinic.Name
 			dsReferral.ToClinicAddress = toClinic.Address
