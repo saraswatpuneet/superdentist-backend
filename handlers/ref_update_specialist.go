@@ -100,6 +100,7 @@ func AddCommentsToReferral(c *gin.Context) {
 			dsReferral.ToClinicAddress = toClinic.Address
 			dsReferral.ToEmail = toClinic.EmailAddress
 			dsReferral.ToClinicPhone = toClinic.PhoneNumber
+			dsReferral.ToAddressID = toClinic.AddressID
 		}
 	}
 
@@ -429,6 +430,7 @@ func UpdateReferralStatus(c *gin.Context) {
 			dsReferral.ToClinicAddress = toClinic.Address
 			dsReferral.ToEmail = toClinic.EmailAddress
 			dsReferral.ToClinicPhone = toClinic.PhoneNumber
+			dsReferral.ToAddressID = toClinic.AddressID
 		}
 	}
 	dsReferral.Status = referralDetails.Status
@@ -605,6 +607,7 @@ func UploadDocuments(c *gin.Context) {
 			dsReferral.ToPlaceID = toClinic.PlaceID
 			dsReferral.ToClinicName = toClinic.Name
 			dsReferral.ToClinicAddress = toClinic.Address
+			dsReferral.ToAddressID = toClinic.AddressID
 			dsReferral.ToEmail = toClinic.EmailAddress
 			dsReferral.ToClinicPhone = toClinic.PhoneNumber
 		}
