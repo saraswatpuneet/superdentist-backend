@@ -127,7 +127,8 @@ type ParsedEmail struct {
 
 // Parse ....
 func (email *ParsedEmail) Parse() error {
-	err := email.RawRequest.ParseMultipartForm(0)
+	const _24K = (1 << 10) * 100
+	err := email.RawRequest.ParseMultipartForm(_24K)
 	if err != nil {
 		return err
 	}

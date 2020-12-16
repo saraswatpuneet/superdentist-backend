@@ -627,7 +627,7 @@ func UploadDocuments(c *gin.Context) {
 	docIDNames := make([]string, 0)
 	// Stage 2 Upload files from
 	// parse request
-	const _24K = (1 << 10) * 24
+	const _24K = (1 << 10) * 100
 	if err = c.Request.ParseMultipartForm(_24K); err == nil {
 		for _, fheaders := range c.Request.MultipartForm.File {
 			for _, hdr := range fheaders {
