@@ -1076,7 +1076,7 @@ definitions:
               type: string
             phoneNumber:
               type: string
-            speciality:
+            specialty:
               type: array
               items:
                 type: string
@@ -1096,7 +1096,7 @@ definitions:
               type: string
             phoneNumber:
               type: string
-            speciality:
+            specialty:
               type: array
               items:
                 type: string
@@ -1123,7 +1123,7 @@ definitions:
                     type: string
                   emailAddress:
                     type: string
-                  speciality:
+                  specialty:
                     type: array
                     items:
                       type: string
@@ -1148,7 +1148,7 @@ definitions:
               type: string
             phoneNumber:
               type: string
-            speciality:
+            specialty:
               type: array
               items:
                 type: string
@@ -1177,7 +1177,7 @@ definitions:
               type: string
             emailAddress:
               type: string
-            speciality:
+            specialty:
               type: array
               items:
                 type: string
@@ -1202,7 +1202,7 @@ definitions:
                   type: string
                 phoneNumber:
                   type: string
-                speciality:
+                specialty:
                   type: array
                   items:
                     type: string

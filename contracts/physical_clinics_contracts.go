@@ -15,7 +15,7 @@ type PhysicalClinicsRegistration struct {
 	Address      string   `json:"address" valid:"required"`
 	EmailAddress string   `json:"emailAddress" valid:"required"`
 	PhoneNumber  string   `json:"phoneNumber" valid:"required"`
-	Speciality   []string `json:"speciality"`
+	Specialty    []string `json:"specialty"`
 	Favorites    []string `json:"favorites"`
 }
 
@@ -63,7 +63,7 @@ type ClinicDoctorRegistration struct {
 	FirstName    string   `json:"firstName" valid:"required"`
 	LastName     string   `json:"lastName" valid:"required"`
 	EmailAddress string   `json:"emailAddress" valid:"required"`
-	Speciality   []string `json:"speciality" valid:"required"`
+	Specialty    []string `json:"specialty" valid:"required"`
 }
 
 // PostPhysicalClinicDetails .....
