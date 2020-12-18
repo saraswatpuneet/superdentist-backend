@@ -984,7 +984,7 @@ definitions:
         type: string
       searchRadius:
         type: string
-      specialities:
+      specialties:
         type: string
   RegisterClinicServices:
     type: object

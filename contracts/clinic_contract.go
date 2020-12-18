@@ -18,7 +18,7 @@ type PasswordResetData struct {
 // GetNearbySpecialists .....
 type GetNearbySpecialists struct {
 	ClinicAddessID string `json:"addressId" valid:"required"`
-	Specialities   string `json:"specialities"`
+	Specialties    string `json:"specialties"`
 	SearchRadius   string `json:"searchRadius"`
 	Cursor         string `json:"cursor"`
 }

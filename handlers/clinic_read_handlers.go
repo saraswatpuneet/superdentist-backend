@@ -287,7 +287,7 @@ func GetNearbySpeialists(c *gin.Context) {
 		Lat: loc.Lat,
 		Lng: loc.Long,
 	}
-	currentSpeciality := nearbyRequest.Specialities
+	currentSpeciality := nearbyRequest.Specialties
 	if currentSpeciality == "" {
 		currentSpeciality = "specialist"
 	}
