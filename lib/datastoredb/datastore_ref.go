@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/superdentist/superdentist-backend/contracts"
 	"github.com/superdentist/superdentist-backend/global"
@@ -69,7 +70,7 @@ func (db *DSReferral) CreateReferral(ctx context.Context, referral contracts.DSR
 // GetReferral .....
 func (db *DSReferral) GetReferral(ctx context.Context, refID string) (*contracts.DSReferral, error) {
 	primaryKey := datastore.NameKey("ClinicReferrals", refID, nil)
-	if global.Options.DSName!= "" {
+	if global.Options.DSName != "" {
 		primaryKey.Namespace = global.Options.DSName
 	}
 	var referral contracts.DSReferral
@@ -87,7 +88,7 @@ func (db *DSReferral) GetReferral(ctx context.Context, refID string) (*contracts
 func (db *DSReferral) GetReferralFromEmail(ctx context.Context, emailID string) (*contracts.DSReferral, error) {
 	returnedReferrals := make([]contracts.DSReferral, 0)
 	qP := datastore.NewQuery("ClinicReferrals")
-	if global.Options.DSName!= "" {
+	if global.Options.DSName != "" {
 		qP = qP.Namespace(global.Options.DSName)
 	}
 	if emailID != "" {
@@ -97,14 +98,22 @@ func (db *DSReferral) GetReferralFromEmail(ctx context.Context, emailID string) 
 	if err != nil || len(keysClinics) <= 0 {
 		return nil, fmt.Errorf("no referrals found: %v", err)
 	}
-	return &returnedReferrals[0], nil
+	var outputRef contracts.DSReferral
+	for _, ref := range returnedReferrals {
+		if strings.Contains(strings.ToLower(ref.Status.SPStatus), "complete") || strings.Contains(strings.ToLower(ref.Status.SPStatus), "finish") ||
+			strings.Contains(strings.ToLower(ref.Status.SPStatus), "close") {
+			continue
+		}
+		outputRef = ref
+	}
+	return &outputRef, nil
 }
 
 // ReferralFromPatientPhone .....
 func (db *DSReferral) ReferralFromPatientPhone(ctx context.Context, patientPhone string) (*contracts.DSReferral, error) {
 	returnedReferrals := make([]contracts.DSReferral, 0)
 	qP := datastore.NewQuery("ClinicReferrals")
-	if global.Options.DSName!= "" {
+	if global.Options.DSName != "" {
 		qP = qP.Namespace(global.Options.DSName)
 	}
 	if patientPhone != "" {
@@ -114,14 +123,22 @@ func (db *DSReferral) ReferralFromPatientPhone(ctx context.Context, patientPhone
 	if err != nil || len(keysClinics) <= 0 {
 		return nil, fmt.Errorf("no referrals found: %v", err)
 	}
-	return &returnedReferrals[0], nil
+	var outputRef contracts.DSReferral
+	for _, ref := range returnedReferrals {
+		if strings.Contains(strings.ToLower(ref.Status.SPStatus), "complete") || strings.Contains(strings.ToLower(ref.Status.SPStatus), "finish") ||
+			strings.Contains(strings.ToLower(ref.Status.SPStatus), "close") {
+			continue
+		}
+		outputRef = ref
+	}
+	return &outputRef, nil
 }
 
 // GetAllReferralsGD .....
 func (db *DSReferral) GetAllReferralsGD(ctx context.Context, addressID string) ([]contracts.DSReferral, error) {
 	returnedReferrals := make([]contracts.DSReferral, 0)
 	qP := datastore.NewQuery("ClinicReferrals")
-	if global.Options.DSName!= "" {
+	if global.Options.DSName != "" {
 		qP = qP.Namespace(global.Options.DSName)
 	}
 	if addressID != "" {
@@ -141,7 +158,7 @@ func (db *DSReferral) GetAllReferralsSP(ctx context.Context, addressID string) (
 	if addressID != "" {
 		qP = qP.Filter("ToPlaceID =", addressID).Filter("IsDirty =", false)
 	}
-	if global.Options.DSName!= "" {
+	if global.Options.DSName != "" {
 		qP = qP.Namespace(global.Options.DSName)
 	}
 	keysClinics, err := db.client.GetAll(ctx, qP, &returnedReferrals)
@@ -156,7 +173,7 @@ func (db *DSReferral) GetAllReferralsSP(ctx context.Context, addressID string) (
 // DeleteReferral .....
 func (db *DSReferral) DeleteReferral(ctx context.Context, refID string) (*contracts.DSReferral, error) {
 	primaryKey := datastore.NameKey("ClinicReferrals", refID, nil)
-	if global.Options.DSName!= "" {
+	if global.Options.DSName != "" {
 		primaryKey.Namespace = global.Options.DSName
 	}
 	var referral contracts.DSReferral
@@ -170,12 +187,12 @@ func (db *DSReferral) DeleteReferral(ctx context.Context, refID string) (*contra
 // CreateMessage .....
 func (db *DSReferral) CreateMessage(ctx context.Context, referral contracts.DSReferral, comms []contracts.Comment) error {
 	primaryKey := datastore.NameKey("ReferralMessages", referral.ReferralID, nil)
-	if global.Options.DSName!= "" {
+	if global.Options.DSName != "" {
 		primaryKey.Namespace = global.Options.DSName
 	}
 	for _, comment := range comms {
 		secondarKey := datastore.NameKey("ReferralMessages", comment.MessageID, primaryKey)
-		if global.Options.DSName!= "" {
+		if global.Options.DSName != "" {
 			secondarKey.Namespace = global.Options.DSName
 		}
 		_, err := db.client.Put(ctx, secondarKey, &comment)
@@ -189,7 +206,7 @@ func (db *DSReferral) CreateMessage(ctx context.Context, referral contracts.DSRe
 // GetMessagesAll .....
 func (db *DSReferral) GetMessagesAll(ctx context.Context, referralID string) ([]contracts.Comment, error) {
 	ancKey := datastore.NameKey("ReferralMessages", referralID, nil)
-	if global.Options.DSName!= "" {
+	if global.Options.DSName != "" {
 		ancKey.Namespace = global.Options.DSName
 	}
 	returnedComments := make([]contracts.Comment, 0)
@@ -207,7 +224,7 @@ func (db *DSReferral) GetMessagesAll(ctx context.Context, referralID string) ([]
 // GetMessagesAllWithChannel .....
 func (db *DSReferral) GetMessagesAllWithChannel(ctx context.Context, referralID string, channel string) ([]contracts.Comment, error) {
 	ancKey := datastore.NameKey("ReferralMessages", referralID, nil)
-	if global.Options.DSName!= "" {
+	if global.Options.DSName != "" {
 		ancKey.Namespace = global.Options.DSName
 	}
 	returnedComments := make([]contracts.Comment, 0)
@@ -215,7 +232,7 @@ func (db *DSReferral) GetMessagesAllWithChannel(ctx context.Context, referralID 
 	if channel != "" {
 		qP = qP.Filter("Channel =", channel)
 	}
-	if global.Options.DSName!= "" {
+	if global.Options.DSName != "" {
 		qP = qP.Namespace(global.Options.DSName)
 	}
 	keysClinics, err := db.client.GetAll(ctx, qP, &returnedComments)
@@ -228,11 +245,11 @@ func (db *DSReferral) GetMessagesAllWithChannel(ctx context.Context, referralID 
 // GetOneMessage .....
 func (db *DSReferral) GetOneMessage(ctx context.Context, referralID string, messageID string) (*contracts.Comment, error) {
 	pKey := datastore.NameKey("ReferralMessages", referralID, nil)
-	if global.Options.DSName!= "" {
+	if global.Options.DSName != "" {
 		pKey.Namespace = global.Options.DSName
 	}
 	mainKey := datastore.NameKey("ReferralMessages", messageID, pKey)
-	if global.Options.DSName!= "" {
+	if global.Options.DSName != "" {
 		mainKey.Namespace = global.Options.DSName
 	}
 	var returnedComments contracts.Comment
