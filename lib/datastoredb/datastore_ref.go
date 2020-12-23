@@ -110,7 +110,7 @@ func (db *DSReferral) GetReferralFromEmail(ctx context.Context, emailID string) 
 }
 
 // ReferralFromPatientPhone .....
-func (db *DSReferral) ReferralFromPatientPhone(ctx context.Context, patientPhone string) (*contracts.DSReferral, error) {
+func (db *DSReferral) ReferralFromPatientPhone(ctx context.Context, patientPhone string) ([]contracts.DSReferral, error) {
 	returnedReferrals := make([]contracts.DSReferral, 0)
 	qP := datastore.NewQuery("ClinicReferrals")
 	if global.Options.DSName != "" {
@@ -123,15 +123,15 @@ func (db *DSReferral) ReferralFromPatientPhone(ctx context.Context, patientPhone
 	if err != nil || len(keysClinics) <= 0 {
 		return nil, fmt.Errorf("no referrals found: %v", err)
 	}
-	var outputRef contracts.DSReferral
+	outputRef := make([] contracts.DSReferral, 0)
 	for _, ref := range returnedReferrals {
 		if strings.Contains(strings.ToLower(ref.Status.SPStatus), "complete") || strings.Contains(strings.ToLower(ref.Status.SPStatus), "finish") ||
 			strings.Contains(strings.ToLower(ref.Status.SPStatus), "close") {
 			continue
 		}
-		outputRef = ref
+		outputRef = append(outputRef, ref)
 	}
-	return &outputRef, nil
+	return outputRef, nil
 }
 
 // GetAllReferralsGD .....

@@ -94,7 +94,7 @@ func AddCommentsToReferral(c *gin.Context) {
 			return
 		}
 		toClinic, err := clinicDB.GetSingleClinicViaPlace(ctx, dsReferral.ToPlaceID)
-		if err == nil && toClinic.AddressID!="" {
+		if err == nil && toClinic.AddressID != "" {
 			dsReferral.ToPlaceID = toClinic.PlaceID
 			dsReferral.ToClinicName = toClinic.Name
 			dsReferral.ToClinicAddress = toClinic.Address
@@ -424,7 +424,7 @@ func UpdateReferralStatus(c *gin.Context) {
 			return
 		}
 		toClinic, err := clinicDB.GetSingleClinicViaPlace(ctx, dsReferral.ToPlaceID)
-		if err == nil && toClinic.AddressID!="" {
+		if err == nil && toClinic.AddressID != "" {
 			dsReferral.ToPlaceID = toClinic.PlaceID
 			dsReferral.ToClinicName = toClinic.Name
 			dsReferral.ToClinicAddress = toClinic.Address
@@ -603,7 +603,7 @@ func UploadDocuments(c *gin.Context) {
 			return
 		}
 		toClinic, err := clinicDB.GetSingleClinicViaPlace(ctx, dsReferral.ToPlaceID)
-		if err == nil && toClinic.AddressID!="" {
+		if err == nil && toClinic.AddressID != "" {
 			dsReferral.ToPlaceID = toClinic.PlaceID
 			dsReferral.ToClinicName = toClinic.Name
 			dsReferral.ToClinicAddress = toClinic.Address
@@ -1105,83 +1105,85 @@ func TextRecievedPatient(c *gin.Context) {
 	if err != nil {
 		log.Errorf("Error parsing text recieve: %v", err.Error())
 	}
-	dsReferral, err := dsRefC.ReferralFromPatientPhone(ctx, incomingPhone)
+	dsReferrals, err := dsRefC.ReferralFromPatientPhone(ctx, incomingPhone)
 	if err != nil {
 		log.Errorf("Referral not gound: %v", err.Error())
 	}
-	if incomingText != "" {
-		var commText contracts.Comment
-		commText.UserID = dsReferral.PatientEmail
-		commText.Channel = contracts.SPCBox
-		commText.Text = incomingText
-		commText.TimeStamp = time.Now().Unix()
-		id, _ := uuid.NewUUID()
-		commText.MessageID = id.String()
-		err = dsRefC.CreateMessage(ctx, *dsReferral, []contracts.Comment{commText})
-		if err != nil {
-			log.Errorf("Error processing sms error:%v ", err.Error())
-		}
-	}
-	docIDNames := make([]string, 0)
-
-	if len(filePatients) > 0 {
-		var commText contracts.Comment
-		commText.Channel = contracts.SPCBox
-		commText.Text = "New documents uploaded by " + dsReferral.PatientFirstName + " " + dsReferral.PatientLastName
-		commText.TimeStamp = time.Now().Unix()
-		id, _ := uuid.NewUUID()
-		commText.MessageID = id.String()
-		commText.UserID = dsReferral.PatientEmail
-		err = dsRefC.CreateMessage(ctx, *dsReferral, []contracts.Comment{commText})
-		if err != nil {
-			log.Errorf("Error processing sms error:%v ", err.Error())
-		}
-		storageC := storage.NewStorageHandler()
-		err = storageC.InitializeStorageClient(ctx, gproject)
-		if err != nil {
-			log.Errorf("Referral not gound: %v", err.Error())
-		}
-		var counter int64
-		for fileName, fileBytes := range filePatients {
-			counter++
-			extension := strings.Split(fileName, ".")[1]
-			fileName = dsReferral.PatientFirstName + strconv.Itoa(int(time.Now().Unix()+counter)) + "." + extension
-			bucketPath := dsReferral.ReferralID + "/" + fileName
-			buckerW, err := storageC.UploadToGCS(ctx, bucketPath)
-			if err != nil {
-				log.Errorf("Error processing uploading text error:%v ", err.Error())
-			}
-			_, err = io.Copy(buckerW, *fileBytes)
+	for _, dsReferral := range dsReferrals {
+		if incomingText != "" {
+			var commText contracts.Comment
+			commText.UserID = dsReferral.PatientEmail
+			commText.Channel = contracts.SPCBox
+			commText.Text = incomingText
+			commText.TimeStamp = time.Now().Unix()
+			id, _ := uuid.NewUUID()
+			commText.MessageID = id.String()
+			err = dsRefC.CreateMessage(ctx, dsReferral, []contracts.Comment{commText})
 			if err != nil {
 				log.Errorf("Error processing sms error:%v ", err.Error())
 			}
-			buckerW.Close()
-			(*fileBytes).Close()
-			docIDNames = append(docIDNames, fileName)
 		}
-		err = storageC.ZipFile(ctx, dsReferral.ReferralID)
-		if err != nil {
-			log.Errorf("Error processing zipping text error:%v ", err.Error())
-		}
-	}
-	dsReferral.ModifiedOn = time.Now()
-	dsReferral.Documents = append(dsReferral.Documents, docIDNames...)
-	err = dsRefC.CreateReferral(ctx, *dsReferral)
-	if err != nil {
-		log.Errorf("Error processing sms error:%v ", err.Error())
-	}
-	sgClient := sendgrid.NewSendGridClient()
-	err = sgClient.InitializeSendGridClient()
-	if err != nil {
-		log.Errorf("Error processing sms error:%v ", err.Error())
-	}
-	if dsReferral.ToEmail != "" {
-		sgClient.SendClinicNotification(dsReferral.ToEmail, dsReferral.ToClinicName,
-			dsReferral.PatientFirstName+" "+dsReferral.PatientLastName, dsReferral.ReferralID)
+		docIDNames := make([]string, 0)
 
-	} else {
-		sgClient.SendClinicNotification(constants.SD_ADMIN_EMAIL, dsReferral.ToClinicName,
-			dsReferral.PatientFirstName+" "+dsReferral.PatientLastName, dsReferral.ReferralID)
+		if len(filePatients) > 0 {
+			var commText contracts.Comment
+			commText.Channel = contracts.SPCBox
+			commText.Text = "New documents uploaded by " + dsReferral.PatientFirstName + " " + dsReferral.PatientLastName
+			commText.TimeStamp = time.Now().Unix()
+			id, _ := uuid.NewUUID()
+			commText.MessageID = id.String()
+			commText.UserID = dsReferral.PatientEmail
+			err = dsRefC.CreateMessage(ctx, dsReferral, []contracts.Comment{commText})
+			if err != nil {
+				log.Errorf("Error processing sms error:%v ", err.Error())
+			}
+			storageC := storage.NewStorageHandler()
+			err = storageC.InitializeStorageClient(ctx, gproject)
+			if err != nil {
+				log.Errorf("Referral not gound: %v", err.Error())
+			}
+			var counter int64
+			for fileName, fileBytes := range filePatients {
+				counter++
+				extension := strings.Split(fileName, ".")[1]
+				fileName = dsReferral.PatientFirstName + strconv.Itoa(int(time.Now().Unix()+counter)) + "." + extension
+				bucketPath := dsReferral.ReferralID + "/" + fileName
+				buckerW, err := storageC.UploadToGCS(ctx, bucketPath)
+				if err != nil {
+					log.Errorf("Error processing uploading text error:%v ", err.Error())
+				}
+				_, err = io.Copy(buckerW, *fileBytes)
+				if err != nil {
+					log.Errorf("Error processing sms error:%v ", err.Error())
+				}
+				buckerW.Close()
+				(*fileBytes).Close()
+				docIDNames = append(docIDNames, fileName)
+			}
+			err = storageC.ZipFile(ctx, dsReferral.ReferralID)
+			if err != nil {
+				log.Errorf("Error processing zipping text error:%v ", err.Error())
+			}
+		}
+		dsReferral.ModifiedOn = time.Now()
+		dsReferral.Documents = append(dsReferral.Documents, docIDNames...)
+		err = dsRefC.CreateReferral(ctx, dsReferral)
+		if err != nil {
+			log.Errorf("Error processing sms error:%v ", err.Error())
+		}
+		sgClient := sendgrid.NewSendGridClient()
+		err = sgClient.InitializeSendGridClient()
+		if err != nil {
+			log.Errorf("Error processing sms error:%v ", err.Error())
+		}
+		if dsReferral.ToEmail != "" {
+			sgClient.SendClinicNotification(dsReferral.ToEmail, dsReferral.ToClinicName,
+				dsReferral.PatientFirstName+" "+dsReferral.PatientLastName, dsReferral.ReferralID)
+
+		} else {
+			sgClient.SendClinicNotification(constants.SD_ADMIN_EMAIL, dsReferral.ToClinicName,
+				dsReferral.PatientFirstName+" "+dsReferral.PatientLastName, dsReferral.ReferralID)
+		}
 	}
 }
 
