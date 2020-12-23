@@ -1017,7 +1017,11 @@ func ReceiveReferralMail(c *gin.Context) {
 	if len(docIDNames) > 0 {
 		var uploadComment contracts.Comment
 		uploadComment.Channel = contracts.SPCBox
-		uploadComment.UserID = dsReferral.PatientEmail
+		if dsReferral.PatientEmail != "" {
+			uploadComment.UserID = dsReferral.PatientEmail
+		} else {
+			uploadComment.UserID = dsReferral.PatientPhone
+		}
 		id, _ := uuid.NewUUID()
 		uploadComment.MessageID = id.String()
 		uploadComment.Text = "New documents are uploaded by " + dsReferral.PatientFirstName + " " + dsReferral.PatientLastName
@@ -1035,7 +1039,11 @@ func ReceiveReferralMail(c *gin.Context) {
 		id, _ := uuid.NewUUID()
 		comm.MessageID = id.String()
 		comm.Channel = contracts.SPCBox
-		comm.UserID = dsReferral.PatientEmail
+		if dsReferral.PatientEmail != "" {
+			comm.UserID = dsReferral.PatientEmail
+		} else {
+			comm.UserID = dsReferral.PatientPhone
+		}
 		comm.Text = text
 		comm.TimeStamp = time.Now().Unix()
 		currentComments = append(currentComments, comm)
@@ -1132,7 +1140,11 @@ func TextRecievedPatient(c *gin.Context) {
 			commText.TimeStamp = time.Now().Unix()
 			id, _ := uuid.NewUUID()
 			commText.MessageID = id.String()
-			commText.UserID = dsReferral.PatientEmail
+			if dsReferral.PatientEmail != "" {
+				commText.UserID = dsReferral.PatientEmail
+			} else {
+				commText.UserID = dsReferral.PatientPhone
+			}
 			err = dsRefC.CreateMessage(ctx, dsReferral, []contracts.Comment{commText})
 			if err != nil {
 				log.Errorf("Error processing sms error:%v ", err.Error())
