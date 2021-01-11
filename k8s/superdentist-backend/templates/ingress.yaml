@@ -31,7 +31,7 @@ metadata:
       if ($request_uri ~* "^\/docs\/") {
         # For swagger docs we should allow slightly more in terms of script behavior and images
         set $csp_script_src_value "'self' 'unsafe-eval' 'unsafe-inline'";
-        set $csp_image_src_value "'self' data: https://online.swagger.io";
+        set $csp_image_src_value "'self' https://a.tile.openstreetmap.org data: https://online.swagger.io";
       }
       
       # API calls
