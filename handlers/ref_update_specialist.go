@@ -856,7 +856,7 @@ func GetAllReferralsSP(c *gin.Context) {
 		)
 		return
 	}
-	dsReferrals, err := dsRefC.GetAllReferralsSP(ctx, currentClinic.PlaceID)
+	dsReferrals, err := dsRefC.GetAllReferralsSP(ctx, currentClinic.PlaceID, currentClinic.Name)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusNotFound,

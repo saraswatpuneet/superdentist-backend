@@ -123,7 +123,7 @@ func (db *DSReferral) ReferralFromPatientPhone(ctx context.Context, patientPhone
 	if err != nil || len(keysClinics) <= 0 {
 		return nil, fmt.Errorf("no referrals found: %v", err)
 	}
-	outputRef := make([] contracts.DSReferral, 0)
+	outputRef := make([]contracts.DSReferral, 0)
 	for _, ref := range returnedReferrals {
 		if strings.Contains(strings.ToLower(ref.Status.SPStatus), "complete") || strings.Contains(strings.ToLower(ref.Status.SPStatus), "finish") ||
 			strings.Contains(strings.ToLower(ref.Status.SPStatus), "close") {
@@ -152,8 +152,10 @@ func (db *DSReferral) GetAllReferralsGD(ctx context.Context, addressID string) (
 }
 
 // GetAllReferralsSP .....
-func (db *DSReferral) GetAllReferralsSP(ctx context.Context, addressID string) ([]contracts.DSReferral, error) {
+func (db *DSReferral) GetAllReferralsSP(ctx context.Context, addressID string, clinicName string) ([]contracts.DSReferral, error) {
 	returnedReferrals := make([]contracts.DSReferral, 0)
+	returnedReferrals2 := make([]contracts.DSReferral, 0)
+
 	qP := datastore.NewQuery("ClinicReferrals")
 	if addressID != "" {
 		qP = qP.Filter("ToPlaceID =", addressID).Filter("IsDirty =", false)
@@ -161,10 +163,22 @@ func (db *DSReferral) GetAllReferralsSP(ctx context.Context, addressID string) (
 	if global.Options.DSName != "" {
 		qP = qP.Namespace(global.Options.DSName)
 	}
-	keysClinics, err := db.client.GetAll(ctx, qP, &returnedReferrals)
-	if err != nil || len(keysClinics) <= 0 {
-		if err != nil || len(keysClinics) <= 0 {
-			return returnedReferrals, fmt.Errorf("no referrals found: %v", err)
+	_, err := db.client.GetAll(ctx, qP, &returnedReferrals)
+	if err != nil {
+		return returnedReferrals, fmt.Errorf("no referrals found: %v", err)
+	}
+	qP2 := datastore.NewQuery("ClinicReferrals")
+	if clinicName != "" {
+		qP2 = qP2.Filter("ToClinicName>=", clinicName)
+	}
+	if global.Options.DSName != "" {
+		qP2 = qP2.Namespace(global.Options.DSName)
+	}
+	_, err = db.client.GetAll(ctx, qP2, &returnedReferrals2)
+	for _, ref := range returnedReferrals2 {
+		if !ref.IsDirty {
+			returnedReferrals = append(returnedReferrals, ref)
+
 		}
 	}
 	return returnedReferrals, nil
