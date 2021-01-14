@@ -176,7 +176,7 @@ func (db *DSReferral) GetAllReferralsSP(ctx context.Context, addressID string, c
 	}
 	_, err = db.client.GetAll(ctx, qP2, &returnedReferrals2)
 	for _, ref := range returnedReferrals2 {
-		if !ref.IsDirty {
+		if !ref.IsDirty && strings.Contains(ref.ToClinicName, clinicName) {
 			returnedReferrals = append(returnedReferrals, ref)
 
 		}
