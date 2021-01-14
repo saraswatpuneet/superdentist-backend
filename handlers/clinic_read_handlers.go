@@ -688,6 +688,9 @@ func RemoveFavoriteClinics(c *gin.Context) {
 		exists := Find(favoriteAdd.PlaceIDs, favID)
 		if !exists {
 			updatedFavorites = append(updatedFavorites, favID)
+		} else {
+			clinicMetaDB.RemoveNetworkForFavoritedClinic(ctx, favID, *currentClinic.PlaceID)
+
 		}
 	}
 	currentClinic.Favorites = updatedFavorites

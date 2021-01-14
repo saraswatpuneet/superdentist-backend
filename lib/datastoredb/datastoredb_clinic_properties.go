@@ -160,6 +160,35 @@ func (db dsClinicMeta) UpdateNetworkForFavoritedClinic(ctx context.Context, clin
 }
 
 // UpdatePhysicalAddessressToClinic
+func (db dsClinicMeta) RemoveNetworkForFavoritedClinic(ctx context.Context, favID string, favClinic string) error {
+	primaryKey := datastore.NameKey("ClinicNetwork", favID, nil)
+	if global.Options.DSName != "" {
+		primaryKey.Namespace = global.Options.DSName
+	}
+	var clinicNetwork contracts.ClinicNetwork
+	err := db.client.Get(ctx, primaryKey, clinicNetwork)
+	if err != nil || clinicNetwork.ClinicPlaceID == nil || len(clinicNetwork.ClinicPlaceID) <= 0 {
+		networkData := []string{}
+		clinicNetwork.ClinicPlaceID = networkData
+	} else {
+		newNetwork := make([]string, 0)
+		for _, placeID := range clinicNetwork.ClinicPlaceID {
+			if placeID != favClinic {
+				newNetwork = append(newNetwork, placeID)
+			}
+		}
+		clinicNetwork.ClinicPlaceID = newNetwork
+	}
+	_, err = db.client.Put(ctx, primaryKey, &clinicNetwork)
+	if err != nil {
+		return fmt.Errorf("cannot update clinic network: %v", err)
+
+	}
+	return nil
+	//lets create the clinic
+}
+
+// UpdatePhysicalAddessressToClinic
 func (db dsClinicMeta) GetNetworkClincs(ctx context.Context, placeID string) ([]string, error) {
 	primaryKey := datastore.NameKey("ClinicNetwork", placeID, nil)
 	if global.Options.DSName != "" {
