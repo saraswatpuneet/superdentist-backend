@@ -434,8 +434,8 @@ paths:
     get:
       tags:
        - "Registration APIs (R of CRUD)"
-      summary: "Get all favorite clinics favorited by GD"
-      description: "Get a list of clinics nearby current admin clinic"
+      summary: "Get all network clinics favorited by others"
+      description: "Get all network clinics favorited by others"
       operationId: "GetNetworkClinics"
       produces:
       - "application/json"
