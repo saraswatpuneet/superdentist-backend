@@ -155,7 +155,8 @@ func (db *DSReferral) GetAllReferralsGD(ctx context.Context, addressID string) (
 func (db *DSReferral) GetAllReferralsSP(ctx context.Context, addressID string, clinicName string) ([]contracts.DSReferral, error) {
 	returnedReferrals := make([]contracts.DSReferral, 0)
 	returnedReferrals2 := make([]contracts.DSReferral, 0)
-
+	returnedReferrals3 := make([]contracts.DSReferral, 0)
+	mapRef	:= make(map[string]contracts.DSReferral,0)
 	qP := datastore.NewQuery("ClinicReferrals")
 	if addressID != "" {
 		qP = qP.Filter("ToPlaceID =", addressID).Filter("IsDirty =", false)
@@ -167,6 +168,9 @@ func (db *DSReferral) GetAllReferralsSP(ctx context.Context, addressID string, c
 	if err != nil {
 		return returnedReferrals, fmt.Errorf("no referrals found: %v", err)
 	}
+	for _,ref := range returnedReferrals {
+		mapRef[ref.ReferralID] = ref
+	}
 	qP2 := datastore.NewQuery("ClinicReferrals")
 	if clinicName != "" {
 		qP2 = qP2.Filter("ToClinicName>=", clinicName)
@@ -177,11 +181,13 @@ func (db *DSReferral) GetAllReferralsSP(ctx context.Context, addressID string, c
 	_, err = db.client.GetAll(ctx, qP2, &returnedReferrals2)
 	for _, ref := range returnedReferrals2 {
 		if !ref.IsDirty && strings.Contains(ref.ToClinicName, clinicName) {
-			returnedReferrals = append(returnedReferrals, ref)
-
+			mapRef[ref.ReferralID] = ref
 		}
 	}
-	return returnedReferrals, nil
+	for _, value := range mapRef {
+		returnedReferrals3 = append(returnedReferrals3, value)
+	}
+	return returnedReferrals3, nil
 }
 
 // DeleteReferral .....
