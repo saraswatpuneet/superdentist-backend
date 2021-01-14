@@ -135,6 +135,45 @@ func (db dsClinicMeta) UpdatePhysicalAddessressToClinic(ctx context.Context, cli
 	return nil
 }
 
+// UpdatePhysicalAddessressToClinic
+func (db dsClinicMeta) UpdateNetworkForFavoritedClinic(ctx context.Context, clinicUpdated contracts.PhysicalClinicMapLocation) error {
+	for _, favClinic := range clinicUpdated.Favorites {
+		primaryKey := datastore.NameKey("ClinicNetwork", favClinic, nil)
+		if global.Options.DSName != "" {
+			primaryKey.Namespace = global.Options.DSName
+		}
+		var clinicNetwork contracts.ClinicNetwork
+		err := db.client.Get(ctx, primaryKey, clinicNetwork)
+		if err != nil || clinicNetwork.ClinicPlaceID == nil || len(clinicNetwork.ClinicPlaceID) <= 0 {
+			networkData := []string{clinicUpdated.PlaceID}
+			clinicNetwork.ClinicPlaceID = networkData
+		} else {
+			clinicNetwork.ClinicPlaceID = append(clinicNetwork.ClinicPlaceID, clinicUpdated.PlaceID)
+		}
+		_, err = db.client.Put(ctx, primaryKey, &clinicNetwork)
+		if err != nil {
+			return fmt.Errorf("cannot update clinic network: %v", err)
+		}
+	}
+	return nil
+	//lets create the clinic
+}
+
+// UpdatePhysicalAddessressToClinic
+func (db dsClinicMeta) GetNetworkClincs(ctx context.Context, placeID string) ([]string, error) {
+	primaryKey := datastore.NameKey("ClinicNetwork", placeID, nil)
+	if global.Options.DSName != "" {
+		primaryKey.Namespace = global.Options.DSName
+	}
+	var clinicNetwork contracts.ClinicNetwork
+	err := db.client.Get(ctx, primaryKey, clinicNetwork)
+	if err != nil {
+		return []string{}, fmt.Errorf("cannot update clinic network: %v", err)
+	}
+	return clinicNetwork.ClinicPlaceID, nil
+	//lets create the clinic
+}
+
 // AddDoctorsToPhysicalClincs ....
 func (db dsClinicMeta) AddDoctorsToPhysicalClincs(ctx context.Context, clinicEmailID string, clinicFBID string, doctorsData []contracts.ClinicDoctorsDetails) error {
 	parentKey := datastore.NameKey("ClinicAdmin", clinicFBID, nil)

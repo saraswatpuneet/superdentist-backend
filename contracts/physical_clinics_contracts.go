@@ -87,6 +87,10 @@ type PostPMSDetails struct {
 	PMSNames []string `json:"pmsNames" valid:"required"`
 }
 
+// ClinicNetwork ....
+type ClinicNetwork struct {
+	ClinicPlaceID []string `json:"clinicPlaceID" valid:"required"`
+}
 // PMSAuthStruct .....
 type PMSAuthStruct struct {
 	PMSName     string                 `json:"pmsName" valid:"required"`
