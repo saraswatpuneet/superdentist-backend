@@ -19,7 +19,7 @@ metadata:
       set $expires_value '0';
 
       set $csp_script_src_value "'self'";
-      set $csp_image_src_value "'self' data:";
+      set $csp_image_src_value "'self' https://*.tile.openstreetmap.org data:";
 
 
       # UI pages
