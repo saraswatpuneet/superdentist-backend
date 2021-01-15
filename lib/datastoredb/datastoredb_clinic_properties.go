@@ -195,7 +195,7 @@ func (db dsClinicMeta) GetNetworkClincs(ctx context.Context, placeID string) ([]
 		primaryKey.Namespace = global.Options.DSName
 	}
 	var clinicNetwork contracts.ClinicNetwork
-	err := db.client.Get(ctx, primaryKey, clinicNetwork)
+	err := db.client.Get(ctx, primaryKey, &clinicNetwork)
 	if err != nil {
 		return []string{}, fmt.Errorf("cannot update clinic network: %v", err)
 	}
