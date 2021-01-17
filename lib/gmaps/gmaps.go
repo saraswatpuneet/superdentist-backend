@@ -54,7 +54,6 @@ func (gm *ClientGMaps) FindPlacesFromText(placeText string) (maps.PlacesSearchRe
 	ctx := context.Background()
 	placesFromTextReq := maps.TextSearchRequest{
 		Query: placeText,
-		Type:  maps.PlaceTypeDentist,
 	}
 	placesSearchResponse, err := gm.client.TextSearch(ctx, &placesFromTextReq)
 	if err != nil {
