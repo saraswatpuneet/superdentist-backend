@@ -153,13 +153,15 @@ func CreateRefSpecialist(c *gin.Context) {
 		}
 	}
 	var dsReferral contracts.DSReferral
-	currentPhone := referralDetails.Patient.Phone
-	pnum, _ := phonenumbers.Parse(currentPhone, "US")
-	countryCode := "+1"
-	if pnum.CountryCode != nil {
-		countryCode = "+" + strconv.Itoa(int(*pnum.CountryCode))
+	if referralDetails.Patient.Phone != "" {
+		currentPhone := referralDetails.Patient.Phone
+		pnum, _ := phonenumbers.Parse(currentPhone, "US")
+		countryCode := "+1"
+		if pnum.CountryCode != nil {
+			countryCode = "+" + strconv.Itoa(int(*pnum.CountryCode))
+		}
+		dsReferral.PatientPhone = countryCode + strconv.Itoa(int(*pnum.NationalNumber))
 	}
-	dsReferral.PatientPhone = countryCode + strconv.Itoa(int(*pnum.NationalNumber))
 
 	dsReferral.Documents = docIDNames
 	dsReferral.CreatedOn = time.Now()
@@ -208,7 +210,7 @@ func CreateRefSpecialist(c *gin.Context) {
 			dsReferral.ToClinicAddress = fromClinic.Address
 			dsReferral.ToEmail = fromClinic.EmailAddress
 			dsReferral.ToClinicPhone = fromClinic.PhoneNumber
-		} 
+		}
 	}
 	if referralDetails.ToAddressID != "" {
 		toClinic, err := clinicDB.GetSingleClinic(ctx, referralDetails.ToAddressID)

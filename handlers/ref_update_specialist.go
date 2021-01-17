@@ -171,9 +171,11 @@ func AddCommentsToReferral(c *gin.Context) {
 		if err != nil {
 			log.Errorf("Failed to send SMS: %v", err.Error())
 		}
-		message := fmt.Sprintf(constants.PATIENT_MESSAGE, dsReferral.PatientFirstName+" "+dsReferral.PatientLastName,
-			dsReferral.ToClinicName, dsReferral.ToClinicAddress, dsReferral.ToClinicPhone, sendPatientComments)
-		err = clientSMS.SendSMS(global.Options.ReferralPhone, dsReferral.PatientPhone, message)
+		if dsReferral.PatientPhone != "" {
+			message := fmt.Sprintf(constants.PATIENT_MESSAGE, dsReferral.PatientFirstName+" "+dsReferral.PatientLastName,
+				dsReferral.ToClinicName, dsReferral.ToClinicAddress, dsReferral.ToClinicPhone, sendPatientComments)
+			err = clientSMS.SendSMS(global.Options.ReferralPhone, dsReferral.PatientPhone, message)
+		}
 
 	}
 	wasNew := dsReferral.IsNew
@@ -217,9 +219,11 @@ func AddCommentsToReferral(c *gin.Context) {
 					)
 					return
 				}
-				message := fmt.Sprintf(constants.PATIENT_MESSAGE_NOTICE, dsReferral.PatientFirstName+" "+dsReferral.PatientLastName,
-					dsReferral.ToClinicName, comm.Text)
-				clientSMS.SendSMS(global.Options.ReferralPhone, dsReferral.PatientPhone, message)
+				if dsReferral.PatientPhone != "" {
+					message := fmt.Sprintf(constants.PATIENT_MESSAGE_NOTICE, dsReferral.PatientFirstName+" "+dsReferral.PatientLastName,
+						dsReferral.ToClinicName, comm.Text)
+					clientSMS.SendSMS(global.Options.ReferralPhone, dsReferral.PatientPhone, message)
+				}
 				if dsReferral.PatientEmail != "" {
 					err = sgClient.SendCommentNotificationPatient(dsReferral.PatientFirstName+" "+dsReferral.PatientLastName,
 						dsReferral.PatientEmail, comm.Text, dsReferral.ToClinicName, dsReferral.ReferralID)
