@@ -71,7 +71,6 @@ func (gm *ClientGMaps) FindNearbyPlacesFromLocation(location maps.LatLng, radius
 		Location: &location,
 		RankBy:   maps.RankByDistance,
 		Keyword:  keyword,
-		Type:     maps.PlaceTypeDentist,
 	}
 	placesSearchResponse, err := gm.client.NearbySearch(ctx, &placesFromTextReq)
 	if err != nil {
