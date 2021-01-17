@@ -183,22 +183,33 @@ func CreateRefSpecialist(c *gin.Context) {
 	dsReferral.FromAddressID = referralDetails.FromAddressID
 	dsReferral.ToAddressID = referralDetails.ToAddressID
 	// Stage 3 Create datastore entry for referral
-	fromClinic, err := clinicDB.GetSingleClinic(ctx, referralDetails.FromAddressID)
-	if err != nil {
-		c.AbortWithStatusJSON(
-			http.StatusInternalServerError,
-			gin.H{
-				constants.RESPONSE_JSON_DATA:   nil,
-				constants.RESPONSDE_JSON_ERROR: err.Error(),
-			},
-		)
-		return
+	if referralDetails.FromAddressID != "" {
+		fromClinic, err := clinicDB.GetSingleClinic(ctx, referralDetails.FromAddressID)
+		if err != nil {
+			c.AbortWithStatusJSON(
+				http.StatusInternalServerError,
+				gin.H{
+					constants.RESPONSE_JSON_DATA:   nil,
+					constants.RESPONSDE_JSON_ERROR: err.Error(),
+				},
+			)
+			return
+		}
+		dsReferral.FromPlaceID = fromClinic.PlaceID
+		dsReferral.FromClinicName = fromClinic.Name
+		dsReferral.FromClinicAddress = fromClinic.Address
+		dsReferral.FromEmail = fromClinic.EmailAddress
+		dsReferral.FromClinicPhone = fromClinic.PhoneNumber
+	} else {
+		fromClinic, err := clinicDB.GetSingleClinicViaPlace(ctx, referralDetails.FromPlaceID)
+		if err == nil && fromClinic.IsVerified {
+			dsReferral.ToPlaceID = fromClinic.PlaceID
+			dsReferral.ToClinicName = fromClinic.Name
+			dsReferral.ToClinicAddress = fromClinic.Address
+			dsReferral.ToEmail = fromClinic.EmailAddress
+			dsReferral.ToClinicPhone = fromClinic.PhoneNumber
+		} 
 	}
-	dsReferral.FromPlaceID = fromClinic.PlaceID
-	dsReferral.FromClinicName = fromClinic.Name
-	dsReferral.FromClinicAddress = fromClinic.Address
-	dsReferral.FromEmail = fromClinic.EmailAddress
-	dsReferral.FromClinicPhone = fromClinic.PhoneNumber
 	if referralDetails.ToAddressID != "" {
 		toClinic, err := clinicDB.GetSingleClinic(ctx, referralDetails.ToAddressID)
 		if err != nil {
