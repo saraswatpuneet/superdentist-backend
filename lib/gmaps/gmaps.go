@@ -67,12 +67,12 @@ func (gm *ClientGMaps) FindNearbyPlacesFromLocation(location maps.LatLng, radius
 	ctx := context.Background()
 	nearbyClinicsMap := make(map[string]maps.PlaceDetailsResult)
 
-	placesFromTextReq := maps.NearbySearchRequest{
+	placesFromTextReq := maps.TextSearchRequest{
 		Location: &location,
-		RankBy:   maps.RankByDistance,
-		Keyword:  keyword,
+		Radius: 50,
+		Query:  keyword,
 	}
-	placesSearchResponse, err := gm.client.NearbySearch(ctx, &placesFromTextReq)
+	placesSearchResponse, err := gm.client.TextSearch(ctx, &placesFromTextReq)
 	if err != nil {
 		return nil, "", err
 	}
