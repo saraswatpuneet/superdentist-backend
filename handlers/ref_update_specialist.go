@@ -1081,8 +1081,8 @@ func ReceiveReferralMail(c *gin.Context) {
 // ScheduleDemo ...
 func ScheduleDemo(c *gin.Context) {
 	resp, errResp := ioutil.ReadAll(c.Request.Body)
-	log.Infof("data demo:", resp)
-	log.Infof("error demo:", errResp.Error())
+	log.Errorf("data demo:", string(resp))
+	log.Errorf("error demo:", errResp.Error)
 
 }
 
