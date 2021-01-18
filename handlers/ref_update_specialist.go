@@ -1080,10 +1080,11 @@ func ReceiveReferralMail(c *gin.Context) {
 
 // ScheduleDemo ...
 func ScheduleDemo(c *gin.Context) {
-	resp, errResp := ioutil.ReadAll(c.Request.Body)
-	log.Errorf("data demo:", string(resp))
-	log.Errorf("error demo:", errResp.Error)
-
+	var data map[string]interface{}   
+	if err := c.ShouldBindWith(&data, binding.JSON); err != nil {
+		log.Infof("error demo:", err)
+	}
+	log.Infof("data demo:",data)
 }
 
 // TextRecievedPatient ...
