@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"mime/multipart"
 	"net/http"
 	"regexp"
@@ -1079,6 +1080,10 @@ func ReceiveReferralMail(c *gin.Context) {
 
 // ScheduleDemo ...
 func ScheduleDemo(c *gin.Context) {
+	resp, errResp := ioutil.ReadAll(c.Request.Body)
+	log.Infof("data demo:", resp)
+	log.Infof("error demo:", errResp.Error())
+
 }
 
 // TextRecievedPatient ...
