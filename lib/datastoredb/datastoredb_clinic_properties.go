@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strings"
 
 	"cloud.google.com/go/datastore"
 	guuid "github.com/google/uuid"
@@ -84,7 +85,9 @@ func (db dsClinicMeta) AddPhysicalAddessressToClinic(ctx context.Context, clinic
 		placeID := ""
 		if err == nil && len(gmapAddress.Results) > 0 {
 			for idx, gAddress := range gmapAddress.Results {
-				if gAddress.FormattedAddress == address.Address {
+				splitGaddress := strings.Split(gAddress.FormattedAddress,",")
+				splitAaddress  := strings.Split(address.Address, ",")	
+				if splitGaddress[0] == splitAaddress[0] && splitGaddress[1] == splitAaddress[1] {
 					currentLocation := gmapAddress.Results[idx]
 					location.Lat = currentLocation.Geometry.Location.Lat
 					location.Long = currentLocation.Geometry.Location.Lng
