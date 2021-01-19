@@ -93,7 +93,11 @@ func (db dsClinicMeta) AddPhysicalAddessressToClinic(ctx context.Context, clinic
 				}
 			}
 		}
-		addressKey := datastore.NameKey("ClinicAddress", addrID.String(), primaryKey)
+		existingClinic, err := db.GetSingleClinicViaPlace(ctx, placeID)
+		if err != nil && existingClinic.IsVerified && existingClinic.AddressID!="" {
+			address.AddressID = existingClinic.AddressID
+		}
+		addressKey := datastore.NameKey("ClinicAddress", address.AddressID, primaryKey)
 		if global.Options.DSName != "" {
 			addressKey.Namespace = global.Options.DSName
 		}
