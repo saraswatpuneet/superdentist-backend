@@ -101,6 +101,9 @@ func (db dsClinicMeta) AddPhysicalAddessressToClinic(ctx context.Context, clinic
 		if global.Options.DSName != "" {
 			addressKey.Namespace = global.Options.DSName
 		}
+		if existingClinic.IsVerified {
+			err = db.client.Delete(ctx, addressKey)
+		}
 		currentHash := geohash.Encode(location.Lat, location.Long, 12)
 		currentLocWithMap := contracts.PhysicalClinicMapLocation{
 			PhysicalClinicsRegistration: address,
