@@ -43,8 +43,7 @@ func (sgc *ClientSendGrid) SendLiveDemoRequest(data map[string]interface{}) {
 		currentString += string(key) + ": " + string(valStr)
 		currentString += "\n"
 	}
-	htmlContent := "<strong>Requested Live Demo</strong>"
-	message := mail.NewSingleEmail(from, subject, to, currentString, htmlContent)
+	message := mail.NewSingleEmail(from, subject, to, currentString, "")
 	sgc.client.Send(message)
 }
 
