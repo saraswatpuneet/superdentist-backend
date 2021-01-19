@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"strings"
 
 	"cloud.google.com/go/datastore"
 	guuid "github.com/google/uuid"
