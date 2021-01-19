@@ -31,6 +31,23 @@ func (sgc *ClientSendGrid) InitializeSendGridClient() error {
 	return nil
 }
 
+// SendLiveDemoRequest ....
+func (sgc *ClientSendGrid) SendLiveDemoRequest(data map[string]interface{}) {
+	from := mail.NewEmail("Landing Page", "superdentist.admin@superdentist.io")
+	subject := "Request for Live Demo"
+	to := mail.NewEmail("Parth Patel", "parth@superdentist.io")
+	currentString := ""
+	for key, value := range data {
+		valStr := fmt.Sprintf("%v", value)
+
+		currentString += string(key) + ": " + string(valStr)
+		currentString += "\n"
+	}
+	htmlContent := "<strong>Requested Live Demo</strong>"
+	message := mail.NewSingleEmail(from, subject, to, currentString, htmlContent)
+	sgc.client.Send(message)
+}
+
 // SendEmailNotificationPatient ......
 func (sgc *ClientSendGrid) SendEmailNotificationPatient(pemail string,
 	pname string,

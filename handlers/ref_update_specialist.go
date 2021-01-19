@@ -1083,7 +1083,22 @@ func ScheduleDemo(c *gin.Context) {
 	if err := c.ShouldBindWith(&data, binding.JSON); err != nil {
 		log.Infof("error demo: %v", err)
 	}
-	log.Infof("data demo: %v", data)
+	sgClient := sendgrid.NewSendGridClient()
+	err := sgClient.InitializeSendGridClient()
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	if data["bot-field"] == "" {
+		delete(data, "bot-field")
+		sgClient.SendLiveDemoRequest(data)
+	}
 }
 
 // TextRecievedPatient ...
