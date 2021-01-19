@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"mime/multipart"
 	"net/http"
 	"regexp"
@@ -1080,11 +1079,11 @@ func ReceiveReferralMail(c *gin.Context) {
 
 // ScheduleDemo ...
 func ScheduleDemo(c *gin.Context) {
-	var data map[string]interface{}   
+	var data map[string]interface{}
 	if err := c.ShouldBindWith(&data, binding.JSON); err != nil {
 		log.Infof("error demo: %v", err)
 	}
-	log.Infof("data demo: %v",data)
+	log.Infof("data demo: %v", data)
 }
 
 // TextRecievedPatient ...
