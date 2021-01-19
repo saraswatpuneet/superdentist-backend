@@ -94,14 +94,14 @@ func (db dsClinicMeta) AddPhysicalAddessressToClinic(ctx context.Context, clinic
 			}
 		}
 		existingClinic, err := db.GetSingleClinicViaPlace(ctx, placeID)
-		if err != nil && existingClinic.IsVerified && existingClinic.AddressID != "" {
+		if err != nil && existingClinic != nil && existingClinic.IsVerified && existingClinic.AddressID != "" {
 			address.AddressID = existingClinic.AddressID
 		}
 		addressKey := datastore.NameKey("ClinicAddress", address.AddressID, primaryKey)
 		if global.Options.DSName != "" {
 			addressKey.Namespace = global.Options.DSName
 		}
-		if existingClinic.IsVerified {
+		if existingClinic != nil && existingClinic.IsVerified {
 			err = db.client.Delete(ctx, addressKey)
 		}
 		currentHash := geohash.Encode(location.Lat, location.Long, 12)
