@@ -440,10 +440,10 @@ func AddFavoriteClinics(c *gin.Context) {
 	}
 	for _, fav := range currentClinic.Favorites {
 		if currentClinic.Type == "dentist" {
-			GenerateQRAndStore(ctx, currentClinic.PlaceID, fav, storageC)
+			GenerateQRAndStore(ctx, currentClinic.PlaceID, currentClinic.PlaceID, fav, storageC)
 
 		} else {
-			GenerateQRAndStore(ctx, fav, currentClinic.PlaceID, storageC)
+			GenerateQRAndStore(ctx, currentClinic.PlaceID, fav, currentClinic.PlaceID, storageC)
 		}
 
 	}
@@ -452,6 +452,118 @@ func AddFavoriteClinics(c *gin.Context) {
 		constants.RESPONSDE_JSON_ERROR: nil,
 	})
 	clinicMetaDB.Close()
+}
+
+// GetAllQRZip ...
+func GetAllQRZip(c *gin.Context) {
+	log.Infof("Add Favorite Clinics")
+	ctx := c.Request.Context()
+	ctx, span := trace.StartSpan(ctx, "Get all clinics in close proximity to current clinic")
+	defer span.End()
+	addressID := c.Param("placeId")
+	if addressID == "" {
+		c.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: fmt.Errorf("Missing clinic address id"),
+			},
+		)
+		return
+	}
+	userEmail, _, gproject, err := getUserDetails(ctx, c.Request)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	if !strings.Contains(userEmail, "@superdentist.io") {
+		c.AbortWithStatusJSON(
+			http.StatusUnauthorized,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: fmt.Errorf("Not allowed to access this api"),
+			},
+		)
+		return
+	}
+	clinicMetaDB := datastoredb.NewClinicMetaHandler()
+	err = clinicMetaDB.InitializeDataBase(ctx, gproject)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	currentClinic, err := clinicMetaDB.GetSingleClinicViaPlace(ctx, addressID)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	storageC := storage.NewStorageHandler()
+	err = storageC.InitializeStorageClient(ctx, gproject)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	err = storageC.ZipFile(ctx, currentClinic.PlaceID, constants.SD_QR_BUCKET)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+
+	zipReader, err := storageC.DownloadAsZip(ctx, currentClinic.PlaceID, constants.SD_QR_BUCKET)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	fileNameDefault := currentClinic.Name + ".zip"
+	c.Header("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", fileNameDefault))
+	c.Header("Content-Type", "application/zip")
+	clinicMetaDB.Close()
+	if _, err := io.Copy(c.Writer, zipReader); err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
 }
 
 // GetFavoriteClinics ...
@@ -776,7 +888,7 @@ func Find(slice []string, val string) bool {
 }
 
 // GenerateQRAndStore ....
-func GenerateQRAndStore(ctx context.Context, from string, to string, storageC *storage.Client) []byte {
+func GenerateQRAndStore(ctx context.Context, folder string, from string, to string, storageC *storage.Client) []byte {
 	url := "from+" + from + "+to+" + to
 	urlEncoded, err := encryptAndEncode(url)
 	if err != nil {
@@ -789,7 +901,7 @@ func GenerateQRAndStore(ctx context.Context, from string, to string, storageC *s
 		return nil
 	}
 	fileName := from + to
-	bucketPath := fileName + ".png"
+	bucketPath := folder + "/" + fileName + ".png"
 	buckerW, err := storageC.UploadQRtoGCS(ctx, bucketPath)
 	if err != nil {
 		log.Errorf("failed to create bucket image: %v", err.Error())

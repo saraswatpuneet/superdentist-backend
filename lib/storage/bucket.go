@@ -83,8 +83,8 @@ func (sc *Client) UploadQRtoGCS(ctx context.Context, fileName string) (*storage.
 }
 
 // ZipFile ....ZipFile
-func (sc *Client) ZipFile(ctx context.Context, folderPath string) error {
-	currentBucket, err := sc.CreateBucket(ctx, constants.SD_REFERRAL_BUCKET)
+func (sc *Client) ZipFile(ctx context.Context, folderPath string, bucket string) error {
+	currentBucket, err := sc.CreateBucket(ctx, bucket)
 	if err != nil {
 		return err
 	}
@@ -152,8 +152,8 @@ func (sc *Client) ZipFile(ctx context.Context, folderPath string) error {
 }
 
 // DownloadAsZip ....
-func (sc *Client) DownloadAsZip(ctx context.Context, folderPath string) (*storage.Reader, error) {
-	currentBucket, err := sc.CreateBucket(ctx, constants.SD_REFERRAL_BUCKET)
+func (sc *Client) DownloadAsZip(ctx context.Context, folderPath string, bucket string) (*storage.Reader, error) {
+	currentBucket, err := sc.CreateBucket(ctx, bucket)
 	if err != nil {
 		return nil, err
 	}

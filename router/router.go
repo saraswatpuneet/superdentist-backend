@@ -54,6 +54,7 @@ func SDRouter() (*gin.Engine, error) {
 		clinicGroup.GET("/getAllDoctors", handlers.GetAllDoctors)
 		clinicGroup.POST("/getNearbySpecialists", handlers.GetNearbySpeialists)
 		clinicGroup.POST("/addFavorites/:addressId", handlers.AddFavoriteClinics)
+		clinicGroup.GET("/qrimages/:placeId", handlers.GetAllQRZip)
 		clinicGroup.GET("/getFavorites/:addressId", handlers.GetFavoriteClinics)
 		clinicGroup.GET("/getNetwork/:addressId", handlers.GetNetworkClinics)
 		clinicGroup.POST("/removeFavorites/:addressId", handlers.RemoveFavoriteClinics)

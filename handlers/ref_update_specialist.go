@@ -676,7 +676,7 @@ func UploadDocuments(c *gin.Context) {
 				docIDNames = append(docIDNames, hdr.Filename)
 			}
 		}
-		err = storageC.ZipFile(ctx, referralID)
+		err = storageC.ZipFile(ctx, referralID, constants.SD_REFERRAL_BUCKET)
 		if err != nil {
 			c.AbortWithStatusJSON(
 				http.StatusInternalServerError,
@@ -735,7 +735,7 @@ func DownloadDocumentsAsZip(c *gin.Context) {
 		)
 		return
 	}
-	zipReader, err := storageC.DownloadAsZip(ctx, referralID)
+	zipReader, err := storageC.DownloadAsZip(ctx, referralID, constants.SD_REFERRAL_BUCKET)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
@@ -1031,7 +1031,7 @@ func ReceiveReferralMail(c *gin.Context) {
 		uploadComment.Text = "New documents are uploaded by " + dsReferral.PatientFirstName + " " + dsReferral.PatientLastName
 		uploadComment.TimeStamp = time.Now().Unix()
 		currentComments = append(currentComments, uploadComment)
-		err = storageC.ZipFile(ctx, dsReferral.ReferralID)
+		err = storageC.ZipFile(ctx, dsReferral.ReferralID, constants.SD_REFERRAL_BUCKET)
 		if err != nil {
 			log.Errorf("Error processing email"+" "+fromEmail+" "+subject+" error:%v ", err.Error())
 		}
@@ -1200,7 +1200,7 @@ func TextRecievedPatient(c *gin.Context) {
 				(*fileBytes).Close()
 				docIDNames = append(docIDNames, fileName)
 			}
-			err = storageC.ZipFile(ctx, dsReferral.ReferralID)
+			err = storageC.ZipFile(ctx, dsReferral.ReferralID, constants.SD_REFERRAL_BUCKET)
 			if err != nil {
 				log.Errorf("Error processing zipping text error:%v ", err.Error())
 			}

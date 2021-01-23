@@ -140,7 +140,7 @@ func CreateRefSpecialist(c *gin.Context) {
 				docIDNames = append(docIDNames, hdr.Filename)
 			}
 		}
-		err = storageC.ZipFile(ctx, uniqueRefID)
+		err = storageC.ZipFile(ctx, uniqueRefID, constants.SD_REFERRAL_BUCKET)
 		if err != nil {
 			c.AbortWithStatusJSON(
 				http.StatusInternalServerError,
