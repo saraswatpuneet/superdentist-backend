@@ -38,6 +38,7 @@ type PhysicalClinicMapLocation struct {
 type PhysicalClinicMapDetails struct {
 	VerifiedDetails PhysicalClinicMapLocation `json:"verifiedDetails" valid:"required"`
 	GeneralDetails  maps.PlaceDetailsResult   `json:"generalDetails" valid:"required"`
+	QRCode          string                    `json:"qrCode"`
 }
 
 //GetClinicAddressResponse ....
@@ -91,6 +92,7 @@ type PostPMSDetails struct {
 type ClinicNetwork struct {
 	ClinicPlaceID []string `json:"clinicPlaceID" valid:"required"`
 }
+
 // PMSAuthStruct .....
 type PMSAuthStruct struct {
 	PMSName     string                 `json:"pmsName" valid:"required"`

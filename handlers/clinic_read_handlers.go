@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"bytes"
+	"context"
 	"crypto/rand"
 	"encoding/base64"
 	"fmt"
@@ -439,57 +440,10 @@ func AddFavoriteClinics(c *gin.Context) {
 	}
 	for _, fav := range currentClinic.Favorites {
 		if currentClinic.Type == "dentist" {
-			url := "from+" + currentClinic.PlaceID + "+to+" + fav
-			urlEncoded, err := encryptAndEncode(url)
-			if err != nil {
-				log.Errorf("failed to encode qr url: %v", err.Error())
-				continue
-			}
-			currentURL := fmt.Sprintf(constants.QR_URL_CODE, urlEncoded)
-			png, err := qrcode.Encode(currentURL, qrcode.Highest, 256)
-			if err != nil {
-				log.Errorf("failed to create qr image: %v", err.Error())
-				continue
-			}
-			fileName := currentClinic.PlaceID + fav
-			bucketPath := fileName + ".png"
-			buckerW, err := storageC.UploadQRtoGCS(ctx, bucketPath)
-			if err != nil {
-				log.Errorf("failed to create bucket image: %v", err.Error())
-				continue
-			}
-			_, err = io.Copy(buckerW, bytes.NewReader(png))
-			if err != nil {
-				log.Errorf("failed to upload qr image to bucket: %v", err.Error())
-				continue
-			}
-			buckerW.Close()
+			GenerateQRAndStore(ctx, currentClinic.PlaceID, fav, storageC)
+
 		} else {
-			url := "from+" + fav + "+to+" + currentClinic.PlaceID
-			urlEncoded, err := encryptAndEncode(url)
-			if err != nil {
-				log.Errorf("failed to encode qr url: %v", err.Error())
-				continue
-			}
-			currentURL := fmt.Sprintf(constants.QR_URL_CODE, urlEncoded)
-			png, err := qrcode.Encode(currentURL, qrcode.Medium, 256)
-			if err != nil {
-				log.Errorf("failed to create qr image: %v", err.Error())
-				continue
-			}
-			fileName := fav + currentClinic.PlaceID
-			bucketPath := fileName + ".png"
-			buckerW, err := storageC.UploadQRtoGCS(ctx, bucketPath)
-			if err != nil {
-				log.Errorf("failed to create bucket image: %v", err.Error())
-				continue
-			}
-			_, err = io.Copy(buckerW, bytes.NewReader(png))
-			if err != nil {
-				log.Errorf("failed to upload qr image to bucket: %v", err.Error())
-				continue
-			}
-			buckerW.Close()
+			GenerateQRAndStore(ctx, fav, currentClinic.PlaceID, storageC)
 		}
 
 	}
@@ -566,8 +520,30 @@ func GetFavoriteClinics(c *gin.Context) {
 		)
 		return
 	}
+	storageC := storage.NewStorageHandler()
+	err = storageC.InitializeStorageClient(ctx, gproject)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	isDentist := currentClinic.Type == "dentist"
 	for _, clinicAdd := range favoriteClinics {
 		var currentReturn contracts.PhysicalClinicMapDetails
+		qrpng := make([]byte, 0)
+		if isDentist {
+			qrpng = GetQRPNGBytes(ctx, currentClinic.PlaceID, clinicAdd.PlaceID)
+		} else {
+			qrpng = GetQRPNGBytes(ctx, clinicAdd.PlaceID, currentClinic.PlaceID)
+
+		}
+		pngQRBase := base64.StdEncoding.EncodeToString(qrpng)
+
 		getClinicSearchLoc, err := mapClient.FindPlaceFromID(clinicAdd.PlaceID)
 		if err != nil {
 			c.AbortWithStatusJSON(
@@ -580,6 +556,7 @@ func GetFavoriteClinics(c *gin.Context) {
 		}
 		currentReturn.GeneralDetails = *getClinicSearchLoc
 		currentReturn.VerifiedDetails = clinicAdd
+		currentReturn.QRCode = pngQRBase
 		collectClinics = append(collectClinics, currentReturn)
 
 	}
@@ -796,6 +773,51 @@ func Find(slice []string, val string) bool {
 		}
 	}
 	return false
+}
+
+// GenerateQRAndStore ....
+func GenerateQRAndStore(ctx context.Context, from string, to string, storageC *storage.Client) []byte {
+	url := "from+" + from + "+to+" + to
+	urlEncoded, err := encryptAndEncode(url)
+	if err != nil {
+		log.Errorf("failed to encode qr url: %v", err.Error())
+	}
+	currentURL := fmt.Sprintf(constants.QR_URL_CODE, urlEncoded)
+	png, err := qrcode.Encode(currentURL, qrcode.Medium, 256)
+	if err != nil {
+		log.Errorf("failed to create qr image: %v", err.Error())
+		return nil
+	}
+	fileName := from + to
+	bucketPath := fileName + ".png"
+	buckerW, err := storageC.UploadQRtoGCS(ctx, bucketPath)
+	if err != nil {
+		log.Errorf("failed to create bucket image: %v", err.Error())
+		return nil
+	}
+	_, err = io.Copy(buckerW, bytes.NewReader(png))
+	if err != nil {
+		log.Errorf("failed to upload qr image to bucket: %v", err.Error())
+		return nil
+	}
+	buckerW.Close()
+	return png
+}
+
+// GetQRPNGBytes ....
+func GetQRPNGBytes(ctx context.Context, from string, to string) []byte {
+	url := "from+" + from + "+to+" + to
+	urlEncoded, err := encryptAndEncode(url)
+	if err != nil {
+		log.Errorf("failed to encode qr url: %v", err.Error())
+	}
+	currentURL := fmt.Sprintf(constants.QR_URL_CODE, urlEncoded)
+	png, err := qrcode.Encode(currentURL, qrcode.Medium, 256)
+	if err != nil {
+		log.Errorf("failed to create qr image: %v", err.Error())
+		return nil
+	}
+	return png
 }
 
 func encryptAndEncode(toencode string) (string, error) {
