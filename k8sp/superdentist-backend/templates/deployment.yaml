@@ -101,6 +101,11 @@ spec:
               secretKeyRef:
                 name: {{.Values.twiAuthSecret.name}}
                 key : {{.Values.twiAuthSecret.secret}}
+          - name: QR_ENC_KEY
+            valueFrom:
+              secretKeyRef:
+                name: {{.Values.encqr.name}}
+                key : {{.Values.encqr.secret}}
       volumes:
       - name: superdentist-backend
         secret:

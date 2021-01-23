@@ -1,6 +1,9 @@
 package options
 
 import (
+	"crypto/aes"
+	"crypto/cipher"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -20,6 +23,8 @@ type Options struct {
 	PatientNotificationNew string `json:"pnn,omitempty"`
 	ContinueURL            string `json:"curi,omitempty"`
 	ReferralPhone          string `json:"refphone,omitempty"`
+	EncryptionKeyQR        string `json:"encryptionkeyqr,omitempty"`
+	GCMQR                  cipher.AEAD
 }
 
 // New .. create a new instance
@@ -43,6 +48,19 @@ func InitOptions() (*Options, error) {
 		options.PatientNotificationNew = os.Getenv("PATINET_EMAIL_NOTIFICATION")
 		options.ContinueURL = os.Getenv("CONTINUE_URL")
 		options.ReferralPhone = os.Getenv("SD_REFERRAL_PHONE")
+		options.EncryptionKeyQR = os.Getenv("QR_ENC_KEY")
+		if options.EncryptionKeyQR != "" {
+			key, _ := hex.DecodeString(options.EncryptionKeyQR)
+			c, err := aes.NewCipher(key)
+			options.GCMQR = nil
+			if err == nil {
+				gcm, err := cipher.NewGCM(c)
+				if err != nil {
+					options.GCMQR = nil
+				}
+				options.GCMQR = gcm
+			}
+		}
 	}
 	return options, nil
 }

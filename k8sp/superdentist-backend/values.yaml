@@ -43,6 +43,9 @@ twiSIDSecret:
 twiAuthSecret:
   name: twi-sd-auth
   secret: TWI_AUTH
+encqr:
+  name: enc-qr
+  secret: QR_ENC_KEY
 service:
   type: ClusterIP
   port: 80

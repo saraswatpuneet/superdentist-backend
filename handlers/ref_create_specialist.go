@@ -205,11 +205,30 @@ func CreateRefSpecialist(c *gin.Context) {
 	} else {
 		fromClinic, err := clinicDB.GetSingleClinicViaPlace(ctx, referralDetails.FromPlaceID)
 		if err == nil && fromClinic.IsVerified {
-			dsReferral.ToPlaceID = fromClinic.PlaceID
-			dsReferral.ToClinicName = fromClinic.Name
-			dsReferral.ToClinicAddress = fromClinic.Address
-			dsReferral.ToEmail = fromClinic.EmailAddress
-			dsReferral.ToClinicPhone = fromClinic.PhoneNumber
+			dsReferral.FromPlaceID = fromClinic.PlaceID
+			dsReferral.FromClinicName = fromClinic.Name
+			dsReferral.FromClinicAddress = fromClinic.Address
+			dsReferral.FromEmail = fromClinic.EmailAddress
+			dsReferral.FromClinicPhone = fromClinic.PhoneNumber
+		} else {
+			mapClient := gmaps.NewMapsHandler()
+			err = mapClient.InitializeGoogleMapsAPIClient(ctx, gproject)
+			if err != nil {
+				c.AbortWithStatusJSON(
+					http.StatusInternalServerError,
+					gin.H{
+						constants.RESPONSE_JSON_DATA:   nil,
+						constants.RESPONSDE_JSON_ERROR: err.Error(),
+					},
+				)
+			}
+			details, _ := mapClient.FindPlaceFromID(referralDetails.FromPlaceID)
+			dsReferral.FromPlaceID = referralDetails.FromPlaceID
+			if details != nil && details.PlaceID == referralDetails.FromPlaceID {
+				dsReferral.FromClinicName = details.Name
+				dsReferral.FromClinicAddress = details.FormattedAddress
+				dsReferral.FromClinicPhone = details.FormattedPhoneNumber
+			}
 		}
 	}
 	if referralDetails.ToAddressID != "" {

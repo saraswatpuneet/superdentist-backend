@@ -1,7 +1,11 @@
 package handlers
 
 import (
+	"bytes"
+	"crypto/rand"
+	"encoding/base64"
 	"fmt"
+	"io"
 	"net/http"
 	"strconv"
 	"strings"
@@ -9,10 +13,13 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	log "github.com/sirupsen/logrus"
+	qrcode "github.com/skip2/go-qrcode"
 	"github.com/superdentist/superdentist-backend/constants"
 	"github.com/superdentist/superdentist-backend/contracts"
+	"github.com/superdentist/superdentist-backend/global"
 	"github.com/superdentist/superdentist-backend/lib/datastoredb"
 	"github.com/superdentist/superdentist-backend/lib/gmaps"
+	"github.com/superdentist/superdentist-backend/lib/storage"
 	"go.opencensus.io/trace"
 	"googlemaps.github.io/maps"
 )
@@ -418,6 +425,74 @@ func AddFavoriteClinics(c *gin.Context) {
 		)
 		return
 	}
+	storageC := storage.NewStorageHandler()
+	err = storageC.InitializeStorageClient(ctx, gproject)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	for _, fav := range currentClinic.Favorites {
+		if currentClinic.Type == "dentist" {
+			url := "from+" + currentClinic.PlaceID + "+to+" + fav
+			urlEncoded, err := encryptAndEncode(url)
+			if err != nil {
+				log.Errorf("failed to encode qr url: %v", err.Error())
+				continue
+			}
+			currentURL := fmt.Sprintf(constants.QR_URL_CODE, urlEncoded)
+			png, err := qrcode.Encode(currentURL, qrcode.Highest, 256)
+			if err != nil {
+				log.Errorf("failed to create qr image: %v", err.Error())
+				continue
+			}
+			fileName := currentClinic.PlaceID + fav
+			bucketPath := fileName + ".png"
+			buckerW, err := storageC.UploadQRtoGCS(ctx, bucketPath)
+			if err != nil {
+				log.Errorf("failed to create bucket image: %v", err.Error())
+				continue
+			}
+			_, err = io.Copy(buckerW, bytes.NewReader(png))
+			if err != nil {
+				log.Errorf("failed to upload qr image to bucket: %v", err.Error())
+				continue
+			}
+			buckerW.Close()
+		} else {
+			url := "from+" + fav + "+to+" + currentClinic.PlaceID
+			urlEncoded, err := encryptAndEncode(url)
+			if err != nil {
+				log.Errorf("failed to encode qr url: %v", err.Error())
+				continue
+			}
+			currentURL := fmt.Sprintf(constants.QR_URL_CODE, urlEncoded)
+			png, err := qrcode.Encode(currentURL, qrcode.Medium, 256)
+			if err != nil {
+				log.Errorf("failed to create qr image: %v", err.Error())
+				continue
+			}
+			fileName := fav + currentClinic.PlaceID
+			bucketPath := fileName + ".png"
+			buckerW, err := storageC.UploadQRtoGCS(ctx, bucketPath)
+			if err != nil {
+				log.Errorf("failed to create bucket image: %v", err.Error())
+				continue
+			}
+			_, err = io.Copy(buckerW, bytes.NewReader(png))
+			if err != nil {
+				log.Errorf("failed to upload qr image to bucket: %v", err.Error())
+				continue
+			}
+			buckerW.Close()
+		}
+
+	}
 	c.JSON(http.StatusOK, gin.H{
 		constants.RESPONSE_JSON_DATA:   "Added favorite places to current clinic",
 		constants.RESPONSDE_JSON_ERROR: nil,
@@ -721,4 +796,12 @@ func Find(slice []string, val string) bool {
 		}
 	}
 	return false
+}
+
+func encryptAndEncode(toencode string) (string, error) {
+	nonce := make([]byte, global.Options.GCMQR.NonceSize())
+	if _, err := io.ReadFull(rand.Reader, nonce); err != nil {
+		return "", err
+	}
+	return base64.StdEncoding.EncodeToString(global.Options.GCMQR.Seal(nonce, nonce, []byte(toencode), nil)), nil
 }
