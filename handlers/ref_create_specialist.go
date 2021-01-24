@@ -1,11 +1,15 @@
 package handlers
 
 import (
+	"context"
+	"encoding/base64"
+	"errors"
 	"fmt"
 	"io"
 	"mime/multipart"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -15,8 +19,10 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/superdentist/superdentist-backend/constants"
 	"github.com/superdentist/superdentist-backend/contracts"
+	"github.com/superdentist/superdentist-backend/global"
 	"github.com/superdentist/superdentist-backend/lib/datastoredb"
 	"github.com/superdentist/superdentist-backend/lib/gmaps"
+	"github.com/superdentist/superdentist-backend/lib/googleprojectlib"
 	"github.com/superdentist/superdentist-backend/lib/sendgrid"
 	"github.com/superdentist/superdentist-backend/lib/storage"
 	"go.opencensus.io/trace"
@@ -51,8 +57,77 @@ func CreateRefSpecialist(c *gin.Context) {
 		)
 		return
 	}
+	processReferral(ctx, c, referralDetails, gproject)
+}
+
+// QRReferral ...
+func QRReferral(c *gin.Context) {
+	ctx := c.Request.Context()
+	log.Infof("Received QR referral request")
+	secureKey := c.Query("secureKey")
+	decryptedKey, err := decrypt(secureKey)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	splitKey := strings.Split(decryptedKey, "+")
+	numeric := splitKey[len(splitKey)-1]
+	boolean := splitKey[len(splitKey)-2]
+	if numeric != "10074" && boolean != "true" {
+		c.AbortWithStatusJSON(
+			http.StatusUnauthorized,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	// we got a valid request
+	var patientDetails contracts.Patient
+	gproject := googleprojectlib.GetGoogleProjectID()
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	ctx, span := trace.StartSpan(ctx, "Register incoming request for clinic")
+	defer span.End()
+	if err := c.ShouldBindWith(&patientDetails, binding.JSON); err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: fmt.Errorf("Bad data sent to backened"),
+			},
+		)
+		return
+	}
+	fromClinic := splitKey[1]
+	toClinic := splitKey[3]
+	var referralDetails contracts.ReferralDetails
+	referralDetails.FromPlaceID = fromClinic
+	referralDetails.ToPlaceID = toClinic
+	referralDetails.Patient = patientDetails
+	referralDetails.Status.GDStatus = "referred"
+	referralDetails.Status.SPStatus = "referred"
+	processReferral(ctx, c, referralDetails, gproject)
+}
+
+func processReferral(ctx context.Context, c *gin.Context, referralDetails contracts.ReferralDetails, gproject string) {
 	storageC := storage.NewStorageHandler()
-	err = storageC.InitializeStorageClient(ctx, gproject)
+	err := storageC.InitializeStorageClient(ctx, gproject)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
@@ -303,6 +378,22 @@ func CreateRefSpecialist(c *gin.Context) {
 	})
 }
 
-// QRReferral ...
-func QRReferral(c *gin.Context) {
+func decrypt(ciphertext64 string) (string, error) {
+	ciphertext, err := base64.StdEncoding.DecodeString(ciphertext64)
+	if err != nil {
+		return "", err
+	}
+
+	nonceSize := global.Options.GCMQR.NonceSize()
+	if len(ciphertext) < nonceSize {
+		return "", errors.New("ciphertext too short")
+	}
+	nonce, ciphertext := ciphertext[:nonceSize], ciphertext[nonceSize:]
+
+	b, err := global.Options.GCMQR.Open(nil, nonce, ciphertext, nil)
+	if err != nil {
+		return "", err
+	}
+
+	return string(b), err
 }
