@@ -302,3 +302,7 @@ func CreateRefSpecialist(c *gin.Context) {
 		constants.RESPONSDE_JSON_ERROR: nil,
 	})
 }
+
+// QRReferral ...
+func QRReferral(c *gin.Context) {
+}

@@ -66,6 +66,7 @@ func SDRouter() (*gin.Engine, error) {
 		referralGroup.POST("/referral/scheduledemo", handlers.ScheduleDemo)
 		referralGroup.POST("/referral/sms", handlers.TextRecievedPatient)
 		referralGroup.POST("/referrals", handlers.CreateRefSpecialist)
+		referralGroup.POST("/qrReferral", handlers.QRReferral)
 		referralGroup.POST("/referrals/:referralId/messages", handlers.AddCommentsToReferral)
 		referralGroup.GET("/referrals/:referralId/messages", handlers.GetAllMessages)
 		referralGroup.GET("/referrals/:referralId/messages/:messageId", handlers.GetOneMessage)
