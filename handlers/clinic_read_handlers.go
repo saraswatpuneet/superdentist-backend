@@ -889,7 +889,7 @@ func Find(slice []string, val string) bool {
 
 // GenerateQRAndStore ....
 func GenerateQRAndStore(ctx context.Context, folder string, from string, to string, storageC *storage.Client) []byte {
-	url := "from+" + from + "+to+" + to
+	url := "from+" + from + "+to+" + to+"+true+10074"
 	urlEncoded, err := encryptAndEncode(url)
 	if err != nil {
 		log.Errorf("failed to encode qr url: %v", err.Error())
