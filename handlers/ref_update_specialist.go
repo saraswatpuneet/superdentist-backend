@@ -791,7 +791,31 @@ func GetAllReferralsGD(c *gin.Context) {
 		)
 		return
 	}
-	dsReferrals, err := dsRefC.GetAllReferralsGD(ctx, addressID)
+	clinicDB := datastoredb.NewClinicMetaHandler()
+	err = clinicDB.InitializeDataBase(ctx, gproject)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	currentClinic, err := clinicDB.GetSingleClinic(ctx, addressID)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	dsReferrals := make([]contracts.DSReferral, 0)
+	dsReferrals, err = dsRefC.GetAllReferralsGD(ctx, addressID)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusNotFound,
@@ -801,6 +825,20 @@ func GetAllReferralsGD(c *gin.Context) {
 			},
 		)
 		return
+	}
+	treatmentSummary, err := dsRefC.GetAllTreamentSummaryGD(ctx, currentClinic.PlaceID)
+	mapGDStuff := make(map[string]contracts.DSReferral)
+	for _, ref := range dsReferrals {
+		mapGDStuff[ref.ReferralID] = ref
+	}
+	if err != nil && treatmentSummary != nil && len(treatmentSummary) > 0 {
+		for _, ref := range treatmentSummary {
+			mapGDStuff[ref.ReferralID] = ref
+		}
+		dsReferrals = make([]contracts.DSReferral, 0)
+		for _, ref := range mapGDStuff {
+			dsReferrals = append(dsReferrals, ref)
+		}
 	}
 	c.JSON(http.StatusOK, gin.H{
 		constants.RESPONSE_JSON_DATA:   dsReferrals,

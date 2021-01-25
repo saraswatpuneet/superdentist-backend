@@ -151,12 +151,29 @@ func (db *DSReferral) GetAllReferralsGD(ctx context.Context, addressID string) (
 	return returnedReferrals, nil
 }
 
+// GetAllTreamentSummaryGD .....
+func (db *DSReferral) GetAllTreamentSummaryGD(ctx context.Context, placeID string) ([]contracts.DSReferral, error) {
+	returnedReferrals := make([]contracts.DSReferral, 0)
+	qP := datastore.NewQuery("ClinicReferrals")
+	if global.Options.DSName != "" {
+		qP = qP.Namespace(global.Options.DSName)
+	}
+	if placeID != "" {
+		qP = qP.Filter("FromPlaceID =", placeID).Filter("IsDirty =", false)
+	}
+	keysClinics, err := db.client.GetAll(ctx, qP, &returnedReferrals)
+	if err != nil || len(keysClinics) <= 0 {
+		return returnedReferrals, fmt.Errorf("no referrals found: %v", err)
+	}
+	return returnedReferrals, nil
+}
+
 // GetAllReferralsSP .....
 func (db *DSReferral) GetAllReferralsSP(ctx context.Context, addressID string, clinicName string) ([]contracts.DSReferral, error) {
 	returnedReferrals := make([]contracts.DSReferral, 0)
 	returnedReferrals2 := make([]contracts.DSReferral, 0)
 	returnedReferrals3 := make([]contracts.DSReferral, 0)
-	mapRef	:= make(map[string]contracts.DSReferral,0)
+	mapRef := make(map[string]contracts.DSReferral, 0)
 	qP := datastore.NewQuery("ClinicReferrals")
 	if addressID != "" {
 		qP = qP.Filter("ToPlaceID =", addressID).Filter("IsDirty =", false)
@@ -168,7 +185,7 @@ func (db *DSReferral) GetAllReferralsSP(ctx context.Context, addressID string, c
 	if err != nil {
 		return returnedReferrals, fmt.Errorf("no referrals found: %v", err)
 	}
-	for _,ref := range returnedReferrals {
+	for _, ref := range returnedReferrals {
 		mapRef[ref.ReferralID] = ref
 	}
 	qP2 := datastore.NewQuery("ClinicReferrals")
