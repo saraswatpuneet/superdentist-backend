@@ -13,6 +13,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
+	"github.com/johnfercher/maroto/pkg/consts"
+	"github.com/johnfercher/maroto/pkg/pdf"
+	"github.com/johnfercher/maroto/pkg/props"
 	log "github.com/sirupsen/logrus"
 	qrcode "github.com/skip2/go-qrcode"
 	"github.com/superdentist/superdentist-backend/constants"
@@ -426,32 +429,11 @@ func AddFavoriteClinics(c *gin.Context) {
 		)
 		return
 	}
-	storageC := storage.NewStorageHandler()
-	err = storageC.InitializeStorageClient(ctx, gproject)
-	if err != nil {
-		c.AbortWithStatusJSON(
-			http.StatusInternalServerError,
-			gin.H{
-				constants.RESPONSE_JSON_DATA:   nil,
-				constants.RESPONSDE_JSON_ERROR: err.Error(),
-			},
-		)
-		return
-	}
-	for _, fav := range currentClinic.Favorites {
-		if currentClinic.Type == "dentist" {
-			GenerateQRAndStore(ctx, currentClinic.PlaceID, currentClinic.PlaceID, fav, storageC)
-
-		} else {
-			GenerateQRAndStore(ctx, currentClinic.PlaceID, fav, currentClinic.PlaceID, storageC)
-		}
-
-	}
+	go createQRsAndSave(gproject, currentClinic, clinicMetaDB)
 	c.JSON(http.StatusOK, gin.H{
 		constants.RESPONSE_JSON_DATA:   "Added favorite places to current clinic",
 		constants.RESPONSDE_JSON_ERROR: nil,
 	})
-	clinicMetaDB.Close()
 }
 
 // GetAllQRZip ...
@@ -888,8 +870,14 @@ func Find(slice []string, val string) bool {
 }
 
 // GenerateQRAndStore ....
-func GenerateQRAndStore(ctx context.Context, folder string, from string, to string, storageC *storage.Client) []byte {
-	url := "from+" + from + "+to+" + to+"+true+10074"
+func GenerateQRAndStore(ctx context.Context,
+	folder string, from string, to string,
+	storageC *storage.Client,
+	currentClinic *contracts.PhysicalClinicMapLocation,
+	spClinic *contracts.PhysicalClinicMapLocation) []byte {
+	qrPDFM := pdf.NewMaroto(consts.Portrait, consts.Letter)
+	qrPDFM.SetBorder(true)
+	url := "from+" + from + "+to+" + to + "+true+10074"
 	urlEncoded, err := encryptAndEncode(url)
 	if err != nil {
 		log.Errorf("failed to encode qr url: %v", err.Error())
@@ -900,14 +888,51 @@ func GenerateQRAndStore(ctx context.Context, folder string, from string, to stri
 		log.Errorf("failed to create qr image: %v", err.Error())
 		return nil
 	}
+	qrPDFM.Row(20, func() {
+		qrPDFM.Text(currentClinic.Name+" To "+spClinic.Name, props.Text{
+			Top:   6,
+			Align: consts.Center,
+			Size:  12,
+			Style: consts.BoldItalic,
+			Family: consts.Arial,
+		})
+	})
+	pngQRBase := base64.StdEncoding.EncodeToString(png)
+
+	qrPDFM.Row(130, func() {
+		qrPDFM.Col(12, func() {
+			_ = qrPDFM.Base64Image(pngQRBase, consts.Png, props.Rect{
+				Percent: 100,
+				Center:  true,
+			})
+		})
+	})
+	qrPDFM.Line(1)
+	qrPDFM.Row(10, func() {
+		qrPDFM.Text("Remarks", props.Text{
+			Top:   6,
+			Align: consts.Center,
+			Size:  8,
+			Style: consts.Bold,
+			Family: consts.Courier,
+		})
+	})
+	qrPDFM.Line(50)
+	pdfBytes, err := qrPDFM.Output()
+	qrBytes := make([]byte, 0)
+	if err != nil {
+		qrBytes = png
+	} else {
+		qrBytes = pdfBytes.Bytes()
+	}
 	fileName := from + to
-	bucketPath := folder + "/" + fileName + ".png"
+	bucketPath := folder + "/" + fileName + ".pdf"
 	buckerW, err := storageC.UploadQRtoGCS(ctx, bucketPath)
 	if err != nil {
 		log.Errorf("failed to create bucket image: %v", err.Error())
 		return nil
 	}
-	_, err = io.Copy(buckerW, bytes.NewReader(png))
+	_, err = io.Copy(buckerW, bytes.NewReader(qrBytes))
 	if err != nil {
 		log.Errorf("failed to upload qr image to bucket: %v", err.Error())
 		return nil
@@ -938,4 +963,39 @@ func encryptAndEncode(toencode string) (string, error) {
 		return "", err
 	}
 	return base64.StdEncoding.EncodeToString(global.Options.GCMQR.Seal(nonce, nonce, []byte(toencode), nil)), nil
+}
+
+func createQRsAndSave(project string,
+	currentClinic *contracts.PhysicalClinicMapLocation,
+	clinicMetaDB *datastoredb.DSClinicMeta) {
+	ctx := context.Background()
+	storageC := storage.NewStorageHandler()
+	err := storageC.InitializeStorageClient(ctx, project)
+	if err != nil {
+		log.Errorf("failed to initialize storage client: %v", err.Error())
+		return
+	}
+	mapClient := gmaps.NewMapsHandler()
+	err = mapClient.InitializeGoogleMapsAPIClient(ctx, project)
+	if err != nil {
+		log.Errorf("failed to initialize map client: %v", err.Error())
+	}
+	for _, fav := range currentClinic.Favorites {
+		var favclinic *contracts.PhysicalClinicMapLocation
+		favclinic, err = clinicMetaDB.GetSingleClinicViaPlace(ctx, fav)
+		if err != nil || favclinic == nil || !favclinic.IsVerified {
+			details, _ := mapClient.FindPlaceFromID(fav)
+			favclinic = &contracts.PhysicalClinicMapLocation{}
+			favclinic.Name = details.Name
+			favclinic.Address = details.FormattedAddress
+		}
+		if currentClinic.Type == "dentist" {
+			GenerateQRAndStore(ctx, currentClinic.PlaceID, currentClinic.PlaceID, fav, storageC, currentClinic, favclinic)
+
+		} else {
+			GenerateQRAndStore(ctx, currentClinic.PlaceID, fav, currentClinic.PlaceID, storageC, favclinic, currentClinic)
+		}
+
+	}
+	clinicMetaDB.Close()
 }
