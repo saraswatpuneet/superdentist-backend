@@ -831,7 +831,7 @@ func GetAllReferralsGD(c *gin.Context) {
 	for _, ref := range dsReferrals {
 		mapGDStuff[ref.ReferralID] = ref
 	}
-	if err != nil && treatmentSummary != nil && len(treatmentSummary) > 0 {
+	if err == nil && treatmentSummary != nil && len(treatmentSummary) > 0 {
 		for _, ref := range treatmentSummary {
 			mapGDStuff[ref.ReferralID] = ref
 		}
