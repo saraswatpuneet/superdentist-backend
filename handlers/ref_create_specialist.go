@@ -279,7 +279,7 @@ func processReferral(ctx context.Context, c *gin.Context, referralDetails contra
 		dsReferral.FromClinicPhone = fromClinic.PhoneNumber
 	} else {
 		fromClinic, err := clinicDB.GetSingleClinicViaPlace(ctx, referralDetails.FromPlaceID)
-		if err == nil && fromClinic.IsVerified {
+		if err == nil && fromClinic.PhysicalClinicsRegistration.Name != "" {
 			dsReferral.FromPlaceID = fromClinic.PlaceID
 			dsReferral.FromClinicName = fromClinic.Name
 			dsReferral.FromClinicAddress = fromClinic.Address
@@ -325,7 +325,7 @@ func processReferral(ctx context.Context, c *gin.Context, referralDetails contra
 		dsReferral.ToClinicPhone = toClinic.PhoneNumber
 	} else {
 		toClinic, err := clinicDB.GetSingleClinicViaPlace(ctx, referralDetails.ToPlaceID)
-		if err == nil && toClinic.IsVerified {
+		if err == nil && toClinic.PhysicalClinicsRegistration.Name != "" {
 			dsReferral.ToPlaceID = toClinic.PlaceID
 			dsReferral.ToClinicName = toClinic.Name
 			dsReferral.ToClinicAddress = toClinic.Address

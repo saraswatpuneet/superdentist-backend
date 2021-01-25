@@ -890,10 +890,10 @@ func GenerateQRAndStore(ctx context.Context,
 	}
 	qrPDFM.Row(20, func() {
 		qrPDFM.Text(currentClinic.Name+" To "+spClinic.Name, props.Text{
-			Top:   6,
-			Align: consts.Center,
-			Size:  12,
-			Style: consts.BoldItalic,
+			Top:    6,
+			Align:  consts.Center,
+			Size:   12,
+			Style:  consts.BoldItalic,
 			Family: consts.Arial,
 		})
 	})
@@ -910,10 +910,10 @@ func GenerateQRAndStore(ctx context.Context,
 	qrPDFM.Line(1)
 	qrPDFM.Row(10, func() {
 		qrPDFM.Text("Remarks", props.Text{
-			Top:   6,
-			Align: consts.Center,
-			Size:  8,
-			Style: consts.Bold,
+			Top:    6,
+			Align:  consts.Center,
+			Size:   8,
+			Style:  consts.Bold,
 			Family: consts.Courier,
 		})
 	})
@@ -983,7 +983,7 @@ func createQRsAndSave(project string,
 	for _, fav := range currentClinic.Favorites {
 		var favclinic *contracts.PhysicalClinicMapLocation
 		favclinic, err = clinicMetaDB.GetSingleClinicViaPlace(ctx, fav)
-		if err != nil || favclinic == nil || !favclinic.IsVerified {
+		if err != nil || favclinic == nil || favclinic.PhysicalClinicsRegistration.Name == "" {
 			details, _ := mapClient.FindPlaceFromID(fav)
 			favclinic = &contracts.PhysicalClinicMapLocation{}
 			favclinic.Name = details.Name
