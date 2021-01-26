@@ -3,7 +3,7 @@ package options
 import (
 	"crypto/aes"
 	"crypto/cipher"
-	"encoding/hex"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -50,7 +50,7 @@ func InitOptions() (*Options, error) {
 		options.ReferralPhone = os.Getenv("SD_REFERRAL_PHONE")
 		options.EncryptionKeyQR = os.Getenv("QR_ENC_KEY")
 		if options.EncryptionKeyQR != "" {
-			key, _ := hex.DecodeString(options.EncryptionKeyQR)
+			key, err := base64.StdEncoding.DecodeString(options.EncryptionKeyQR)
 			c, err := aes.NewCipher(key)
 			options.GCMQR = nil
 			if err == nil {

@@ -65,6 +65,11 @@ func QRReferral(c *gin.Context) {
 	ctx := c.Request.Context()
 	log.Infof("Received QR referral request")
 	secureKey := c.Query("secureKey")
+	patientFName := c.Query("firstName")
+	patientLName := c.Query("lastName")
+	patientPhone := c.Query("phone")
+	patientEmail := c.Query("email")
+
 	decryptedKey, err := decrypt(secureKey)
 	if err != nil {
 		c.AbortWithStatusJSON(
@@ -89,8 +94,6 @@ func QRReferral(c *gin.Context) {
 		)
 		return
 	}
-	// we got a valid request
-	var patientDetails contracts.Patient
 	gproject := googleprojectlib.GetGoogleProjectID()
 	if err != nil {
 		c.AbortWithStatusJSON(
@@ -104,22 +107,17 @@ func QRReferral(c *gin.Context) {
 	}
 	ctx, span := trace.StartSpan(ctx, "Register incoming request for clinic")
 	defer span.End()
-	if err := c.ShouldBindWith(&patientDetails, binding.JSON); err != nil {
-		c.AbortWithStatusJSON(
-			http.StatusBadRequest,
-			gin.H{
-				constants.RESPONSE_JSON_DATA:   nil,
-				constants.RESPONSDE_JSON_ERROR: fmt.Errorf("Bad data sent to backened"),
-			},
-		)
-		return
-	}
 	fromClinic := splitKey[1]
 	toClinic := splitKey[3]
 	var referralDetails contracts.ReferralDetails
 	referralDetails.FromPlaceID = fromClinic
 	referralDetails.ToPlaceID = toClinic
-	referralDetails.Patient = patientDetails
+	referralDetails.Patient = contracts.Patient{
+		FirstName: patientFName,
+		LastName:  patientLName,
+		Phone:     patientPhone,
+		Email:     patientEmail,
+	}
 	referralDetails.Status.GDStatus = "referred"
 	referralDetails.Status.SPStatus = "referred"
 	processReferral(ctx, c, referralDetails, gproject)

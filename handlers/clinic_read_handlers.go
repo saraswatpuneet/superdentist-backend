@@ -879,6 +879,7 @@ func GenerateQRAndStore(ctx context.Context,
 	qrPDFM.SetBorder(true)
 	url := "from+" + from + "+to+" + to + "+true+10074"
 	urlEncoded, err := encryptAndEncode(url)
+	log.Info(urlEncoded)
 	if err != nil {
 		log.Errorf("failed to encode qr url: %v", err.Error())
 	}
@@ -962,7 +963,9 @@ func encryptAndEncode(toencode string) (string, error) {
 	if _, err := io.ReadFull(rand.Reader, nonce); err != nil {
 		return "", err
 	}
-	return base64.StdEncoding.EncodeToString(global.Options.GCMQR.Seal(nonce, nonce, []byte(toencode), nil)), nil
+	ciphertext := global.Options.GCMQR.Seal(nil, nonce, []byte(toencode), nil)
+	str := base64.StdEncoding.EncodeToString(append(nonce, ciphertext...))
+	return str, nil
 }
 
 func createQRsAndSave(project string,
