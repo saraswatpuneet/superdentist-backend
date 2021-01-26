@@ -944,7 +944,7 @@ func GenerateQRAndStore(ctx context.Context,
 
 // GetQRPNGBytes ....
 func GetQRPNGBytes(ctx context.Context, from string, to string) []byte {
-	url := "from+" + from + "+to+" + to
+	url := "from+" + from + "+to+" + to + "+true+10074"
 	urlEncoded, err := encryptAndEncode(url)
 	if err != nil {
 		log.Errorf("failed to encode qr url: %v", err.Error())
