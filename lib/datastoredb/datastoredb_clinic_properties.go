@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strings"
 
 	"cloud.google.com/go/datastore"
 	guuid "github.com/google/uuid"
@@ -84,7 +85,9 @@ func (db DSClinicMeta) AddPhysicalAddessressToClinic(ctx context.Context, clinic
 		placeID := ""
 		if err == nil && len(gmapAddress.Results) > 0 {
 			for idx, gAddress := range gmapAddress.Results {
-				if gAddress.Name == address.Name {
+				splitG := strings.Split(gAddress.FormattedAddress, ",")[0]
+				splitA := strings.Split(address.Address, ",")[0]
+				if splitG == splitA {
 					currentLocation := gmapAddress.Results[idx]
 					location.Lat = currentLocation.Geometry.Location.Lat
 					location.Long = currentLocation.Geometry.Location.Lng
@@ -101,7 +104,7 @@ func (db DSClinicMeta) AddPhysicalAddessressToClinic(ctx context.Context, clinic
 		if global.Options.DSName != "" {
 			addressKey.Namespace = global.Options.DSName
 		}
-		if existingClinic != nil && existingClinic.AddressID != ""  {
+		if existingClinic != nil && existingClinic.AddressID != "" {
 			err = db.client.Delete(ctx, addressKey)
 		}
 		currentHash := geohash.Encode(location.Lat, location.Long, 12)
