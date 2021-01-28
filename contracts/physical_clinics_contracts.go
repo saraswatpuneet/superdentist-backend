@@ -34,6 +34,13 @@ type PhysicalClinicMapLocation struct {
 	PlaceID    string
 }
 
+// QRStoreSchema ....
+type QRStoreSchema struct {
+	GDID   []string
+	SPID   []string
+	QRCode string
+}
+
 // PhysicalClinicMapDetails ....
 type PhysicalClinicMapDetails struct {
 	VerifiedDetails PhysicalClinicMapLocation `json:"verifiedDetails" valid:"required"`

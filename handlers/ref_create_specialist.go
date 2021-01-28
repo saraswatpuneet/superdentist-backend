@@ -69,7 +69,8 @@ func QRReferral(c *gin.Context) {
 	patientLName := c.Query("lastName")
 	patientPhone := c.Query("phone")
 	patientEmail := c.Query("email")
-
+	from := c.Query("from")
+	to := c.Query("to")
 	decryptedKey, err := decrypt(secureKey)
 	if err != nil {
 		c.AbortWithStatusJSON(
@@ -82,9 +83,10 @@ func QRReferral(c *gin.Context) {
 		return
 	}
 	splitKey := strings.Split(decryptedKey, "+")
-	numeric := splitKey[len(splitKey)-1]
-	boolean := splitKey[len(splitKey)-2]
-	if numeric != "10074" && boolean != "true" {
+	logo := splitKey[0]
+	numeric := splitKey[1]
+	boolean := splitKey[2]
+	if numeric != "10074" && boolean != "true" && logo != "superdentist" {
 		c.AbortWithStatusJSON(
 			http.StatusUnauthorized,
 			gin.H{
@@ -107,8 +109,8 @@ func QRReferral(c *gin.Context) {
 	}
 	ctx, span := trace.StartSpan(ctx, "Register incoming request for clinic")
 	defer span.End()
-	fromClinic := splitKey[1]
-	toClinic := splitKey[3]
+	fromClinic := from
+	toClinic := to
 	var referralDetails contracts.ReferralDetails
 	referralDetails.FromPlaceID = fromClinic
 	referralDetails.ToPlaceID = toClinic

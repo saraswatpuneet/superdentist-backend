@@ -18,6 +18,7 @@ import (
 	"google.golang.org/api/option"
 )
 
+// DSClinicMeta ...
 type DSClinicMeta struct {
 	projectID string
 	client    *datastore.Client
@@ -320,6 +321,103 @@ func (db *DSClinicMeta) AddServicesForClinic(ctx context.Context, clinicEmailID 
 	return nil
 }
 
+// StorePNGInDatabase .....
+func (db *DSClinicMeta) StorePNGInDatabase(ctx context.Context, png string,
+	gdClincs map[string][]contracts.PhysicalClinicMapLocation,
+	spClinics map[string][]contracts.PhysicalClinicMapLocation) error {
+	qrID, _ := guuid.NewUUID()
+	qrTextID := qrID.String()
+	var storeQR contracts.QRStoreSchema
+	parentKey := datastore.NameKey("ClinicQR", qrTextID, nil)
+	if global.Options.DSName != "" {
+		parentKey.Namespace = global.Options.DSName
+	}
+	foundExisting := false
+	qrExists := ""
+	var qrKey *datastore.Key
+	for _, values := range gdClincs {
+		for _, cli1 := range values {
+			for _, values := range spClinics {
+				for _, cli2 := range values {
+					existingQR, key, err := db.GetStoreKeysQR(ctx, cli1.PlaceID, cli2.PlaceID)
+					if err != nil {
+						continue
+					} else if err == nil && existingQR != "" {
+						foundExisting = true
+						qrExists = existingQR
+						qrKey = key
+						break
+					}
+				}
+				if foundExisting {
+					break
+				}
+			}
+			if foundExisting {
+				break
+			}
+		}
+		if foundExisting {
+			break
+		}
+	}
+	for _, values := range gdClincs {
+		for _, cli := range values {
+			storeQR.GDID = append(storeQR.SPID, cli.PlaceID)
+		}
+	}
+	for _, values := range spClinics {
+		for _, cli := range values {
+			storeQR.SPID = append(storeQR.SPID, cli.PlaceID)
+		}
+	}
+	if foundExisting && qrExists != "" && qrKey != nil {
+		parentKey = qrKey
+	}
+	storeQR.QRCode = png
+	_, err := db.client.Put(ctx, parentKey, &storeQR)
+	if err != nil {
+		return fmt.Errorf("cannot register clinic with sd: %v", err)
+	}
+	return nil
+}
+
+// GetQRFROMDatabase ....
+func (db *DSClinicMeta) GetQRFROMDatabase(ctx context.Context,
+	gdPlaceID string,
+	spPlaceID string) (string, error) {
+	returnedAddresses := make([]contracts.QRStoreSchema, 0)
+
+	qP := datastore.NewQuery("ClinicQR")
+	if global.Options.DSName != "" {
+		qP = qP.Namespace(global.Options.DSName)
+	}
+	qP = qP.Filter("GDID =", gdPlaceID).Filter("SPID =", spPlaceID)
+	keysClinics, err := db.client.GetAll(ctx, qP, &returnedAddresses)
+	if err != nil || len(keysClinics) <= 0 {
+		return "", fmt.Errorf("clinic with given address id not found: %v", err)
+	}
+	return returnedAddresses[0].QRCode, nil
+}
+
+// GetStoreKeysQR ....
+func (db *DSClinicMeta) GetStoreKeysQR(ctx context.Context,
+	gdPlaceID string,
+	spPlaceID string) (string, *datastore.Key, error) {
+	returnedAddresses := make([]contracts.QRStoreSchema, 0)
+
+	qP := datastore.NewQuery("ClinicQR")
+	if global.Options.DSName != "" {
+		qP = qP.Namespace(global.Options.DSName)
+	}
+	qP = qP.Filter("GDID =", gdPlaceID).Filter("SPID =", spPlaceID)
+	keysClinics, err := db.client.GetAll(ctx, qP, &returnedAddresses)
+	if err != nil || len(keysClinics) <= 0 {
+		return "", nil, fmt.Errorf("clinic with given address id not found: %v", err)
+	}
+	return returnedAddresses[0].QRCode, keysClinics[0], nil
+}
+
 // GetAllClinics ....
 func (db *DSClinicMeta) GetAllClinics(ctx context.Context, clinicEmailID string, clinicFBID string) ([]contracts.PhysicalClinicMapLocation, error) {
 	parentKey := datastore.NameKey("ClinicAdmin", clinicFBID, nil)
@@ -340,6 +438,23 @@ func (db *DSClinicMeta) GetAllClinics(ctx context.Context, clinicEmailID string,
 		return nil, fmt.Errorf("no clinics have been found for the admin error: %v", err)
 	}
 	return returnedAddress, nil
+}
+
+// GetAllClinicsByEmail ....
+func (db *DSClinicMeta) GetAllClinicsByEmail(ctx context.Context, clinicEmailID string) ([]contracts.PhysicalClinicMapLocation, error) {
+	returnedAddresses := make([]contracts.PhysicalClinicMapLocation, 0)
+	qP := datastore.NewQuery("ClinicAddress")
+	if clinicEmailID != "" {
+		qP = qP.Filter("EmailAddress =", clinicEmailID)
+	}
+	if global.Options.DSName != "" {
+		qP = qP.Namespace(global.Options.DSName)
+	}
+	keysClinics, err := db.client.GetAll(ctx, qP, &returnedAddresses)
+	if err != nil || len(keysClinics) <= 0 {
+		return nil, fmt.Errorf("clinic with given address id not found: %v", err)
+	}
+	return returnedAddresses, nil
 }
 
 // GetClinicDoctors ....
