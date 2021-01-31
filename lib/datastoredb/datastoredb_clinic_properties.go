@@ -78,7 +78,9 @@ func (db DSClinicMeta) AddPhysicalAddessressToClinic(ctx context.Context, clinic
 		if err != nil {
 			return nil, fmt.Errorf("cannot register clinic with sd: %v", err)
 		}
-		gmapAddress, err := mapsClient.FindPlacesFromText(address.Name)
+		splitAddress := strings.Split(address.Address, ",")[0]
+
+		gmapAddress, err := mapsClient.FindPlacesFromText(address.Name + " "+ splitAddress)
 		location := contracts.ClinicLocation{
 			Lat:  0.0,
 			Long: 0.0,
