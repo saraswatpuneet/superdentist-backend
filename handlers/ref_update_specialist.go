@@ -1091,7 +1091,7 @@ func ReceiveReferralMail(c *gin.Context) {
 		latLong.Long = details.Geometry.Location.Lng
 	}
 	zone, err := tz.GetZone(tz.Point{
-		Lon: -157.21328, Lat: 1.74294,
+		Lon: latLong.Long, Lat: latLong.Lat,
 	})
 	if len(docIDNames) > 0 {
 		var uploadComment contracts.Comment
@@ -1126,7 +1126,7 @@ func ReceiveReferralMail(c *gin.Context) {
 		}
 		comm.Text = text
 		location, _ := time.LoadLocation(zone[0])
-		comm.TimeStamp = time.Now().In(location).UTC().Unix()
+		comm.TimeStamp = time.Now().In(location).UTC().UnixNano() / int64(time.Millisecond)
 		currentComments = append(currentComments, comm)
 	}
 	err = dsRefC.CreateMessage(ctx, *dsReferral, currentComments)
@@ -1256,7 +1256,7 @@ func TextRecievedPatient(c *gin.Context) {
 		latLong.Long = details.Geometry.Location.Lng
 	}
 	zone, err := tz.GetZone(tz.Point{
-		Lon: -157.21328, Lat: 1.74294,
+		Lon: latLong.Long, Lat: latLong.Lat,
 	})
 	for _, dsReferral := range dsReferrals {
 		if incomingText != "" {
@@ -1265,7 +1265,7 @@ func TextRecievedPatient(c *gin.Context) {
 			commText.Channel = contracts.SPCBox
 			commText.Text = incomingText
 			location, _ := time.LoadLocation(zone[0])
-			commText.TimeStamp = time.Now().In(location).UTC().Unix()
+			commText.TimeStamp = time.Now().In(location).UTC().UnixNano() / int64(time.Millisecond)
 			id, _ := uuid.NewUUID()
 			commText.MessageID = id.String()
 			err = dsRefC.CreateMessage(ctx, dsReferral, []contracts.Comment{commText})
