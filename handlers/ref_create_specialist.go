@@ -247,7 +247,6 @@ func processReferral(ctx context.Context, c *gin.Context, referralDetails contra
 	dsReferral.History = referralDetails.History
 	updatedComm := make([]contracts.Comment, 0)
 	for _, comm := range referralDetails.Comments {
-		comm.TimeStamp = time.Now().Unix()
 		currentID, _ := uuid.NewUUID()
 		comm.MessageID = currentID.String()
 		updatedComm = append(updatedComm, comm)

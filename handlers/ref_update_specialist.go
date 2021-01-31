@@ -106,7 +106,6 @@ func AddCommentsToReferral(c *gin.Context) {
 
 	updatedComm := make([]contracts.Comment, 0)
 	for _, comm := range referralDetails.Comments {
-		comm.TimeStamp = time.Now().Unix()
 		currentID, _ := uuid.NewUUID()
 		comm.MessageID = currentID.String()
 		updatedComm = append(updatedComm, comm)
@@ -1067,7 +1066,7 @@ func ReceiveReferralMail(c *gin.Context) {
 		id, _ := uuid.NewUUID()
 		uploadComment.MessageID = id.String()
 		uploadComment.Text = "New documents are uploaded by " + dsReferral.PatientFirstName + " " + dsReferral.PatientLastName
-		uploadComment.TimeStamp = time.Now().Unix()
+		uploadComment.TimeStamp = time.Now().UTC().Unix()
 		currentComments = append(currentComments, uploadComment)
 		err = storageC.ZipFile(ctx, dsReferral.ReferralID, constants.SD_REFERRAL_BUCKET)
 		if err != nil {
@@ -1087,7 +1086,7 @@ func ReceiveReferralMail(c *gin.Context) {
 			comm.UserID = dsReferral.PatientPhone
 		}
 		comm.Text = text
-		comm.TimeStamp = time.Now().Unix()
+		comm.TimeStamp = time.Now().UTC().Unix()
 		currentComments = append(currentComments, comm)
 	}
 	err = dsRefC.CreateMessage(ctx, *dsReferral, currentComments)
@@ -1189,7 +1188,7 @@ func TextRecievedPatient(c *gin.Context) {
 			commText.UserID = dsReferral.PatientEmail
 			commText.Channel = contracts.SPCBox
 			commText.Text = incomingText
-			commText.TimeStamp = time.Now().Unix()
+			commText.TimeStamp = time.Now().UTC().Unix()
 			id, _ := uuid.NewUUID()
 			commText.MessageID = id.String()
 			err = dsRefC.CreateMessage(ctx, dsReferral, []contracts.Comment{commText})
@@ -1203,7 +1202,7 @@ func TextRecievedPatient(c *gin.Context) {
 			var commText contracts.Comment
 			commText.Channel = contracts.SPCBox
 			commText.Text = "New documents uploaded by " + dsReferral.PatientFirstName + " " + dsReferral.PatientLastName
-			commText.TimeStamp = time.Now().Unix()
+			commText.TimeStamp = time.Now().UTC().Unix()
 			id, _ := uuid.NewUUID()
 			commText.MessageID = id.String()
 			if dsReferral.PatientEmail != "" {
@@ -1224,7 +1223,7 @@ func TextRecievedPatient(c *gin.Context) {
 			for fileName, fileBytes := range filePatients {
 				counter++
 				extension := strings.Split(fileName, ".")[1]
-				fileName = dsReferral.PatientFirstName + strconv.Itoa(int(time.Now().Unix()+counter)) + "." + extension
+				fileName = dsReferral.PatientFirstName + strconv.Itoa(int(time.Now().UTC().Unix()+counter)) + "." + extension
 				bucketPath := dsReferral.ReferralID + "/" + fileName
 				buckerW, err := storageC.UploadToGCS(ctx, bucketPath)
 				if err != nil {
