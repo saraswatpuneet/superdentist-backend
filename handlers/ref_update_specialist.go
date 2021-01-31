@@ -13,6 +13,7 @@ import (
 
 	"github.com/google/uuid"
 	strip "github.com/grokify/html-strip-tags-go"
+	"gopkg.in/ugjka/go-tz.v2/tz"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -21,6 +22,7 @@ import (
 	"github.com/superdentist/superdentist-backend/contracts"
 	"github.com/superdentist/superdentist-backend/global"
 	"github.com/superdentist/superdentist-backend/lib/datastoredb"
+	"github.com/superdentist/superdentist-backend/lib/gmaps"
 	"github.com/superdentist/superdentist-backend/lib/googleprojectlib"
 	"github.com/superdentist/superdentist-backend/lib/sendgrid"
 	"github.com/superdentist/superdentist-backend/lib/sms"
@@ -1055,6 +1057,42 @@ func ReceiveReferralMail(c *gin.Context) {
 		buckerW.Close()
 		docIDNames = append(docIDNames, fileName)
 	}
+	clinicMetaDB := datastoredb.NewClinicMetaHandler()
+	err = clinicMetaDB.InitializeDataBase(ctx, gproject)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	currentDS := dsReferral.ToPlaceID
+	latLong := contracts.ClinicLocation{}
+	getClinic, err := clinicMetaDB.GetSingleClinicViaPlace(ctx, currentDS)
+	if err == nil && getClinic.PhysicalClinicsRegistration.Name != "" {
+		latLong = getClinic.Location
+	} else {
+		mapClient := gmaps.NewMapsHandler()
+		err = mapClient.InitializeGoogleMapsAPIClient(ctx, gproject)
+		if err != nil {
+			c.AbortWithStatusJSON(
+				http.StatusInternalServerError,
+				gin.H{
+					constants.RESPONSE_JSON_DATA:   nil,
+					constants.RESPONSDE_JSON_ERROR: err.Error(),
+				},
+			)
+		}
+		details, _ := mapClient.FindPlaceFromID(currentDS)
+		latLong.Lat = details.Geometry.Location.Lat
+		latLong.Long = details.Geometry.Location.Lng
+	}
+	zone, err := tz.GetZone(tz.Point{
+		Lon: -157.21328, Lat: 1.74294,
+	})
 	if len(docIDNames) > 0 {
 		var uploadComment contracts.Comment
 		uploadComment.Channel = contracts.SPCBox
@@ -1066,7 +1104,8 @@ func ReceiveReferralMail(c *gin.Context) {
 		id, _ := uuid.NewUUID()
 		uploadComment.MessageID = id.String()
 		uploadComment.Text = "New documents are uploaded by " + dsReferral.PatientFirstName + " " + dsReferral.PatientLastName
-		uploadComment.TimeStamp = time.Now().UTC().Unix()
+		location, _ := time.LoadLocation(zone[0])
+		uploadComment.TimeStamp = time.Now().In(location).UTC().Unix()
 		currentComments = append(currentComments, uploadComment)
 		err = storageC.ZipFile(ctx, dsReferral.ReferralID, constants.SD_REFERRAL_BUCKET)
 		if err != nil {
@@ -1086,7 +1125,8 @@ func ReceiveReferralMail(c *gin.Context) {
 			comm.UserID = dsReferral.PatientPhone
 		}
 		comm.Text = text
-		comm.TimeStamp = time.Now().UTC().Unix()
+		location, _ := time.LoadLocation(zone[0])
+		comm.TimeStamp = time.Now().In(location).UTC().Unix()
 		currentComments = append(currentComments, comm)
 	}
 	err = dsRefC.CreateMessage(ctx, *dsReferral, currentComments)
@@ -1179,16 +1219,53 @@ func TextRecievedPatient(c *gin.Context) {
 		log.Errorf("Error parsing text recieve: %v", err.Error())
 	}
 	dsReferrals, err := dsRefC.ReferralFromPatientPhone(ctx, incomingPhone)
-	if err != nil {
+	if err != nil || len(dsReferrals) <= 0 {
 		log.Errorf("Referral not gound: %v", err.Error())
 	}
+	clinicMetaDB := datastoredb.NewClinicMetaHandler()
+	err = clinicMetaDB.InitializeDataBase(ctx, gproject)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	currentDS := dsReferrals[0].ToPlaceID
+	latLong := contracts.ClinicLocation{}
+	getClinic, err := clinicMetaDB.GetSingleClinicViaPlace(ctx, currentDS)
+	if err == nil && getClinic.PhysicalClinicsRegistration.Name != "" {
+		latLong = getClinic.Location
+	} else {
+		mapClient := gmaps.NewMapsHandler()
+		err = mapClient.InitializeGoogleMapsAPIClient(ctx, gproject)
+		if err != nil {
+			c.AbortWithStatusJSON(
+				http.StatusInternalServerError,
+				gin.H{
+					constants.RESPONSE_JSON_DATA:   nil,
+					constants.RESPONSDE_JSON_ERROR: err.Error(),
+				},
+			)
+		}
+		details, _ := mapClient.FindPlaceFromID(currentDS)
+		latLong.Lat = details.Geometry.Location.Lat
+		latLong.Long = details.Geometry.Location.Lng
+	}
+	zone, err := tz.GetZone(tz.Point{
+		Lon: -157.21328, Lat: 1.74294,
+	})
 	for _, dsReferral := range dsReferrals {
 		if incomingText != "" {
 			var commText contracts.Comment
 			commText.UserID = dsReferral.PatientEmail
 			commText.Channel = contracts.SPCBox
 			commText.Text = incomingText
-			commText.TimeStamp = time.Now().UTC().Unix()
+			location, _ := time.LoadLocation(zone[0])
+			commText.TimeStamp = time.Now().In(location).UTC().Unix()
 			id, _ := uuid.NewUUID()
 			commText.MessageID = id.String()
 			err = dsRefC.CreateMessage(ctx, dsReferral, []contracts.Comment{commText})
