@@ -100,7 +100,7 @@ func (db DSClinicMeta) AddPhysicalAddessressToClinic(ctx context.Context, clinic
 			}
 		}
 		existingClinic, err := db.GetSingleClinicViaPlace(ctx, placeID)
-		if err != nil && existingClinic != nil && existingClinic.AddressID != "" {
+		if err == nil && existingClinic != nil && existingClinic.AddressID != "" {
 			address.AddressID = existingClinic.AddressID
 		}
 		addressKey := datastore.NameKey("ClinicAddress", address.AddressID, primaryKey)
@@ -127,7 +127,7 @@ func (db DSClinicMeta) AddPhysicalAddessressToClinic(ctx context.Context, clinic
 	return returnedAddress, nil
 }
 
-// UpdatePhysicalAddessressToClinic
+// UpdatePhysicalAddessressToClinic ....
 func (db DSClinicMeta) UpdatePhysicalAddessressToClinic(ctx context.Context, clinicFBID string, clinicUpdated contracts.PhysicalClinicMapLocation) error {
 	parentKey := datastore.NameKey("ClinicAdmin", clinicFBID, nil)
 	if global.Options.DSName != "" {
