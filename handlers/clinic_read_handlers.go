@@ -959,7 +959,7 @@ func encryptAndEncode(toencode string) (string, error) {
 		return "", err
 	}
 	ciphertext := global.Options.GCMQR.Seal(nil, nonce, []byte(toencode), nil)
-	str := base64.StdEncoding.EncodeToString(append(nonce, ciphertext...))
+	str := base64.URLEncoding.EncodeToString(append(nonce, ciphertext...))
 	return str, nil
 }
 

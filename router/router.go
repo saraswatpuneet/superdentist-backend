@@ -79,6 +79,11 @@ func SDRouter() (*gin.Engine, error) {
 		referralGroup.GET("/referrals/:referralId", handlers.GetOneReferral)
 
 	}
+	adminGroup := version1.Group("/admin")
+	{
+		// All data entry related APIs: Basic Stuff C & U
+		adminGroup.POST("/createAccount", handlers.AdminRegistrationHandler)
+	}
 	{
 		// All wesocket related routing goes here follow the pattern
 

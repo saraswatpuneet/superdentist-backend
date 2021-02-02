@@ -378,7 +378,7 @@ func processReferral(ctx context.Context, c *gin.Context, referralDetails contra
 }
 
 func decrypt(ciphertext64 string) (string, error) {
-	ciphertext, err := base64.StdEncoding.DecodeString(ciphertext64)
+	ciphertext, err := base64.URLEncoding.DecodeString(ciphertext64)
 	if err != nil {
 		return "", err
 	}
