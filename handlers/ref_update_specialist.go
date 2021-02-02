@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"io"
 	"mime/multipart"
@@ -58,9 +59,7 @@ func AddCommentsToReferral(c *gin.Context) {
 		)
 		return
 	}
-
-	dsRefC := datastoredb.NewReferralHandler()
-	err = dsRefC.InitializeDataBase(ctx, gproject)
+	updatedComm, err := ProcessComments(ctx, gproject, referralID, referralDetails)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
@@ -69,178 +68,6 @@ func AddCommentsToReferral(c *gin.Context) {
 				constants.RESPONSDE_JSON_ERROR: err.Error(),
 			},
 		)
-		return
-	}
-	dsReferral, err := dsRefC.GetReferral(ctx, referralID)
-	if err != nil {
-		c.AbortWithStatusJSON(
-			http.StatusInternalServerError,
-			gin.H{
-				constants.RESPONSE_JSON_DATA:   nil,
-				constants.RESPONSDE_JSON_ERROR: err.Error(),
-			},
-		)
-		return
-	}
-	if dsReferral.ToAddressID == "" {
-		clinicDB := datastoredb.NewClinicMetaHandler()
-		err = clinicDB.InitializeDataBase(ctx, gproject)
-		if err != nil {
-			c.AbortWithStatusJSON(
-				http.StatusInternalServerError,
-				gin.H{
-					constants.RESPONSE_JSON_DATA:   nil,
-					constants.RESPONSDE_JSON_ERROR: err.Error(),
-				},
-			)
-			return
-		}
-		toClinic, err := clinicDB.GetSingleClinicViaPlace(ctx, dsReferral.ToPlaceID)
-		if err == nil && toClinic.AddressID != "" {
-			dsReferral.ToPlaceID = toClinic.PlaceID
-			dsReferral.ToClinicName = toClinic.Name
-			dsReferral.ToClinicAddress = toClinic.Address
-			dsReferral.ToEmail = toClinic.EmailAddress
-			dsReferral.ToClinicPhone = toClinic.PhoneNumber
-			dsReferral.ToAddressID = toClinic.AddressID
-		}
-	}
-
-	updatedComm := make([]contracts.Comment, 0)
-	for _, comm := range referralDetails.Comments {
-		currentID, _ := uuid.NewUUID()
-		comm.MessageID = currentID.String()
-		updatedComm = append(updatedComm, comm)
-
-	}
-	err = dsRefC.CreateMessage(ctx, *dsReferral, updatedComm)
-	if err != nil {
-		c.AbortWithStatusJSON(
-			http.StatusInternalServerError,
-			gin.H{
-				constants.RESPONSE_JSON_DATA:   nil,
-				constants.RESPONSDE_JSON_ERROR: err.Error(),
-			},
-		)
-		return
-	}
-	sgClient := sendgrid.NewSendGridClient()
-	err = sgClient.InitializeSendGridClient()
-	if err != nil {
-		c.AbortWithStatusJSON(
-			http.StatusInternalServerError,
-			gin.H{
-				constants.RESPONSE_JSON_DATA:   nil,
-				constants.RESPONSDE_JSON_ERROR: err.Error(),
-			},
-		)
-		return
-	}
-	if dsReferral.IsNew {
-		sendPatientComments := make([]string, 0)
-		for _, newComm := range updatedComm {
-			sendPatientComments = append(sendPatientComments, newComm.Text)
-		}
-		y, m, d := dsReferral.CreatedOn.Date()
-		dateString := fmt.Sprintf("%d-%d-%d", y, int(m), d)
-		if dsReferral.ToEmail != "" {
-			err = sgClient.SendEmailNotificationSpecialist(dsReferral.ToEmail,
-				dsReferral.PatientFirstName+" "+dsReferral.PatientLastName, dsReferral.ToClinicName,
-				dsReferral.PatientPhone, dsReferral.ReferralID, dateString, sendPatientComments)
-		} else {
-			err = sgClient.SendEmailNotificationSpecialist(constants.SD_ADMIN_EMAIL,
-				dsReferral.PatientFirstName+" "+dsReferral.PatientLastName, dsReferral.ToClinicName,
-				dsReferral.PatientPhone, dsReferral.ReferralID, dateString, sendPatientComments)
-		}
-		if err != nil {
-			if err != nil {
-				log.Errorf("Failed to send email: %v", err.Error())
-			}
-		}
-		if dsReferral.PatientEmail != "" {
-			err = sgClient.SendEmailNotificationPatient(dsReferral.PatientEmail,
-				dsReferral.PatientFirstName+" "+dsReferral.PatientLastName, dsReferral.ToClinicName,
-				dsReferral.ToClinicPhone, dsReferral.ReferralID, dsReferral.ToClinicAddress, sendPatientComments)
-			if err != nil {
-				if err != nil {
-					log.Errorf("Failed to send email: %v", err.Error())
-				}
-			}
-		}
-		clientSMS := sms.NewSMSClient()
-		err = clientSMS.InitializeSMSClient()
-		if err != nil {
-			log.Errorf("Failed to send SMS: %v", err.Error())
-		}
-		if dsReferral.PatientPhone != "" {
-			message := fmt.Sprintf(constants.PATIENT_MESSAGE, dsReferral.PatientFirstName+" "+dsReferral.PatientLastName,
-				dsReferral.ToClinicName, dsReferral.ToClinicAddress, dsReferral.ToClinicPhone, sendPatientComments)
-			err = clientSMS.SendSMS(global.Options.ReferralPhone, dsReferral.PatientPhone, message)
-		}
-
-	}
-	wasNew := dsReferral.IsNew
-	dsReferral.IsNew = false
-	dsReferral.ModifiedOn = time.Now()
-	err = dsRefC.CreateReferral(ctx, *dsReferral)
-	if err != nil {
-		c.AbortWithStatusJSON(
-			http.StatusInternalServerError,
-			gin.H{
-				constants.RESPONSE_JSON_DATA:   nil,
-				constants.RESPONSDE_JSON_ERROR: err.Error(),
-			},
-		)
-		return
-	}
-	if !wasNew {
-		for _, comm := range referralDetails.Comments {
-			if comm.Channel == contracts.GDCBox {
-				if dsReferral.ToEmail != "" && comm.UserID == dsReferral.FromEmail {
-					sgClient.SendClinicNotification(dsReferral.ToEmail, dsReferral.ToClinicName,
-						dsReferral.PatientFirstName+" "+dsReferral.PatientLastName, dsReferral.ReferralID)
-
-				} else if dsReferral.ToEmail != "" && comm.UserID == dsReferral.ToEmail {
-					sgClient.SendClinicNotification(dsReferral.FromEmail, dsReferral.FromClinicName,
-						dsReferral.PatientFirstName+" "+dsReferral.PatientLastName, dsReferral.ReferralID)
-				} else {
-					sgClient.SendClinicNotification(constants.SD_ADMIN_EMAIL, dsReferral.ToClinicName,
-						dsReferral.PatientFirstName+" "+dsReferral.PatientLastName, dsReferral.ReferralID)
-				}
-			} else if comm.Channel == contracts.SPCBox {
-				clientSMS := sms.NewSMSClient()
-				err = clientSMS.InitializeSMSClient()
-				if err != nil {
-					c.AbortWithStatusJSON(
-						http.StatusInternalServerError,
-						gin.H{
-							constants.RESPONSE_JSON_DATA:   nil,
-							constants.RESPONSDE_JSON_ERROR: err.Error(),
-						},
-					)
-					return
-				}
-				if dsReferral.PatientPhone != "" {
-					message := fmt.Sprintf(constants.PATIENT_MESSAGE_NOTICE, dsReferral.PatientFirstName+" "+dsReferral.PatientLastName,
-						dsReferral.ToClinicName, comm.Text)
-					clientSMS.SendSMS(global.Options.ReferralPhone, dsReferral.PatientPhone, message)
-				}
-				if dsReferral.PatientEmail != "" {
-					err = sgClient.SendCommentNotificationPatient(dsReferral.PatientFirstName+" "+dsReferral.PatientLastName,
-						dsReferral.PatientEmail, comm.Text, dsReferral.ToClinicName, dsReferral.ReferralID)
-					if err != nil {
-						c.AbortWithStatusJSON(
-							http.StatusInternalServerError,
-							gin.H{
-								constants.RESPONSE_JSON_DATA:   nil,
-								constants.RESPONSDE_JSON_ERROR: err.Error(),
-							},
-						)
-						return
-					}
-				}
-			}
-		}
 	}
 	c.JSON(http.StatusOK, gin.H{
 		constants.RESPONSE_JSON_DATA:   updatedComm,
@@ -1351,4 +1178,136 @@ func Parse(request *http.Request) *contracts.ParsedEmail {
 	}
 	result.Parse()
 	return &result
+}
+
+// ProcessComments .....
+func ProcessComments(ctx context.Context, gproject string, referralID string, referralDetails contracts.ReferralComments) ([]contracts.Comment, error) {
+	dsRefC := datastoredb.NewReferralHandler()
+	err := dsRefC.InitializeDataBase(ctx, gproject)
+	if err != nil {
+		return nil, err
+	}
+	dsReferral, err := dsRefC.GetReferral(ctx, referralID)
+	if err != nil {
+		return nil, err
+	}
+	if dsReferral.ToAddressID == "" {
+		clinicDB := datastoredb.NewClinicMetaHandler()
+		err = clinicDB.InitializeDataBase(ctx, gproject)
+		if err != nil {
+			return nil, err
+		}
+		toClinic, err := clinicDB.GetSingleClinicViaPlace(ctx, dsReferral.ToPlaceID)
+		if err == nil && toClinic.AddressID != "" {
+			dsReferral.ToPlaceID = toClinic.PlaceID
+			dsReferral.ToClinicName = toClinic.Name
+			dsReferral.ToClinicAddress = toClinic.Address
+			dsReferral.ToEmail = toClinic.EmailAddress
+			dsReferral.ToClinicPhone = toClinic.PhoneNumber
+			dsReferral.ToAddressID = toClinic.AddressID
+		}
+	}
+
+	updatedComm := make([]contracts.Comment, 0)
+	for _, comm := range referralDetails.Comments {
+		currentID, _ := uuid.NewUUID()
+		comm.MessageID = currentID.String()
+		updatedComm = append(updatedComm, comm)
+
+	}
+	err = dsRefC.CreateMessage(ctx, *dsReferral, updatedComm)
+	if err != nil {
+		return nil, err
+	}
+	sgClient := sendgrid.NewSendGridClient()
+	err = sgClient.InitializeSendGridClient()
+	if err != nil {
+		return nil, err
+	}
+	if dsReferral.IsNew {
+		sendPatientComments := make([]string, 0)
+		for _, newComm := range updatedComm {
+			sendPatientComments = append(sendPatientComments, newComm.Text)
+		}
+		y, m, d := dsReferral.CreatedOn.Date()
+		dateString := fmt.Sprintf("%d-%d-%d", y, int(m), d)
+		if dsReferral.ToEmail != "" {
+			err = sgClient.SendEmailNotificationSpecialist(dsReferral.ToEmail,
+				dsReferral.PatientFirstName+" "+dsReferral.PatientLastName, dsReferral.ToClinicName,
+				dsReferral.PatientPhone, dsReferral.ReferralID, dateString, sendPatientComments)
+		} else {
+			err = sgClient.SendEmailNotificationSpecialist(constants.SD_ADMIN_EMAIL,
+				dsReferral.PatientFirstName+" "+dsReferral.PatientLastName, dsReferral.ToClinicName,
+				dsReferral.PatientPhone, dsReferral.ReferralID, dateString, sendPatientComments)
+		}
+		if err != nil {
+			if err != nil {
+				log.Errorf("Failed to send email: %v", err.Error())
+			}
+		}
+		if dsReferral.PatientEmail != "" {
+			err = sgClient.SendEmailNotificationPatient(dsReferral.PatientEmail,
+				dsReferral.PatientFirstName+" "+dsReferral.PatientLastName, dsReferral.ToClinicName,
+				dsReferral.ToClinicPhone, dsReferral.ReferralID, dsReferral.ToClinicAddress, sendPatientComments)
+			if err != nil {
+				if err != nil {
+					log.Errorf("Failed to send email: %v", err.Error())
+				}
+			}
+		}
+		clientSMS := sms.NewSMSClient()
+		err = clientSMS.InitializeSMSClient()
+		if err != nil {
+			log.Errorf("Failed to send SMS: %v", err.Error())
+		}
+		if dsReferral.PatientPhone != "" {
+			message := fmt.Sprintf(constants.PATIENT_MESSAGE, dsReferral.PatientFirstName+" "+dsReferral.PatientLastName,
+				dsReferral.ToClinicName, dsReferral.ToClinicAddress, dsReferral.ToClinicPhone, sendPatientComments)
+			err = clientSMS.SendSMS(global.Options.ReferralPhone, dsReferral.PatientPhone, message)
+		}
+
+	}
+	wasNew := dsReferral.IsNew
+	dsReferral.IsNew = false
+	dsReferral.ModifiedOn = time.Now()
+	err = dsRefC.CreateReferral(ctx, *dsReferral)
+	if err != nil {
+		return nil, err
+	}
+	if !wasNew {
+		for _, comm := range referralDetails.Comments {
+			if comm.Channel == contracts.GDCBox {
+				if dsReferral.ToEmail != "" && comm.UserID == dsReferral.FromEmail {
+					sgClient.SendClinicNotification(dsReferral.ToEmail, dsReferral.ToClinicName,
+						dsReferral.PatientFirstName+" "+dsReferral.PatientLastName, dsReferral.ReferralID)
+
+				} else if dsReferral.ToEmail != "" && comm.UserID == dsReferral.ToEmail {
+					sgClient.SendClinicNotification(dsReferral.FromEmail, dsReferral.FromClinicName,
+						dsReferral.PatientFirstName+" "+dsReferral.PatientLastName, dsReferral.ReferralID)
+				} else {
+					sgClient.SendClinicNotification(constants.SD_ADMIN_EMAIL, dsReferral.ToClinicName,
+						dsReferral.PatientFirstName+" "+dsReferral.PatientLastName, dsReferral.ReferralID)
+				}
+			} else if comm.Channel == contracts.SPCBox {
+				clientSMS := sms.NewSMSClient()
+				err = clientSMS.InitializeSMSClient()
+				if err != nil {
+					return nil, err
+				}
+				if dsReferral.PatientPhone != "" {
+					message := fmt.Sprintf(constants.PATIENT_MESSAGE_NOTICE, dsReferral.PatientFirstName+" "+dsReferral.PatientLastName,
+						dsReferral.ToClinicName, comm.Text)
+					clientSMS.SendSMS(global.Options.ReferralPhone, dsReferral.PatientPhone, message)
+				}
+				if dsReferral.PatientEmail != "" {
+					err = sgClient.SendCommentNotificationPatient(dsReferral.PatientFirstName+" "+dsReferral.PatientLastName,
+						dsReferral.PatientEmail, comm.Text, dsReferral.ToClinicName, dsReferral.ReferralID)
+					if err != nil {
+						return nil, err
+					}
+				}
+			}
+		}
+	}
+	return updatedComm, nil
 }
