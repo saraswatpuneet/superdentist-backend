@@ -201,6 +201,10 @@ func AdminVerificationHandler(c *gin.Context) {
 	clinicDB.Close()
 }
 
+// DirectJoinHandler ...
+func DirectJoinHandler(c *gin.Context) {
+}
+
 // AdminPasswordReset ...
 func AdminPasswordReset(c *gin.Context) {
 	log.Infof("Registering clinic with SD database")

@@ -40,6 +40,7 @@ func SDRouter() (*gin.Engine, error) {
 		// All data entry related APIs: Basic Stuff C & U
 		clinicGroup.POST("/registerAdmin", handlers.AdminRegistrationHandler)
 		clinicGroup.POST("/verifyAdmin", handlers.AdminVerificationHandler)
+		clinicGroup.POST("/directJoin", handlers.AdminVerificationHandler)
 		clinicGroup.PUT("/passwordReset", handlers.AdminPasswordReset)
 		clinicGroup.POST("/addClinics", handlers.AddPhysicalClinicsHandler)
 		clinicGroup.POST("/registerDoctors", handlers.RegisterClinicDoctors)
