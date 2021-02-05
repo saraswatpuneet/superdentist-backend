@@ -58,7 +58,7 @@ func GetPhysicalClinics(c *gin.Context) {
 		)
 		return
 	}
-	registeredClinics, err := clinicMetaDB.GetAllClinics(ctx, userEmail, userID)
+	registeredClinics, err := clinicMetaDB.GetAllClinicsByEmail(ctx, userEmail)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
