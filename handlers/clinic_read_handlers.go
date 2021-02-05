@@ -33,7 +33,7 @@ import (
 func GetPhysicalClinics(c *gin.Context) {
 	log.Infof("Get all clinics associated with admin")
 	ctx := c.Request.Context()
-	userEmail, userID, gproject, err := getUserDetails(ctx, c.Request)
+	userEmail, _, gproject, err := getUserDetails(ctx, c.Request)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
