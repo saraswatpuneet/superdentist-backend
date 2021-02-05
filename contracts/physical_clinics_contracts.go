@@ -29,6 +29,7 @@ type ClinicJoinDetails struct {
 	Name    string
 	URL     string
 	Address string
+	PlaceID string
 }
 
 // PhysicalClinicMapLocation ....

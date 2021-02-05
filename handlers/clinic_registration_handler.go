@@ -2,8 +2,10 @@ package handlers
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -203,6 +205,96 @@ func AdminVerificationHandler(c *gin.Context) {
 
 // DirectJoinHandler ...
 func DirectJoinHandler(c *gin.Context) {
+	ctx := c.Request.Context()
+	log.Infof("Received QR referral request")
+	secureKey := c.Query("secureKey")
+	places := c.Query("places")
+	decryptedKey, err := decrypt(secureKey)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	splitKey := strings.Split(decryptedKey, "+")
+	logo := splitKey[0]
+	numeric := splitKey[1]
+	boolean := splitKey[2]
+	favID :=splitKey[3]
+	if numeric != "10074" && boolean != "true" && logo != "superdentist" {
+		c.AbortWithStatusJSON(
+			http.StatusUnauthorized,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	placesMap := make(map[string][]string, 0)
+	err = json.Unmarshal([]byte(places), &placesMap)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	placeIDs := placesMap["placeIDs"]
+
+	foundPID := false
+	for _, pid := range placeIDs {
+		if pid== favID {
+			foundPID = true
+		}
+	}
+	if ! foundPID {
+		c.AbortWithStatusJSON(
+			http.StatusUnauthorized,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	userEmail, _, gproject, err := getUserDetails(ctx, c.Request)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusUnauthorized,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	clinicDB := datastoredb.NewClinicMetaHandler()
+	err = clinicDB.InitializeDataBase(ctx, gproject)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	clinicDB.UpdateClinicsWithEmail(ctx, userEmail, placeIDs)
+	clinicDB.DeleteClinicJoinURL(ctx, placeIDs)
+	c.JSON(http.StatusOK, gin.H{
+		constants.RESPONSE_JSON_DATA:   "Successfully updated clinics emails and are linked",
+		constants.RESPONSDE_JSON_ERROR: nil,
+	})
+	clinicDB.Close()
 }
 
 // AdminPasswordReset ...

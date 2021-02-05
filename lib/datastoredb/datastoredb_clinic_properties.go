@@ -127,6 +127,26 @@ func (db DSClinicMeta) AddPhysicalAddessressToClinic(ctx context.Context, clinic
 	return returnedAddress, nil
 }
 
+// UpdateClinicsWithEmail ...
+func (db DSClinicMeta) UpdateClinicsWithEmail(ctx context.Context, clinicEmailID string, places []string) error {
+	for _, pid := range places {
+		currentClinic, key, err := db.GetSingleClinicViaPlaceKey(ctx, pid)
+		if err != nil {
+			return err
+		}
+		currentClinic.EmailAddress = clinicEmailID
+		err = db.client.Delete(ctx, key)
+		if err != nil {
+			return err
+		}
+		_, err = db.client.Put(ctx, key, &currentClinic)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // AddPhysicalAddessressToClinicNoAdmin ...
 func (db DSClinicMeta) AddPhysicalAddessressToClinicNoAdmin(ctx context.Context, placeID string, favs []string, mapsClient *gmaps.ClientGMaps) (contracts.PhysicalClinicMapLocation, bool, error) {
 	addrID, err := guuid.NewUUID()
@@ -184,11 +204,28 @@ func (db DSClinicMeta) AddClinicJoinURL(ctx context.Context, currentClinic contr
 	joinDetails.Name = currentClinic.Name
 	joinDetails.Address = currentClinic.Address
 	joinDetails.URL = url
-	numKey := datastore.IncompleteKey("ClinicJoinDetails", nil)
+	joinDetails.PlaceID = currentClinic.PlaceID
+	numKey := datastore.NameKey("ClinicJoinDetails", currentClinic.PlaceID, nil)
 	if global.Options.DSName != "" {
 		numKey.Namespace = global.Options.DSName
 	}
 	db.client.Put(ctx, numKey, &joinDetails)
+}
+
+// DeleteClinicJoinURL ....
+func (db DSClinicMeta) DeleteClinicJoinURL(ctx context.Context, places []string) {
+	for _, pid:= range places {
+		qP := datastore.NewQuery("ClinicJoinDetails")
+		qP = qP.Filter("PlaceID =", pid)
+		if global.Options.DSName != "" {
+			qP = qP.Namespace(global.Options.DSName)
+		}
+		numKey := datastore.NameKey("ClinicJoinDetails", pid, nil)
+		if global.Options.DSName != "" {
+			numKey.Namespace = global.Options.DSName
+		}
+		db.client.Delete(ctx, numKey)
+	}
 }
 
 // UpdatePhysicalAddessressToClinic ....
@@ -212,7 +249,7 @@ func (db DSClinicMeta) UpdatePhysicalAddessressToClinic(ctx context.Context, cli
 	return nil
 }
 
-// UpdatePhysicalAddessressToClinic
+// UpdateNetworkForFavoritedClinic .....
 func (db DSClinicMeta) UpdateNetworkForFavoritedClinic(ctx context.Context, clinicUpdated contracts.PhysicalClinicMapLocation) error {
 	for _, favClinic := range clinicUpdated.Favorites {
 		primaryKey := datastore.NameKey("ClinicNetwork", favClinic, nil)
@@ -236,7 +273,7 @@ func (db DSClinicMeta) UpdateNetworkForFavoritedClinic(ctx context.Context, clin
 	//lets create the clinic
 }
 
-// UpdatePhysicalAddessressToClinic
+// RemoveNetworkForFavoritedClinic ...
 func (db DSClinicMeta) RemoveNetworkForFavoritedClinic(ctx context.Context, favID string, favClinic string) error {
 	primaryKey := datastore.NameKey("ClinicNetwork", favID, nil)
 	if global.Options.DSName != "" {
@@ -265,7 +302,7 @@ func (db DSClinicMeta) RemoveNetworkForFavoritedClinic(ctx context.Context, favI
 	//lets create the clinic
 }
 
-// UpdatePhysicalAddessressToClinic
+// GetNetworkClincs ....
 func (db DSClinicMeta) GetNetworkClincs(ctx context.Context, placeID string) ([]string, error) {
 	primaryKey := datastore.NameKey("ClinicNetwork", placeID, nil)
 	if global.Options.DSName != "" {
@@ -582,6 +619,24 @@ func (db *DSClinicMeta) GetSingleClinicViaPlace(ctx context.Context, placeID str
 		return nil, fmt.Errorf("clinic with given address id not found: %v", err)
 	}
 	return &returnedAddresses[0], nil
+}
+
+// GetSingleClinicViaPlaceKey ....
+func (db *DSClinicMeta) GetSingleClinicViaPlaceKey(ctx context.Context, placeID string) (*contracts.PhysicalClinicMapLocation, *datastore.Key, error) {
+
+	returnedAddresses := make([]contracts.PhysicalClinicMapLocation, 0)
+	qP := datastore.NewQuery("ClinicAddress")
+	if placeID != "" {
+		qP = qP.Filter("PlaceID =", placeID)
+	}
+	if global.Options.DSName != "" {
+		qP = qP.Namespace(global.Options.DSName)
+	}
+	keysClinics, err := db.client.GetAll(ctx, qP, &returnedAddresses)
+	if err != nil || len(keysClinics) <= 0 {
+		return nil, nil, fmt.Errorf("clinic with given address id not found: %v", err)
+	}
+	return &returnedAddresses[0], keysClinics[0], nil
 }
 
 // GetNearbyClinics ....
