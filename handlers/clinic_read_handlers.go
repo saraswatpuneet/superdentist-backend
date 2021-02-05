@@ -1085,7 +1085,13 @@ func addFavoriteToNewClinics(project string, currentClinic contracts.PhysicalCli
 			if err != nil {
 				log.Errorf("failed to encode qr url: %v", err.Error())
 			}
-			secureURL := fmt.Sprintf("https://superdentist.io/join?secureKey=%s&places=%s", secureKey, currentPlaceIDS)
+			secureURL := ""
+			if global.Options.DSName != "" {
+				secureURL = fmt.Sprintf("https://superdentist.io/join?secureKey=%s&places=%s", secureKey, currentPlaceIDS)
+			} else {
+				secureURL = fmt.Sprintf("https://dev.superdentist.io/join?secureKey=%s&places=%s", secureKey, currentPlaceIDS)
+
+			}
 			clinicMetaDB.AddClinicJoinURL(ctx, newClinic, secureURL)
 		}
 	}
