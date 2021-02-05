@@ -430,7 +430,8 @@ func AddFavoriteClinics(c *gin.Context) {
 		)
 		return
 	}
-	go createQRsAndSave(gproject, currentClinic, clinicMetaDB)
+	go createQRsAndSave(gproject, *currentClinic, *clinicMetaDB)
+	go addFavoriteToNewClinics(gproject, *currentClinic, *clinicMetaDB)
 	c.JSON(http.StatusOK, gin.H{
 		constants.RESPONSE_JSON_DATA:   "Added favorite places to current clinic",
 		constants.RESPONSDE_JSON_ERROR: nil,
@@ -627,7 +628,7 @@ func GetFavoriteClinics(c *gin.Context) {
 		)
 		return
 	}
-	favQRs := createQRsAndSave(gproject, currentClinic, clinicMetaDB)
+	favQRs := createQRsAndSave(gproject, *currentClinic, *clinicMetaDB)
 	for _, clinicAdd := range favoriteClinics {
 		var currentReturn contracts.PhysicalClinicMapDetails
 		pngQRBase := favQRs[clinicAdd.PlaceID]
@@ -964,8 +965,8 @@ func encryptAndEncode(toencode string) (string, error) {
 }
 
 func createQRsAndSave(project string,
-	currentClinic *contracts.PhysicalClinicMapLocation,
-	clinicMetaDB *datastoredb.DSClinicMeta) map[string]string{
+	currentClinic contracts.PhysicalClinicMapLocation,
+	clinicMetaDB datastoredb.DSClinicMeta) map[string]string {
 	ctx := context.Background()
 	storageC := storage.NewStorageHandler()
 	err := storageC.InitializeStorageClient(ctx, project)
@@ -1040,7 +1041,6 @@ func createQRsAndSave(project string,
 			clinicMetaDB.StorePNGInDatabase(ctx, pngQRBase, mapCurrentClinics, mapFavClinics)
 			favQRS[fav] = pngQRBase
 
-
 		} else {
 			qrBytes = GenerateQRAndStore(ctx, storageC, mapFavClinics, mapCurrentClinics)
 			pngQRBase := base64.StdEncoding.EncodeToString(qrBytes)
@@ -1051,4 +1051,42 @@ func createQRsAndSave(project string,
 	}
 	clinicMetaDB.Close()
 	return favQRS
+}
+
+func addFavoriteToNewClinics(project string, currentClinic contracts.PhysicalClinicMapLocation, clinicMetaDB datastoredb.DSClinicMeta) {
+	ctx := context.Background()
+	mapClient := gmaps.NewMapsHandler()
+	err := mapClient.InitializeGoogleMapsAPIClient(ctx, project)
+	if err != nil {
+		log.Errorf("Something went with map client: %v", err.Error())
+	}
+	allClinics, _ := clinicMetaDB.GetAllClinicsByEmail(ctx, currentClinic.EmailAddress)
+	favs := make([]string, 0)
+	for _, clinic := range allClinics {
+		favs = append(favs, clinic.PlaceID)
+	}
+	for _, fav := range currentClinic.Favorites {
+		newClinic, existed, err := clinicMetaDB.AddPhysicalAddessressToClinicNoAdmin(ctx, fav, favs, mapClient)
+		if err == nil {
+			clinicMetaDB.UpdateNetworkForFavoritedClinic(ctx, newClinic)
+
+		}
+		if err != nil {
+			log.Errorf("Something went wrong while auto clinic registration: %v", err.Error())
+		}
+		// Generate https://superdentist.io/join?placeIds=['a','b', 'c', 'd']&secureKey=a@xyz
+		if !existed {
+			defineMap := make(map[string][]string)
+			defineMap["placeIds"] = []string{fav}
+			jsonString, err := json.Marshal(defineMap)
+			currentPlaceIDS := string(jsonString)
+			key := "superdentist+true+10074" + "+" + fav
+			secureKey, err := encryptAndEncode(key)
+			if err != nil {
+				log.Errorf("failed to encode qr url: %v", err.Error())
+			}
+			secureURL := fmt.Sprintf("https://superdentist.io/join?secureKey=%s&places=%s", secureKey, currentPlaceIDS)
+			clinicMetaDB.AddClinicJoinURL(ctx, newClinic, secureURL)
+		}
+	}
 }

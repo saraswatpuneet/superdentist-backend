@@ -24,6 +24,13 @@ type ClinicAddressResponse struct {
 	ClinicDetails []PhysicalClinicsRegistration `json:"clinicDetails" valid:"required"`
 }
 
+// ClinicJoinDetails ....
+type ClinicJoinDetails struct {
+	Name    string
+	URL     string
+	Address string
+}
+
 // PhysicalClinicMapLocation ....
 type PhysicalClinicMapLocation struct {
 	PhysicalClinicsRegistration

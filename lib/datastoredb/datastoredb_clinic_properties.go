@@ -80,7 +80,7 @@ func (db DSClinicMeta) AddPhysicalAddessressToClinic(ctx context.Context, clinic
 		}
 		splitAddress := strings.Split(address.Address, ",")[0]
 
-		gmapAddress, err := mapsClient.FindPlacesFromText(address.Name + " "+ splitAddress)
+		gmapAddress, err := mapsClient.FindPlacesFromText(address.Name + " " + splitAddress)
 		location := contracts.ClinicLocation{
 			Lat:  0.0,
 			Long: 0.0,
@@ -125,6 +125,70 @@ func (db DSClinicMeta) AddPhysicalAddessressToClinic(ctx context.Context, clinic
 		returnedAddress = append(returnedAddress, address)
 	}
 	return returnedAddress, nil
+}
+
+// AddPhysicalAddessressToClinicNoAdmin ...
+func (db DSClinicMeta) AddPhysicalAddessressToClinicNoAdmin(ctx context.Context, placeID string, favs []string, mapsClient *gmaps.ClientGMaps) (contracts.PhysicalClinicMapLocation, bool, error) {
+	addrID, err := guuid.NewUUID()
+	var addressDB contracts.PhysicalClinicsRegistration
+	var currentLocWithMap contracts.PhysicalClinicMapLocation
+	existingClinic, err := db.GetSingleClinicViaPlace(ctx, placeID)
+	existed := false
+	if err == nil && existingClinic != nil && existingClinic.AddressID != "" {
+		addressDB = existingClinic.PhysicalClinicsRegistration
+		addressDB.Favorites = append(addressDB.Favorites, favs...)
+		currentLocWithMap = *existingClinic
+		currentLocWithMap.PhysicalClinicsRegistration = addressDB
+		existed = true
+	} else {
+		addressDB.AddressID = addrID.String()
+		gmapAddress, err := mapsClient.FindPlaceFromID(placeID)
+		if err != nil {
+			return currentLocWithMap, false, err
+		}
+		location := contracts.ClinicLocation{
+			Lat:  gmapAddress.Geometry.Location.Lat,
+			Long: gmapAddress.Geometry.Location.Lng,
+		}
+		addressDB.Name = gmapAddress.Name
+		addressDB.Favorites = favs
+		addressDB.Type = "dentist"
+		currentHash := geohash.Encode(location.Lat, location.Long, 12)
+		currentLocWithMap = contracts.PhysicalClinicMapLocation{
+			PhysicalClinicsRegistration: addressDB,
+			Location:                    location,
+			Geohash:                     currentHash,
+			Precision:                   12,
+			PlaceID:                     placeID,
+		}
+	}
+
+	addressKey := datastore.NameKey("ClinicAddress", addressDB.AddressID, nil)
+	if global.Options.DSName != "" {
+		addressKey.Namespace = global.Options.DSName
+	}
+	if existingClinic != nil && existingClinic.AddressID != "" {
+		err = db.client.Delete(ctx, addressKey)
+	}
+
+	_, err = db.client.Put(ctx, addressKey, &currentLocWithMap)
+	if err != nil {
+		return currentLocWithMap, false, fmt.Errorf("cannot register clinic with sd: %v", err)
+	}
+	return currentLocWithMap, existed, nil
+}
+
+// AddClinicJoinURL ....
+func (db DSClinicMeta) AddClinicJoinURL(ctx context.Context, currentClinic contracts.PhysicalClinicMapLocation, url string) {
+	var joinDetails contracts.ClinicJoinDetails
+	joinDetails.Name = currentClinic.Name
+	joinDetails.Address = currentClinic.Address
+	joinDetails.URL = url
+	numKey := datastore.IncompleteKey("ClinicJoinDetails", nil)
+	if global.Options.DSName != "" {
+		numKey.Namespace = global.Options.DSName
+	}
+	db.client.Put(ctx, numKey, &joinDetails)
 }
 
 // UpdatePhysicalAddessressToClinic ....
