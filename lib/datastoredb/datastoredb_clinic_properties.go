@@ -118,6 +118,10 @@ func (db DSClinicMeta) AddPhysicalAddessressToClinic(ctx context.Context, clinic
 			Precision:                   12,
 			PlaceID:                     placeID,
 		}
+		if currentLocWithMap.AutoEmail == "" {
+			autoEmail := strings.Replace(address.AddressID, "-", "", -1) + "@superdentist.io"
+			currentLocWithMap.AutoEmail = autoEmail
+		}
 		_, err = db.client.Put(ctx, addressKey, &currentLocWithMap)
 		if err != nil {
 			return nil, fmt.Errorf("cannot register clinic with sd: %v", err)
@@ -162,6 +166,11 @@ func (db DSClinicMeta) AddPhysicalAddessressToClinicNoAdmin(ctx context.Context,
 		addressDB.Favorites = append(addressDB.Favorites, favs...)
 		currentLocWithMap = *existingClinic
 		currentLocWithMap.PhysicalClinicsRegistration = addressDB
+
+		if currentLocWithMap.AutoEmail == "" {
+			autoEmail := strings.Replace(addressDB.AddressID, "-", "", -1) + "@superdentist.io"
+			currentLocWithMap.AutoEmail = autoEmail
+		}
 		existed = true
 	} else {
 		addressDB.AddressID = addrID.String()
@@ -175,8 +184,10 @@ func (db DSClinicMeta) AddPhysicalAddessressToClinicNoAdmin(ctx context.Context,
 		}
 		addressDB.Name = gmapAddress.Name
 		addressDB.Favorites = favs
+		addressDB.Address = gmapAddress.FormattedAddress
 		addressDB.Type = "dentist"
 		currentHash := geohash.Encode(location.Lat, location.Long, 12)
+		autoEmail := strings.Replace(addressDB.AddressID, "-", "", -1) + "@superdentist.io"
 		currentLocWithMap = contracts.PhysicalClinicMapLocation{
 			PhysicalClinicsRegistration: addressDB,
 			Location:                    location,
@@ -184,6 +195,7 @@ func (db DSClinicMeta) AddPhysicalAddessressToClinicNoAdmin(ctx context.Context,
 			Precision:                   12,
 			PlaceID:                     placeID,
 			IsVerified:                  true,
+			AutoEmail:                   autoEmail,
 		}
 	}
 

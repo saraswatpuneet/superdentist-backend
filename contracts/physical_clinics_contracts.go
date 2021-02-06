@@ -40,6 +40,7 @@ type PhysicalClinicMapLocation struct {
 	Geohash    string `json:"-"`
 	Precision  int    `json:"-"`
 	PlaceID    string
+	AutoEmail  string
 }
 
 // QRStoreSchema ....
