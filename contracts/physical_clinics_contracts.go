@@ -26,10 +26,11 @@ type ClinicAddressResponse struct {
 
 // ClinicJoinDetails ....
 type ClinicJoinDetails struct {
-	Name    string
-	URL     string
-	Address string
-	PlaceID string
+	Name      string
+	URL       string
+	Address   string
+	PlaceID   string
+	AutoEmail string
 }
 
 // PhysicalClinicMapLocation ....

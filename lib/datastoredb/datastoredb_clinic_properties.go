@@ -221,6 +221,7 @@ func (db DSClinicMeta) AddClinicJoinURL(ctx context.Context, currentClinic contr
 	joinDetails.Address = currentClinic.Address
 	joinDetails.URL = url
 	joinDetails.PlaceID = currentClinic.PlaceID
+	joinDetails.AutoEmail = currentClinic.AutoEmail
 	numKey := datastore.NameKey("ClinicJoinDetails", currentClinic.PlaceID, nil)
 	if global.Options.DSName != "" {
 		numKey.Namespace = global.Options.DSName
