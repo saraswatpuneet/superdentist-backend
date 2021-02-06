@@ -247,7 +247,7 @@ func DirectJoinHandler(c *gin.Context) {
 		)
 		return
 	}
-	placeIDs := placesMap["placeIDs"]
+	placeIDs := placesMap["placeIds"]
 
 	foundPID := false
 	for _, pid := range placeIDs {
