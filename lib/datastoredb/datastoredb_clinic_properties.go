@@ -134,6 +134,9 @@ func (db DSClinicMeta) UpdateClinicsWithEmail(ctx context.Context, clinicEmailID
 		if err != nil {
 			return err
 		}
+		if currentClinic.EmailAddress != "" {
+			return fmt.Errorf("clinic already accounted for")
+		}
 		currentClinic.EmailAddress = clinicEmailID
 		err = db.client.Delete(ctx, key)
 		if err != nil {
@@ -180,6 +183,7 @@ func (db DSClinicMeta) AddPhysicalAddessressToClinicNoAdmin(ctx context.Context,
 			Geohash:                     currentHash,
 			Precision:                   12,
 			PlaceID:                     placeID,
+			IsVerified:                  true,
 		}
 	}
 
@@ -214,7 +218,7 @@ func (db DSClinicMeta) AddClinicJoinURL(ctx context.Context, currentClinic contr
 
 // DeleteClinicJoinURL ....
 func (db DSClinicMeta) DeleteClinicJoinURL(ctx context.Context, places []string) {
-	for _, pid:= range places {
+	for _, pid := range places {
 		qP := datastore.NewQuery("ClinicJoinDetails")
 		qP = qP.Filter("PlaceID =", pid)
 		if global.Options.DSName != "" {

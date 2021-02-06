@@ -224,7 +224,7 @@ func DirectJoinHandler(c *gin.Context) {
 	logo := splitKey[0]
 	numeric := splitKey[1]
 	boolean := splitKey[2]
-	favID :=splitKey[3]
+	favID := splitKey[3]
 	if numeric != "10074" && boolean != "true" && logo != "superdentist" {
 		c.AbortWithStatusJSON(
 			http.StatusUnauthorized,
@@ -251,11 +251,11 @@ func DirectJoinHandler(c *gin.Context) {
 
 	foundPID := false
 	for _, pid := range placeIDs {
-		if pid== favID {
+		if pid == favID {
 			foundPID = true
 		}
 	}
-	if ! foundPID {
+	if !foundPID {
 		c.AbortWithStatusJSON(
 			http.StatusUnauthorized,
 			gin.H{
@@ -265,7 +265,7 @@ func DirectJoinHandler(c *gin.Context) {
 		)
 		return
 	}
-	userEmail, _, gproject, err := getUserDetails(ctx, c.Request)
+	userEmail, userID, gproject, err := getUserDetails(ctx, c.Request)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusUnauthorized,
@@ -288,8 +288,43 @@ func DirectJoinHandler(c *gin.Context) {
 		)
 		return
 	}
-	clinicDB.UpdateClinicsWithEmail(ctx, userEmail, placeIDs)
-	clinicDB.DeleteClinicJoinURL(ctx, placeIDs)
+	err = clinicDB.UpdateClinicsWithEmail(ctx, userEmail, placeIDs)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusUnauthorized,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	clinicDBMain := datastoredb.NewClinicHandler()
+	err = clinicDB.InitializeDataBase(ctx, gproject)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	var cregisData contracts.ClinicRegistrationData
+	cregisData.EmailID = userEmail
+	cregisData.IsVerified = true
+	err = clinicDBMain.AddClinicRegistration(ctx, &cregisData, userID)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{
 		constants.RESPONSE_JSON_DATA:   "Successfully updated clinics emails and are linked",
 		constants.RESPONSDE_JSON_ERROR: nil,
