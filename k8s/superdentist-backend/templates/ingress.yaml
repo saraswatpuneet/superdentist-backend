@@ -18,7 +18,7 @@ metadata:
       set $cache_control_value 'no-cache, max-age=0';
       set $expires_value '0';
 
-      set $csp_script_src_value "'self'";
+      set $csp_script_src_value "'self' https://maps.googleapis.com https://us-central1-superdentist.cloudfunctions.net";
       set $csp_image_src_value "'self' https://*.tile.openstreetmap.org data:";
 
 
@@ -67,7 +67,7 @@ metadata:
       more_set_headers "Surrogate-Control: no-store";
       more_set_headers "Referrer-Policy: no-referrer-when-downgrade";
       more_set_headers "X-DNS-Prefetch-Control: off";
-      more_set_headers "Content-Security-Policy: default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; script-src ${csp_script_src_value}; font-src 'self' data: https://fonts.gstatic.com; img-src ${csp_image_src_value}; connect-src 'self' superdentist.firebaseapp.com https://www.googleapis.com https://securetoken.googleapis.com";
+      more_set_headers "Content-Security-Policy: default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; script-src ${csp_script_src_value}; font-src 'self' data: https://fonts.gstatic.com; img-src ${csp_image_src_value}; connect-src 'self' superdentist.firebaseapp.com https://us-central1-superdentist.cloudfunctions.net https://www.googleapis.com https://securetoken.googleapis.com https://maps.googleapis.com";
       more_set_headers "Strict-Transport-Security: max-age=15724800; includeSubDomains";
 
       # CORS
