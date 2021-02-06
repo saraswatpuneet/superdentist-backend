@@ -142,11 +142,7 @@ func (db DSClinicMeta) UpdateClinicsWithEmail(ctx context.Context, clinicEmailID
 			return fmt.Errorf("clinic already accounted for")
 		}
 		currentClinic.EmailAddress = clinicEmailID
-		err = db.client.Delete(ctx, key)
-		if err != nil {
-			return err
-		}
-		_, err = db.client.Put(ctx, key, &currentClinic)
+		_, err = db.client.Put(ctx, key, currentClinic)
 		if err != nil {
 			return err
 		}

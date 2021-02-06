@@ -81,49 +81,7 @@ func AdminRegistrationHandler(c *gin.Context) {
 		EmailID:    clinicRegistrationReq.EmailID,
 		IsVerified: false,
 	}
-	sgClient := sendgrid.NewSendGridClient()
-	err = sgClient.InitializeSendGridClient()
-	log.Infof("Registering clinic with SD database sendgrid")
-
-	if err != nil {
-		c.AbortWithStatusJSON(
-			http.StatusInternalServerError,
-			gin.H{
-				constants.RESPONSE_JSON_DATA:   nil,
-				constants.RESPONSDE_JSON_ERROR: err.Error(),
-			},
-		)
-		return
-	}
-	idAuth, err := identity.NewIDPEP(ctx, gproject)
-	log.Infof("Registering clinic with SD database idep")
-
-	if err != nil {
-		c.AbortWithStatusJSON(
-			http.StatusInternalServerError,
-			gin.H{
-				constants.RESPONSE_JSON_DATA:   nil,
-				constants.RESPONSDE_JSON_ERROR: err.Error(),
-			},
-		)
-		return
-	}
-	veriURL, err := idAuth.GetVerificationURL(ctx, clinicRegistrationReq.EmailID)
-	log.Infof("Registering clinic with SD database3")
-
-	if err != nil {
-		c.AbortWithStatusJSON(
-			http.StatusInternalServerError,
-			gin.H{
-				constants.RESPONSE_JSON_DATA:   nil,
-				constants.RESPONSDE_JSON_ERROR: err.Error(),
-			},
-		)
-		return
-	}
-	err = sgClient.SendVerificationEmail(clinicRegistrationReq.EmailID, veriURL)
-	log.Infof("Registering clinic with SD database4")
-
+	err = registerAndSendVerification(ctx, gproject, clinicRegistrationReq)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
@@ -300,7 +258,7 @@ func DirectJoinHandler(c *gin.Context) {
 		return
 	}
 	clinicDBMain := datastoredb.NewClinicHandler()
-	err = clinicDB.InitializeDataBase(ctx, gproject)
+	err = clinicDBMain.InitializeDataBase(ctx, gproject)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
@@ -325,6 +283,8 @@ func DirectJoinHandler(c *gin.Context) {
 		)
 		return
 	}
+	registerAndSendVerification(ctx,gproject, cregisData)
+	clinicDB.DeleteClinicJoinURL(ctx, placeIDs)
 	c.JSON(http.StatusOK, gin.H{
 		constants.RESPONSE_JSON_DATA:   "Successfully updated clinics emails and are linked",
 		constants.RESPONSDE_JSON_ERROR: nil,
@@ -781,6 +741,7 @@ func QueryAddressHandlerWebsocket(webPool *websocket.Pool, c *gin.Context) {
 	go client.ReadAddressString()
 	go client.WriteAdderessJSON(mapClient)
 }
+
 func getUserDetails(ctx context.Context, request *http.Request) (string, string, string, error) {
 	gProjectDeployment := googleprojectlib.GetGoogleProjectID()
 	identityClient, err := identity.NewIDPEP(ctx, gProjectDeployment)
@@ -797,4 +758,35 @@ func getUserDetails(ctx context.Context, request *http.Request) (string, string,
 		return "", "", "", fmt.Errorf("Unauthorized access: aborting")
 	}
 	return currentClinicRecord.Email, currentClinicRecord.UID, gProjectDeployment, nil
+}
+func registerAndSendVerification(ctx context.Context, gproject string, clinicRegistrationReq contracts.ClinicRegistrationData) error {
+	sgClient := sendgrid.NewSendGridClient()
+	err := sgClient.InitializeSendGridClient()
+	log.Infof("Registering clinic with SD database sendgrid")
+
+	if err != nil {
+		return err
+	}
+	idAuth, err := identity.NewIDPEP(ctx, gproject)
+	log.Infof("Registering clinic with SD database idep")
+
+	if err != nil {
+		return err
+
+	}
+	veriURL, err := idAuth.GetVerificationURL(ctx, clinicRegistrationReq.EmailID)
+	log.Infof("Registering clinic with SD database3")
+
+	if err != nil {
+		return err
+
+	}
+	err = sgClient.SendVerificationEmail(clinicRegistrationReq.EmailID, veriURL)
+	log.Infof("Registering clinic with SD database4")
+
+	if err != nil {
+		return err
+
+	}
+	return nil
 }
