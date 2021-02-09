@@ -86,6 +86,7 @@ func (db DSClinicMeta) AddPhysicalAddessressToClinic(ctx context.Context, clinic
 			Long: 0.0,
 		}
 		placeID := ""
+		phone := ""
 		if err == nil && len(gmapAddress.Results) > 0 {
 			for idx, gAddress := range gmapAddress.Results {
 				splitG := strings.Split(gAddress.FormattedAddress, ",")[0]
@@ -95,6 +96,10 @@ func (db DSClinicMeta) AddPhysicalAddessressToClinic(ctx context.Context, clinic
 					location.Lat = currentLocation.Geometry.Location.Lat
 					location.Long = currentLocation.Geometry.Location.Lng
 					placeID = currentLocation.PlaceID
+					gPlace, _ := mapsClient.FindPlaceFromID(placeID)
+					if gPlace!= nil {
+						phone = gPlace.FormattedPhoneNumber
+					}
 					break
 				}
 			}
@@ -122,6 +127,7 @@ func (db DSClinicMeta) AddPhysicalAddessressToClinic(ctx context.Context, clinic
 			autoEmail := strings.Replace(address.AddressID, "-", "", -1) + "@clinic.superdentist.io"
 			currentLocWithMap.AutoEmail = autoEmail
 		}
+		currentLocWithMap.PhoneNumber = phone
 		_, err = db.client.Put(ctx, addressKey, &currentLocWithMap)
 		if err != nil {
 			return nil, fmt.Errorf("cannot register clinic with sd: %v", err)
