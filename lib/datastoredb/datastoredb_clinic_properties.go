@@ -490,7 +490,7 @@ func (db *DSClinicMeta) StorePNGInDatabase(ctx context.Context, png string,
 	if foundExisting && qrExists != "" && qrKey != nil {
 		parentKey = qrKey
 	}
-	storeQR.QRCode = png
+	storeQR.QRCode = append(storeQR.QRCode, png)
 	_, err := db.client.Put(ctx, parentKey, &storeQR)
 	if err != nil {
 		return fmt.Errorf("cannot register clinic with sd: %v", err)
@@ -513,7 +513,7 @@ func (db *DSClinicMeta) GetQRFROMDatabase(ctx context.Context,
 	if err != nil || len(keysClinics) <= 0 {
 		return "", fmt.Errorf("clinic with given address id not found: %v", err)
 	}
-	return returnedAddresses[0].QRCode, nil
+	return returnedAddresses[0].QRCode[0], nil
 }
 
 // GetStoreKeysQR ....
@@ -531,7 +531,7 @@ func (db *DSClinicMeta) GetStoreKeysQR(ctx context.Context,
 	if err != nil || len(keysClinics) <= 0 {
 		return "", nil, fmt.Errorf("clinic with given address id not found: %v", err)
 	}
-	return returnedAddresses[0].QRCode, keysClinics[0], nil
+	return returnedAddresses[0].QRCode[0], keysClinics[0], nil
 }
 
 // GetAllClinics ....
