@@ -17,6 +17,16 @@ import (
 	"github.com/superdentist/superdentist-backend/lib/helpers"
 	"google.golang.org/api/option"
 )
+// SPECIALITYMAP ....
+var SPECIALITYMAP = map[string]string{
+	"ortho":  "Orthodontist",
+	"maxi":   "Oral and Maxillofacial",
+	"oral":   "Oral Surgeon",
+	"pedia":  "Perdiatric Dentistry",
+	"endo":   "Endodontist",
+	"perio":  "Periodontist",
+	"prosth": "Prosthodontist",
+}
 
 // DSClinicMeta ...
 type DSClinicMeta struct {
@@ -188,6 +198,13 @@ func (db DSClinicMeta) AddPhysicalAddessressToClinicNoAdmin(ctx context.Context,
 		addressDB.Favorites = favs
 		addressDB.Address = gmapAddress.FormattedAddress
 		addressDB.Type = "dentist"
+		nameLower := strings.ToLower(addressDB.Name)
+		for key := range SPECIALITYMAP {
+			if strings.Contains(key, nameLower) {
+				addressDB.Type = "specialist"
+			}
+		}
+		addressDB.PhoneNumber = gmapAddress.FormattedPhoneNumber
 		currentHash := geohash.Encode(location.Lat, location.Long, 12)
 		autoEmail := strings.Replace(addressDB.AddressID, "-", "", -1) + "@clinic.superdentist.io"
 		currentLocWithMap = contracts.PhysicalClinicMapLocation{
