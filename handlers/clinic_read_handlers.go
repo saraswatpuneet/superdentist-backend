@@ -616,18 +616,6 @@ func GetFavoriteClinics(c *gin.Context) {
 		)
 		return
 	}
-	storageC := storage.NewStorageHandler()
-	err = storageC.InitializeStorageClient(ctx, gproject)
-	if err != nil {
-		c.AbortWithStatusJSON(
-			http.StatusInternalServerError,
-			gin.H{
-				constants.RESPONSE_JSON_DATA:   nil,
-				constants.RESPONSDE_JSON_ERROR: err.Error(),
-			},
-		)
-		return
-	}
 	favQRs := createQRsAndSave(gproject, *currentClinic, *clinicMetaDB)
 	for _, clinicAdd := range favoriteClinics {
 		var currentReturn contracts.PhysicalClinicMapDetails
@@ -968,26 +956,17 @@ func createQRsAndSave(project string,
 	currentClinic contracts.PhysicalClinicMapLocation,
 	clinicMetaDB datastoredb.DSClinicMeta) map[string]string {
 	ctx := context.Background()
-	storageC := storage.NewStorageHandler()
-	err := storageC.InitializeStorageClient(ctx, project)
-	if err != nil {
-		log.Errorf("failed to initialize storage client: %v", err.Error())
-		return nil
-	}
-	mapClient := gmaps.NewMapsHandler()
-	err = mapClient.InitializeGoogleMapsAPIClient(ctx, project)
-	if err != nil {
-		log.Errorf("failed to initialize map client: %v", err.Error())
-	}
+
 	allClinicsCurrent := make([]contracts.PhysicalClinicMapLocation, 0)
 	mapCurrentClinics := make(map[string][]contracts.PhysicalClinicMapLocation)
 	favQRS := make(map[string]string)
 
 	emailID := currentClinic.EmailAddress
-	allClinicsCurrent, err = clinicMetaDB.GetAllClinicsByEmail(ctx, emailID)
+	allClinicsCurrent, _ = clinicMetaDB.GetAllClinicsByEmail(ctx, emailID)
 	for _, cli := range allClinicsCurrent {
 		mapCurrentClinics[emailID] = append(mapCurrentClinics[emailID], cli)
 	}
+	leftOverFavs := make([]string, 0)
 	for _, fav := range currentClinic.Favorites {
 		foundDB := false
 		if currentClinic.Type == "dentist" {
@@ -1007,10 +986,32 @@ func createQRsAndSave(project string,
 		if foundDB {
 			continue
 		}
-		mapFavClinics := make(map[string][]contracts.PhysicalClinicMapLocation)
-		var favclinic *contracts.PhysicalClinicMapLocation
-		allClinics := make([]contracts.PhysicalClinicMapLocation, 0)
-		favclinic, err = clinicMetaDB.GetSingleClinicViaPlace(ctx, fav)
+		leftOverFavs = append(leftOverFavs, fav)
+		favQRS[fav] = ""
+	}
+	if len(leftOverFavs) > 0 {
+		go createQRsInBackground(ctx, project, currentClinic, leftOverFavs, clinicMetaDB, mapCurrentClinics)
+	}
+	return favQRS
+}
+
+func createQRsInBackground(ctx context.Context, project string, currentClinic contracts.PhysicalClinicMapLocation, leftOverFavs []string,
+	clinicMetaDB datastoredb.DSClinicMeta,
+	mapCurrentClinics map[string][]contracts.PhysicalClinicMapLocation) {
+	mapFavClinics := make(map[string][]contracts.PhysicalClinicMapLocation)
+	allClinics := make([]contracts.PhysicalClinicMapLocation, 0)
+	storageC := storage.NewStorageHandler()
+	err := storageC.InitializeStorageClient(ctx, project)
+	if err != nil {
+		log.Errorf("failed to initialize storage client: %v", err.Error())
+	}
+	mapClient := gmaps.NewMapsHandler()
+	err = mapClient.InitializeGoogleMapsAPIClient(ctx, project)
+	if err != nil {
+		log.Errorf("failed to initialize map client: %v", err.Error())
+	}
+	for _, fav := range leftOverFavs {
+		favclinic, err := clinicMetaDB.GetSingleClinicViaPlace(ctx, fav)
 		if err != nil || favclinic == nil || favclinic.PhysicalClinicsRegistration.Name == "" {
 			if _, ok := mapFavClinics[fav]; !ok {
 				details, _ := mapClient.FindPlaceFromID(fav)
@@ -1039,20 +1040,16 @@ func createQRsAndSave(project string,
 			qrBytes = GenerateQRAndStore(ctx, storageC, mapCurrentClinics, mapFavClinics)
 			pngQRBase := base64.StdEncoding.EncodeToString(qrBytes)
 			clinicMetaDB.StorePNGInDatabase(ctx, pngQRBase, mapCurrentClinics, mapFavClinics)
-			favQRS[fav] = pngQRBase
 
 		} else {
 			qrBytes = GenerateQRAndStore(ctx, storageC, mapFavClinics, mapCurrentClinics)
 			pngQRBase := base64.StdEncoding.EncodeToString(qrBytes)
 			clinicMetaDB.StorePNGInDatabase(ctx, pngQRBase, mapFavClinics, mapCurrentClinics)
-			favQRS[fav] = pngQRBase
 
 		}
 	}
 	clinicMetaDB.Close()
-	return favQRS
 }
-
 func addFavoriteToNewClinics(project string, currentClinic contracts.PhysicalClinicMapLocation, clinicMetaDB datastoredb.DSClinicMeta) {
 	ctx := context.Background()
 	mapClient := gmaps.NewMapsHandler()
