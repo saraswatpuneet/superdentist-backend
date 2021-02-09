@@ -171,7 +171,7 @@ func (db DSClinicMeta) AddPhysicalAddessressToClinicNoAdmin(ctx context.Context,
 	addrID, err := guuid.NewUUID()
 	var addressDB contracts.PhysicalClinicsRegistration
 	var currentLocWithMap contracts.PhysicalClinicMapLocation
-	existingClinic, err := db.GetSingleClinicViaPlace(ctx, placeID)
+	existingClinic, key, err := db.GetSingleClinicViaPlaceKey(ctx, placeID)
 	existed := false
 	if err == nil && existingClinic != nil && existingClinic.AddressID != "" {
 		addressDB = existingClinic.PhysicalClinicsRegistration
@@ -223,7 +223,8 @@ func (db DSClinicMeta) AddPhysicalAddessressToClinicNoAdmin(ctx context.Context,
 		addressKey.Namespace = global.Options.DSName
 	}
 	if existingClinic != nil && existingClinic.AddressID != "" {
-		err = db.client.Delete(ctx, addressKey)
+		_, err = db.client.Put(ctx, key, &currentLocWithMap)
+		return currentLocWithMap, existed, nil
 	}
 
 	_, err = db.client.Put(ctx, addressKey, &currentLocWithMap)
