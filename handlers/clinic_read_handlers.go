@@ -466,7 +466,7 @@ func GetAllQRZip(c *gin.Context) {
 		)
 		return
 	}
-	if !strings.Contains(userEmail, "@clinic.superdentist.io") {
+	if !strings.Contains(userEmail, "@superdentist.io") {
 		c.AbortWithStatusJSON(
 			http.StatusUnauthorized,
 			gin.H{
