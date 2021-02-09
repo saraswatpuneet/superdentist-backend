@@ -48,7 +48,7 @@ type PhysicalClinicMapLocation struct {
 type QRStoreSchema struct {
 	GDID   []string
 	SPID   []string
-	QRCode []string
+	QRCode string `datastore:",noindex"`
 }
 
 // PhysicalClinicMapDetails ....
