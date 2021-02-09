@@ -991,13 +991,12 @@ func createQRsAndSave(project string,
 		favQRS[fav] = ""
 	}
 	if len(leftOverFavs) > 0 {
-		go createQRsInBackground(ctx, project, currentClinic, leftOverFavs, clinicMetaDB, mapCurrentClinics)
+		go createQRsInBackground(ctx, project, currentClinic, leftOverFavs, mapCurrentClinics)
 	}
 	return favQRS
 }
 
 func createQRsInBackground(ctx context.Context, project string, currentClinic contracts.PhysicalClinicMapLocation, leftOverFavs []string,
-	clinicMetaDB datastoredb.DSClinicMeta,
 	mapCurrentClinics map[string][]contracts.PhysicalClinicMapLocation) {
 	mapFavClinics := make(map[string][]contracts.PhysicalClinicMapLocation)
 	allClinics := make([]contracts.PhysicalClinicMapLocation, 0)
@@ -1011,9 +1010,15 @@ func createQRsInBackground(ctx context.Context, project string, currentClinic co
 	if err != nil {
 		log.Errorf("failed to initialize map client: %v", err.Error())
 	}
+	clinicMetaDB := datastoredb.NewClinicMetaHandler()
+	err = clinicMetaDB.InitializeDataBase(ctx, project)
+	if err != nil {
+		log.Errorf("failed to initialize map client: %v", err.Error())
+	}
 	for _, fav := range leftOverFavs {
 		favclinic, err := clinicMetaDB.GetSingleClinicViaPlace(ctx, fav)
 		if err != nil || favclinic == nil || favclinic.PhysicalClinicsRegistration.Name == "" {
+			mapFavClinics = make(map[string][]contracts.PhysicalClinicMapLocation)
 			if _, ok := mapFavClinics[fav]; !ok {
 				details, _ := mapClient.FindPlaceFromID(fav)
 				favclinic = &contracts.PhysicalClinicMapLocation{}
@@ -1027,8 +1032,15 @@ func createQRsInBackground(ctx context.Context, project string, currentClinic co
 			}
 		} else {
 			emailID := favclinic.EmailAddress
+			if emailID == "" && favclinic.PlaceID != "" {
+				emailID = favclinic.PlaceID
+				mapFavClinics = make(map[string][]contracts.PhysicalClinicMapLocation)
+			}
 			if _, ok := mapFavClinics[emailID]; !ok {
 				allClinics, err = clinicMetaDB.GetAllClinicsByEmail(ctx, emailID)
+				if allClinics == nil ||len(allClinics) <=0 {
+					mapFavClinics[favclinic.PlaceID] = []contracts.PhysicalClinicMapLocation{*favclinic}
+				}
 				for _, cli := range allClinics {
 					mapFavClinics[emailID] = append(mapFavClinics[emailID], cli)
 				}
