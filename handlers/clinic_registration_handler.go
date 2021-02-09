@@ -774,14 +774,14 @@ func registerAndSendVerification(ctx context.Context, gproject string, clinicReg
 		return err
 
 	}
-	_, err = idAuth.GetVerificationURL(ctx, clinicRegistrationReq.EmailID)
+	veriURL, err := idAuth.GetVerificationURL(ctx, clinicRegistrationReq.EmailID)
 	log.Infof("Registering clinic with SD database3")
 
 	if err != nil {
 		return err
 
 	}
-	//err = sgClient.SendVerificationEmail(clinicRegistrationReq.EmailID, veriURL)
+	err = sgClient.SendVerificationEmail(clinicRegistrationReq.EmailID, veriURL)
 	log.Infof("Registering clinic with SD database4")
 
 	if err != nil {
