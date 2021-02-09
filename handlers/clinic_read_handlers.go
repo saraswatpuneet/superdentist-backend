@@ -855,7 +855,8 @@ func Find(slice []string, val string) bool {
 func GenerateQRAndStore(ctx context.Context,
 	storageC *storage.Client,
 	gdClincs map[string][]contracts.PhysicalClinicMapLocation,
-	spClinics map[string][]contracts.PhysicalClinicMapLocation) []byte {
+	spClinics map[string][]contracts.PhysicalClinicMapLocation,
+	folderName string) []byte {
 	qrPDFM := pdf.NewMaroto(consts.Portrait, consts.Letter)
 	qrPDFM.SetBorder(true)
 	defineMap := make(map[string][]string)
@@ -926,8 +927,8 @@ func GenerateQRAndStore(ctx context.Context,
 	} else {
 		qrBytes = pdfBytes.Bytes()
 	}
-	fileName := fromGDClinic.PlaceID + toSPClinic.PlaceID
-	bucketPath := fromGDClinic.PlaceID + "/" + fileName + ".pdf"
+	fileName := fromGDClinic.Name + "_" + toSPClinic.Name + "(" + fromGDClinic.PlaceID + toSPClinic.PlaceID + ")"
+	bucketPath := folderName + "/" + fileName + ".pdf"
 	buckerW, err := storageC.UploadQRtoGCS(ctx, bucketPath)
 	if err != nil {
 		log.Errorf("failed to create bucket image: %v", err.Error())
@@ -1037,12 +1038,12 @@ func createQRsInBackground(ctx context.Context, project string, currentClinic co
 		}
 		var qrBytes []byte
 		if currentClinic.Type == "dentist" {
-			qrBytes = GenerateQRAndStore(ctx, storageC, mapCurrentClinics, mapFavClinics)
+			qrBytes = GenerateQRAndStore(ctx, storageC, mapCurrentClinics, mapFavClinics, currentClinic.Name)
 			pngQRBase := base64.StdEncoding.EncodeToString(qrBytes)
 			clinicMetaDB.StorePNGInDatabase(ctx, pngQRBase, mapCurrentClinics, mapFavClinics)
 
 		} else {
-			qrBytes = GenerateQRAndStore(ctx, storageC, mapFavClinics, mapCurrentClinics)
+			qrBytes = GenerateQRAndStore(ctx, storageC, mapFavClinics, mapCurrentClinics, currentClinic.Name)
 			pngQRBase := base64.StdEncoding.EncodeToString(qrBytes)
 			clinicMetaDB.StorePNGInDatabase(ctx, pngQRBase, mapFavClinics, mapCurrentClinics)
 
