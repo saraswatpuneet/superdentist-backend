@@ -1191,7 +1191,7 @@ func ProcessComments(ctx context.Context, gproject string, referralID string, re
 	if err != nil {
 		return nil, err
 	}
-	if dsReferral.ToAddressID == "" {
+	if dsReferral.ToAddressID == "" || dsReferral.ToClinicPhone == "" {
 		clinicDB := datastoredb.NewClinicMetaHandler()
 		err = clinicDB.InitializeDataBase(ctx, gproject)
 		if err != nil {
