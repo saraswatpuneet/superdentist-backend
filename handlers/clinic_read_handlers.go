@@ -927,6 +927,7 @@ func GenerateQRAndStore(ctx context.Context,
 	} else {
 		qrBytes = pdfBytes.Bytes()
 	}
+	folderName = strings.Replace(folderName, " ", "", -1)
 	fileName := fromGDClinic.Name + "_" + toSPClinic.Name + "(" + fromGDClinic.PlaceID + toSPClinic.PlaceID + ")"
 	bucketPath := folderName + "/" + fileName + ".pdf"
 	buckerW, err := storageC.UploadQRtoGCS(ctx, bucketPath)
@@ -1038,7 +1039,7 @@ func createQRsInBackground(ctx context.Context, project string, currentClinic co
 			}
 			if _, ok := mapFavClinics[emailID]; !ok {
 				allClinics, err = clinicMetaDB.GetAllClinicsByEmail(ctx, emailID)
-				if allClinics == nil ||len(allClinics) <=0 {
+				if allClinics == nil || len(allClinics) <= 0 {
 					mapFavClinics[favclinic.PlaceID] = []contracts.PhysicalClinicMapLocation{*favclinic}
 				}
 				for _, cli := range allClinics {
