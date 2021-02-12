@@ -890,15 +890,15 @@ func GenerateQRAndStore(ctx context.Context,
 		log.Errorf("failed to create qr image: %v", err.Error())
 		return nil
 	}
-	qrPDFM.Row(20, func() {
-		qrPDFM.Text(fromGDClinic.Name+" To "+toSPClinic.Name, props.Text{
-			Top:    6,
-			Align:  consts.Center,
-			Size:   12,
-			Style:  consts.BoldItalic,
-			Family: consts.Arial,
-		})
-	})
+	// qrPDFM.Row(20, func() {
+	// 	qrPDFM.Text(fromGDClinic.Name+" To "+toSPClinic.Name, props.Text{
+	// 		Top:    6,
+	// 		Align:  consts.Center,
+	// 		Size:   12,
+	// 		Style:  consts.BoldItalic,
+	// 		Family: consts.Arial,
+	// 	})
+	// })
 	pngQRBase := base64.StdEncoding.EncodeToString(png)
 
 	qrPDFM.Row(130, func() {
@@ -909,17 +909,17 @@ func GenerateQRAndStore(ctx context.Context,
 			})
 		})
 	})
-	qrPDFM.Line(1)
-	qrPDFM.Row(10, func() {
-		qrPDFM.Text("Remarks", props.Text{
-			Top:    6,
-			Align:  consts.Center,
-			Size:   8,
-			Style:  consts.Bold,
-			Family: consts.Courier,
-		})
-	})
-	qrPDFM.Line(50)
+	// qrPDFM.Line(1)
+	// qrPDFM.Row(10, func() {
+	// 	qrPDFM.Text("Remarks", props.Text{
+	// 		Top:    6,
+	// 		Align:  consts.Center,
+	// 		Size:   8,
+	// 		Style:  consts.Bold,
+	// 		Family: consts.Courier,
+	// 	})
+	// })
+	// qrPDFM.Line(50)
 	pdfBytes, err := qrPDFM.Output()
 	qrBytes := make([]byte, 0)
 	if err != nil {
