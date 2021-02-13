@@ -1,6 +1,7 @@
 package websocket
 
 import (
+	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -114,6 +115,7 @@ func (h *Pool) RunPool() {
 func UpgradeWebSocket(c *gin.Context) (*websocket.Conn, error) {
 	webSocketWriter := c.Writer
 	webSocketRequest := c.Request
+	wsupgrader.CheckOrigin = func(r *http.Request) bool { return true }
 	webSocketConn, err := wsupgrader.Upgrade(webSocketWriter, webSocketRequest, nil)
 	if err != nil {
 		log.Errorf("Failed to establish websocket connection: %v", err.Error())
