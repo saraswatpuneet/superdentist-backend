@@ -2,6 +2,7 @@ package websocket
 
 import (
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -116,6 +117,12 @@ func UpgradeWebSocket(c *gin.Context) (*websocket.Conn, error) {
 	webSocketWriter := c.Writer
 	webSocketRequest := c.Request
 	wsupgrader.CheckOrigin = func(r *http.Request) bool { return true }
+	var respHeader http.Header
+	for key, value := range c.Request.Header {
+		if strings.ToLower(key)!="sec-webSocket-extensions" {
+			respHeader[key] = value
+		}
+	}
 	respnHeader := c.Request.Header
 	webSocketConn, err := wsupgrader.Upgrade(webSocketWriter, webSocketRequest,respnHeader)
 	if err != nil {
