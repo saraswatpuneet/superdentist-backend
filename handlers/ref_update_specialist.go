@@ -1020,6 +1020,11 @@ func TextRecievedPatient(c *gin.Context) {
 	}
 	form := c.Request.Form
 	incomingPhone := form["From"][0]
+	receivingCustomPhone := form["To"][0]
+	receivingCustomPhone = strings.Replace(receivingCustomPhone, "-", "", -1)
+	receivingCustomPhone = strings.Replace(receivingCustomPhone, "(", "", -1)
+	receivingCustomPhone = strings.Replace(receivingCustomPhone, ")", "", -1)
+	receivingCustomPhone = strings.Replace(receivingCustomPhone, " ", "", -1)
 	incomingText := ""
 	if text, ok := form["Body"]; ok {
 		incomingText = text[0]
@@ -1086,6 +1091,9 @@ func TextRecievedPatient(c *gin.Context) {
 		Lon: latLong.Long, Lat: latLong.Lat,
 	})
 	for _, dsReferral := range dsReferrals {
+		if dsReferral.CommunicationPhone != "" && dsReferral.CommunicationPhone != receivingCustomPhone {
+			continue
+		}
 		if incomingText != "" {
 			var commText contracts.Comment
 			commText.UserID = dsReferral.PatientEmail
