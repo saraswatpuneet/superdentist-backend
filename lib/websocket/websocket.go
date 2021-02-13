@@ -116,7 +116,8 @@ func UpgradeWebSocket(c *gin.Context) (*websocket.Conn, error) {
 	webSocketWriter := c.Writer
 	webSocketRequest := c.Request
 	wsupgrader.CheckOrigin = func(r *http.Request) bool { return true }
-	webSocketConn, err := wsupgrader.Upgrade(webSocketWriter, webSocketRequest, nil)
+	respnHeader := c.Request.Header
+	webSocketConn, err := wsupgrader.Upgrade(webSocketWriter, webSocketRequest,respnHeader)
 	if err != nil {
 		log.Errorf("Failed to establish websocket connection: %v", err.Error())
 		return nil, err
