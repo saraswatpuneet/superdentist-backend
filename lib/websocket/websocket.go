@@ -117,7 +117,7 @@ func UpgradeWebSocket(c *gin.Context) (*websocket.Conn, error) {
 	webSocketWriter := c.Writer
 	webSocketRequest := c.Request
 	wsupgrader.CheckOrigin = func(r *http.Request) bool { return true }
-	var respHeader http.Header
+	respHeader := make(http.Header, 0)
 	for key, value := range c.Request.Header {
 		if strings.ToLower(key)!="sec-webSocket-extensions" {
 			respHeader[key] = value
