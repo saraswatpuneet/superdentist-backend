@@ -1261,9 +1261,21 @@ func ProcessComments(ctx context.Context, gproject string, referralID string, re
 			log.Errorf("Failed to send SMS: %v", err.Error())
 		}
 		if dsReferral.PatientPhone != "" {
-			message := fmt.Sprintf(constants.PATIENT_MESSAGE, dsReferral.PatientFirstName+" "+dsReferral.PatientLastName,
-				dsReferral.ToClinicName, dsReferral.ToClinicAddress, dsReferral.ToClinicPhone, sendPatientComments)
-			err = clientSMS.SendSMS(global.Options.ReferralPhone, dsReferral.PatientPhone, message)
+			message := ""
+			if dsReferral.CommunicationText == "" {
+				message = fmt.Sprintf(constants.PATIENT_MESSAGE, dsReferral.PatientFirstName+" "+dsReferral.PatientLastName,
+					dsReferral.ToClinicName, dsReferral.ToClinicAddress, dsReferral.ToClinicPhone, sendPatientComments)
+			} else {
+				message = fmt.Sprintf(dsReferral.CommunicationText, dsReferral.PatientFirstName+" "+dsReferral.PatientLastName,
+					dsReferral.ToClinicName, dsReferral.ToClinicAddress, dsReferral.ToClinicPhone, sendPatientComments)
+			}
+			fromPhone := ""
+			if dsReferral.CommunicationPhone == "" {
+				fromPhone = global.Options.ReferralPhone
+			} else {
+				fromPhone = dsReferral.CommunicationPhone
+			}
+			err = clientSMS.SendSMS(fromPhone, dsReferral.PatientPhone, message)
 		}
 
 	}
@@ -1295,9 +1307,21 @@ func ProcessComments(ctx context.Context, gproject string, referralID string, re
 					return nil, err
 				}
 				if dsReferral.PatientPhone != "" {
-					message := fmt.Sprintf(constants.PATIENT_MESSAGE_NOTICE, dsReferral.PatientFirstName+" "+dsReferral.PatientLastName,
-						dsReferral.ToClinicName, comm.Text)
-					clientSMS.SendSMS(global.Options.ReferralPhone, dsReferral.PatientPhone, message)
+					message := ""
+					if dsReferral.CommunicationText == "" {
+						message = fmt.Sprintf(constants.PATIENT_MESSAGE, dsReferral.PatientFirstName+" "+dsReferral.PatientLastName,
+							dsReferral.ToClinicName, dsReferral.ToClinicAddress, dsReferral.ToClinicPhone, comm.Text)
+					} else {
+						message = fmt.Sprintf(dsReferral.CommunicationText, dsReferral.PatientFirstName+" "+dsReferral.PatientLastName,
+							dsReferral.ToClinicName, dsReferral.ToClinicAddress, dsReferral.ToClinicPhone, comm.Text)
+					}
+					fromPhone := ""
+					if dsReferral.CommunicationPhone == "" {
+						fromPhone = global.Options.ReferralPhone
+					} else {
+						fromPhone = dsReferral.CommunicationPhone
+					}
+					err = clientSMS.SendSMS(fromPhone, dsReferral.PatientPhone, message)
 				}
 				if dsReferral.PatientEmail != "" {
 					err = sgClient.SendCommentNotificationPatient(dsReferral.PatientFirstName+" "+dsReferral.PatientLastName,

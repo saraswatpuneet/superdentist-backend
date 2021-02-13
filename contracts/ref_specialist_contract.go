@@ -72,32 +72,34 @@ type ReferralStatus struct {
 
 // DSReferral .....
 type DSReferral struct {
-	ReferralID        string    `json:"referralId" valid:"required"`
-	Documents         []string  `json:"documents" valid:"required"`
-	FromPlaceID       string    `json:"fromPlaceID" valid:"required"`
-	ToPlaceID         string    `json:"toPlaceID" valid:"required"`
-	FromClinicName    string    `json:"fromClinicName" valid:"required"`
-	ToClinicName      string    `json:"toClinicName" valid:"required"`
-	FromClinicAddress string    `json:"fromClinicAddress" valid:"required"`
-	ToClinicAddress   string    `json:"toClinicAddress" valid:"required"`
-	FromAddressID     string    `json:"fromAddressId" valid:"required"`
-	ToAddressID       string    `json:"toAddressId" valid:"required"`
-	Status            Status    `json:"status" valid:"required"`
-	Reasons           []string  `json:"reasons"`
-	History           []string  `json:"history"`
-	Tooth             []string  `json:"tooth"`
-	CreatedOn         time.Time `json:"createdOn" valid:"required"`
-	ModifiedOn        time.Time `json:"modifiedOn" valid:"required"`
-	PatientEmail      string    `json:"patientEmail" valid:"required"`
-	PatientFirstName  string    `json:"patientFirstName" valid:"required"`
-	PatientLastName   string    `json:"patientLastName" valid:"required"`
-	PatientPhone      string    `json:"patientPhone" valid:"required"`
-	FromClinicPhone   string    `json:"fromClinicPhone" valid:"required"`
-	ToClinicPhone     string    `json:"toClinicPhone" valid:"required"`
-	FromEmail         string    `json:"fromEmail" valid:"required"`
-	ToEmail           string    `json:"toEmail" valid:"required"`
-	IsDirty           bool      `json:"isDirty" valid:"required"`
-	IsNew             bool      `json:"-"`
+	ReferralID         string    `json:"referralId" valid:"required"`
+	Documents          []string  `json:"documents" valid:"required"`
+	FromPlaceID        string    `json:"fromPlaceID" valid:"required"`
+	ToPlaceID          string    `json:"toPlaceID" valid:"required"`
+	FromClinicName     string    `json:"fromClinicName" valid:"required"`
+	ToClinicName       string    `json:"toClinicName" valid:"required"`
+	FromClinicAddress  string    `json:"fromClinicAddress" valid:"required"`
+	ToClinicAddress    string    `json:"toClinicAddress" valid:"required"`
+	FromAddressID      string    `json:"fromAddressId" valid:"required"`
+	ToAddressID        string    `json:"toAddressId" valid:"required"`
+	Status             Status    `json:"status" valid:"required"`
+	Reasons            []string  `json:"reasons"`
+	History            []string  `json:"history"`
+	Tooth              []string  `json:"tooth"`
+	CreatedOn          time.Time `json:"createdOn" valid:"required"`
+	ModifiedOn         time.Time `json:"modifiedOn" valid:"required"`
+	PatientEmail       string    `json:"patientEmail" valid:"required"`
+	PatientFirstName   string    `json:"patientFirstName" valid:"required"`
+	PatientLastName    string    `json:"patientLastName" valid:"required"`
+	PatientPhone       string    `json:"patientPhone" valid:"required"`
+	FromClinicPhone    string    `json:"fromClinicPhone" valid:"required"`
+	ToClinicPhone      string    `json:"toClinicPhone" valid:"required"`
+	FromEmail          string    `json:"fromEmail" valid:"required"`
+	ToEmail            string    `json:"toEmail" valid:"required"`
+	IsDirty            bool      `json:"isDirty" valid:"required"`
+	CommunicationPhone string    `json:"communicationPhone" valid:"required"`
+	CommunicationText  string    `json:"communicationText" valid:"required"`
+	IsNew              bool      `json:"-"`
 }
 
 // SMS is returned after a text/sms message is posted to Twilio

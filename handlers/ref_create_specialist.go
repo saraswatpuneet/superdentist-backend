@@ -124,8 +124,8 @@ func QRReferral(c *gin.Context) {
 	referralDetails.Status.SPStatus = "referred"
 	referral := processReferral(ctx, c, referralDetails, gproject)
 	var refComments contracts.ReferralComments
-	var qrComment  contracts.Comment
-	refComments.Comments = append(refComments.Comments,qrComment)
+	var qrComment contracts.Comment
+	refComments.Comments = append(refComments.Comments, qrComment)
 	_, err = ProcessComments(ctx, gproject, referral.ReferralID, refComments)
 	if err != nil {
 		c.AbortWithStatusJSON(
@@ -340,6 +340,9 @@ func processReferral(ctx context.Context, c *gin.Context, referralDetails contra
 		dsReferral.ToClinicAddress = toClinic.Address
 		dsReferral.ToEmail = toClinic.EmailAddress
 		dsReferral.ToClinicPhone = toClinic.PhoneNumber
+		dsReferral.CommunicationPhone = toClinic.TwilioNumber
+		dsReferral.CommunicationText = toClinic.CustomText
+
 	} else {
 		toClinic, err := clinicDB.GetSingleClinicViaPlace(ctx, referralDetails.ToPlaceID)
 		if err == nil && toClinic.PhysicalClinicsRegistration.Name != "" {
@@ -348,7 +351,9 @@ func processReferral(ctx context.Context, c *gin.Context, referralDetails contra
 			dsReferral.ToClinicAddress = toClinic.Address
 			dsReferral.ToEmail = toClinic.EmailAddress
 			dsReferral.ToClinicPhone = toClinic.PhoneNumber
-			dsReferral.ToAddressID =toClinic.AddressID
+			dsReferral.ToAddressID = toClinic.AddressID
+			dsReferral.CommunicationPhone = toClinic.TwilioNumber
+			dsReferral.CommunicationText = toClinic.CustomText
 		} else {
 			mapClient := gmaps.NewMapsHandler()
 			err = mapClient.InitializeGoogleMapsAPIClient(ctx, gproject)
