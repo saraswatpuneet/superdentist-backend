@@ -14,9 +14,8 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o superdentist-back
 
 FROM alpine:latest
 
-ENV DEBIAN_FRONTEND noninteractive
-RUN apt-get update && \
-    apt-get -y install gcc mono-mcs && \
+RUN apt update && \
+    apt -y install gcc mono-mcs && \
     rm -rf /var/lib/apt/lists/*
 RUN apk add --no-cache bash && \
     apk add --update tzdata && \
@@ -24,7 +23,7 @@ RUN apk add --no-cache bash && \
     addgroup -S appgroup && adduser -u 1000 -S appuser -G appgroup
 RUN apt install tesseract-ocr
 RUN apt install libtesseract-dev
-RUN apt-get install -y -qq libtesseract-dev libleptonica-dev
+RUN apt get install -y -qq libtesseract-dev libleptonica-dev
 ENV TESSDATA_PREFIX=/usr/share/tesseract-ocr/4.00/tessdata/
 RUN apt-get install -y -qq \
   tesseract-ocr-eng \
