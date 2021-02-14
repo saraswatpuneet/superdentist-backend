@@ -15,7 +15,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o superdentist-back
 FROM alpine:latest
 
 RUN apk update && \
-    apk -y install gcc mono-mcs && \
+    apk -y add gcc mono-mcs && \
     rm -rf /var/lib/apt/lists/*
 RUN apk add --no-cache bash && \
     apk add --update tzdata && \
