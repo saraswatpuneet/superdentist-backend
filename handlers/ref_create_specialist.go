@@ -244,9 +244,10 @@ func processReferral(ctx context.Context, c *gin.Context, referralDetails contra
 					)
 					return nil, nil
 				}
-				client.SetImageFromBytes(imageBuffer.Bytes())
+				currentBytes := imageBuffer.Bytes()
+				client.SetImageFromBytes(currentBytes)
 				foundImage = true
-				io.Copy(buckerW, infile)
+				io.Copy(buckerW, bytes.NewReader(currentBytes))
 				buckerW.Close()
 				docIDNames = append(docIDNames, hdr.Filename)
 			}
