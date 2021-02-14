@@ -4,6 +4,7 @@ ENV GO111MODULE=on
 ENV GO_MODULES_TOKEN=$GO_MODULES_TOKEN
 WORKDIR /go/src/app
 RUN git config --global url."https://${GO_MODULES_TOKEN}:x-oauth-basic@github.com/superdentist/sdclients".insteadOf "https://github.com/superdentist/sdclients"
+RUN go get -t github.com/otiai10/gosseract/v2
 
 COPY go.mod .
 COPY go.sum .
@@ -36,7 +37,7 @@ RUN apt-get install -y -qq \
 # If you want to download these traineddata via `wget`, don't forget to locate
 # downloaded traineddata under ${TESSDATA_PREFIX}/tessdata.
 
-RUN go get -t github.com/otiai10/gosseract
+RUN go get -t github.com/otiai10/gosseract/v2
 RUN cd ${GOPATH}/src/github.com/otiai10/gosseract && go test
 
 COPY --from=builder /go/src/app/superdentist-backend /usr/bin/
