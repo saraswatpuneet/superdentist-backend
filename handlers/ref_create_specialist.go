@@ -272,8 +272,8 @@ func processReferral(ctx context.Context, c *gin.Context, referralDetails contra
 		startIndex := strings.Index(ocrText, "Reason")
 		endIndex := strings.Index(ocrText, "Faster")
 
-		if startIndex >= 0 && endIndex > 0 {
-			ocrText = ocrText[startIndex:endIndex]
+		if startIndex >= 0 && endIndex-1 > 0 {
+			ocrText = ocrText[startIndex:endIndex-1]
 		} else if startIndex >= 0 {
 			ocrText = ocrText[startIndex:]
 		}
