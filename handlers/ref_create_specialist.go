@@ -270,7 +270,11 @@ func processReferral(ctx context.Context, c *gin.Context, referralDetails contra
 	var dsReferral contracts.DSReferral
 	if ocrText != "" {
 		startIndex := strings.Index(ocrText, "Reason")
-		if startIndex >= 0 {
+		endIndex := strings.Index(ocrText, "Faster")
+
+		if startIndex >= 0 && endIndex > 0 {
+			ocrText = ocrText[startIndex:endIndex]
+		} else if startIndex >= 0 {
 			ocrText = ocrText[startIndex:]
 		}
 		dsReferral.Reasons = []string{ocrText}
