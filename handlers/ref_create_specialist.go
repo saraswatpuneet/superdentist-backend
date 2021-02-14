@@ -332,22 +332,21 @@ func processReferral(ctx context.Context, c *gin.Context, referralDetails contra
 			zone, _ := tz.GetZone(tz.Point{
 				Lon: fromClinic.Location.Long, Lat: fromClinic.Location.Lat,
 			})
+			var commentReasons contracts.Comment
+			currentID, _ := uuid.NewUUID()
+			commentReasons.MessageID = currentID.String()
+			commentReasons.Channel = "c2c"
+			commentReasons.Text = "New QR based referral is created."
+			location, _ := time.LoadLocation(zone[0])
+			commentReasons.TimeStamp = time.Now().In(location).UTC().UnixNano() / int64(time.Millisecond)
+			commentReasons.UserID = fromClinic.EmailAddress
+			updatedComm = append(updatedComm, commentReasons)
 			if ocrText != "" {
 				var commentReasons contracts.Comment
 				currentID, _ := uuid.NewUUID()
 				commentReasons.MessageID = currentID.String()
 				commentReasons.Channel = "c2c"
 				commentReasons.Text = ocrText
-				location, _ := time.LoadLocation(zone[0])
-				commentReasons.TimeStamp = time.Now().In(location).UTC().UnixNano() / int64(time.Millisecond)
-				commentReasons.UserID = fromClinic.EmailAddress
-				updatedComm = append(updatedComm, commentReasons)
-			} else {
-				var commentReasons contracts.Comment
-				currentID, _ := uuid.NewUUID()
-				commentReasons.MessageID = currentID.String()
-				commentReasons.Channel = "c2c"
-				commentReasons.Text = "New QR based referral is created."
 				location, _ := time.LoadLocation(zone[0])
 				commentReasons.TimeStamp = time.Now().In(location).UTC().UnixNano() / int64(time.Millisecond)
 				commentReasons.UserID = fromClinic.EmailAddress
