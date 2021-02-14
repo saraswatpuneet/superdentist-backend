@@ -43,4 +43,3 @@ COPY --from=builder /go/src/app/superdentist-backend /usr/bin/
 EXPOSE 8090
 
 ENTRYPOINT ["/usr/bin/superdentist-backend"]
-USER appuser
