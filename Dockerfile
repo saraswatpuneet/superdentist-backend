@@ -14,14 +14,14 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o superdentist-back
 
 FROM golang:latest
 
+RUN apt-get update -qq
+RUN apt-get install -y --no-install-recommends apt-utils
+
 ENV DEBIAN_FRONTEND noninteractive
+
 RUN apt-get update && \
     apt-get -y install gcc mono-mcs && \
     rm -rf /var/lib/apt/lists/*
-RUN apk add --no-cache bash && \
-    apk add --update tzdata && \
-    apk add --no-cache ca-certificates && \
-    addgroup -S appgroup && adduser -u 1000 -S appuser -G appgroup
 RUN apt install tesseract-ocr
 RUN apt install libtesseract-dev
 RUN apt-get install -y -qq libtesseract-dev libleptonica-dev
