@@ -52,9 +52,6 @@ RUN apt-get install -y -qq \
 # If you want to download these traineddata via `wget`, don't forget to locate
 # downloaded traineddata under ${TESSDATA_PREFIX}/tessdata.
 
-RUN go get -t github.com/otiai10/gosseract/v2
-RUN cd ${GOPATH}/src/github.com/otiai10/gosseract && go test
-
 COPY --from=builder /go/src/app/superdentist-backend /usr/bin/
 EXPOSE 8090
 
