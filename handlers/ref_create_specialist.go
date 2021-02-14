@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"bytes"
 	"context"
 	"encoding/base64"
 	"errors"
@@ -11,6 +12,9 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	ocr "github.com/otiai10/gosseract/v2"
+	"gopkg.in/ugjka/go-tz.v2/tz"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -122,10 +126,9 @@ func QRReferral(c *gin.Context) {
 	}
 	referralDetails.Status.GDStatus = "referred"
 	referralDetails.Status.SPStatus = "referred"
-	referral := processReferral(ctx, c, referralDetails, gproject)
+	referral, updatedComm := processReferral(ctx, c, referralDetails, gproject)
 	var refComments contracts.ReferralComments
-	var qrComment contracts.Comment
-	refComments.Comments = append(refComments.Comments, qrComment)
+	refComments.Comments = append(refComments.Comments, updatedComm.Comments...)
 	_, err = ProcessComments(ctx, gproject, referral.ReferralID, refComments)
 	if err != nil {
 		c.AbortWithStatusJSON(
@@ -142,7 +145,7 @@ func QRReferral(c *gin.Context) {
 	})
 }
 
-func processReferral(ctx context.Context, c *gin.Context, referralDetails contracts.ReferralDetails, gproject string) *contracts.DSReferral {
+func processReferral(ctx context.Context, c *gin.Context, referralDetails contracts.ReferralDetails, gproject string) (*contracts.DSReferral, *contracts.ReferralComments) {
 	storageC := storage.NewStorageHandler()
 	err := storageC.InitializeStorageClient(ctx, gproject)
 	if err != nil {
@@ -153,7 +156,7 @@ func processReferral(ctx context.Context, c *gin.Context, referralDetails contra
 				constants.RESPONSDE_JSON_ERROR: err.Error(),
 			},
 		)
-		return nil
+		return nil, nil
 	}
 	clinicDB := datastoredb.NewClinicMetaHandler()
 	err = clinicDB.InitializeDataBase(ctx, gproject)
@@ -165,7 +168,7 @@ func processReferral(ctx context.Context, c *gin.Context, referralDetails contra
 				constants.RESPONSDE_JSON_ERROR: err.Error(),
 			},
 		)
-		return nil
+		return nil, nil
 	}
 	sgClient := sendgrid.NewSendGridClient()
 	err = sgClient.InitializeSendGridClient()
@@ -177,7 +180,7 @@ func processReferral(ctx context.Context, c *gin.Context, referralDetails contra
 				constants.RESPONSDE_JSON_ERROR: err.Error(),
 			},
 		)
-		return nil
+		return nil, nil
 	}
 	dsRefC := datastoredb.NewReferralHandler()
 	err = dsRefC.InitializeDataBase(ctx, gproject)
@@ -189,13 +192,16 @@ func processReferral(ctx context.Context, c *gin.Context, referralDetails contra
 				constants.RESPONSDE_JSON_ERROR: err.Error(),
 			},
 		)
-		return nil
+		return nil, nil
 	}
 	currentRefUUID, _ := uuid.NewUUID()
 	uniqueRefID := currentRefUUID.String()
 	docIDNames := make([]string, 0)
 	// Stage 2 Upload files from
 	// parse request
+	client := ocr.NewClient()
+	defer client.Close()
+	foundImage := false
 	const _24K = (1 << 10) * 100
 	if err = c.Request.ParseMultipartForm(_24K); err == nil {
 		for _, fheaders := range c.Request.MultipartForm.File {
@@ -211,7 +217,7 @@ func processReferral(ctx context.Context, c *gin.Context, referralDetails contra
 								constants.RESPONSDE_JSON_ERROR: fmt.Errorf("Bad files sent to backend"),
 							},
 						)
-						return nil
+						return nil, nil
 					}
 				}
 				fileName := hdr.Filename
@@ -225,8 +231,21 @@ func processReferral(ctx context.Context, c *gin.Context, referralDetails contra
 							constants.RESPONSDE_JSON_ERROR: err.Error(),
 						},
 					)
-					return nil
+					return nil, nil
 				}
+				imageBuffer := bytes.NewBuffer(nil)
+				if _, err := io.Copy(imageBuffer, infile); err != nil {
+					c.AbortWithStatusJSON(
+						http.StatusInternalServerError,
+						gin.H{
+							constants.RESPONSE_JSON_DATA:   nil,
+							constants.RESPONSDE_JSON_ERROR: err.Error(),
+						},
+					)
+					return nil, nil
+				}
+				client.SetImageFromBytes(imageBuffer.Bytes())
+				foundImage = true
 				io.Copy(buckerW, infile)
 				buckerW.Close()
 				docIDNames = append(docIDNames, hdr.Filename)
@@ -241,10 +260,17 @@ func processReferral(ctx context.Context, c *gin.Context, referralDetails contra
 					constants.RESPONSDE_JSON_ERROR: err.Error(),
 				},
 			)
-			return nil
+			return nil, nil
 		}
 	}
+	ocrText := ""
+	if foundImage {
+		ocrText, _ = client.Text()
+	}
 	var dsReferral contracts.DSReferral
+	if ocrText != "" {
+		dsReferral.Reasons = []string{ocrText}
+	}
 	if referralDetails.Patient.Phone != "" {
 		currentPhone := referralDetails.Patient.Phone
 		pnum, _ := phonenumbers.Parse(currentPhone, "US")
@@ -286,7 +312,7 @@ func processReferral(ctx context.Context, c *gin.Context, referralDetails contra
 					constants.RESPONSDE_JSON_ERROR: err.Error(),
 				},
 			)
-			return nil
+			return nil, nil
 		}
 		dsReferral.FromPlaceID = fromClinic.PlaceID
 		dsReferral.FromClinicName = fromClinic.Name
@@ -295,6 +321,7 @@ func processReferral(ctx context.Context, c *gin.Context, referralDetails contra
 		dsReferral.FromClinicPhone = fromClinic.PhoneNumber
 	} else {
 		fromClinic, err := clinicDB.GetSingleClinicViaPlace(ctx, referralDetails.FromPlaceID)
+
 		if err == nil && fromClinic.PhysicalClinicsRegistration.Name != "" {
 			dsReferral.FromPlaceID = fromClinic.PlaceID
 			dsReferral.FromClinicName = fromClinic.Name
@@ -302,6 +329,20 @@ func processReferral(ctx context.Context, c *gin.Context, referralDetails contra
 			dsReferral.FromClinicAddress = fromClinic.Address
 			dsReferral.FromEmail = fromClinic.EmailAddress
 			dsReferral.FromClinicPhone = fromClinic.PhoneNumber
+			zone, _ := tz.GetZone(tz.Point{
+				Lon: fromClinic.Location.Long, Lat: fromClinic.Location.Lat,
+			})
+			if ocrText != "" {
+				var commentReasons contracts.Comment
+				currentID, _ := uuid.NewUUID()
+				commentReasons.MessageID = currentID.String()
+				commentReasons.Channel = "c2c"
+				commentReasons.Text = ocrText
+				location, _ := time.LoadLocation(zone[0])
+				commentReasons.TimeStamp = time.Now().In(location).UTC().UnixNano() / int64(time.Millisecond)
+				commentReasons.UserID = fromClinic.EmailAddress
+				updatedComm = append(updatedComm, commentReasons)
+			}
 		} else {
 			mapClient := gmaps.NewMapsHandler()
 			err = mapClient.InitializeGoogleMapsAPIClient(ctx, gproject)
@@ -333,7 +374,7 @@ func processReferral(ctx context.Context, c *gin.Context, referralDetails contra
 					constants.RESPONSDE_JSON_ERROR: err.Error(),
 				},
 			)
-			return nil
+			return nil, nil
 		}
 		dsReferral.ToPlaceID = toClinic.PlaceID
 		dsReferral.ToClinicName = toClinic.Name
@@ -392,14 +433,15 @@ func processReferral(ctx context.Context, c *gin.Context, referralDetails contra
 				constants.RESPONSDE_JSON_ERROR: err.Error(),
 			},
 		)
-		return nil
+		return nil, nil
 	}
-
+	var returnComments contracts.ReferralComments
+	returnComments.Comments = updatedComm
 	c.JSON(http.StatusOK, gin.H{
 		constants.RESPONSE_JSON_DATA:   dsReferral,
 		constants.RESPONSDE_JSON_ERROR: nil,
 	})
-	return &dsReferral
+	return &dsReferral, &returnComments
 }
 
 func decrypt(ciphertext64 string) (string, error) {
