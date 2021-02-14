@@ -97,3 +97,13 @@ func (c *Client) WriteAdderessJSON(mapClient *gmaps.ClientGMaps) {
 		}
 	}
 }
+
+// ReadChatPayload ...
+func(c *Client) ReadChatPayload(){
+
+}
+
+// WritePingsToChat ...
+func(c *Client) WritePingsToChat(){
+
+}
