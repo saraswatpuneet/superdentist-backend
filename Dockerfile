@@ -13,7 +13,7 @@ COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o superdentist-backend .
 
 FROM golang:latest
-LABEL maintainer="Hiromu Ochiai <otiai10@gmail.com>"
+LABEL maintainer="Puneet Saraswat <puneet.saraswat10074@gmail.com>"
 
 RUN apt-get update -qq
 
