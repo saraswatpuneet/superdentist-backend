@@ -22,7 +22,6 @@ ENV GO_MODULES_TOKEN=$GO_MODULES_TOKEN
 WORKDIR /go/src/app
 RUN git config --global url."https://${GO_MODULES_TOKEN}:x-oauth-basic@github.com/superdentist/sdclients".insteadOf "https://github.com/superdentist/sdclients"
 RUN go get -t github.com/otiai10/gosseract/v2
-RUN cd ${GOPATH}/src/github.com/otiai10/gosseract && go test
 COPY go.mod .
 COPY go.sum .
 # Get dependencies - will also be cached if we won't change mod/sum
