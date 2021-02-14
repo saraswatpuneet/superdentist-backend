@@ -12,20 +12,21 @@ RUN go mod download
 COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o superdentist-backend .
 
-FROM alpine:latest
+FROM golang:latest
 
-RUN apk update && \
-    apk -y add gcc mono-mcs && \
+ENV DEBIAN_FRONTEND noninteractive
+RUN apt-get update && \
+    apt-get -y install gcc mono-mcs && \
     rm -rf /var/lib/apt/lists/*
 RUN apk add --no-cache bash && \
     apk add --update tzdata && \
     apk add --no-cache ca-certificates && \
     addgroup -S appgroup && adduser -u 1000 -S appuser -G appgroup
-RUN apk add tesseract-ocr
-RUN apk add libtesseract-dev
-RUN apk add -y -qq libtesseract-dev libleptonica-dev
+RUN apt install tesseract-ocr
+RUN apt install libtesseract-dev
+RUN apt-get install -y -qq libtesseract-dev libleptonica-dev
 ENV TESSDATA_PREFIX=/usr/share/tesseract-ocr/4.00/tessdata/
-RUN apk add -y -qq \
+RUN apt-get install -y -qq \
   tesseract-ocr-eng \
   tesseract-ocr-deu \
   tesseract-ocr-jpn
