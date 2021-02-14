@@ -13,7 +13,7 @@ import (
 	"strings"
 	"time"
 
-	ocr "github.com/otiai10/gosseract/v2"
+	"github.com/otiai10/gosseract/v2"
 	"gopkg.in/ugjka/go-tz.v2/tz"
 
 	"github.com/gin-gonic/gin"
@@ -199,7 +199,7 @@ func processReferral(ctx context.Context, c *gin.Context, referralDetails contra
 	docIDNames := make([]string, 0)
 	// Stage 2 Upload files from
 	// parse request
-	client := ocr.NewClient()
+	client := gosseract.NewClient()
 	defer client.Close()
 	foundImage := false
 	const _24K = (1 << 10) * 100
