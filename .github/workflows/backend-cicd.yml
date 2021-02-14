@@ -75,7 +75,7 @@ jobs:
         fi
     - name: Build Docker Image
       run: |-
-        docker build \
+        docker build --no-cache \
           --tag "gcr.io/$PROJECT_ID/$IMAGE:$GITHUB_SHA" \
           --tag "gcr.io/$PROJECT_ID/$IMAGE:latest" \
           --build-arg GITHUB_SHA="$GITHUB_SHA" \
