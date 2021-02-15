@@ -17,6 +17,7 @@ import (
 	"github.com/superdentist/superdentist-backend/lib/helpers"
 	"google.golang.org/api/option"
 )
+
 // SPECIALITYMAP ....
 var SPECIALITYMAP = map[string]string{
 	"ortho":  "Orthodontist",
@@ -107,7 +108,7 @@ func (db DSClinicMeta) AddPhysicalAddessressToClinic(ctx context.Context, clinic
 					location.Long = currentLocation.Geometry.Location.Lng
 					placeID = currentLocation.PlaceID
 					gPlace, _ := mapsClient.FindPlaceFromID(placeID)
-					if gPlace!= nil {
+					if gPlace != nil {
 						phone = gPlace.FormattedPhoneNumber
 					}
 					break
@@ -280,6 +281,15 @@ func (db DSClinicMeta) UpdatePhysicalAddessressToClinic(ctx context.Context, cli
 		addressKey.Namespace = global.Options.DSName
 	}
 	_, err := db.client.Put(ctx, addressKey, &clinicUpdated)
+	if err != nil {
+		return fmt.Errorf("update clinic failed: %v", err)
+	}
+	return nil
+}
+
+// UpdatePhysicalAddessressToClinicKey ....
+func (db DSClinicMeta) UpdatePhysicalAddessressToClinicKey(ctx context.Context, key *datastore.Key, clinicUpdated contracts.PhysicalClinicMapLocation) error {
+	_, err := db.client.Put(ctx, key, &clinicUpdated)
 	if err != nil {
 		return fmt.Errorf("update clinic failed: %v", err)
 	}
@@ -665,6 +675,24 @@ func (db *DSClinicMeta) GetSingleClinicViaPlaceKey(ctx context.Context, placeID 
 	qP := datastore.NewQuery("ClinicAddress")
 	if placeID != "" {
 		qP = qP.Filter("PlaceID =", placeID)
+	}
+	if global.Options.DSName != "" {
+		qP = qP.Namespace(global.Options.DSName)
+	}
+	keysClinics, err := db.client.GetAll(ctx, qP, &returnedAddresses)
+	if err != nil || len(keysClinics) <= 0 {
+		return nil, nil, fmt.Errorf("clinic with given address id not found: %v", err)
+	}
+	return &returnedAddresses[0], keysClinics[0], nil
+}
+
+// GetSingleClinicViaIDKey ....
+func (db *DSClinicMeta) GetSingleClinicViaIDKey(ctx context.Context, placeID string) (*contracts.PhysicalClinicMapLocation, *datastore.Key, error) {
+
+	returnedAddresses := make([]contracts.PhysicalClinicMapLocation, 0)
+	qP := datastore.NewQuery("ClinicAddress")
+	if placeID != "" {
+		qP = qP.Filter("AddressID =", placeID)
 	}
 	if global.Options.DSName != "" {
 		qP = qP.Namespace(global.Options.DSName)

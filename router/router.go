@@ -84,7 +84,8 @@ func SDRouter() (*gin.Engine, error) {
 	adminGroup := version1.Group("/admin")
 	{
 		// All data entry related APIs: Basic Stuff C & U
-		adminGroup.POST("/createAccount", handlers.AdminRegistrationHandler)
+		adminGroup.POST("/addFavorites/:addressId", handlers.AddFavoriteClinics)
+
 	}
 	{
 		// All wesocket related routing goes here follow the pattern

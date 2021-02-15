@@ -438,6 +438,109 @@ func AddFavoriteClinics(c *gin.Context) {
 	})
 }
 
+// AddFavoriteClinicsAdmin ...
+func AddFavoriteClinicsAdmin(c *gin.Context) {
+	log.Infof("Add Favorite Clinics Admin")
+	ctx := c.Request.Context()
+	var favoriteAdd contracts.AddFavoriteClinics
+	ctx, span := trace.StartSpan(ctx, "Get all clinics in close proximity to current clinic")
+	defer span.End()
+	if err := c.ShouldBindWith(&favoriteAdd, binding.JSON); err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: fmt.Errorf("Bad data sent to backened"),
+			},
+		)
+		return
+	}
+	addressID := c.Param("addressId")
+	if addressID == "" {
+		c.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: fmt.Errorf("Missing clinic address id"),
+			},
+		)
+		return
+	}
+	userEmail, _, gproject, err := getUserDetails(ctx, c.Request)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	if !strings.Contains(userEmail, "@superdentist.io") {
+		c.AbortWithStatusJSON(
+			http.StatusUnauthorized,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: fmt.Errorf("unauthorized access to admin"),
+			},
+		)
+		return
+	}
+	clinicMetaDB := datastoredb.NewClinicMetaHandler()
+	err = clinicMetaDB.InitializeDataBase(ctx, gproject)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	currentClinic, key, err := clinicMetaDB.GetSingleClinicViaIDKey(ctx, addressID)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	currentClinic.Favorites = append(currentClinic.Favorites, favoriteAdd.PlaceIDs...)
+	err = clinicMetaDB.UpdatePhysicalAddessressToClinicKey(ctx, key, *currentClinic)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	err = clinicMetaDB.UpdateNetworkForFavoritedClinic(ctx, *currentClinic)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	go createQRsAndSave(gproject, *currentClinic, *clinicMetaDB)
+	go addFavoriteToNewClinics(gproject, *currentClinic, *clinicMetaDB)
+	c.JSON(http.StatusOK, gin.H{
+		constants.RESPONSE_JSON_DATA:   "Added favorite places to current clinic",
+		constants.RESPONSDE_JSON_ERROR: nil,
+	})
+}
+
 // GetAllQRZip ...
 func GetAllQRZip(c *gin.Context) {
 	log.Infof("Add Favorite Clinics")

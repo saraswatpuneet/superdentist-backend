@@ -28,6 +28,17 @@ type AddFavoriteClinics struct {
 	PlaceIDs []string `json:"placeIds" valid:"required"`
 }
 
+// FavClinicsAdmin ....
+type FavClinicsAdmin struct {
+	Name    string `json:"name" valid:"required"`
+	Address string `json:"address" valid:"required"`
+}
+
+// AddFavoriteClinicsAdmin ...
+type AddFavoriteClinicsAdmin struct {
+	Places []FavClinicsAdmin `json:"places" valid:"required"`
+}
+
 // ClinicVerificationData ...
 type ClinicVerificationData struct {
 	IsVerified bool `json:"isVerified" valid:"required"`

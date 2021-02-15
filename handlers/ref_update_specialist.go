@@ -1001,10 +1001,6 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 		toEmail = strings.Trim(toEmail, ">")
 	}
 
-	if toEmail != global.Options.ReplyTo {
-		log.Errorf("Email sent to bad actor" + " " + fromEmail + " " + subject)
-		return
-	}
 	bodyCleaned := make(map[string]string, 0)
 	for key, text := range parsedEmail.Body {
 		if strings.Contains(key, "html") {
