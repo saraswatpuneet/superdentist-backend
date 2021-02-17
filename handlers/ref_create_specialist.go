@@ -268,6 +268,7 @@ func processReferral(ctx context.Context, c *gin.Context, referralDetails contra
 	if foundImage {
 		ocrText, _ = client.Text()
 	}
+	ocrText = "Please refer to attached documents for more details."
 	var dsReferral contracts.DSReferral
 	if ocrText != "" {
 		startIndex := strings.Index(ocrText, "Reason")
