@@ -36,14 +36,16 @@ type ClinicJoinDetails struct {
 // PhysicalClinicMapLocation ....
 type PhysicalClinicMapLocation struct {
 	PhysicalClinicsRegistration
-	Location     ClinicLocation
-	IsVerified   bool
-	Geohash      string `json:"-"`
-	Precision    int    `json:"-"`
-	PlaceID      string
-	AutoEmail    string
-	TwilioNumber string
-	CustomText   string
+	Location       ClinicLocation
+	IsVerified     bool
+	Geohash        string `json:"-"`
+	Precision      int    `json:"-"`
+	PlaceID        string
+	AutoEmail      string   `json:"-"`
+	TwilioNumber   string   `json:"-"`
+	CustomText     string   `json:"-"`
+	VerifiedEmails []string `json:"-"`
+	Domain         []string `json:"-"`
 }
 
 // QRStoreSchema ....
