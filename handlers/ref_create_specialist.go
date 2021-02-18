@@ -61,7 +61,11 @@ func CreateRefSpecialist(c *gin.Context) {
 		)
 		return
 	}
-	processReferral(ctx, c, referralDetails, gproject)
+	dsReferral, _ := processReferral(ctx, c, referralDetails, gproject)
+	c.JSON(http.StatusOK, gin.H{
+		constants.RESPONSE_JSON_DATA:   dsReferral,
+		constants.RESPONSDE_JSON_ERROR: nil,
+	})
 }
 
 // QRReferral ...
@@ -140,7 +144,7 @@ func QRReferral(c *gin.Context) {
 		)
 	}
 	c.JSON(http.StatusOK, gin.H{
-		constants.RESPONSE_JSON_DATA:   nil,
+		constants.RESPONSE_JSON_DATA:   "referral created successfully.",
 		constants.RESPONSDE_JSON_ERROR: nil,
 	})
 }
@@ -275,7 +279,7 @@ func processReferral(ctx context.Context, c *gin.Context, referralDetails contra
 		endIndex := strings.Index(ocrText, "Faster")
 
 		if startIndex >= 0 && endIndex-1 > 0 {
-			ocrText = ocrText[startIndex:endIndex-1]
+			ocrText = ocrText[startIndex : endIndex-1]
 		} else if startIndex >= 0 {
 			ocrText = ocrText[startIndex:]
 		}
@@ -456,10 +460,6 @@ func processReferral(ctx context.Context, c *gin.Context, referralDetails contra
 	}
 	var returnComments contracts.ReferralComments
 	returnComments.Comments = updatedComm
-	c.JSON(http.StatusOK, gin.H{
-		constants.RESPONSE_JSON_DATA:   dsReferral,
-		constants.RESPONSDE_JSON_ERROR: nil,
-	})
 	return &dsReferral, &returnComments
 }
 
