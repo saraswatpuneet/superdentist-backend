@@ -37,7 +37,7 @@ RUN apt-get update -qq
 # When you miss these or LD_LIBRARY_PATH is not set to them,
 # you would face an error: "tesseract/baseapi.h: No such file or directory"
 RUN apt-get install -y -qq libtesseract-dev libleptonica-dev
-RUN apt-get install poppler-utils wv unrtf tidy
+RUN apt-get install -y -qq poppler-utils wv unrtf tidy
 
 # In case you face TESSDATA_PREFIX error, you minght need to set env vars
 # to specify the directory where "tessdata" is located.
