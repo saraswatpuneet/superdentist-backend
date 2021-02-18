@@ -7,7 +7,10 @@ require (
 	cloud.google.com/go/datastore v1.4.0
 	cloud.google.com/go/firestore v1.4.0 // indirect
 	cloud.google.com/go/storage v1.12.0
+	code.sajari.com/docconv v1.1.0 // indirect
 	firebase.google.com/go v3.13.0+incompatible
+	github.com/JalfResi/justext v0.0.0-20170829062021-c0282dea7198 // indirect
+	github.com/advancedlogic/GoOse v0.0.0-20200830213114-1225d531e0ad // indirect
 	github.com/boombuler/barcode v1.0.1 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-contrib/cors v1.3.1
@@ -25,6 +28,7 @@ require (
 	github.com/kevinburke/twilio-go v0.0.0-20210106192831-51cae4e2b9d8
 	github.com/kr/text v0.2.0 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
+	github.com/levigross/exp-html v0.0.0-20120902181939-8df60c69a8f5 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.1 // indirect
 	github.com/nyaruka/phonenumbers v1.0.61

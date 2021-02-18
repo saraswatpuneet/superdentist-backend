@@ -14,9 +14,9 @@ import (
 
 	"github.com/google/uuid"
 	strip "github.com/grokify/html-strip-tags-go"
-	"github.com/otiai10/gosseract/v2"
 	"gopkg.in/ugjka/go-tz.v2/tz"
 
+	"code.sajari.com/docconv"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	log "github.com/sirupsen/logrus"
@@ -1107,8 +1107,6 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 	docIDNames := make([]string, 0)
 	// Stage 2 Upload files from
 	// parse request
-	client := gosseract.NewClient()
-	defer client.Close()
 	storageC := storage.NewStorageHandler()
 	err = storageC.InitializeStorageClient(ctx, gproject)
 	if err != nil {
@@ -1122,6 +1120,7 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 		return
 	}
 	foundOne := false
+	ocrText := ""
 	for fileName, fileBytes := range parsedEmail.Attachments {
 		bucketPath := dsReferral.ReferralID + "/" + fileName
 		buckerW, err := storageC.UploadToGCS(ctx, bucketPath)
@@ -1136,7 +1135,8 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 			return
 		}
 		if !foundOne {
-			client.SetImageFromBytes(fileBytes)
+			ocrText, _, err = docconv.ConvertPDF(bytes.NewBuffer(fileBytes))
+
 		}
 		_, err = io.Copy(buckerW, bytes.NewReader(fileBytes))
 		if err != nil {
@@ -1144,10 +1144,6 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 		}
 		buckerW.Close()
 		docIDNames = append(docIDNames, fileName)
-	}
-	ocrText := ""
-	if foundOne {
-		ocrText, _ = client.Text()
 	}
 	log.Errorf(ocrText)
 	splitOCR := strings.Split(ocrText, " ")
@@ -1200,7 +1196,7 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 		id, _ := uuid.NewUUID()
 		comm.MessageID = id.String()
 		comm.Channel = contracts.SPCBox
-		comm.UserID = dsReferral.ToEmail		
+		comm.UserID = dsReferral.ToEmail
 		comm.Text = text
 		comm.TimeStamp = time.Now().In(location).UTC().UnixNano() / int64(time.Millisecond)
 		currentComments = append(currentComments, comm)

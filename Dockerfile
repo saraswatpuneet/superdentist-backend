@@ -37,11 +37,12 @@ RUN apt-get update -qq
 # When you miss these or LD_LIBRARY_PATH is not set to them,
 # you would face an error: "tesseract/baseapi.h: No such file or directory"
 RUN apt-get install -y -qq libtesseract-dev libleptonica-dev
+RUN apt-get install poppler-utils wv unrtf tidy
 
 # In case you face TESSDATA_PREFIX error, you minght need to set env vars
 # to specify the directory where "tessdata" is located.
 ENV TESSDATA_PREFIX=/usr/share/tesseract-ocr/4.00/tessdata/
-
+RUN go get github.com/JalfResi/justext
 # Load languages.
 # These {lang}.traineddata would b located under ${TESSDATA_PREFIX}/tessdata.
 RUN apt-get install -y -qq \
