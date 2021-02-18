@@ -1028,13 +1028,12 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 		fromEmail = strings.Trim(fromSub[0], "<")
 		fromEmail = strings.Trim(fromEmail, ">")
 	}
-	log.Errorf(fromEmail)
+
 	toSub := re.FindAllString(toEmail, -1)
 	if len(toSub) > 0 {
 		toEmail = strings.Trim(toSub[0], "<")
 		toEmail = strings.Trim(toEmail, ">")
 	}
-	log.Errorf(toEmail)
 
 	bodyCleaned := make(map[string]string, 0)
 	for key, text := range parsedEmail.Body {
@@ -1065,7 +1064,7 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 	var dsReferral contracts.DSReferral
 	dsReferral.IsSummary = true
 	currentClinicInbound, err := clinicDB.GetAllClinicsByEmail(ctx, fromEmail)
-	if err != nil && len(currentClinicInbound) > 0 {
+	if err == nil && len(currentClinicInbound) > 0 {
 		oneClinicFrom := currentClinicInbound[0]
 		dsReferral.ToAddressID = oneClinicFrom.AddressID
 		dsReferral.ToPlaceID = oneClinicFrom.PlaceID
@@ -1150,6 +1149,7 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 	if foundOne {
 		ocrText, _ = client.Text()
 	}
+	log.Errorf(ocrText)
 	splitOCR := strings.Split(ocrText, " ")
 	patientIndex := -1
 	for index, word := range splitOCR {

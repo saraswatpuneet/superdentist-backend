@@ -98,9 +98,9 @@ type DSReferral struct {
 	ToEmail            string    `json:"toEmail" valid:"required"`
 	IsDirty            bool      `json:"isDirty" valid:"required"`
 	CommunicationPhone string    `json:"-"`
-	CommunicationText  string    `json:"-"`
+	CommunicationText  string    `datastore:"CommunicationText,noindex"`
 	IsSummary          bool      `json:"isSummary" valid:"required"`
-	SummaryText        string 	 `json:"summaryText" valid:"required"`
+	SummaryText        string 	 `datastore:"SummaryText,noindex"`
 	IsNew bool `json:"-"`
 }
 
