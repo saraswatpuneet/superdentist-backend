@@ -14,6 +14,7 @@ import (
 
 	"github.com/google/uuid"
 	strip "github.com/grokify/html-strip-tags-go"
+	"github.com/otiai10/gosseract/v2"
 	"gopkg.in/ugjka/go-tz.v2/tz"
 
 	"github.com/gin-gonic/gin"
@@ -242,20 +243,20 @@ func UpdateReferralStatus(c *gin.Context) {
 		)
 		return
 	}
+	clinicDB := datastoredb.NewClinicMetaHandler()
+	err = clinicDB.InitializeDataBase(ctx, gproject)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	toClinic, err := clinicDB.GetSingleClinicViaPlace(ctx, dsReferral.ToPlaceID)
 	if dsReferral.ToAddressID == "" {
-		clinicDB := datastoredb.NewClinicMetaHandler()
-		err = clinicDB.InitializeDataBase(ctx, gproject)
-		if err != nil {
-			c.AbortWithStatusJSON(
-				http.StatusInternalServerError,
-				gin.H{
-					constants.RESPONSE_JSON_DATA:   nil,
-					constants.RESPONSDE_JSON_ERROR: err.Error(),
-				},
-			)
-			return
-		}
-		toClinic, err := clinicDB.GetSingleClinicViaPlace(ctx, dsReferral.ToPlaceID)
 		if err == nil && toClinic.AddressID != "" {
 			dsReferral.ToPlaceID = toClinic.PlaceID
 			dsReferral.ToClinicName = toClinic.Name
@@ -266,7 +267,18 @@ func UpdateReferralStatus(c *gin.Context) {
 		}
 	}
 	dsReferral.Status = referralDetails.Status
-	dsReferral.ModifiedOn = time.Now()
+
+	if err == nil {
+		zone, _ := tz.GetZone(tz.Point{
+			Lon: toClinic.Location.Long, Lat: toClinic.Location.Lat,
+		})
+
+		location, _ := time.LoadLocation(zone[0])
+		dsReferral.ModifiedOn = time.Now().In(location)
+
+	} else {
+		dsReferral.ModifiedOn = time.Now()
+	}
 	err = dsRefC.CreateReferral(ctx, *dsReferral)
 	if err != nil {
 		c.AbortWithStatusJSON(
@@ -421,6 +433,19 @@ func UploadDocuments(c *gin.Context) {
 		)
 		return
 	}
+	clinicDB := datastoredb.NewClinicMetaHandler()
+	err = clinicDB.InitializeDataBase(ctx, gproject)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	toClinic, err := clinicDB.GetSingleClinicViaPlace(ctx, dsReferral.ToPlaceID)
 	if dsReferral.ToAddressID == "" {
 		clinicDB := datastoredb.NewClinicMetaHandler()
 		err = clinicDB.InitializeDataBase(ctx, gproject)
@@ -434,7 +459,6 @@ func UploadDocuments(c *gin.Context) {
 			)
 			return
 		}
-		toClinic, err := clinicDB.GetSingleClinicViaPlace(ctx, dsReferral.ToPlaceID)
 		if err == nil && toClinic.AddressID != "" {
 			dsReferral.ToPlaceID = toClinic.PlaceID
 			dsReferral.ToClinicName = toClinic.Name
@@ -443,6 +467,17 @@ func UploadDocuments(c *gin.Context) {
 			dsReferral.ToEmail = toClinic.EmailAddress
 			dsReferral.ToClinicPhone = toClinic.PhoneNumber
 		}
+	}
+	if err == nil {
+		zone, _ := tz.GetZone(tz.Point{
+			Lon: toClinic.Location.Long, Lat: toClinic.Location.Lat,
+		})
+
+		location, _ := time.LoadLocation(zone[0])
+		dsReferral.ModifiedOn = time.Now().In(location)
+
+	} else {
+		dsReferral.ModifiedOn = time.Now()
 	}
 	storageC := storage.NewStorageHandler()
 	err = storageC.InitializeStorageClient(ctx, gproject)
@@ -517,7 +552,6 @@ func UploadDocuments(c *gin.Context) {
 		}
 	}
 	dsReferral.Documents = append(dsReferral.Documents, docIDNames...)
-	dsReferral.ModifiedOn = time.Now()
 	err = dsRefC.CreateReferral(ctx, *dsReferral)
 	if err != nil {
 		c.AbortWithStatusJSON(
@@ -920,6 +954,8 @@ func ReceiveReferralMail(c *gin.Context) {
 	zone, err := tz.GetZone(tz.Point{
 		Lon: latLong.Long, Lat: latLong.Lat,
 	})
+	location, _ := time.LoadLocation(zone[0])
+
 	if len(docIDNames) > 0 {
 		var uploadComment contracts.Comment
 		uploadComment.Channel = contracts.SPCBox
@@ -931,8 +967,7 @@ func ReceiveReferralMail(c *gin.Context) {
 		id, _ := uuid.NewUUID()
 		uploadComment.MessageID = id.String()
 		uploadComment.Text = "New documents are uploaded by " + dsReferral.PatientFirstName + " " + dsReferral.PatientLastName
-		location, _ := time.LoadLocation(zone[0])
-		uploadComment.TimeStamp = time.Now().In(location).UTC().Unix()
+		uploadComment.TimeStamp = time.Now().In(location).UTC().UnixNano() / int64(time.Millisecond)
 		currentComments = append(currentComments, uploadComment)
 		err = storageC.ZipFile(ctx, dsReferral.ReferralID, constants.SD_REFERRAL_BUCKET)
 		if err != nil {
@@ -952,7 +987,6 @@ func ReceiveReferralMail(c *gin.Context) {
 			comm.UserID = dsReferral.PatientPhone
 		}
 		comm.Text = text
-		location, _ := time.LoadLocation(zone[0])
 		comm.TimeStamp = time.Now().In(location).UTC().UnixNano() / int64(time.Millisecond)
 		currentComments = append(currentComments, comm)
 	}
@@ -960,7 +994,7 @@ func ReceiveReferralMail(c *gin.Context) {
 	if err != nil {
 		log.Errorf("Error processing email"+" "+fromEmail+" "+subject+" error:%v ", err.Error())
 	}
-	dsReferral.ModifiedOn = time.Now()
+	dsReferral.ModifiedOn = time.Now().In(location)
 
 	err = dsRefC.CreateReferral(ctx, *dsReferral)
 	if err != nil {
@@ -1006,10 +1040,8 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 		if strings.Contains(key, "html") {
 			text = strings.ReplaceAll(text, ">", "> ")
 			text = strip.StripTags(text)
-			text = strings.ReplaceAll(text, "***Enter your message related to appointment,available date, questions etc.***", "")
-			text = strings.ReplaceAll(text, "\n", "")
+			text = strings.ReplaceAll(text, "\n", " ")
 			text = strings.TrimSpace(text)
-			text = strings.Split(text, "SuperDentist Admin")[0]
 			bodyCleaned[key] = text
 		}
 	}
@@ -1019,27 +1051,64 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 	dsRefC := datastoredb.NewReferralHandler()
 	err := dsRefC.InitializeDataBase(ctx, gproject)
 	if err != nil {
-		c.AbortWithStatusJSON(
-			http.StatusInternalServerError,
-			gin.H{
-				constants.RESPONSE_JSON_DATA:   nil,
-				constants.RESPONSDE_JSON_ERROR: err.Error(),
-			},
-		)
+		log.Errorf("No clinics found for incoming email: %v", err.Error())
 		return
 	}
-	dsReferral, err := dsRefC.GetReferral(ctx, subject)
+	clinicDB := datastoredb.NewClinicMetaHandler()
+	err = clinicDB.InitializeDataBase(ctx, gproject)
 	if err != nil {
-		dsReferral, err = dsRefC.GetReferralFromEmail(ctx, fromEmail)
-		if err != nil {
-			log.Errorf("Error processing email"+" "+fromEmail+" "+subject+" error:%v ", err.Error())
+		log.Errorf("No clinics found for incoming email: %v", err.Error())
+		return
+	}
+	domainName := strings.Split(fromEmail, "@")[1]
+	var dsReferral contracts.DSReferral
+	dsReferral.IsSummary = true
+	currentClinicInbound, err := clinicDB.GetAllClinicsByEmail(ctx, fromEmail)
+	if err != nil && len(currentClinicInbound) > 0 {
+		oneClinicFrom := currentClinicInbound[0]
+		dsReferral.ToAddressID = oneClinicFrom.AddressID
+		dsReferral.ToPlaceID = oneClinicFrom.PlaceID
+		dsReferral.ToClinicAddress = oneClinicFrom.Address
+		dsReferral.ToClinicName = oneClinicFrom.Name
+		dsReferral.ToClinicPhone = oneClinicFrom.PhoneNumber
+		dsReferral.ToEmail = oneClinicFrom.EmailAddress
+	} else {
+		currentClinicInbound, err = clinicDB.GetAllClinicsByDomain(ctx, domainName)
+		if err != nil && len(currentClinicInbound) > 0 {
+			oneClinicFrom := currentClinicInbound[0]
+			dsReferral.ToAddressID = oneClinicFrom.AddressID
+			dsReferral.ToPlaceID = oneClinicFrom.PlaceID
+			dsReferral.ToClinicAddress = oneClinicFrom.Address
+			dsReferral.ToClinicName = oneClinicFrom.Name
+			dsReferral.ToClinicPhone = oneClinicFrom.PhoneNumber
+			dsReferral.ToEmail = oneClinicFrom.EmailAddress
+		} else {
+			log.Errorf("No clinics found for incoming email: %v", err.Error())
+			return
 		}
 	}
+	currentClinicOutBoud, err := clinicDB.GetAllClinicsByAutoEmail(ctx, toEmail)
+	if err != nil {
+		log.Errorf("No clinics found for incoming email: %v", err.Error())
+		return
+	}
+	toClinic := currentClinicOutBoud[0]
+	dsReferral.FromAddressID = toClinic.AddressID
+	dsReferral.FromEmail = toClinic.EmailAddress
+	dsReferral.FromPlaceID = toClinic.PlaceID
+	dsReferral.FromClinicAddress = toClinic.Address
+	dsReferral.FromClinicName = toClinic.Name
+	dsReferral.FromClinicPhone = toClinic.PhoneNumber
+	currentRefUUID, _ := uuid.NewUUID()
+	uniqueRefID := currentRefUUID.String()
+	dsReferral.ReferralID = uniqueRefID
 	currentBody := parsedEmail.Body
 	currentComments := make([]contracts.Comment, 0)
 	docIDNames := make([]string, 0)
 	// Stage 2 Upload files from
 	// parse request
+	client := gosseract.NewClient()
+	defer client.Close()
 	storageC := storage.NewStorageHandler()
 	err = storageC.InitializeStorageClient(ctx, gproject)
 	if err != nil {
@@ -1052,6 +1121,7 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 		)
 		return
 	}
+	foundOne := false
 	for fileName, fileBytes := range parsedEmail.Attachments {
 		bucketPath := dsReferral.ReferralID + "/" + fileName
 		buckerW, err := storageC.UploadToGCS(ctx, bucketPath)
@@ -1065,6 +1135,9 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 			)
 			return
 		}
+		if !foundOne {
+			client.SetImageFromBytes(fileBytes)
+		}
 		_, err = io.Copy(buckerW, bytes.NewReader(fileBytes))
 		if err != nil {
 			log.Errorf("Error processing email"+" "+fromEmail+" "+subject+" error:%v ", err.Error())
@@ -1072,42 +1145,35 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 		buckerW.Close()
 		docIDNames = append(docIDNames, fileName)
 	}
-	clinicMetaDB := datastoredb.NewClinicMetaHandler()
-	err = clinicMetaDB.InitializeDataBase(ctx, gproject)
-	if err != nil {
-		c.AbortWithStatusJSON(
-			http.StatusInternalServerError,
-			gin.H{
-				constants.RESPONSE_JSON_DATA:   nil,
-				constants.RESPONSDE_JSON_ERROR: err.Error(),
-			},
-		)
-		return
+	ocrText := ""
+	if foundOne {
+		ocrText, _ = client.Text()
 	}
-	currentDS := dsReferral.ToPlaceID
-	latLong := contracts.ClinicLocation{}
-	getClinic, err := clinicMetaDB.GetSingleClinicViaPlace(ctx, currentDS)
-	if err == nil && getClinic.PhysicalClinicsRegistration.Name != "" {
-		latLong = getClinic.Location
-	} else {
-		mapClient := gmaps.NewMapsHandler()
-		err = mapClient.InitializeGoogleMapsAPIClient(ctx, gproject)
-		if err != nil {
-			c.AbortWithStatusJSON(
-				http.StatusInternalServerError,
-				gin.H{
-					constants.RESPONSE_JSON_DATA:   nil,
-					constants.RESPONSDE_JSON_ERROR: err.Error(),
-				},
-			)
+	splitOCR := strings.Split(ocrText, " ")
+	patientIndex := -1
+	for index, word := range splitOCR {
+		if word == "patient" || word == "Patient" {
+			patientIndex = index
+			break
 		}
-		details, _ := mapClient.FindPlaceFromID(currentDS)
-		latLong.Lat = details.Geometry.Location.Lat
-		latLong.Long = details.Geometry.Location.Lng
 	}
+	if patientIndex < 0 {
+		patientIndex = strings.Index(ocrText, "Patient")
+	}
+	if patientIndex > 0 {
+		dsReferral.PatientFirstName = splitOCR[patientIndex+1]
+	}
+	dsReferral.IsDirty = false
+	dsReferral.IsNew = false
+	dsReferral.SummaryText = ocrText
+	dsReferral.Status.GDStatus = "completed"
+	dsReferral.Status.SPStatus = "completed"
 	zone, err := tz.GetZone(tz.Point{
-		Lon: latLong.Long, Lat: latLong.Lat,
+		Lon: toClinic.Location.Long, Lat: toClinic.Location.Lat,
 	})
+	location, _ := time.LoadLocation(zone[0])
+	dsReferral.CreatedOn = time.Now().In(location)
+	dsReferral.ModifiedOn = time.Now().In(location)
 	if len(docIDNames) > 0 {
 		var uploadComment contracts.Comment
 		uploadComment.Channel = contracts.SPCBox
@@ -1119,8 +1185,7 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 		id, _ := uuid.NewUUID()
 		uploadComment.MessageID = id.String()
 		uploadComment.Text = "New documents are uploaded by " + dsReferral.PatientFirstName + " " + dsReferral.PatientLastName
-		location, _ := time.LoadLocation(zone[0])
-		uploadComment.TimeStamp = time.Now().In(location).UTC().Unix()
+		uploadComment.TimeStamp = time.Now().In(location).UTC().UnixNano() / int64(time.Millisecond)
 		currentComments = append(currentComments, uploadComment)
 		err = storageC.ZipFile(ctx, dsReferral.ReferralID, constants.SD_REFERRAL_BUCKET)
 		if err != nil {
@@ -1134,23 +1199,18 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 		id, _ := uuid.NewUUID()
 		comm.MessageID = id.String()
 		comm.Channel = contracts.SPCBox
-		if dsReferral.PatientEmail != "" {
-			comm.UserID = dsReferral.PatientEmail
-		} else {
-			comm.UserID = dsReferral.PatientPhone
-		}
+		comm.UserID = dsReferral.ToEmail		
 		comm.Text = text
-		location, _ := time.LoadLocation(zone[0])
 		comm.TimeStamp = time.Now().In(location).UTC().UnixNano() / int64(time.Millisecond)
 		currentComments = append(currentComments, comm)
 	}
-	err = dsRefC.CreateMessage(ctx, *dsReferral, currentComments)
+	err = dsRefC.CreateMessage(ctx, dsReferral, currentComments)
 	if err != nil {
 		log.Errorf("Error processing email"+" "+fromEmail+" "+subject+" error:%v ", err.Error())
 	}
 	dsReferral.ModifiedOn = time.Now()
 
-	err = dsRefC.CreateReferral(ctx, *dsReferral)
+	err = dsRefC.CreateReferral(ctx, dsReferral)
 	if err != nil {
 		log.Errorf("Error processing email"+" "+fromEmail+" "+subject+" error:%v ", err.Error())
 	}
@@ -1159,8 +1219,8 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 	if err != nil {
 		log.Errorf("Error processing sms error:%v ", err.Error())
 	}
-	if dsReferral.ToEmail != "" {
-		sgClient.SendClinicNotification(dsReferral.ToEmail, dsReferral.ToClinicName,
+	if dsReferral.FromEmail != "" {
+		sgClient.SendClinicNotification(dsReferral.FromEmail, dsReferral.ToClinicName,
 			dsReferral.PatientFirstName+" "+dsReferral.PatientLastName, dsReferral.ReferralID)
 
 	} else {
@@ -1278,6 +1338,7 @@ func TextRecievedPatient(c *gin.Context) {
 	zone, err := tz.GetZone(tz.Point{
 		Lon: latLong.Long, Lat: latLong.Lat,
 	})
+	location, _ := time.LoadLocation(zone[0])
 	for _, dsReferral := range dsReferrals {
 		if dsReferral.CommunicationPhone != "" && dsReferral.CommunicationPhone != receivingCustomPhone {
 			continue
@@ -1287,7 +1348,6 @@ func TextRecievedPatient(c *gin.Context) {
 			commText.UserID = dsReferral.PatientEmail
 			commText.Channel = contracts.SPCBox
 			commText.Text = incomingText
-			location, _ := time.LoadLocation(zone[0])
 			commText.TimeStamp = time.Now().In(location).UTC().UnixNano() / int64(time.Millisecond)
 			id, _ := uuid.NewUUID()
 			commText.MessageID = id.String()
@@ -1342,7 +1402,7 @@ func TextRecievedPatient(c *gin.Context) {
 				log.Errorf("Error processing zipping text error:%v ", err.Error())
 			}
 		}
-		dsReferral.ModifiedOn = time.Now()
+		dsReferral.ModifiedOn = time.Now().In(location)
 		dsReferral.Documents = append(dsReferral.Documents, docIDNames...)
 		err = dsRefC.CreateReferral(ctx, dsReferral)
 		if err != nil {
@@ -1387,13 +1447,13 @@ func ProcessComments(ctx context.Context, gproject string, referralID string, re
 	if err != nil {
 		return nil, err
 	}
+	clinicDB := datastoredb.NewClinicMetaHandler()
+	err = clinicDB.InitializeDataBase(ctx, gproject)
+	if err != nil {
+		return nil, err
+	}
+	toClinic, err := clinicDB.GetSingleClinicViaPlace(ctx, dsReferral.ToPlaceID)
 	if dsReferral.ToAddressID == "" || dsReferral.ToClinicPhone == "" {
-		clinicDB := datastoredb.NewClinicMetaHandler()
-		err = clinicDB.InitializeDataBase(ctx, gproject)
-		if err != nil {
-			return nil, err
-		}
-		toClinic, err := clinicDB.GetSingleClinicViaPlace(ctx, dsReferral.ToPlaceID)
 		if err == nil && toClinic.AddressID != "" {
 			dsReferral.ToPlaceID = toClinic.PlaceID
 			dsReferral.ToClinicName = toClinic.Name
@@ -1403,7 +1463,17 @@ func ProcessComments(ctx context.Context, gproject string, referralID string, re
 			dsReferral.ToAddressID = toClinic.AddressID
 		}
 	}
+	if err == nil {
+		zone, _ := tz.GetZone(tz.Point{
+			Lon: toClinic.Location.Long, Lat: toClinic.Location.Lat,
+		})
 
+		location, _ := time.LoadLocation(zone[0])
+		dsReferral.ModifiedOn = time.Now().In(location)
+
+	} else {
+		dsReferral.ModifiedOn = time.Now()
+	}
 	updatedComm := make([]contracts.Comment, 0)
 	for _, comm := range referralDetails.Comments {
 		currentID, _ := uuid.NewUUID()
@@ -1479,7 +1549,7 @@ func ProcessComments(ctx context.Context, gproject string, referralID string, re
 	}
 	wasNew := dsReferral.IsNew
 	dsReferral.IsNew = false
-	dsReferral.ModifiedOn = time.Now()
+
 	err = dsRefC.CreateReferral(ctx, *dsReferral)
 	if err != nil {
 		return nil, err

@@ -61,7 +61,7 @@ func CreateRefSpecialist(c *gin.Context) {
 		)
 		return
 	}
-	dsReferral, _ := processReferral(ctx, c, referralDetails, gproject)
+	dsReferral, _ := processReferral(ctx, c, referralDetails, gproject, false)
 	c.JSON(http.StatusOK, gin.H{
 		constants.RESPONSE_JSON_DATA:   dsReferral,
 		constants.RESPONSDE_JSON_ERROR: nil,
@@ -130,7 +130,7 @@ func QRReferral(c *gin.Context) {
 	}
 	referralDetails.Status.GDStatus = "referred"
 	referralDetails.Status.SPStatus = "referred"
-	referral, updatedComm := processReferral(ctx, c, referralDetails, gproject)
+	referral, updatedComm := processReferral(ctx, c, referralDetails, gproject, true)
 	var refComments contracts.ReferralComments
 	refComments.Comments = append(refComments.Comments, updatedComm.Comments...)
 	_, err = ProcessComments(ctx, gproject, referral.ReferralID, refComments)
@@ -149,7 +149,7 @@ func QRReferral(c *gin.Context) {
 	})
 }
 
-func processReferral(ctx context.Context, c *gin.Context, referralDetails contracts.ReferralDetails, gproject string) (*contracts.DSReferral, *contracts.ReferralComments) {
+func processReferral(ctx context.Context, c *gin.Context, referralDetails contracts.ReferralDetails, gproject string, isQR bool) (*contracts.DSReferral, *contracts.ReferralComments) {
 	storageC := storage.NewStorageHandler()
 	err := storageC.InitializeStorageClient(ctx, gproject)
 	if err != nil {
@@ -249,7 +249,9 @@ func processReferral(ctx context.Context, c *gin.Context, referralDetails contra
 					return nil, nil
 				}
 				currentBytes := imageBuffer.Bytes()
-				client.SetImageFromBytes(currentBytes)
+				if isQR {
+					client.SetImageFromBytes(currentBytes)
+				}
 				foundImage = true
 				io.Copy(buckerW, bytes.NewReader(currentBytes))
 				buckerW.Close()
@@ -269,7 +271,7 @@ func processReferral(ctx context.Context, c *gin.Context, referralDetails contra
 		}
 	}
 	ocrText := ""
-	if foundImage {
+	if foundImage && isQR {
 		ocrText, _ = client.Text()
 	}
 	ocrText = "Please refer to attached documents for more details."
@@ -294,10 +296,8 @@ func processReferral(ctx context.Context, c *gin.Context, referralDetails contra
 		}
 		dsReferral.PatientPhone = countryCode + strconv.Itoa(int(*pnum.NationalNumber))
 	}
-
+	
 	dsReferral.Documents = docIDNames
-	dsReferral.CreatedOn = time.Now()
-	dsReferral.ModifiedOn = time.Now()
 	dsReferral.ReferralID = uniqueRefID
 	dsReferral.Reasons = referralDetails.Reasons
 	dsReferral.Status = referralDetails.Status
@@ -333,6 +333,12 @@ func processReferral(ctx context.Context, c *gin.Context, referralDetails contra
 		dsReferral.FromClinicAddress = fromClinic.Address
 		dsReferral.FromEmail = fromClinic.EmailAddress
 		dsReferral.FromClinicPhone = fromClinic.PhoneNumber
+		zone, err := tz.GetZone(tz.Point{
+			Lon: fromClinic.Location.Long, Lat: fromClinic.Location.Lat,
+		})
+		location, _ := time.LoadLocation(zone[0])
+		dsReferral.CreatedOn = time.Now().In(location)
+		dsReferral.ModifiedOn = time.Now().In(location)
 	} else {
 		fromClinic, err := clinicDB.GetSingleClinicViaPlace(ctx, referralDetails.FromPlaceID)
 
@@ -346,25 +352,31 @@ func processReferral(ctx context.Context, c *gin.Context, referralDetails contra
 			zone, _ := tz.GetZone(tz.Point{
 				Lon: fromClinic.Location.Long, Lat: fromClinic.Location.Lat,
 			})
-			var commentReasons contracts.Comment
-			currentID, _ := uuid.NewUUID()
-			commentReasons.MessageID = currentID.String()
-			commentReasons.Channel = "c2c"
-			commentReasons.Text = "New QR based referral is created."
 			location, _ := time.LoadLocation(zone[0])
-			commentReasons.TimeStamp = time.Now().In(location).UTC().UnixNano() / int64(time.Millisecond)
-			commentReasons.UserID = fromClinic.EmailAddress
-			updatedComm = append(updatedComm, commentReasons)
-			if ocrText != "" {
+			dsReferral.CreatedOn = time.Now().In(location)
+			dsReferral.ModifiedOn = time.Now().In(location)
+			if isQR {
 				var commentReasons contracts.Comment
 				currentID, _ := uuid.NewUUID()
 				commentReasons.MessageID = currentID.String()
 				commentReasons.Channel = "c2c"
-				commentReasons.Text = ocrText
+				commentReasons.Text = "New QR based referral is created."
 				location, _ := time.LoadLocation(zone[0])
 				commentReasons.TimeStamp = time.Now().In(location).UTC().UnixNano() / int64(time.Millisecond)
 				commentReasons.UserID = fromClinic.EmailAddress
 				updatedComm = append(updatedComm, commentReasons)
+
+				if ocrText != "" {
+					var commentReasons contracts.Comment
+					currentID, _ := uuid.NewUUID()
+					commentReasons.MessageID = currentID.String()
+					commentReasons.Channel = "c2c"
+					commentReasons.Text = ocrText
+					location, _ := time.LoadLocation(zone[0])
+					commentReasons.TimeStamp = time.Now().In(location).UTC().UnixNano() / int64(time.Millisecond)
+					commentReasons.UserID = fromClinic.EmailAddress
+					updatedComm = append(updatedComm, commentReasons)
+				}
 			}
 		} else {
 			mapClient := gmaps.NewMapsHandler()

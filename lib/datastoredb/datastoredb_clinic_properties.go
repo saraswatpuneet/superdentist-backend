@@ -607,6 +607,41 @@ func (db *DSClinicMeta) GetAllClinicsByEmail(ctx context.Context, clinicEmailID 
 	return returnedAddresses, nil
 }
 
+// GetAllClinicsByAutoEmail ....
+func (db *DSClinicMeta) GetAllClinicsByAutoEmail(ctx context.Context, clinicEmailID string) ([]contracts.PhysicalClinicMapLocation, error) {
+	returnedAddresses := make([]contracts.PhysicalClinicMapLocation, 0)
+	qP := datastore.NewQuery("ClinicAddress")
+	if clinicEmailID != "" {
+		qP = qP.Filter("AutoEmail =", clinicEmailID)
+	}
+	if global.Options.DSName != "" {
+		qP = qP.Namespace(global.Options.DSName)
+	}
+	keysClinics, err := db.client.GetAll(ctx, qP, &returnedAddresses)
+	if err != nil || len(keysClinics) <= 0 {
+		return nil, fmt.Errorf("clinic with given address id not found: %v", err)
+	}
+	return returnedAddresses, nil
+}
+
+
+// GetAllClinicsByDomain ....
+func (db *DSClinicMeta) GetAllClinicsByDomain(ctx context.Context, domain string) ([]contracts.PhysicalClinicMapLocation, error) {
+	returnedAddresses := make([]contracts.PhysicalClinicMapLocation, 0)
+	qP := datastore.NewQuery("ClinicAddress")
+	if domain != "" {
+		qP = qP.Filter("Domain =", domain)
+	}
+	if global.Options.DSName != "" {
+		qP = qP.Namespace(global.Options.DSName)
+	}
+	keysClinics, err := db.client.GetAll(ctx, qP, &returnedAddresses)
+	if err != nil || len(keysClinics) <= 0 {
+		return nil, fmt.Errorf("clinic with given address id not found: %v", err)
+	}
+	return returnedAddresses, nil
+}
+
 // GetClinicDoctors ....
 func (db *DSClinicMeta) GetClinicDoctors(ctx context.Context, clinicEmailID string, clinicFBID string, addressID string) ([]contracts.ClinicDoctorRegistration, error) {
 	parentKey := datastore.NameKey("ClinicAdmin", clinicFBID, nil)
