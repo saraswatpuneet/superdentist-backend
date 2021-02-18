@@ -1028,12 +1028,13 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 		fromEmail = strings.Trim(fromSub[0], "<")
 		fromEmail = strings.Trim(fromEmail, ">")
 	}
-
+	log.Errorf(fromEmail)
 	toSub := re.FindAllString(toEmail, -1)
 	if len(toSub) > 0 {
 		toEmail = strings.Trim(toSub[0], "<")
 		toEmail = strings.Trim(toEmail, ">")
 	}
+	log.Errorf(toEmail)
 
 	bodyCleaned := make(map[string]string, 0)
 	for key, text := range parsedEmail.Body {
@@ -1083,13 +1084,13 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 			dsReferral.ToClinicPhone = oneClinicFrom.PhoneNumber
 			dsReferral.ToEmail = oneClinicFrom.EmailAddress
 		} else {
-			log.Errorf("No clinics found for incoming email: %v", err.Error())
+			log.Errorf("No clinics inbound found for incoming email: %v", err.Error())
 			return
 		}
 	}
 	currentClinicOutBoud, err := clinicDB.GetAllClinicsByAutoEmail(ctx, toEmail)
 	if err != nil {
-		log.Errorf("No clinics found for incoming email: %v", err.Error())
+		log.Errorf("No clinics outbound found for incoming email: %v", err.Error())
 		return
 	}
 	toClinic := currentClinicOutBoud[0]
