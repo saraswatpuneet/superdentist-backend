@@ -44,7 +44,6 @@ type PhysicalClinicMapLocation struct {
 	AutoEmail      string   `json:"-"`
 	TwilioNumber   string   `json:"-"`
 	CustomText     string   `json:"-"`
-	VerifiedEmails []string `json:"-"`
 	Domain         []string `json:"-"`
 }
 
