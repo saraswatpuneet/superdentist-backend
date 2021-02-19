@@ -1149,19 +1149,16 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 	if res != nil {
 		ocrText = res.Body
 	}
-	splitOCR := strings.Split(ocrText, " ")
 	patientIndex := -1
-	for index, word := range splitOCR {
-		if word == "patient" || word == "Patient" {
-			patientIndex = index
+	wordFields := strings.Fields(ocrText)
+	for i, word := range wordFields {
+		if strings.ToLower(word) == "patient" {
+			patientIndex = i
 			break
 		}
 	}
-	if patientIndex < 0 {
-		patientIndex = strings.Index(ocrText, "Patient")
-	}
 	if patientIndex > 0 {
-		dsReferral.PatientFirstName = splitOCR[patientIndex+1]
+		dsReferral.PatientFirstName = wordFields[patientIndex+1]
 	}
 	dsReferral.IsDirty = false
 	dsReferral.IsNew = false
