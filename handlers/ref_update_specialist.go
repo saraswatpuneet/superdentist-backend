@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"mime/multipart"
 	"net/http"
 	"regexp"
@@ -1105,6 +1106,7 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 	var res *docconv.Response
 	for _, attch := range parsedEmail.Attachments {
 		bucketPath := dsReferral.ReferralID + "/" + attch.Filename
+		saveFileReader, _ := ioutil.ReadAll(attch.Data)
 		buckerW, err := storageC.UploadToGCS(ctx, bucketPath)
 		if err != nil {
 			c.AbortWithStatusJSON(
@@ -1118,13 +1120,13 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 		}
 		if !foundOne {
 			foundOne = true
-			res, err = docconv.Convert(attch.Data, "application/pdf", true)
+			res, err = docconv.Convert(bytes.NewReader(saveFileReader), "application/pdf", true)
 			if err != nil {
 				log.Errorf("deconv error: %v", err.Error())
 			}
 
 		}
-		_, err = io.Copy(buckerW, attch.Data)
+		_, err = io.Copy(buckerW, bytes.NewReader(saveFileReader))
 		if err != nil {
 			log.Errorf("Error processing email"+" "+fromEmail+" "+subject+" error:%v ", err.Error())
 		}
@@ -1144,6 +1146,11 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 	}
 	if patientIndex >= 0 {
 		dsReferral.PatientFirstName = wordFields[patientIndex+1]
+		dsReferral.PatientLastName = "Treament Summary"
+
+	} else {
+		dsReferral.PatientFirstName = "Treament"
+		dsReferral.PatientLastName = "Summary"
 	}
 	dsReferral.IsDirty = false
 	dsReferral.IsNew = false
