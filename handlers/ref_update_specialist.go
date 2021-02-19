@@ -17,6 +17,7 @@ import (
 	"gopkg.in/ugjka/go-tz.v2/tz"
 
 	"code.sajari.com/docconv"
+	pe "github.com/DusanKasan/parsemail"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	log "github.com/sirupsen/logrus"
@@ -1018,38 +1019,29 @@ func ReceiveReferralMail(c *gin.Context) {
 // ReceiveAutoSummaryMail ...
 func ReceiveAutoSummaryMail(c *gin.Context) {
 	log.Infof("Referral Email Receieved")
-	parsedEmail := Parse(c.Request)
-	fromEmail := parsedEmail.Headers["From"]
-	toEmail := parsedEmail.Headers["To"]
-	subject := parsedEmail.Headers["Subject"]
+	emails := c.Request.MultipartForm.Value["email"][0]
+	parsedEmail, err := pe.Parse(strings.NewReader(emails))
+	fromEmailAdd := parsedEmail.From[0]
+	toEmailAdd := parsedEmail.To[0]
+	subject := parsedEmail.Subject
 	re := regexp.MustCompile(`\<.*?\>`)
-	fromSub := re.FindAllString(fromEmail, -1)
+	fromEmail := ""
+	toEmail := ""
+	fromSub := re.FindAllString(fromEmailAdd.Address, -1)
 	if len(fromSub) > 0 {
 		fromEmail = strings.Trim(fromSub[0], "<")
 		fromEmail = strings.Trim(fromEmail, ">")
 	}
 
-	toSub := re.FindAllString(toEmail, -1)
+	toSub := re.FindAllString(toEmailAdd.Address, -1)
 	if len(toSub) > 0 {
 		toEmail = strings.Trim(toSub[0], "<")
 		toEmail = strings.Trim(toEmail, ">")
 	}
-
-	bodyCleaned := make(map[string]string, 0)
-	for key, text := range parsedEmail.Body {
-		if strings.Contains(key, "html") {
-			text = strings.ReplaceAll(text, ">", "> ")
-			text = strip.StripTags(text)
-			text = strings.ReplaceAll(text, "\n", " ")
-			text = strings.TrimSpace(text)
-			bodyCleaned[key] = text
-		}
-	}
-	parsedEmail.Body = bodyCleaned
 	ctx := c.Request.Context()
 	gproject := googleprojectlib.GetGoogleProjectID()
 	dsRefC := datastoredb.NewReferralHandler()
-	err := dsRefC.InitializeDataBase(ctx, gproject)
+	err = dsRefC.InitializeDataBase(ctx, gproject)
 	if err != nil {
 		log.Errorf("No clinics found for incoming email: %v", err.Error())
 		return
@@ -1102,7 +1094,7 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 	currentRefUUID, _ := uuid.NewUUID()
 	uniqueRefID := currentRefUUID.String()
 	dsReferral.ReferralID = uniqueRefID
-	currentBody := parsedEmail.Body
+	currentBody := parsedEmail.TextBody
 	currentComments := make([]contracts.Comment, 0)
 	docIDNames := make([]string, 0)
 	// Stage 2 Upload files from
@@ -1119,11 +1111,11 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 		)
 		return
 	}
-	//foundOne := false
+	foundOne := false
 	ocrText := ""
 	var res *docconv.Response
-	for fileName, fileBytes := range parsedEmail.Attachments {
-		bucketPath := dsReferral.ReferralID + "/" + fileName
+	for _, attch := range parsedEmail.Attachments {
+		bucketPath := dsReferral.ReferralID + "/" + attch.Filename
 		buckerW, err := storageC.UploadToGCS(ctx, bucketPath)
 		if err != nil {
 			c.AbortWithStatusJSON(
@@ -1135,20 +1127,20 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 			)
 			return
 		}
-		// if !foundOne {
-		// 	foundOne = true
-		// 	res, err = docconv.Convert(bytes.NewReader(fileBytes), "application/pdf", true)
-		// 	if err != nil {
-		// 		log.Errorf("deconv error: %v", err.Error())
-		// 	}
+		if !foundOne {
+			foundOne = true
+			res, err = docconv.Convert(attch.Data, "application/pdf", true)
+			if err != nil {
+				log.Errorf("deconv error: %v", err.Error())
+			}
 
-		// }
-		_, err = io.Copy(buckerW, bytes.NewReader(fileBytes))
+		}
+		_, err = io.Copy(buckerW, attch.Data)
 		if err != nil {
 			log.Errorf("Error processing email"+" "+fromEmail+" "+subject+" error:%v ", err.Error())
 		}
 		buckerW.Close()
-		docIDNames = append(docIDNames, fileName)
+		docIDNames = append(docIDNames, attch.Filename)
 	}
 	if res != nil {
 		ocrText = res.Body
@@ -1195,16 +1187,15 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 	}
 
 	dsReferral.Documents = append(dsReferral.Documents, docIDNames...)
-	for _, text := range currentBody {
-		var comm contracts.Comment
-		id, _ := uuid.NewUUID()
-		comm.MessageID = id.String()
-		comm.Channel = contracts.GDCBox
-		comm.UserID = dsReferral.ToEmail
-		comm.Text = text
-		comm.TimeStamp = time.Now().In(location).UTC().UnixNano() / int64(time.Millisecond)
-		currentComments = append(currentComments, comm)
-	}
+	var comm contracts.Comment
+	id, _ := uuid.NewUUID()
+	comm.MessageID = id.String()
+	comm.Channel = contracts.GDCBox
+	comm.UserID = dsReferral.ToEmail
+	comm.Text = currentBody
+	comm.TimeStamp = time.Now().In(location).UTC().UnixNano() / int64(time.Millisecond)
+	currentComments = append(currentComments, comm)
+
 	err = dsRefC.CreateMessage(ctx, dsReferral, currentComments)
 	if err != nil {
 		log.Errorf("Error processing email"+" "+fromEmail+" "+subject+" error:%v ", err.Error())

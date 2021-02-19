@@ -7,8 +7,9 @@ require (
 	cloud.google.com/go/datastore v1.4.0
 	cloud.google.com/go/firestore v1.4.0 // indirect
 	cloud.google.com/go/storage v1.12.0
-	code.sajari.com/docconv v1.1.0 // indirect
+	code.sajari.com/docconv v1.1.0
 	firebase.google.com/go v3.13.0+incompatible
+	github.com/DusanKasan/parsemail v1.2.0
 	github.com/JalfResi/justext v0.0.0-20170829062021-c0282dea7198 // indirect
 	github.com/advancedlogic/GoOse v0.0.0-20200830213114-1225d531e0ad // indirect
 	github.com/boombuler/barcode v1.0.1 // indirect
