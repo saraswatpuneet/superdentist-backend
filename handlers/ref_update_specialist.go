@@ -1020,6 +1020,7 @@ func ReceiveReferralMail(c *gin.Context) {
 func ReceiveAutoSummaryMail(c *gin.Context) {
 	log.Infof("Referral Email Receieved")
 	emails := c.Request.MultipartForm.Value["email"][0]
+	log.Errorf(emails)
 	parsedEmail, err := pe.Parse(strings.NewReader(emails))
 	fromEmailAdd := parsedEmail.From[0]
 	toEmailAdd := parsedEmail.To[0]
