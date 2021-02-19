@@ -8,13 +8,11 @@ import (
 	"io/ioutil"
 	"mime/multipart"
 	"net/http"
-	"regexp"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/google/uuid"
-	strip "github.com/grokify/html-strip-tags-go"
 	"gopkg.in/ugjka/go-tz.v2/tz"
 
 	"code.sajari.com/docconv"
@@ -828,44 +826,17 @@ func GetOneReferral(c *gin.Context) {
 // ReceiveReferralMail ...
 func ReceiveReferralMail(c *gin.Context) {
 	log.Infof("Referral Email Receieved")
-	parsedEmail := Parse(c.Request)
-	fromEmail := parsedEmail.Headers["From"]
-	toEmail := parsedEmail.Headers["To"]
-	subject := parsedEmail.Headers["Subject"]
-	re := regexp.MustCompile(`\<.*?\>`)
-	fromSub := re.FindAllString(fromEmail, -1)
-	if len(fromSub) > 0 {
-		fromEmail = strings.Trim(fromSub[0], "<")
-		fromEmail = strings.Trim(fromEmail, ">")
-	}
-
-	toSub := re.FindAllString(toEmail, -1)
-	if len(toSub) > 0 {
-		toEmail = strings.Trim(toSub[0], "<")
-		toEmail = strings.Trim(toEmail, ">")
-	}
-
-	if toEmail != global.Options.ReplyTo {
-		log.Errorf("Email sent to bad actor" + " " + fromEmail + " " + subject)
-		return
-	}
-	bodyCleaned := make(map[string]string, 0)
-	for key, text := range parsedEmail.Body {
-		if strings.Contains(key, "html") {
-			text = strings.ReplaceAll(text, ">", "> ")
-			text = strip.StripTags(text)
-			text = strings.ReplaceAll(text, "***Enter your message related to appointment,available date, questions etc.***", "")
-			text = strings.ReplaceAll(text, "\n", "")
-			text = strings.TrimSpace(text)
-			text = strings.Split(text, "SuperDentist Admin")[0]
-			bodyCleaned[key] = text
-		}
-	}
-	parsedEmail.Body = bodyCleaned
+	const _24K = (1 << 10) * 100
+	err := c.Request.ParseMultipartForm(_24K)
+	emails := c.Request.MultipartForm.Value["email"][0]
+	log.Errorf(emails)
+	parsedEmail, err := pe.Parse(strings.NewReader(emails))
+	fromEmail := parsedEmail.From[0].Address
+	subject := parsedEmail.Subject
 	ctx := c.Request.Context()
 	gproject := googleprojectlib.GetGoogleProjectID()
 	dsRefC := datastoredb.NewReferralHandler()
-	err := dsRefC.InitializeDataBase(ctx, gproject)
+	err = dsRefC.InitializeDataBase(ctx, gproject)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
@@ -883,7 +854,7 @@ func ReceiveReferralMail(c *gin.Context) {
 			log.Errorf("Error processing email"+" "+fromEmail+" "+subject+" error:%v ", err.Error())
 		}
 	}
-	currentBody := parsedEmail.Body
+	currentBody := parsedEmail.TextBody
 	currentComments := make([]contracts.Comment, 0)
 	docIDNames := make([]string, 0)
 	// Stage 2 Upload files from
@@ -900,8 +871,8 @@ func ReceiveReferralMail(c *gin.Context) {
 		)
 		return
 	}
-	for fileName, fileBytes := range parsedEmail.Attachments {
-		bucketPath := dsReferral.ReferralID + "/" + fileName
+	for _, attach := range parsedEmail.Attachments {
+		bucketPath := dsReferral.ReferralID + "/" + attach.Filename
 		buckerW, err := storageC.UploadToGCS(ctx, bucketPath)
 		if err != nil {
 			c.AbortWithStatusJSON(
@@ -913,12 +884,12 @@ func ReceiveReferralMail(c *gin.Context) {
 			)
 			return
 		}
-		_, err = io.Copy(buckerW, bytes.NewReader(fileBytes))
+		_, err = io.Copy(buckerW, attach.Data)
 		if err != nil {
 			log.Errorf("Error processing email"+" "+fromEmail+" "+subject+" error:%v ", err.Error())
 		}
 		buckerW.Close()
-		docIDNames = append(docIDNames, fileName)
+		docIDNames = append(docIDNames, attach.Filename)
 	}
 	clinicMetaDB := datastoredb.NewClinicMetaHandler()
 	err = clinicMetaDB.InitializeDataBase(ctx, gproject)
@@ -978,20 +949,20 @@ func ReceiveReferralMail(c *gin.Context) {
 	}
 
 	dsReferral.Documents = append(dsReferral.Documents, docIDNames...)
-	for _, text := range currentBody {
-		var comm contracts.Comment
-		id, _ := uuid.NewUUID()
-		comm.MessageID = id.String()
-		comm.Channel = contracts.SPCBox
-		if dsReferral.PatientEmail != "" {
-			comm.UserID = dsReferral.PatientEmail
-		} else {
-			comm.UserID = dsReferral.PatientPhone
-		}
-		comm.Text = text
-		comm.TimeStamp = time.Now().In(location).UTC().UnixNano() / int64(time.Millisecond)
-		currentComments = append(currentComments, comm)
+
+	var comm contracts.Comment
+	id, _ := uuid.NewUUID()
+	comm.MessageID = id.String()
+	comm.Channel = contracts.SPCBox
+	if dsReferral.PatientEmail != "" {
+		comm.UserID = dsReferral.PatientEmail
+	} else {
+		comm.UserID = dsReferral.PatientPhone
 	}
+	comm.Text = currentBody
+	comm.TimeStamp = time.Now().In(location).UTC().UnixNano() / int64(time.Millisecond)
+	currentComments = append(currentComments, comm)
+
 	err = dsRefC.CreateMessage(ctx, *dsReferral, currentComments)
 	if err != nil {
 		log.Errorf("Error processing email"+" "+fromEmail+" "+subject+" error:%v ", err.Error())
