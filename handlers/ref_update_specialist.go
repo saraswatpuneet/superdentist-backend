@@ -1145,7 +1145,7 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 				}
 				foundOne = true
 			}
-			res, err = docconv.ConvertPath("temp.pdf")
+			res, err = docconv.Convert(bytes.NewBuffer(fileBytes),"application/pdf", true)
 			if err!=nil {
 				log.Errorf("deconv error: %v", err.Error())
 			}
