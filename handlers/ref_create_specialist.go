@@ -122,6 +122,7 @@ func QRReferral(c *gin.Context) {
 	var referralDetails contracts.ReferralDetails
 	referralDetails.FromPlaceID = fromClinic
 	referralDetails.ToPlaceID = toClinic
+	referralDetails.IsSummary = false
 	referralDetails.Patient = contracts.Patient{
 		FirstName: patientFName,
 		LastName:  patientLName,
@@ -287,6 +288,7 @@ func processReferral(ctx context.Context, c *gin.Context, referralDetails contra
 		}
 		dsReferral.Reasons = []string{ocrText}
 	}
+	dsReferral.IsSummary = referralDetails.IsSummary
 	if referralDetails.Patient.Phone != "" {
 		currentPhone := referralDetails.Patient.Phone
 		pnum, _ := phonenumbers.Parse(currentPhone, "US")
@@ -296,7 +298,7 @@ func processReferral(ctx context.Context, c *gin.Context, referralDetails contra
 		}
 		dsReferral.PatientPhone = countryCode + strconv.Itoa(int(*pnum.NationalNumber))
 	}
-	
+
 	dsReferral.Documents = docIDNames
 	dsReferral.ReferralID = uniqueRefID
 	dsReferral.Reasons = referralDetails.Reasons

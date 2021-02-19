@@ -58,6 +58,7 @@ type ReferralDetails struct {
 	Reasons       []string  `json:"reasons"`
 	History       []string  `json:"history"`
 	Tooth         []string  `json:"tooth"`
+	IsSummary     bool      `json:"isSummary"`
 }
 
 // ReferralComments .....
@@ -100,8 +101,8 @@ type DSReferral struct {
 	CommunicationPhone string    `json:"-"`
 	CommunicationText  string    `datastore:"CommunicationText,noindex"`
 	IsSummary          bool      `json:"isSummary" valid:"required"`
-	SummaryText        string 	 `datastore:"SummaryText,noindex"`
-	IsNew bool `json:"-"`
+	SummaryText        string    `datastore:"SummaryText,noindex"`
+	IsNew              bool      `json:"-"`
 }
 
 // SMS is returned after a text/sms message is posted to Twilio
