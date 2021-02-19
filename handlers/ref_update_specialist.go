@@ -1195,7 +1195,7 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 		var comm contracts.Comment
 		id, _ := uuid.NewUUID()
 		comm.MessageID = id.String()
-		comm.Channel = contracts.SPCBox
+		comm.Channel = contracts.GDCBox
 		comm.UserID = dsReferral.ToEmail
 		comm.Text = text
 		comm.TimeStamp = time.Now().In(location).UTC().UnixNano() / int64(time.Millisecond)
