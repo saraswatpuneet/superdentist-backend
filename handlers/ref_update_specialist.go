@@ -1143,6 +1143,7 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 				if err != nil {
 					// handle error
 				}
+				foundOne = true
 			}
 			res, err = docconv.ConvertPath("temp.pdf")
 
