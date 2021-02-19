@@ -1019,6 +1019,8 @@ func ReceiveReferralMail(c *gin.Context) {
 // ReceiveAutoSummaryMail ...
 func ReceiveAutoSummaryMail(c *gin.Context) {
 	log.Infof("Referral Email Receieved")
+	const _24K = (1 << 10) * 100
+	err := c.Request.ParseMultipartForm(_24K)
 	emails := c.Request.MultipartForm.Value["email"][0]
 	log.Errorf(emails)
 	parsedEmail, err := pe.Parse(strings.NewReader(emails))
