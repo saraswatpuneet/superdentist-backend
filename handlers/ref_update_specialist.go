@@ -1119,7 +1119,7 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 		)
 		return
 	}
-	foundOne := false
+	//foundOne := false
 	ocrText := ""
 	var res *docconv.Response
 	for fileName, fileBytes := range parsedEmail.Attachments {
@@ -1135,14 +1135,14 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 			)
 			return
 		}
-		if !foundOne {
-			foundOne = true
-			res, err = docconv.Convert(bytes.NewReader(fileBytes), "application/pdf", true)
-			if err != nil {
-				log.Errorf("deconv error: %v", err.Error())
-			}
+		// if !foundOne {
+		// 	foundOne = true
+		// 	res, err = docconv.Convert(bytes.NewReader(fileBytes), "application/pdf", true)
+		// 	if err != nil {
+		// 		log.Errorf("deconv error: %v", err.Error())
+		// 	}
 
-		}
+		// }
 		_, err = io.Copy(buckerW, bytes.NewReader(fileBytes))
 		if err != nil {
 			log.Errorf("Error processing email"+" "+fromEmail+" "+subject+" error:%v ", err.Error())
