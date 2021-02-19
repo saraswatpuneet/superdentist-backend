@@ -1145,8 +1145,8 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 				}
 				foundOne = true
 			}
-			res, err = docconv.Convert(bytes.NewBuffer(fileBytes),"application/pdf", true)
-			if err!=nil {
+			res, err = docconv.Convert(bytes.NewBuffer(fileBytes), "application/pdf", true)
+			if err != nil {
 				log.Errorf("deconv error: %v", err.Error())
 			}
 
@@ -1193,7 +1193,7 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 		}
 		id, _ := uuid.NewUUID()
 		uploadComment.MessageID = id.String()
-		uploadComment.Text = "New documents are uploaded by " + dsReferral.PatientFirstName + " " + dsReferral.PatientLastName
+		uploadComment.Text = "New documents are uploaded by " + dsReferral.ToClinicName
 		uploadComment.TimeStamp = time.Now().In(location).UTC().UnixNano() / int64(time.Millisecond)
 		currentComments = append(currentComments, uploadComment)
 		err = storageC.ZipFile(ctx, dsReferral.ReferralID, constants.SD_REFERRAL_BUCKET)
