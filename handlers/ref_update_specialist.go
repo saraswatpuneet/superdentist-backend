@@ -1024,30 +1024,9 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 	emails := c.Request.MultipartForm.Value["email"][0]
 	log.Errorf(emails)
 	parsedEmail, err := pe.Parse(strings.NewReader(emails))
-	fromEmailAdd := parsedEmail.From[0]
-	toEmailAdd := parsedEmail.To[0]
+	fromEmail := parsedEmail.From[0].Address
+	toEmail := parsedEmail.To[0].Address
 	subject := parsedEmail.Subject
-	re := regexp.MustCompile(`\<.*?\>`)
-	log.Errorf(fromEmailAdd.Address)
-	log.Errorf(toEmailAdd.Address)
-	log.Errorf(strconv.Itoa(len(parsedEmail.Attachments)))
-	log.Errorf(subject)
-	log.Errorf(parsedEmail.TextBody)
-
-	return
-	fromEmail := ""
-	toEmail := ""
-	fromSub := re.FindAllString(fromEmailAdd.Address, -1)
-	if len(fromSub) > 0 {
-		fromEmail = strings.Trim(fromSub[0], "<")
-		fromEmail = strings.Trim(fromEmail, ">")
-	}
-
-	toSub := re.FindAllString(toEmailAdd.Address, -1)
-	if len(toSub) > 0 {
-		toEmail = strings.Trim(toSub[0], "<")
-		toEmail = strings.Trim(toEmail, ">")
-	}
 	ctx := c.Request.Context()
 	gproject := googleprojectlib.GetGoogleProjectID()
 	dsRefC := datastoredb.NewReferralHandler()
