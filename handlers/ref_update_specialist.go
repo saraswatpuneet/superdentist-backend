@@ -5,8 +5,10 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"mime/multipart"
 	"net/http"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -1136,6 +1138,12 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 			return
 		}
 		if !foundOne {
+			if strings.Split(fileName, ".")[1] == "pdf" {
+				err := ioutil.WriteFile("temp.pdf", fileBytes, os.ModeTemporary)
+				if err != nil {
+					// handle error
+				}
+			}
 			res, err = docconv.ConvertPath("temp.pdf")
 
 		}
@@ -1157,7 +1165,7 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 			break
 		}
 	}
-	if patientIndex > 0 {
+	if patientIndex >= 0 {
 		dsReferral.PatientFirstName = wordFields[patientIndex+1]
 	}
 	dsReferral.IsDirty = false
