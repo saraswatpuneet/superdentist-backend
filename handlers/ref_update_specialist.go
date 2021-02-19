@@ -1028,6 +1028,13 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 	toEmailAdd := parsedEmail.To[0]
 	subject := parsedEmail.Subject
 	re := regexp.MustCompile(`\<.*?\>`)
+	log.Errorf(fromEmailAdd.Address)
+	log.Errorf(toEmailAdd.Address)
+	log.Errorf(strconv.Itoa(len(parsedEmail.Attachments)))
+	log.Errorf(subject)
+	log.Errorf(parsedEmail.TextBody)
+
+	return
 	fromEmail := ""
 	toEmail := ""
 	fromSub := re.FindAllString(fromEmailAdd.Address, -1)
