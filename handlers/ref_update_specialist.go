@@ -1121,6 +1121,7 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 	}
 	foundOne := false
 	ocrText := ""
+	var res *docconv.Response
 	for fileName, fileBytes := range parsedEmail.Attachments {
 		bucketPath := dsReferral.ReferralID + "/" + fileName
 		buckerW, err := storageC.UploadToGCS(ctx, bucketPath)
@@ -1135,7 +1136,7 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 			return
 		}
 		if !foundOne {
-			ocrText, _, err = docconv.ConvertPDF(bytes.NewBuffer(fileBytes))
+			res, err = docconv.ConvertPath("temp.pdf")
 
 		}
 		_, err = io.Copy(buckerW, bytes.NewReader(fileBytes))
@@ -1145,7 +1146,9 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 		buckerW.Close()
 		docIDNames = append(docIDNames, fileName)
 	}
-	log.Errorf(ocrText)
+	if res != nil {
+		ocrText = res.Body
+	}
 	splitOCR := strings.Split(ocrText, " ")
 	patientIndex := -1
 	for index, word := range splitOCR {
@@ -1173,7 +1176,7 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 	dsReferral.ModifiedOn = time.Now().In(location)
 	if len(docIDNames) > 0 {
 		var uploadComment contracts.Comment
-		uploadComment.Channel = contracts.SPCBox
+		uploadComment.Channel = contracts.GDCBox
 		if dsReferral.PatientEmail != "" {
 			uploadComment.UserID = dsReferral.PatientEmail
 		} else {
