@@ -1141,11 +1141,14 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 			if strings.Split(fileName, ".")[1] == "pdf" {
 				err := ioutil.WriteFile("temp.pdf", fileBytes, os.ModeTemporary)
 				if err != nil {
-					// handle error
+					log.Errorf("pdf error error: %v", err.Error())
 				}
 				foundOne = true
 			}
 			res, err = docconv.ConvertPath("temp.pdf")
+			if err!=nil {
+				log.Errorf("deconv error: %v", err.Error())
+			}
 
 		}
 		_, err = io.Copy(buckerW, bytes.NewReader(fileBytes))
