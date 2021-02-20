@@ -11,6 +11,7 @@ require (
 	firebase.google.com/go v3.13.0+incompatible
 	github.com/DusanKasan/parsemail v1.2.0
 	github.com/JalfResi/justext v0.0.0-20170829062021-c0282dea7198 // indirect
+	github.com/NaySoftware/go-fcm v0.0.0-20190516140123-808e978ddcd2
 	github.com/advancedlogic/GoOse v0.0.0-20200830213114-1225d531e0ad // indirect
 	github.com/boombuler/barcode v1.0.1 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
