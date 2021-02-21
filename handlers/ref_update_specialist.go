@@ -549,7 +549,7 @@ func UploadDocuments(c *gin.Context) {
 					return
 				}
 				buckerW.Close()
-				docIDNames = append(docIDNames, hdr.Filename)
+				docIDNames = append(docIDNames, fileName)
 			}
 		}
 		err = storageC.ZipFile(ctx, referralID, constants.SD_REFERRAL_BUCKET)
@@ -979,7 +979,7 @@ func ReceiveReferralMail(c *gin.Context) {
 			log.Errorf("Error processing email"+" "+fromEmail+" "+subject+" error:%v ", err.Error())
 		}
 		buckerW.Close()
-		docIDNames = append(docIDNames, attach.Filename)
+		docIDNames = append(docIDNames, fileName)
 	}
 	clinicMetaDB := datastoredb.NewClinicMetaHandler()
 	err = clinicMetaDB.InitializeDataBase(ctx, gproject)
@@ -1199,7 +1199,7 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 			log.Errorf("Error processing email"+" "+fromEmail+" "+subject+" error:%v ", err.Error())
 		}
 		buckerW.Close()
-		docIDNames = append(docIDNames, attch.Filename)
+		docIDNames = append(docIDNames, fileName)
 	}
 	if res != nil {
 		ocrText = res.Body

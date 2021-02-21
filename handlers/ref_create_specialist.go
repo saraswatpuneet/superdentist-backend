@@ -221,7 +221,7 @@ func processReferral(c *gin.Context, referralDetails contracts.ReferralDetails, 
 				foundImage = true
 				io.Copy(buckerW, bytes.NewReader(currentBytes))
 				buckerW.Close()
-				docIDNames = append(docIDNames, hdr.Filename)
+				docIDNames = append(docIDNames, fileName)
 			}
 		}
 		err = storageC.ZipFile(ctx, uniqueRefID, constants.SD_REFERRAL_BUCKET)
