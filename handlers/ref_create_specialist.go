@@ -13,7 +13,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/otiai10/gosseract/v2"
+	//"github.com/otiai10/gosseract/v2"
 	"gopkg.in/ugjka/go-tz.v2/tz"
 
 	"github.com/gin-gonic/gin"
@@ -204,8 +204,8 @@ func processReferral(ctx context.Context, c *gin.Context, referralDetails contra
 	docIDNames := make([]string, 0)
 	// Stage 2 Upload files from
 	// parse request
-	client := gosseract.NewClient()
-	defer client.Close()
+	//client := gosseract.NewClient()
+	//defer client.Close()
 	foundImage := false
 	const _24K = (1 << 10) * 100
 	if err = c.Request.ParseMultipartForm(_24K); err == nil {
@@ -251,7 +251,7 @@ func processReferral(ctx context.Context, c *gin.Context, referralDetails contra
 				}
 				currentBytes := imageBuffer.Bytes()
 				if isQR {
-					client.SetImageFromBytes(currentBytes)
+					//client.SetImageFromBytes(currentBytes)
 				}
 				foundImage = true
 				io.Copy(buckerW, bytes.NewReader(currentBytes))
@@ -273,7 +273,7 @@ func processReferral(ctx context.Context, c *gin.Context, referralDetails contra
 	}
 	ocrText := ""
 	if foundImage && isQR {
-		ocrText, _ = client.Text()
+		//ocrText, _ = client.Text()
 	}
 	ocrText = "Please refer to attached documents for more details."
 	var dsReferral contracts.DSReferral
