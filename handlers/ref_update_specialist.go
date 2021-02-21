@@ -520,6 +520,11 @@ func UploadDocuments(c *gin.Context) {
 					return
 				}
 				fileName := hdr.Filename
+				reader, err := storageC.DownloadSingleFile(ctx, referralID, constants.SD_REFERRAL_BUCKET, fileName)
+				if err == nil && reader != nil {
+					timeNow := time.Now()
+					fileName += strconv.Itoa(timeNow.Year()) + timeNow.Month().String() + strconv.Itoa(timeNow.Day()) + strconv.Itoa(timeNow.Second())
+				}
 				bucketPath := referralID + "/" + fileName
 				buckerW, err := storageC.UploadToGCS(ctx, bucketPath)
 				if err != nil {
@@ -636,6 +641,62 @@ func DownloadDocumentsAsZip(c *gin.Context) {
 	c.Header("Content-Type", "application/zip")
 
 	if _, err := io.Copy(c.Writer, zipReader); err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+}
+
+// DownloadSingleFile .....
+func DownloadSingleFile(c *gin.Context) {
+	log.Infof("Download Referral Documents")
+	ctx := c.Request.Context()
+	referralID := c.Param("referralId")
+	fileName := c.Param("fileName")
+	_, _, gproject, err := getUserDetails(ctx, c.Request)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	storageC := storage.NewStorageHandler()
+	err = storageC.InitializeStorageClient(ctx, gproject)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	fileReader, err := storageC.DownloadSingleFile(ctx, referralID, constants.SD_REFERRAL_BUCKET, fileName)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	fileNameDefault := fileName
+	c.Header("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", fileNameDefault))
+	c.Header("Content-Type", "application/zip")
+
+	if _, err := io.Copy(c.Writer, fileReader); err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
 			gin.H{
@@ -895,7 +956,13 @@ func ReceiveReferralMail(c *gin.Context) {
 		return
 	}
 	for _, attach := range parsedEmail.Attachments {
-		bucketPath := dsReferral.ReferralID + "/" + attach.Filename
+		fileName:= attach.Filename
+		reader, err := storageC.DownloadSingleFile(ctx, dsReferral.ReferralID, constants.SD_REFERRAL_BUCKET, fileName)
+		if err == nil && reader != nil {
+			timeNow := time.Now()
+			fileName += strconv.Itoa(timeNow.Year()) + timeNow.Month().String() + strconv.Itoa(timeNow.Day()) + strconv.Itoa(timeNow.Second())
+		}
+		bucketPath := dsReferral.ReferralID + "/" + fileName
 		buckerW, err := storageC.UploadToGCS(ctx, bucketPath)
 		if err != nil {
 			c.AbortWithStatusJSON(
@@ -1100,7 +1167,13 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 	ocrText := ""
 	var res *docconv.Response
 	for _, attch := range parsedEmail.Attachments {
-		bucketPath := dsReferral.ReferralID + "/" + attch.Filename
+		fileName:= attch.Filename
+		reader, err := storageC.DownloadSingleFile(ctx, dsReferral.ReferralID, constants.SD_REFERRAL_BUCKET, fileName)
+		if err == nil && reader != nil {
+			timeNow := time.Now()
+			fileName += strconv.Itoa(timeNow.Year()) + timeNow.Month().String() + strconv.Itoa(timeNow.Day()) + strconv.Itoa(timeNow.Second())
+		}
+		bucketPath := dsReferral.ReferralID + "/" + fileName
 		saveFileReader, _ := ioutil.ReadAll(attch.Data)
 		buckerW, err := storageC.UploadToGCS(ctx, bucketPath)
 		if err != nil {

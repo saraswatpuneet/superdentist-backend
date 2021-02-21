@@ -164,3 +164,17 @@ func (sc *Client) DownloadAsZip(ctx context.Context, folderPath string, bucket s
 	}
 	return storageReader, nil
 }
+
+// DownloadSingleFile ....
+func (sc *Client) DownloadSingleFile(ctx context.Context, folderPath string, bucket string, fileName string) (*storage.Reader, error) {
+	currentBucket, err := sc.CreateBucket(ctx, bucket)
+	if err != nil {
+		return nil, err
+	}
+	zipFileURI := folderPath + "/" + fileName
+	storageReader, err := currentBucket.Object(zipFileURI).NewReader(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return storageReader, nil
+}
