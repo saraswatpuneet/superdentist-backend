@@ -61,7 +61,17 @@ func CreateRefSpecialist(c *gin.Context) {
 		)
 		return
 	}
-	dsReferral, _ := processReferral(ctx, c, referralDetails, gproject, false)
+	dsReferral, _ := processReferral(c, referralDetails, gproject, false)
+	if dsReferral == nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: "Unable to create referral",
+			},
+		)
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{
 		constants.RESPONSE_JSON_DATA:   dsReferral,
 		constants.RESPONSDE_JSON_ERROR: nil,
@@ -131,69 +141,37 @@ func QRReferral(c *gin.Context) {
 	}
 	referralDetails.Status.GDStatus = "referred"
 	referralDetails.Status.SPStatus = "referred"
-	go processReferral(ctx, c, referralDetails, gproject, true)
-	if err != nil {
-		c.AbortWithStatusJSON(
-			http.StatusInternalServerError,
-			gin.H{
-				constants.RESPONSE_JSON_DATA:   nil,
-				constants.RESPONSDE_JSON_ERROR: err.Error(),
-			},
-		)
-	}
+	go processReferral(c, referralDetails, gproject, true)
 	c.JSON(http.StatusOK, gin.H{
 		constants.RESPONSE_JSON_DATA:   "referral created successfully.",
 		constants.RESPONSDE_JSON_ERROR: nil,
 	})
 }
 
-func processReferral(ctx context.Context, c *gin.Context, referralDetails contracts.ReferralDetails, gproject string, isQR bool) (*contracts.DSReferral, *contracts.ReferralComments) {
+func processReferral(c *gin.Context, referralDetails contracts.ReferralDetails, gproject string, isQR bool) (*contracts.DSReferral, *contracts.ReferralComments) {
 	storageC := storage.NewStorageHandler()
+	ctx := context.Background()
 	err := storageC.InitializeStorageClient(ctx, gproject)
 	if err != nil {
-		c.AbortWithStatusJSON(
-			http.StatusInternalServerError,
-			gin.H{
-				constants.RESPONSE_JSON_DATA:   nil,
-				constants.RESPONSDE_JSON_ERROR: err.Error(),
-			},
-		)
+		log.Errorf("Failed to created referral: %v", err.Error())
 		return nil, nil
 	}
 	clinicDB := datastoredb.NewClinicMetaHandler()
 	err = clinicDB.InitializeDataBase(ctx, gproject)
 	if err != nil {
-		c.AbortWithStatusJSON(
-			http.StatusInternalServerError,
-			gin.H{
-				constants.RESPONSE_JSON_DATA:   nil,
-				constants.RESPONSDE_JSON_ERROR: err.Error(),
-			},
-		)
+		log.Errorf("Failed to created referral: %v", err.Error())
 		return nil, nil
 	}
 	sgClient := sendgrid.NewSendGridClient()
 	err = sgClient.InitializeSendGridClient()
 	if err != nil {
-		c.AbortWithStatusJSON(
-			http.StatusInternalServerError,
-			gin.H{
-				constants.RESPONSE_JSON_DATA:   nil,
-				constants.RESPONSDE_JSON_ERROR: err.Error(),
-			},
-		)
+		log.Errorf("Failed to created referral: %v", err.Error())
 		return nil, nil
 	}
 	dsRefC := datastoredb.NewReferralHandler()
 	err = dsRefC.InitializeDataBase(ctx, gproject)
 	if err != nil {
-		c.AbortWithStatusJSON(
-			http.StatusInternalServerError,
-			gin.H{
-				constants.RESPONSE_JSON_DATA:   nil,
-				constants.RESPONSDE_JSON_ERROR: err.Error(),
-			},
-		)
+		log.Errorf("Failed to created referral: %v", err.Error())
 		return nil, nil
 	}
 	currentRefUUID, _ := uuid.NewUUID()
@@ -211,40 +189,24 @@ func processReferral(ctx context.Context, c *gin.Context, referralDetails contra
 				// open uploaded
 				var infile multipart.File
 				if infile, err = hdr.Open(); err != nil {
-					if err := c.ShouldBindWith(&referralDetails, binding.JSON); err != nil {
-						c.AbortWithStatusJSON(
-							http.StatusBadRequest,
-							gin.H{
-								constants.RESPONSE_JSON_DATA:   nil,
-								constants.RESPONSDE_JSON_ERROR: fmt.Errorf("Bad files sent to backend"),
-							},
-						)
-						return nil, nil
-					}
+
+					log.Errorf("Failed to created referral: %v", err.Error())
+					return nil, nil
+
 				}
 				fileName := hdr.Filename
 				bucketPath := uniqueRefID + "/" + fileName
 				buckerW, err := storageC.UploadToGCS(ctx, bucketPath)
 				if err != nil {
-					c.AbortWithStatusJSON(
-						http.StatusInternalServerError,
-						gin.H{
-							constants.RESPONSE_JSON_DATA:   nil,
-							constants.RESPONSDE_JSON_ERROR: err.Error(),
-						},
-					)
+					log.Errorf("Failed to created referral: %v", err.Error())
 					return nil, nil
 				}
 				imageBuffer := bytes.NewBuffer(nil)
 				if _, err := io.Copy(imageBuffer, infile); err != nil {
-					c.AbortWithStatusJSON(
-						http.StatusInternalServerError,
-						gin.H{
-							constants.RESPONSE_JSON_DATA:   nil,
-							constants.RESPONSDE_JSON_ERROR: err.Error(),
-						},
-					)
+
+					log.Errorf("Failed to created referral: %v", err.Error())
 					return nil, nil
+
 				}
 				currentBytes := imageBuffer.Bytes()
 				if isQR {
@@ -258,13 +220,7 @@ func processReferral(ctx context.Context, c *gin.Context, referralDetails contra
 		}
 		err = storageC.ZipFile(ctx, uniqueRefID, constants.SD_REFERRAL_BUCKET)
 		if err != nil {
-			c.AbortWithStatusJSON(
-				http.StatusInternalServerError,
-				gin.H{
-					constants.RESPONSE_JSON_DATA:   nil,
-					constants.RESPONSDE_JSON_ERROR: err.Error(),
-				},
-			)
+			log.Errorf("Failed to created referral: %v", err.Error())
 			return nil, nil
 		}
 	}
@@ -318,13 +274,7 @@ func processReferral(ctx context.Context, c *gin.Context, referralDetails contra
 	if referralDetails.FromAddressID != "" {
 		fromClinic, err := clinicDB.GetSingleClinic(ctx, referralDetails.FromAddressID)
 		if err != nil {
-			c.AbortWithStatusJSON(
-				http.StatusInternalServerError,
-				gin.H{
-					constants.RESPONSE_JSON_DATA:   nil,
-					constants.RESPONSDE_JSON_ERROR: err.Error(),
-				},
-			)
+			log.Errorf("Failed to created referral: %v", err.Error())
 			return nil, nil
 		}
 		dsReferral.FromPlaceID = fromClinic.PlaceID
@@ -381,13 +331,8 @@ func processReferral(ctx context.Context, c *gin.Context, referralDetails contra
 			mapClient := gmaps.NewMapsHandler()
 			err = mapClient.InitializeGoogleMapsAPIClient(ctx, gproject)
 			if err != nil {
-				c.AbortWithStatusJSON(
-					http.StatusInternalServerError,
-					gin.H{
-						constants.RESPONSE_JSON_DATA:   nil,
-						constants.RESPONSDE_JSON_ERROR: err.Error(),
-					},
-				)
+				log.Errorf("Failed to created referral: %v", err.Error())
+				return nil, nil
 			}
 			details, _ := mapClient.FindPlaceFromID(referralDetails.FromPlaceID)
 			dsReferral.FromPlaceID = referralDetails.FromPlaceID
@@ -401,13 +346,7 @@ func processReferral(ctx context.Context, c *gin.Context, referralDetails contra
 	if referralDetails.ToAddressID != "" {
 		toClinic, err := clinicDB.GetSingleClinic(ctx, referralDetails.ToAddressID)
 		if err != nil {
-			c.AbortWithStatusJSON(
-				http.StatusInternalServerError,
-				gin.H{
-					constants.RESPONSE_JSON_DATA:   nil,
-					constants.RESPONSDE_JSON_ERROR: err.Error(),
-				},
-			)
+			log.Errorf("Failed to created referral: %v", err.Error())
 			return nil, nil
 		}
 		dsReferral.ToPlaceID = toClinic.PlaceID
@@ -433,23 +372,13 @@ func processReferral(ctx context.Context, c *gin.Context, referralDetails contra
 			mapClient := gmaps.NewMapsHandler()
 			err = mapClient.InitializeGoogleMapsAPIClient(ctx, gproject)
 			if err != nil {
-				c.AbortWithStatusJSON(
-					http.StatusInternalServerError,
-					gin.H{
-						constants.RESPONSE_JSON_DATA:   nil,
-						constants.RESPONSDE_JSON_ERROR: err.Error(),
-					},
-				)
+				log.Errorf("Failed to created referral: %v", err.Error())
+				return nil, nil
 			}
 			details, err := mapClient.FindPlaceFromID(referralDetails.ToPlaceID)
 			if err != nil {
-				c.AbortWithStatusJSON(
-					http.StatusInternalServerError,
-					gin.H{
-						constants.RESPONSE_JSON_DATA:   nil,
-						constants.RESPONSDE_JSON_ERROR: err.Error(),
-					},
-				)
+				log.Errorf("Failed to created referral: %v", err.Error())
+				return nil, nil
 			}
 			dsReferral.ToClinicAddress = details.FormattedAddress
 			dsReferral.ToPlaceID = details.PlaceID
@@ -460,13 +389,7 @@ func processReferral(ctx context.Context, c *gin.Context, referralDetails contra
 	dsReferral.IsNew = true
 	err = dsRefC.CreateReferral(ctx, dsReferral)
 	if err != nil {
-		c.AbortWithStatusJSON(
-			http.StatusInternalServerError,
-			gin.H{
-				constants.RESPONSE_JSON_DATA:   nil,
-				constants.RESPONSDE_JSON_ERROR: err.Error(),
-			},
-		)
+		log.Errorf("Failed to created referral: %v", err.Error())
 		return nil, nil
 	}
 	var returnComments contracts.ReferralComments
@@ -474,6 +397,10 @@ func processReferral(ctx context.Context, c *gin.Context, referralDetails contra
 	var refComments contracts.ReferralComments
 	refComments.Comments = append(refComments.Comments, returnComments.Comments...)
 	_, err = ProcessComments(ctx, gproject, dsReferral.ReferralID, refComments)
+	if err != nil {
+		log.Errorf("Failed to created referral: %v", err.Error())
+		return nil, nil
+	}
 	return &dsReferral, &returnComments
 }
 
