@@ -199,7 +199,10 @@ func processReferral(c *gin.Context, referralDetails contracts.ReferralDetails, 
 				reader, err := storageC.DownloadSingleFile(ctx, uniqueRefID, constants.SD_REFERRAL_BUCKET, fileName)
 				if err == nil && reader != nil {
 					timeNow := time.Now()
-					fileName += strconv.Itoa(timeNow.Year()) + timeNow.Month().String() + strconv.Itoa(timeNow.Day()) + strconv.Itoa(timeNow.Second())
+					stripFile := strings.Split(fileName, ".")
+					name := stripFile[0]
+					name += strconv.Itoa(timeNow.Year()) + timeNow.Month().String() + strconv.Itoa(timeNow.Day()) + strconv.Itoa(timeNow.Second())
+					fileName = name + "." + stripFile[1]
 				}
 				bucketPath := uniqueRefID + "/" + fileName
 				buckerW, err := storageC.UploadToGCS(ctx, bucketPath)

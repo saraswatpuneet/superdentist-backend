@@ -523,7 +523,10 @@ func UploadDocuments(c *gin.Context) {
 				reader, err := storageC.DownloadSingleFile(ctx, referralID, constants.SD_REFERRAL_BUCKET, fileName)
 				if err == nil && reader != nil {
 					timeNow := time.Now()
-					fileName += strconv.Itoa(timeNow.Year()) + timeNow.Month().String() + strconv.Itoa(timeNow.Day()) + strconv.Itoa(timeNow.Second())
+					stripFile := strings.Split(fileName, ".")
+					name := stripFile[0]
+					name += strconv.Itoa(timeNow.Year()) + timeNow.Month().String() + strconv.Itoa(timeNow.Day()) + strconv.Itoa(timeNow.Second())
+					fileName = name +"."+ stripFile[1]
 				}
 				bucketPath := referralID + "/" + fileName
 				buckerW, err := storageC.UploadToGCS(ctx, bucketPath)
@@ -657,7 +660,7 @@ func DownloadSingleFile(c *gin.Context) {
 	log.Infof("Download Referral Documents")
 	ctx := c.Request.Context()
 	referralID := c.Param("referralId")
-	fileName := c.Param("fileName")
+	fileName := c.Query("fileName")
 	_, _, gproject, err := getUserDetails(ctx, c.Request)
 	if err != nil {
 		c.AbortWithStatusJSON(
@@ -960,7 +963,10 @@ func ReceiveReferralMail(c *gin.Context) {
 		reader, err := storageC.DownloadSingleFile(ctx, dsReferral.ReferralID, constants.SD_REFERRAL_BUCKET, fileName)
 		if err == nil && reader != nil {
 			timeNow := time.Now()
-			fileName += strconv.Itoa(timeNow.Year()) + timeNow.Month().String() + strconv.Itoa(timeNow.Day()) + strconv.Itoa(timeNow.Second())
+			stripFile := strings.Split(fileName, ".")
+			name := stripFile[0]
+			name += strconv.Itoa(timeNow.Year()) + timeNow.Month().String() + strconv.Itoa(timeNow.Day()) + strconv.Itoa(timeNow.Second())
+			fileName = name +"."+ stripFile[1]
 		}
 		bucketPath := dsReferral.ReferralID + "/" + fileName
 		buckerW, err := storageC.UploadToGCS(ctx, bucketPath)
@@ -1171,7 +1177,10 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 		reader, err := storageC.DownloadSingleFile(ctx, dsReferral.ReferralID, constants.SD_REFERRAL_BUCKET, fileName)
 		if err == nil && reader != nil {
 			timeNow := time.Now()
-			fileName += strconv.Itoa(timeNow.Year()) + timeNow.Month().String() + strconv.Itoa(timeNow.Day()) + strconv.Itoa(timeNow.Second())
+			stripFile := strings.Split(fileName, ".")
+			name := stripFile[0]
+			name += strconv.Itoa(timeNow.Year()) + timeNow.Month().String() + strconv.Itoa(timeNow.Day()) + strconv.Itoa(timeNow.Second())
+			fileName = name +"."+ stripFile[1]
 		}
 		bucketPath := dsReferral.ReferralID + "/" + fileName
 		saveFileReader, _ := ioutil.ReadAll(attch.Data)
