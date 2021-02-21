@@ -131,10 +131,7 @@ func QRReferral(c *gin.Context) {
 	}
 	referralDetails.Status.GDStatus = "referred"
 	referralDetails.Status.SPStatus = "referred"
-	referral, updatedComm := processReferral(ctx, c, referralDetails, gproject, true)
-	var refComments contracts.ReferralComments
-	refComments.Comments = append(refComments.Comments, updatedComm.Comments...)
-	_, err = ProcessComments(ctx, gproject, referral.ReferralID, refComments)
+	go processReferral(ctx, c, referralDetails, gproject, true)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
@@ -474,6 +471,9 @@ func processReferral(ctx context.Context, c *gin.Context, referralDetails contra
 	}
 	var returnComments contracts.ReferralComments
 	returnComments.Comments = updatedComm
+	var refComments contracts.ReferralComments
+	refComments.Comments = append(refComments.Comments, returnComments.Comments...)
+	_, err = ProcessComments(ctx, gproject, dsReferral.ReferralID, refComments)
 	return &dsReferral, &returnComments
 }
 
