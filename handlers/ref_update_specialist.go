@@ -962,6 +962,7 @@ func ReceiveReferralMail(c *gin.Context) {
 		}
 		id, _ := uuid.NewUUID()
 		uploadComment.MessageID = id.String()
+		uploadComment.Files = docIDNames
 		uploadComment.Text = "New documents are uploaded by " + dsReferral.PatientFirstName + " " + dsReferral.PatientLastName
 		uploadComment.TimeStamp = time.Now().In(location).UTC().UnixNano() / int64(time.Millisecond)
 		currentComments = append(currentComments, uploadComment)
@@ -1167,6 +1168,7 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 		}
 		id, _ := uuid.NewUUID()
 		uploadComment.MessageID = id.String()
+		uploadComment.Files = docIDNames
 		uploadComment.Text = "New documents are uploaded by " + dsReferral.ToClinicName
 		uploadComment.TimeStamp = time.Now().In(location).UTC().UnixNano() / int64(time.Millisecond)
 		currentComments = append(currentComments, uploadComment)
@@ -1339,9 +1341,9 @@ func TextRecievedPatient(c *gin.Context) {
 			}
 		}
 		docIDNames := make([]string, 0)
+		var commText contracts.Comment
 
 		if len(filePatients) > 0 {
-			var commText contracts.Comment
 			commText.Channel = contracts.SPCBox
 			commText.Text = "New documents uploaded by " + dsReferral.PatientFirstName + " " + dsReferral.PatientLastName
 			commText.TimeStamp = time.Now().UTC().Unix()
@@ -1351,10 +1353,6 @@ func TextRecievedPatient(c *gin.Context) {
 				commText.UserID = dsReferral.PatientEmail
 			} else {
 				commText.UserID = dsReferral.PatientPhone
-			}
-			err = dsRefC.CreateMessage(ctx, dsReferral, []contracts.Comment{commText})
-			if err != nil {
-				log.Errorf("Error processing sms error:%v ", err.Error())
 			}
 			storageC := storage.NewStorageHandler()
 			err = storageC.InitializeStorageClient(ctx, gproject)
@@ -1382,6 +1380,13 @@ func TextRecievedPatient(c *gin.Context) {
 			err = storageC.ZipFile(ctx, dsReferral.ReferralID, constants.SD_REFERRAL_BUCKET)
 			if err != nil {
 				log.Errorf("Error processing zipping text error:%v ", err.Error())
+			}
+		}
+		if len(docIDNames) > 0 {
+			commText.Files = docIDNames
+			err = dsRefC.CreateMessage(ctx, dsReferral, []contracts.Comment{commText})
+			if err != nil {
+				log.Errorf("Error processing sms error:%v ", err.Error())
 			}
 		}
 		dsReferral.ModifiedOn = time.Now().In(location)
