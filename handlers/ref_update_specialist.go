@@ -468,6 +468,8 @@ func UploadDocuments(c *gin.Context) {
 			dsReferral.ToClinicPhone = toClinic.PhoneNumber
 		}
 	}
+	var commentReasons contracts.Comment
+
 	if err == nil {
 		zone, _ := tz.GetZone(tz.Point{
 			Lon: toClinic.Location.Long, Lat: toClinic.Location.Lat,
@@ -475,6 +477,12 @@ func UploadDocuments(c *gin.Context) {
 
 		location, _ := time.LoadLocation(zone[0])
 		dsReferral.ModifiedOn = time.Now().In(location)
+		currentID, _ := uuid.NewUUID()
+		commentReasons.MessageID = currentID.String()
+		commentReasons.Channel = "c2c"
+		commentReasons.Text = "Document List"
+		commentReasons.TimeStamp = time.Now().In(location).UTC().UnixNano() / int64(time.Millisecond)
+		commentReasons.UserID = toClinic.EmailAddress
 
 	} else {
 		dsReferral.ModifiedOn = time.Now()
@@ -551,8 +559,23 @@ func UploadDocuments(c *gin.Context) {
 			return
 		}
 	}
+
 	dsReferral.Documents = append(dsReferral.Documents, docIDNames...)
 	err = dsRefC.CreateReferral(ctx, *dsReferral)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	var refComments contracts.ReferralComments
+	commentReasons.Files = docIDNames
+	refComments.Comments = append(refComments.Comments, commentReasons)
+	_, err = ProcessComments(ctx, gproject, dsReferral.ReferralID, refComments)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,

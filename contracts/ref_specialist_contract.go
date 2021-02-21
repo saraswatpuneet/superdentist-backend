@@ -33,11 +33,12 @@ const SPCBox ChatBox = "c2p"
 
 // Comment .....
 type Comment struct {
-	MessageID string  `json:"messageId"`
-	TimeStamp int64   `json:"timeStamp"`
-	Text      string  `json:"text" valid:"required"`
-	Channel   ChatBox `json:"channel" valid:"required"`
-	UserID    string  `json:"userId" valid:"required"`
+	MessageID string   `json:"messageId"`
+	TimeStamp int64    `json:"timeStamp"`
+	Text      string   `json:"text" valid:"required"`
+	Channel   ChatBox  `json:"channel" valid:"required"`
+	UserID    string   `json:"userId" valid:"required"`
+	Files     []string `json:"file"`
 }
 
 // Status ....
