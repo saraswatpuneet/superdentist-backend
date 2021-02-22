@@ -257,7 +257,7 @@ func UpdateReferralStatus(c *gin.Context) {
 	}
 	toClinic, err := clinicDB.GetSingleClinicViaPlace(ctx, dsReferral.ToPlaceID)
 	if dsReferral.ToAddressID == "" {
-		if err == nil && toClinic.AddressID != "" {
+		if err == nil && toClinic != nil && toClinic.AddressID != "" {
 			dsReferral.ToPlaceID = toClinic.PlaceID
 			dsReferral.ToClinicName = toClinic.Name
 			dsReferral.ToClinicAddress = toClinic.Address
@@ -268,7 +268,7 @@ func UpdateReferralStatus(c *gin.Context) {
 	}
 	dsReferral.Status = referralDetails.Status
 
-	if err == nil {
+	if err == nil && toClinic != nil {
 		zone, _ := tz.GetZone(tz.Point{
 			Lon: toClinic.Location.Long, Lat: toClinic.Location.Lat,
 		})
@@ -457,30 +457,23 @@ func UploadDocuments(c *gin.Context) {
 		}
 	}
 	var commentReasons contracts.Comment
+	currentID, _ := uuid.NewUUID()
+	commentReasons.MessageID = currentID.String()
+	commentReasons.Channel = "c2c"
+	commentReasons.Text = "Document List"
+	commentReasons.UserID = userEmail
+	if err == nil && toClinic != nil {
+		zone, _ := tz.GetZone(tz.Point{
+			Lon: toClinic.Location.Long, Lat: toClinic.Location.Lat,
+		})
 
-	if err == nil {
-		if toClinic != nil {
-			zone, _ := tz.GetZone(tz.Point{
-				Lon: toClinic.Location.Long, Lat: toClinic.Location.Lat,
-			})
-
-			location, _ := time.LoadLocation(zone[0])
-			dsReferral.ModifiedOn = time.Now().In(location)
-			commentReasons.TimeStamp = time.Now().In(location).UTC().UnixNano() / int64(time.Millisecond)
-
-		} else {
-			dsReferral.ModifiedOn = time.Now()
-			commentReasons.TimeStamp = time.Now().UTC().UnixNano() / int64(time.Millisecond)
-
-		}
-		currentID, _ := uuid.NewUUID()
-		commentReasons.MessageID = currentID.String()
-		commentReasons.Channel = "c2c"
-		commentReasons.Text = "Document List"
-		commentReasons.UserID = userEmail
+		location, _ := time.LoadLocation(zone[0])
+		dsReferral.ModifiedOn = time.Now().In(location)
+		commentReasons.TimeStamp = time.Now().In(location).UTC().UnixNano() / int64(time.Millisecond)
 
 	} else {
 		dsReferral.ModifiedOn = time.Now()
+		commentReasons.TimeStamp = time.Now().UTC().UnixNano() / int64(time.Millisecond)
 	}
 	storageC := storage.NewStorageHandler()
 	err = storageC.InitializeStorageClient(ctx, gproject)
@@ -1518,7 +1511,7 @@ func ProcessComments(ctx context.Context, gproject string, referralID string, re
 	}
 	toClinic, err := clinicDB.GetSingleClinicViaPlace(ctx, dsReferral.ToPlaceID)
 	if dsReferral.ToAddressID == "" || dsReferral.ToClinicPhone == "" {
-		if err == nil && toClinic.AddressID != "" {
+		if err == nil && toClinic != nil && toClinic.AddressID != "" {
 			dsReferral.ToPlaceID = toClinic.PlaceID
 			dsReferral.ToClinicName = toClinic.Name
 			dsReferral.ToClinicAddress = toClinic.Address
@@ -1527,7 +1520,7 @@ func ProcessComments(ctx context.Context, gproject string, referralID string, re
 			dsReferral.ToAddressID = toClinic.AddressID
 		}
 	}
-	if err == nil {
+	if err == nil && toClinic != nil {
 		zone, _ := tz.GetZone(tz.Point{
 			Lon: toClinic.Location.Long, Lat: toClinic.Location.Lat,
 		})
