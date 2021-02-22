@@ -446,19 +446,7 @@ func UploadDocuments(c *gin.Context) {
 		return
 	}
 	toClinic, err := clinicDB.GetSingleClinicViaPlace(ctx, dsReferral.ToPlaceID)
-	if dsReferral.ToAddressID == "" {
-		clinicDB := datastoredb.NewClinicMetaHandler()
-		err = clinicDB.InitializeDataBase(ctx, gproject)
-		if err != nil {
-			c.AbortWithStatusJSON(
-				http.StatusInternalServerError,
-				gin.H{
-					constants.RESPONSE_JSON_DATA:   nil,
-					constants.RESPONSDE_JSON_ERROR: err.Error(),
-				},
-			)
-			return
-		}
+	if dsReferral.ToAddressID == "" && toClinic != nil {
 		if err == nil && toClinic.AddressID != "" {
 			dsReferral.ToPlaceID = toClinic.PlaceID
 			dsReferral.ToClinicName = toClinic.Name
@@ -471,17 +459,24 @@ func UploadDocuments(c *gin.Context) {
 	var commentReasons contracts.Comment
 
 	if err == nil {
-		zone, _ := tz.GetZone(tz.Point{
-			Lon: toClinic.Location.Long, Lat: toClinic.Location.Lat,
-		})
+		if toClinic != nil {
+			zone, _ := tz.GetZone(tz.Point{
+				Lon: toClinic.Location.Long, Lat: toClinic.Location.Lat,
+			})
 
-		location, _ := time.LoadLocation(zone[0])
-		dsReferral.ModifiedOn = time.Now().In(location)
+			location, _ := time.LoadLocation(zone[0])
+			dsReferral.ModifiedOn = time.Now().In(location)
+			commentReasons.TimeStamp = time.Now().In(location).UTC().UnixNano() / int64(time.Millisecond)
+
+		} else {
+			dsReferral.ModifiedOn = time.Now()
+			commentReasons.TimeStamp = time.Now().UTC().UnixNano() / int64(time.Millisecond)
+
+		}
 		currentID, _ := uuid.NewUUID()
 		commentReasons.MessageID = currentID.String()
 		commentReasons.Channel = "c2c"
 		commentReasons.Text = "Document List"
-		commentReasons.TimeStamp = time.Now().In(location).UTC().UnixNano() / int64(time.Millisecond)
 		commentReasons.UserID = userEmail
 
 	} else {
@@ -526,7 +521,7 @@ func UploadDocuments(c *gin.Context) {
 					stripFile := strings.Split(fileName, ".")
 					name := stripFile[0]
 					name += strconv.Itoa(timeNow.Year()) + timeNow.Month().String() + strconv.Itoa(timeNow.Day()) + strconv.Itoa(timeNow.Second())
-					fileName = name +"."+ stripFile[1]
+					fileName = name + "." + stripFile[1]
 				}
 				bucketPath := referralID + "/" + fileName
 				buckerW, err := storageC.UploadToGCS(ctx, bucketPath)
@@ -959,14 +954,14 @@ func ReceiveReferralMail(c *gin.Context) {
 		return
 	}
 	for _, attach := range parsedEmail.Attachments {
-		fileName:= attach.Filename
+		fileName := attach.Filename
 		reader, err := storageC.DownloadSingleFile(ctx, dsReferral.ReferralID, constants.SD_REFERRAL_BUCKET, fileName)
 		if err == nil && reader != nil {
 			timeNow := time.Now()
 			stripFile := strings.Split(fileName, ".")
 			name := stripFile[0]
 			name += strconv.Itoa(timeNow.Year()) + timeNow.Month().String() + strconv.Itoa(timeNow.Day()) + strconv.Itoa(timeNow.Second())
-			fileName = name +"."+ stripFile[1]
+			fileName = name + "." + stripFile[1]
 		}
 		bucketPath := dsReferral.ReferralID + "/" + fileName
 		buckerW, err := storageC.UploadToGCS(ctx, bucketPath)
@@ -1173,14 +1168,14 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 	ocrText := ""
 	var res *docconv.Response
 	for _, attch := range parsedEmail.Attachments {
-		fileName:= attch.Filename
+		fileName := attch.Filename
 		reader, err := storageC.DownloadSingleFile(ctx, dsReferral.ReferralID, constants.SD_REFERRAL_BUCKET, fileName)
 		if err == nil && reader != nil {
 			timeNow := time.Now()
 			stripFile := strings.Split(fileName, ".")
 			name := stripFile[0]
 			name += strconv.Itoa(timeNow.Year()) + timeNow.Month().String() + strconv.Itoa(timeNow.Day()) + strconv.Itoa(timeNow.Second())
-			fileName = name +"."+ stripFile[1]
+			fileName = name + "." + stripFile[1]
 		}
 		bucketPath := dsReferral.ReferralID + "/" + fileName
 		saveFileReader, _ := ioutil.ReadAll(attch.Data)
