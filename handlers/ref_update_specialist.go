@@ -39,7 +39,7 @@ func AddCommentsToReferral(c *gin.Context) {
 	referralID := c.Param("referralId")
 
 	var referralDetails contracts.ReferralComments
-	_, _, gproject, err := getUserDetails(ctx, c.Request)
+	userEmail, _, gproject, err := getUserDetails(ctx, c.Request)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
@@ -398,7 +398,7 @@ func UploadDocuments(c *gin.Context) {
 	log.Infof("Update Referral Documents")
 	ctx := c.Request.Context()
 	referralID := c.Param("referralId")
-	_, _, gproject, err := getUserDetails(ctx, c.Request)
+	userEmail, _, gproject, err := getUserDetails(ctx, c.Request)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
@@ -482,7 +482,7 @@ func UploadDocuments(c *gin.Context) {
 		commentReasons.Channel = "c2c"
 		commentReasons.Text = "Document List"
 		commentReasons.TimeStamp = time.Now().In(location).UTC().UnixNano() / int64(time.Millisecond)
-		commentReasons.UserID = toClinic.EmailAddress
+		commentReasons.UserID = userEmail
 
 	} else {
 		dsReferral.ModifiedOn = time.Now()
