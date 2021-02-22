@@ -39,7 +39,7 @@ func AddCommentsToReferral(c *gin.Context) {
 	referralID := c.Param("referralId")
 
 	var referralDetails contracts.ReferralComments
-	userEmail, _, gproject, err := getUserDetails(ctx, c.Request)
+	_, _, gproject, err := getUserDetails(ctx, c.Request)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
