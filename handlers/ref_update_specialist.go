@@ -1588,7 +1588,7 @@ func ProcessComments(ctx context.Context, gproject string, referralID string, re
 			message2 := ""
 			message1 = fmt.Sprintf(constants.PATIENT_MESSAGE, dsReferral.PatientFirstName+" "+dsReferral.PatientLastName,
 				dsReferral.ToClinicName, dsReferral.ToClinicAddress, dsReferral.ToClinicPhone, sendPatientComments)
-			if dsReferral.CommunicationText == "" {
+			if dsReferral.CommunicationText != "" {
 				message2 = dsReferral.CommunicationText
 			}
 			fromPhone := ""
