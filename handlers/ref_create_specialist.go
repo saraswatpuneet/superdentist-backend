@@ -61,7 +61,12 @@ func CreateRefSpecialist(c *gin.Context) {
 		)
 		return
 	}
-	dsReferral, _ := processReferral(c, referralDetails, gproject, false)
+	const _24K = (1 << 10) * 100
+	var documentFiles *multipart.Form
+	if err = c.Request.ParseMultipartForm(_24K); err == nil {
+		documentFiles = c.Request.MultipartForm
+	}
+	dsReferral, _ := processReferral(referralDetails, gproject, false, documentFiles)
 	if dsReferral == nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
@@ -141,14 +146,19 @@ func QRReferral(c *gin.Context) {
 	}
 	referralDetails.Status.GDStatus = "referred"
 	referralDetails.Status.SPStatus = "referred"
-	go processReferral(c, referralDetails, gproject, true)
+	const _24K = (1 << 10) * 100
+	var documentFiles *multipart.Form
+	if err = c.Request.ParseMultipartForm(_24K); err == nil {
+		documentFiles = c.Request.MultipartForm
+	}
+	go processReferral(referralDetails, gproject, true, documentFiles)
 	c.JSON(http.StatusOK, gin.H{
 		constants.RESPONSE_JSON_DATA:   "referral created successfully.",
 		constants.RESPONSDE_JSON_ERROR: nil,
 	})
 }
 
-func processReferral(c *gin.Context, referralDetails contracts.ReferralDetails, gproject string, isQR bool) (*contracts.DSReferral, *contracts.ReferralComments) {
+func processReferral(referralDetails contracts.ReferralDetails, gproject string, isQR bool, documentFiles *multipart.Form) (*contracts.DSReferral, *contracts.ReferralComments) {
 	storageC := storage.NewStorageHandler()
 	ctx := context.Background()
 	err := storageC.InitializeStorageClient(ctx, gproject)
@@ -182,9 +192,8 @@ func processReferral(c *gin.Context, referralDetails contracts.ReferralDetails, 
 	//client := gosseract.NewClient()
 	//defer client.Close()
 	foundImage := false
-	const _24K = (1 << 10) * 100
-	if err = c.Request.ParseMultipartForm(_24K); err == nil {
-		for _, fheaders := range c.Request.MultipartForm.File {
+	if documentFiles != nil {
+		for _, fheaders := range documentFiles.File {
 			for _, hdr := range fheaders {
 				// open uploaded
 				var infile multipart.File
