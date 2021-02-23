@@ -61,7 +61,7 @@ func CreateRefSpecialist(c *gin.Context) {
 		)
 		return
 	}
-	const _24K = (1 << 10) * 100
+	const _24K = 256 << 20
 	var documentFiles *multipart.Form
 	if err = c.Request.ParseMultipartForm(_24K); err == nil {
 		documentFiles = c.Request.MultipartForm
@@ -146,7 +146,7 @@ func QRReferral(c *gin.Context) {
 	}
 	referralDetails.Status.GDStatus = "referred"
 	referralDetails.Status.SPStatus = "referred"
-	const _24K = (1 << 10) * 100
+	const _24K = 256 << 20
 	var documentFiles *multipart.Form
 	if err = c.Request.ParseMultipartForm(_24K); err == nil {
 		documentFiles = c.Request.MultipartForm
