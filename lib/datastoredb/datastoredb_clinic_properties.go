@@ -828,8 +828,11 @@ func (db *DSClinicMeta) GetNearbySpecialist(ctx context.Context, clinicEmailID s
 func (db *DSClinicMeta) GetFavoriteSpecialists(ctx context.Context, clinicEmailID string, clinicFBID string, currentFavorites []string) ([]contracts.PhysicalClinicMapLocation, error) {
 
 	allNearbyAddresses := make([]contracts.PhysicalClinicMapLocation, 0)
-
+	mapPlaceIDs := make(map[string]bool)
 	for _, placeID := range currentFavorites {
+		if data, ok := mapPlaceIDs[placeID]; ok && data {
+			continue
+		}
 		var currentVerified contracts.PhysicalClinicMapLocation
 		tempFav := make([]contracts.PhysicalClinicMapLocation, 0)
 
@@ -847,6 +850,8 @@ func (db *DSClinicMeta) GetFavoriteSpecialists(ctx context.Context, clinicEmailI
 		currentVerified = tempFav[0]
 		currentVerified.IsVerified = true
 		allNearbyAddresses = append(allNearbyAddresses, currentVerified)
+		mapPlaceIDs[placeID] = true
+
 	}
 	return allNearbyAddresses, nil
 }
