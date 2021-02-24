@@ -102,6 +102,7 @@ type DSReferral struct {
 	CommunicationPhone string    `json:"-"`
 	CommunicationText  string    `datastore:"CommunicationText,noindex"`
 	IsSummary          bool      `json:"isSummary" valid:"required"`
+	IsQR               bool      `json:"isQR" valid:"required"`
 	SummaryText        string    `datastore:"SummaryText,noindex"`
 	IsNew              bool      `json:"-"`
 }

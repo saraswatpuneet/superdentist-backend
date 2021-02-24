@@ -269,7 +269,7 @@ func processReferral(referralDetails contracts.ReferralDetails, gproject string,
 		}
 		dsReferral.PatientPhone = countryCode + strconv.Itoa(int(*pnum.NationalNumber))
 	}
-
+	dsReferral.IsQR = isQR
 	dsReferral.Documents = docIDNames
 	dsReferral.ReferralID = uniqueRefID
 	dsReferral.Reasons = referralDetails.Reasons
