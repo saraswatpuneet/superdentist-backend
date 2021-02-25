@@ -283,7 +283,7 @@ func DirectJoinHandler(c *gin.Context) {
 		)
 		return
 	}
-	registerAndSendVerification(ctx,gproject, cregisData)
+	setVerifyClinic(ctx, gproject, userEmail, userID)
 	clinicDB.DeleteClinicJoinURL(ctx, placeIDs)
 	c.JSON(http.StatusOK, gin.H{
 		constants.RESPONSE_JSON_DATA:   "Successfully updated clinics emails and are linked",
@@ -819,6 +819,24 @@ func registerAndSendVerification(ctx context.Context, gproject string, clinicReg
 	}
 	err = sgClient.SendVerificationEmail(clinicRegistrationReq.EmailID, veriURL)
 	log.Infof("Registering clinic with SD database4")
+
+	if err != nil {
+		return err
+
+	}
+	return nil
+}
+
+func setVerifyClinic(ctx context.Context, gproject string, email string, uid string) error {
+	idAuth, err := identity.NewIDPEP(ctx, gproject)
+	log.Infof("Registering clinic with SD database idep")
+
+	if err != nil {
+		return err
+
+	}
+	err = idAuth.VerifyInFirebase(ctx, email, uid)
+	log.Infof("Registering clinic with SD database3")
 
 	if err != nil {
 		return err

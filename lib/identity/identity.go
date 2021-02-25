@@ -116,6 +116,26 @@ func (id *IDP) GetVerificationURL(ctx context.Context, email string) (string, er
 	return verifyLink, nil
 }
 
+// VerifyInFirebase ...
+func (id *IDP) VerifyInFirebase(ctx context.Context, email string, uid string) error {
+	userToUpdate := (&auth.UserToUpdate{}).
+		EmailVerified(true)
+
+	if id.tClient != nil {
+		_, err := id.tClient.UpdateUser(ctx, uid, userToUpdate)
+		if err != nil {
+			return err
+		}
+
+	} else {
+		_, err := id.client.UpdateUser(ctx, uid, userToUpdate)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // GetResetPasswordURL ...
 func (id *IDP) GetResetPasswordURL(ctx context.Context, email string) (string, error) {
 	contURL := global.Options.ContinueURL
