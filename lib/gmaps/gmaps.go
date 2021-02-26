@@ -54,6 +54,7 @@ func (gm *ClientGMaps) FindPlacesFromText(placeText string) (maps.PlacesSearchRe
 	ctx := context.Background()
 	placesFromTextReq := maps.TextSearchRequest{
 		Query: placeText,
+		Type: maps.PlaceTypeDentist,
 	}
 	placesSearchResponse, err := gm.client.TextSearch(ctx, &placesFromTextReq)
 	if err != nil {
@@ -71,6 +72,7 @@ func (gm *ClientGMaps) FindNearbyPlacesFromLocation(location maps.LatLng, radius
 		Location: &location,
 		Radius: 50,
 		Query:  keyword,
+		Type: maps.PlaceTypeDentist,
 	}
 	placesSearchResponse, err := gm.client.TextSearch(ctx, &placesFromTextReq)
 	if err != nil {
