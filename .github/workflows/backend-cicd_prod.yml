@@ -47,8 +47,7 @@ jobs:
 
     # Get the GKE credentials so we can deploy to the cluster
     - run: |-
-        gcloud container clusters get-credentials "$GKE_CLUSTER" --zone "$GKE_ZONE"
-    
+        gcloud container clusters get-credentials superdentist-prod-auto-pilot --region us-central1 --project superdentist    
     # Build the Docker image
     - name: Set up Go 1.x
       uses: actions/setup-go@v2
