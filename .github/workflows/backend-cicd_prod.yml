@@ -20,8 +20,8 @@ env:
   PROJECT_ID: ${{ secrets.GKE_PROJECT }}
   GO_TOKEN: ${{ secrets.GO_MODULES_TOKEN }}
   GKE_CLUSTER:  superdentist-main	
-  GKE_CLUSTER_PROD:  superdentist-prod-auto-pilot
-  GKE_ZONE: us-central1
+  GKE_CLUSTER_PROD:  superdentist-prod
+  GKE_ZONE: us-central1-c
   IMAGE: superdentist-backend
   ACTIONS_ALLOW_UNSECURE_COMMANDS: true
 
@@ -47,7 +47,8 @@ jobs:
 
     # Get the GKE credentials so we can deploy to the cluster
     - run: |-
-        gcloud container clusters get-credentials superdentist-prod-auto-pilot --region us-central1 --project superdentist    
+        gcloud container clusters get-credentials "$GKE_CLUSTER" --zone "$GKE_ZONE"
+    
     # Build the Docker image
     - name: Set up Go 1.x
       uses: actions/setup-go@v2
@@ -90,5 +91,5 @@ jobs:
         ./get_helm.sh
     - name: Deploy to SuperDentist Cluster to PROD
       run: |-
-        gcloud container clusters get-credentials superdentist-prod-auto-pilot --region us-central1 --project superdentist
+        gcloud container clusters get-credentials "$GKE_CLUSTER_PROD" --zone "$GKE_ZONE"
         helm upgrade superdentist-backend ./k8sp/superdentist-backend --set image.tag=$GITHUB_SHA --install --wait --atomic
