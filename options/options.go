@@ -19,6 +19,7 @@ type Options struct {
 	PatientConfTemp        string `json:"pct,omitempty"`
 	SpecialistConfTemp     string `json:"sct,omitempty"`
 	GDReferralComp         string `json:"gdc,omitempty"`
+	GDReferralAuto         string `json:"gdcauto,omitempty"`
 	ClinicNotificatioNew   string `json:"cnn,omitempty"`
 	PatientNotificationNew string `json:"pnn,omitempty"`
 	ContinueURL            string `json:"curi,omitempty"`
@@ -44,6 +45,7 @@ func InitOptions() (*Options, error) {
 		options.PatientConfTemp = os.Getenv("SD_PATIENT_REF_CONF")
 		options.SpecialistConfTemp = os.Getenv("SD_SPECIALIZT_REF_CONF")
 		options.GDReferralComp = os.Getenv("GD_REFERRAL_COMPLETED")
+		options.GDReferralAuto = os.Getenv("GD_REFERRAL_AUTO")
 		options.ClinicNotificatioNew = os.Getenv("CLINIC_NOTIFICATION_NEW")
 		options.PatientNotificationNew = os.Getenv("PATINET_EMAIL_NOTIFICATION")
 		options.ContinueURL = os.Getenv("CONTINUE_URL")

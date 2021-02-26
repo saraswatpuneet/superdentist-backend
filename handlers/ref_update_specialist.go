@@ -1273,13 +1273,24 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 	if err != nil {
 		log.Errorf("Error processing sms error:%v ", err.Error())
 	}
+	sendPatientComments := make([]string, 0)
+	for _, comment := range currentComments {
+		if comment.Channel == contracts.GDCBox && dsReferral.ToEmail != "" && comment.UserID == dsReferral.ToEmail {
+			sendPatientComments = append(sendPatientComments, comment.Text)
+		}
+	}
+	y, m, d := dsReferral.ModifiedOn.Date()
+	dateString := fmt.Sprintf("%d-%d-%d", y, int(m), d)
 	if dsReferral.FromEmail != "" {
-		sgClient.SendClinicNotification(dsReferral.FromEmail, dsReferral.ToClinicName,
-			dsReferral.PatientFirstName+" "+dsReferral.PatientLastName, dsReferral.ReferralID)
+
+		sgClient.SendAutoEmailNotificationToGD(dsReferral.FromEmail, dsReferral.FromClinicName,
+			dsReferral.PatientFirstName+" "+dsReferral.PatientLastName, dsReferral.ToClinicName, dsReferral.PatientPhone, dsReferral.ReferralID, dateString, sendPatientComments)
 
 	} else {
-		sgClient.SendClinicNotification(constants.SD_ADMIN_EMAIL, dsReferral.ToClinicName,
-			dsReferral.PatientFirstName+" "+dsReferral.PatientLastName, dsReferral.ReferralID)
+
+		sgClient.SendAutoEmailNotificationToGD(constants.SD_ADMIN_EMAIL, dsReferral.FromClinicName,
+			dsReferral.PatientFirstName+" "+dsReferral.PatientLastName, dsReferral.ToClinicName, dsReferral.PatientPhone, dsReferral.ReferralID, dateString, sendPatientComments)
+
 	}
 }
 

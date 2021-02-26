@@ -71,6 +71,8 @@ spec:
             value: d-e9288c40cc76436db70a32dc4dba6efa
           - name: GD_REFERRAL_COMPLETED
             value: d-5223f0628162417591e27d9810460ebc
+          - name: GD_REFERRAL_AUTO
+            value: d-cd2ce581f5e14250a914d6a655d93f10
           - name: CLINIC_NOTIFICATION_NEW
             value: d-7ab65eeeb1144af285bc31aa39fb6873
           - name: PATINET_EMAIL_NOTIFICATION
