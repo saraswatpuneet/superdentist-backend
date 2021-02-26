@@ -91,5 +91,5 @@ jobs:
         ./get_helm.sh
     - name: Deploy to SuperDentist Cluster to PROD
       run: |-
-        gcloud container clusters get-credentials "$GKE_CLUSTER_PROD" --zone "$GKE_ZONE"
+        gcloud container clusters get-credentials superdentist-prod-auto-pilot --region us-central1 --project superdentist
         helm upgrade superdentist-backend ./k8sp/superdentist-backend --set image.tag=$GITHUB_SHA --install --wait --atomic
