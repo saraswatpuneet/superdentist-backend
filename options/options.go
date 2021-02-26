@@ -19,7 +19,7 @@ type Options struct {
 	PatientConfTemp        string `json:"pct,omitempty"`
 	SpecialistConfTemp     string `json:"sct,omitempty"`
 	GDReferralComp         string `json:"gdc,omitempty"`
-	GDReferralAuto         string `json:"gdcauto",omitempty"`
+	GDReferralAuto         string `json:"gdcauto,omitempty"`
 	ClinicNotificatioNew   string `json:"cnn,omitempty"`
 	PatientNotificationNew string `json:"pnn,omitempty"`
 	ContinueURL            string `json:"curi,omitempty"`
