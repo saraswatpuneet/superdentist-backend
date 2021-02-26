@@ -21,7 +21,7 @@ env:
   GO_TOKEN: ${{ secrets.GO_MODULES_TOKEN }}
   GKE_CLUSTER:  superdentist-main	
   GKE_CLUSTER_PROD:  superdentist-prod-auto-pilot
-  GKE_ZONE: us-central1-c
+  GKE_ZONE: us-central1
   IMAGE: superdentist-backend
   ACTIONS_ALLOW_UNSECURE_COMMANDS: true
 
