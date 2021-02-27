@@ -11,11 +11,18 @@ import (
 	"time"
 )
 
+// DOB ....
+type DOB struct {
+	Year  string `json:"year" valid:"required"`
+	Month string `json:"month" valid:"required"`
+	Day   string `json:"day" valid:"required"`
+}
+
 // Patient ....
 type Patient struct {
 	FirstName string `json:"firstName" valid:"required"`
 	LastName  string `json:"lastName" valid:"required"`
-	Dob       string `json:"dob"`
+	Dob       DOB    `json:"dob"`
 	Email     string `json:"email" valid:"required"`
 	Phone     string `json:"phone" valid:"required"`
 	MemberID  string `json:"memberId"`
@@ -93,6 +100,9 @@ type DSReferral struct {
 	PatientEmail       string    `json:"patientEmail" valid:"required"`
 	PatientFirstName   string    `json:"patientFirstName" valid:"required"`
 	PatientLastName    string    `json:"patientLastName" valid:"required"`
+	PatientDOBYear     string    `json:"patientDobYear" valid:"required"`
+	PatientDOBMonth    string    `json:"patientDobMonth" valid:"required"`
+	PatientDOBDay      string    `json:"patientDobDay" valid:"required"`
 	PatientPhone       string    `json:"patientPhone" valid:"required"`
 	FromClinicPhone    string    `json:"fromClinicPhone" valid:"required"`
 	ToClinicPhone      string    `json:"toClinicPhone" valid:"required"`

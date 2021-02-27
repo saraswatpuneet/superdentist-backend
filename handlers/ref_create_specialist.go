@@ -92,6 +92,9 @@ func QRReferral(c *gin.Context) {
 	patientLName := c.Query("lastName")
 	patientPhone := c.Query("phone")
 	patientEmail := c.Query("email")
+	dobYear := c.Query("year")
+	dobMonth := c.Query("month")
+	dobDay := c.Query("day")
 	from := c.Query("from")
 	to := c.Query("to")
 	decryptedKey, err := decrypt(secureKey)
@@ -143,6 +146,11 @@ func QRReferral(c *gin.Context) {
 		LastName:  patientLName,
 		Phone:     patientPhone,
 		Email:     patientEmail,
+		Dob: contracts.DOB{
+			Year:  dobYear,
+			Month: dobMonth,
+			Day:   dobDay,
+		},
 	}
 	referralDetails.Status.GDStatus = "referred"
 	referralDetails.Status.SPStatus = "referred"
@@ -248,6 +256,9 @@ func processReferral(referralDetails contracts.ReferralDetails, gproject string,
 	}
 	ocrText = "Please refer to attached documents for more details."
 	var dsReferral contracts.DSReferral
+	dsReferral.PatientDOBYear = referralDetails.Patient.Dob.Year
+	dsReferral.PatientDOBMonth = referralDetails.Patient.Dob.Month
+	dsReferral.PatientDOBDay = referralDetails.Patient.Dob.Day
 	if ocrText != "" {
 		startIndex := strings.Index(ocrText, "Reason")
 		endIndex := strings.Index(ocrText, "Faster")
