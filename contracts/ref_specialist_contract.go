@@ -18,15 +18,31 @@ type DOB struct {
 	Day   string `json:"day" valid:"required"`
 }
 
+// PatientDentalInsurance ....
+type PatientDentalInsurance struct {
+	Company   string `json:"company" valid:"required"`
+	MemberID  string `json:"memberID" valid:"required"`
+	CardBytes string `datastore:"cardBytes,noindex"`
+}
+
+// PatientMedicalInsurance ....
+type PatientMedicalInsurance struct {
+	Company     string `json:"company" valid:"required"`
+	GroupNumber string `json:"groupNumber" valid:"required"`
+	MemberID    string `json:"memberID" valid:"required"`
+	CardBytes   string `datastore:"cardBytes,noindex"`
+}
+
 // Patient ....
 type Patient struct {
-	FirstName string `json:"firstName" valid:"required"`
-	LastName  string `json:"lastName" valid:"required"`
-	Dob       DOB    `json:"dob"`
-	Email     string `json:"email" valid:"required"`
-	Phone     string `json:"phone" valid:"required"`
-	MemberID  string `json:"memberId"`
-	GroupID   string `json:"groupNumber"`
+	FirstName        string                    `json:"firstName" valid:"required"`
+	LastName         string                    `json:"lastName" valid:"required"`
+	Dob              DOB                       `json:"dob"`
+	Email            string                    `json:"email" valid:"required"`
+	Phone            string                    `json:"phone" valid:"required"`
+	SSN              string                    `json:"ssn"`
+	DentalInsurance  []PatientDentalInsurance  `datastore:"dentalInsurance,noindex"`
+	MedicalInsurance []PatientMedicalInsurance `datastore:"medicalInsurance,noindex"`
 }
 
 // ChatBox ....
