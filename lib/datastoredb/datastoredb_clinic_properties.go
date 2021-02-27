@@ -250,6 +250,23 @@ func (db DSClinicMeta) AddClinicJoinURL(ctx context.Context, currentClinic contr
 	db.client.Put(ctx, numKey, &joinDetails)
 }
 
+// AddPatientInformation ....
+func (db DSClinicMeta) AddPatientInformation(ctx context.Context, patient contracts.Patient) error {
+	pKey := datastore.IncompleteKey("PatientDetails", nil)
+
+	if patient.Phone != "" {
+		pKey = datastore.NameKey("PatientDetails", patient.Phone, nil)
+	}
+	if global.Options.DSName != "" {
+		pKey.Namespace = global.Options.DSName
+	}
+	_, err := db.client.Put(ctx, pKey, &patient)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 // DeleteClinicJoinURL ....
 func (db DSClinicMeta) DeleteClinicJoinURL(ctx context.Context, places []string) {
 	for _, pid := range places {
@@ -623,7 +640,6 @@ func (db *DSClinicMeta) GetAllClinicsByAutoEmail(ctx context.Context, clinicEmai
 	}
 	return returnedAddresses, nil
 }
-
 
 // GetAllClinicsByDomain ....
 func (db *DSClinicMeta) GetAllClinicsByDomain(ctx context.Context, domain string) ([]contracts.PhysicalClinicMapLocation, error) {
