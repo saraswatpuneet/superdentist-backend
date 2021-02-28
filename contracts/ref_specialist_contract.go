@@ -21,14 +21,14 @@ type DOB struct {
 // PatientDentalInsurance ....
 type PatientDentalInsurance struct {
 	Company  string `json:"company"`
-	MemberID string `json:"memberID"`
+	MemberID string `json:"memberId"`
 }
 
 // PatientMedicalInsurance ....
 type PatientMedicalInsurance struct {
 	Company     string `json:"company"`
 	GroupNumber string `json:"groupNumber"`
-	MemberID    string `json:"memberID"`
+	MemberID    string `json:"memberId"`
 }
 
 // Patient ....

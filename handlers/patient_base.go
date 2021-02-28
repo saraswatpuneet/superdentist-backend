@@ -3,7 +3,7 @@ package handlers
 import (
 	"bytes"
 	"context"
-	"fmt"
+	"encoding/json"
 	"io"
 	"mime/multipart"
 	"net/http"
@@ -14,7 +14,6 @@ import (
 	//"github.com/otiai10/gosseract/v2"
 
 	"github.com/gin-gonic/gin"
-	"github.com/gin-gonic/gin/binding"
 	log "github.com/sirupsen/logrus"
 	"github.com/superdentist/superdentist-backend/constants"
 	"github.com/superdentist/superdentist-backend/contracts"
@@ -29,31 +28,68 @@ func RegisterPatientInformation(c *gin.Context) {
 	// Stage 1  Load the incoming request
 	log.Infof("Creating Referral")
 	ctx := c.Request.Context()
-	var patientDetails contracts.Patient
 	ctx, span := trace.StartSpan(ctx, "Register incoming request for clinic")
 	defer span.End()
-	if err := c.ShouldBindWith(&patientDetails, binding.JSON); err != nil {
-		c.AbortWithStatusJSON(
-			http.StatusBadRequest,
-			gin.H{
-				constants.RESPONSE_JSON_DATA:   nil,
-				constants.RESPONSDE_JSON_ERROR: fmt.Errorf("Bad data sent to backened"),
-			},
-		)
-		return
-	}
+
 	const _24K = 256 << 20
 	var documentFiles *multipart.Form
 	if err := c.Request.ParseMultipartForm(_24K); err == nil {
 		documentFiles = c.Request.MultipartForm
 	}
-	go registerPatientInDB(patientDetails, documentFiles)
+	go registerPatientInDB(documentFiles)
 	c.JSON(http.StatusOK, gin.H{
 		constants.RESPONSE_JSON_DATA:   "patient registration successful",
 		constants.RESPONSDE_JSON_ERROR: nil,
 	})
 }
-func registerPatientInDB(patientDetails contracts.Patient, documentFiles *multipart.Form) error {
+func registerPatientInDB(documentFiles *multipart.Form) error {
+	var patientDetails contracts.Patient
+	for fieldName, fieldValue := range documentFiles.Value {
+		switch fieldName {
+		case "firstName":
+			patientDetails.FirstName = fieldValue[0]
+		case "lastName":
+			patientDetails.LastName = fieldValue[0]
+		case "phone":
+			patientDetails.Phone = fieldValue[0]
+		case "email":
+			patientDetails.Email = fieldValue[0]
+		case "ssn":
+			patientDetails.SSN = fieldValue[0]
+		case "dob":
+			var dobStruct contracts.DOB
+			err := json.Unmarshal([]byte(fieldValue[0]), &dobStruct)
+			if err == nil {
+				patientDetails.Dob = dobStruct
+			}
+		case "dentalInsurance":
+			dentalInsurance := make([]contracts.PatientDentalInsurance, 0)
+			for _, dI := range fieldValue {
+				var dInsurance contracts.PatientDentalInsurance
+				err := json.Unmarshal([]byte(dI), &dInsurance)
+				if err == nil {
+					dentalInsurance = append(dentalInsurance, dInsurance)
+				}
+			}
+
+			if len(dentalInsurance) > 0 {
+				patientDetails.DentalInsurance = dentalInsurance
+			}
+		case "medicalInsurance":
+			medicalInsurance := make([]contracts.PatientMedicalInsurance, 0)
+			for _, dI := range fieldValue {
+				var dInsurance contracts.PatientMedicalInsurance
+				err := json.Unmarshal([]byte(dI), &dInsurance)
+				if err == nil {
+					medicalInsurance = append(medicalInsurance, dInsurance)
+				}
+			}
+
+			if len(medicalInsurance) > 0 {
+				patientDetails.MedicalInsurance = medicalInsurance
+			}
+		}
+	}
 	gproject := googleprojectlib.GetGoogleProjectID()
 	storageC := storage.NewStorageHandler()
 	ctx := context.Background()
