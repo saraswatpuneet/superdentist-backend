@@ -20,17 +20,15 @@ type DOB struct {
 
 // PatientDentalInsurance ....
 type PatientDentalInsurance struct {
-	Company   string `json:"company" valid:"required"`
-	MemberID  string `json:"memberID" valid:"required"`
-	CardBytes string `datastore:"cardBytes,noindex"`
+	Company  string `json:"company"`
+	MemberID string `json:"memberID"`
 }
 
 // PatientMedicalInsurance ....
 type PatientMedicalInsurance struct {
-	Company     string `json:"company" valid:"required"`
-	GroupNumber string `json:"groupNumber" valid:"required"`
-	MemberID    string `json:"memberID" valid:"required"`
-	CardBytes   string `datastore:"cardBytes,noindex"`
+	Company     string `json:"company"`
+	GroupNumber string `json:"groupNumber"`
+	MemberID    string `json:"memberID"`
 }
 
 // Patient ....

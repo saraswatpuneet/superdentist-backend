@@ -72,6 +72,16 @@ func (sc *Client) UploadToGCS(ctx context.Context, fileName string) (*storage.Wr
 	return bucketWriter, nil
 }
 
+// UploadToGCSPatient ....
+func (sc *Client) UploadToGCSPatient(ctx context.Context, fileName string) (*storage.Writer, error) {
+	currentBucket, err := sc.CreateBucket(ctx, constants.SD_PATIENT_BUCKET)
+	if err != nil {
+		return nil, err
+	}
+	bucketWriter := currentBucket.Object(fileName).NewWriter(ctx)
+	return bucketWriter, nil
+}
+
 // UploadQRtoGCS ....
 func (sc *Client) UploadQRtoGCS(ctx context.Context, fileName string) (*storage.Writer, error) {
 	currentBucket, err := sc.CreateBucket(ctx, constants.SD_QR_BUCKET)

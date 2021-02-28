@@ -88,6 +88,10 @@ func SDRouter() (*gin.Engine, error) {
 		adminGroup.POST("/addFavorites/:addressId", handlers.AddFavoriteClinics)
 
 	}
+	patientGroup := version1.Group("/patient")
+	{
+		patientGroup.POST("/registration", handlers.RegisterPatientInformation)
+	}
 	{
 		// All wesocket related routing goes here follow the pattern
 

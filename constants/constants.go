@@ -8,6 +8,7 @@ const (
 	RESPONSE_JSON_DATA   string = "data"
 	RESPONSDE_JSON_ERROR string = "error"
 	SD_REFERRAL_BUCKET          = "superdentist-referrals"
+	SD_PATIENT_BUCKET           = "superdentist-patients"
 	SD_QR_BUCKET                = "superdentist-qrs"
 	QR_URL_CODE                 = "https://superdentist.io/patient?secureKey=%s&placeIds=%s"
 	SD_ADMIN_EMAIL              = "referrals@superdentist.io"

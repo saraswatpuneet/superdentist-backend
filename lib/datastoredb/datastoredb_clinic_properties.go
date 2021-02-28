@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"cloud.google.com/go/datastore"
+	"github.com/google/uuid"
 	guuid "github.com/google/uuid"
 	"github.com/superdentist/superdentist-backend/contracts"
 	"github.com/superdentist/superdentist-backend/global"
@@ -252,17 +253,36 @@ func (db DSClinicMeta) AddClinicJoinURL(ctx context.Context, currentClinic contr
 
 // AddPatientInformation ....
 func (db DSClinicMeta) AddPatientInformation(ctx context.Context, patient contracts.Patient) error {
-	pKey := datastore.IncompleteKey("PatientDetails", nil)
-
-	if patient.Phone != "" {
-		pKey = datastore.NameKey("PatientDetails", patient.Phone, nil)
-	}
+	patientID, _ := uuid.NewUUID()
+	pIDString := patientID.String()
+	pKey := datastore.NameKey("PatientDetails", pIDString, nil)
 	if global.Options.DSName != "" {
 		pKey.Namespace = global.Options.DSName
 	}
-	_, err := db.client.Put(ctx, pKey, &patient)
-	if err != nil {
-		return err
+	qP := datastore.NewQuery("PatientDetails")
+	if patient.Phone != "" {
+		qP = qP.Filter("Phone =", patient.Phone)
+	}
+	if patient.FirstName != "" {
+		qP = qP.Filter("FirstName =", patient.FirstName)
+	}
+
+	if patient.LastName != "" {
+		qP = qP.Filter("LastName =", patient.LastName)
+	}
+	allPatients := make([]contracts.Patient, 0)
+	keys, err := db.client.GetAll(ctx, qP, &allPatients)
+	if err != nil || len(keys) < 1 {
+		_, err := db.client.Put(ctx, pKey, &patient)
+		if err != nil {
+			return err
+		}
+	} else {
+		firstKey := keys[0]
+		_, err := db.client.Put(ctx, firstKey, &patient)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }
