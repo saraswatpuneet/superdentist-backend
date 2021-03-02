@@ -924,10 +924,12 @@ func ReceiveReferralMail(c *gin.Context) {
 	}
 	dsReferral, err := dsRefC.GetReferral(ctx, subject)
 	if err != nil {
-		dsReferral, err = dsRefC.GetReferralFromEmail(ctx, fromEmail)
+		dsReferralAll, err := dsRefC.GetReferralFromEmail(ctx, fromEmail)
 		if err != nil {
 			log.Errorf("Error processing email"+" "+fromEmail+" "+subject+" error:%v ", err.Error())
+			return
 		}
+		dsReferral = &dsReferralAll[0]
 	}
 	currentBody := parsedEmail.TextBody
 	currentComments := make([]contracts.Comment, 0)
@@ -1160,6 +1162,8 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 	foundOne := false
 	ocrText := ""
 	var res *docconv.Response
+	patientFirstName := ""
+	patientLastName := ""
 	for _, attch := range parsedEmail.Attachments {
 		fileName := attch.Filename
 		reader, err := storageC.DownloadSingleFile(ctx, dsReferral.ReferralID, constants.SD_REFERRAL_BUCKET, fileName)
@@ -1183,11 +1187,23 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 			)
 			return
 		}
-		if !foundOne {
+		if !foundOne || patientFirstName == "" {
 			foundOne = true
 			res, err = docconv.Convert(bytes.NewReader(saveFileReader), "application/pdf", true)
 			if err != nil {
 				log.Errorf("deconv error: %v", err.Error())
+			}
+			patientIndex := -1
+			wordFields := strings.Fields(ocrText)
+			for i, word := range wordFields {
+				if strings.ToLower(word) == "patient" {
+					patientIndex = i
+					break
+				}
+			}
+			if patientIndex >= 0 {
+				patientFirstName = wordFields[patientIndex+1]
+				patientLastName = wordFields[patientIndex+2]
 			}
 
 		}
@@ -1201,21 +1217,74 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 	if res != nil {
 		ocrText = res.Body
 	}
-	patientIndex := -1
-	wordFields := strings.Fields(ocrText)
-	for i, word := range wordFields {
-		if strings.ToLower(word) == "patient" {
-			patientIndex = i
-			break
-		}
-	}
-	if patientIndex >= 0 {
-		dsReferral.PatientFirstName = wordFields[patientIndex+1]
-		dsReferral.PatientLastName = "Treament Summary"
+
+	if patientFirstName != "" {
+		dsReferral.PatientFirstName = patientFirstName
+		dsReferral.PatientLastName = patientLastName
 
 	} else {
 		dsReferral.PatientFirstName = "Treament"
 		dsReferral.PatientLastName = "Summary"
+	}
+	// try to find existing patient summary
+	var existingReferralMain *contracts.DSReferral
+	var existingSummary *contracts.DSReferral
+
+	if dsReferral.PatientFirstName != "Treament" {
+		existingReferrals, err := dsRefC.GetReferralUsingFields(ctx, dsReferral.FromEmail, dsReferral.PatientFirstName, dsReferral.PatientLastName)
+		if err != nil {
+			log.Errorf("Error processing email"+" "+fromEmail+" "+subject+" error:%v ", err.Error())
+		} else {
+			for _, ref := range existingReferrals {
+				if !ref.IsSummary {
+					existingReferralMain = &ref
+				} else {
+					existingSummary = &ref
+				}
+			}
+		}
+		if existingReferralMain != nil {
+			for _, attch := range parsedEmail.Attachments {
+				fileName := attch.Filename
+				reader, err := storageC.DownloadSingleFile(ctx, existingReferralMain.ReferralID, constants.SD_REFERRAL_BUCKET, fileName)
+				if err == nil && reader != nil {
+					timeNow := time.Now()
+					stripFile := strings.Split(fileName, ".")
+					name := stripFile[0]
+					name += strconv.Itoa(timeNow.Year()) + timeNow.Month().String() + strconv.Itoa(timeNow.Day()) + strconv.Itoa(timeNow.Second())
+					fileName = name + "." + stripFile[1]
+				}
+				bucketPath := existingReferralMain.ReferralID + "/" + fileName
+				saveFileReader, _ := ioutil.ReadAll(attch.Data)
+				buckerW, err := storageC.UploadToGCS(ctx, bucketPath)
+				if err != nil {
+					c.AbortWithStatusJSON(
+						http.StatusInternalServerError,
+						gin.H{
+							constants.RESPONSE_JSON_DATA:   nil,
+							constants.RESPONSDE_JSON_ERROR: err.Error(),
+						},
+					)
+					return
+				}
+				_, err = io.Copy(buckerW, bytes.NewReader(saveFileReader))
+				if err != nil {
+					log.Errorf("Error processing email"+" "+fromEmail+" "+subject+" error:%v ", err.Error())
+				}
+				buckerW.Close()
+				docIDNames = append(docIDNames, fileName)
+			}
+			if len(docIDNames) > 0 {
+				existingReferralMain.Documents = append(existingReferralMain.Documents, docIDNames...)
+				err = storageC.ZipFile(ctx, existingReferralMain.ReferralID, constants.SD_REFERRAL_BUCKET)
+				if err != nil {
+					log.Errorf("Error processing email"+" "+fromEmail+" "+subject+" error:%v ", err.Error())
+				}
+			}
+		}
+	}
+	if existingSummary != nil {
+		dsReferral = *existingSummary
 	}
 	dsReferral.IsDirty = false
 	dsReferral.IsNew = false
@@ -1261,6 +1330,14 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 	err = dsRefC.CreateMessage(ctx, dsReferral, currentComments)
 	if err != nil {
 		log.Errorf("Error processing email"+" "+fromEmail+" "+subject+" error:%v ", err.Error())
+	}
+	if existingReferralMain != nil {
+		err = dsRefC.CreateMessage(ctx, *existingReferralMain, currentComments)
+		if err != nil {
+			log.Errorf("Error processing email"+" "+fromEmail+" "+subject+" error:%v ", err.Error())
+		}
+		existingReferralMain.ModifiedOn = time.Now()
+		err = dsRefC.CreateReferral(ctx, *existingReferralMain)
 	}
 	dsReferral.ModifiedOn = time.Now()
 

@@ -85,8 +85,10 @@ func (db *DSReferral) GetReferral(ctx context.Context, refID string) (*contracts
 }
 
 // GetReferralFromEmail .....
-func (db *DSReferral) GetReferralFromEmail(ctx context.Context, emailID string) (*contracts.DSReferral, error) {
+func (db *DSReferral) GetReferralFromEmail(ctx context.Context, emailID string) ([]contracts.DSReferral, error) {
 	returnedReferrals := make([]contracts.DSReferral, 0)
+	allReferrals := make([]contracts.DSReferral, 0)
+
 	qP := datastore.NewQuery("ClinicReferrals")
 	if global.Options.DSName != "" {
 		qP = qP.Namespace(global.Options.DSName)
@@ -98,15 +100,47 @@ func (db *DSReferral) GetReferralFromEmail(ctx context.Context, emailID string) 
 	if err != nil || len(keysClinics) <= 0 {
 		return nil, fmt.Errorf("no referrals found: %v", err)
 	}
-	var outputRef contracts.DSReferral
 	for _, ref := range returnedReferrals {
 		if strings.Contains(strings.ToLower(ref.Status.SPStatus), "complete") || strings.Contains(strings.ToLower(ref.Status.SPStatus), "finish") ||
 			strings.Contains(strings.ToLower(ref.Status.SPStatus), "close") {
 			continue
 		}
-		outputRef = ref
+		allReferrals = append(allReferrals, ref)
 	}
-	return &outputRef, nil
+	return allReferrals, nil
+}
+
+// GetReferralUsingFields .....
+func (db *DSReferral) GetReferralUsingFields(ctx context.Context, fromEmail string, pfName string, plName string) ([]contracts.DSReferral, error) {
+	returnedReferrals := make([]contracts.DSReferral, 0)
+	allReferrals := make([]contracts.DSReferral, 0)
+
+	qP := datastore.NewQuery("ClinicReferrals")
+	if global.Options.DSName != "" {
+		qP = qP.Namespace(global.Options.DSName)
+	}
+	if fromEmail != "" {
+		qP = qP.Filter("FromEmail =", fromEmail)
+	}
+	if pfName != "" {
+		qP = qP.Filter("PatientFirstName =", pfName)
+	}
+	if plName != "" {
+		qP = qP.Filter("PatientLastName =", plName)
+	}
+	qP = qP.Filter("IsDirty =", false)
+	keysClinics, err := db.client.GetAll(ctx, qP, &returnedReferrals)
+	if err != nil || len(keysClinics) <= 0 {
+		return nil, fmt.Errorf("no referrals found: %v", err)
+	}
+	for _, ref := range returnedReferrals {
+		if strings.Contains(strings.ToLower(ref.Status.SPStatus), "complete") || strings.Contains(strings.ToLower(ref.Status.SPStatus), "finish") ||
+			strings.Contains(strings.ToLower(ref.Status.SPStatus), "close") {
+			continue
+		}
+		allReferrals = append(allReferrals, ref)
+	}
+	return allReferrals, nil
 }
 
 // ReferralFromPatientPhone .....
