@@ -134,9 +134,11 @@ func (db *DSReferral) GetReferralUsingFields(ctx context.Context, fromEmail stri
 		return nil, fmt.Errorf("no referrals found: %v", err)
 	}
 	for _, ref := range returnedReferrals {
-		if strings.Contains(strings.ToLower(ref.Status.SPStatus), "complete") || strings.Contains(strings.ToLower(ref.Status.SPStatus), "finish") ||
-			strings.Contains(strings.ToLower(ref.Status.SPStatus), "close") {
-			continue
+		if !ref.IsSummary {
+			if strings.Contains(strings.ToLower(ref.Status.SPStatus), "complete") || strings.Contains(strings.ToLower(ref.Status.SPStatus), "finish") ||
+				strings.Contains(strings.ToLower(ref.Status.SPStatus), "close") {
+				continue
+			}
 		}
 		allReferrals = append(allReferrals, ref)
 	}
