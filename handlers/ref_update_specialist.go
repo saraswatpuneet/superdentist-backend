@@ -1202,8 +1202,8 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 				}
 			}
 			if patientIndex >= 0 {
-				patientFirstName = wordFields[patientIndex+1]
-				patientLastName = wordFields[patientIndex+2]
+				patientFirstName = strings.Title(strings.ToLower(wordFields[patientIndex+1]))
+				patientLastName = strings.Title(strings.ToLower(wordFields[patientIndex+2]))
 			}
 
 		}
