@@ -13,22 +13,23 @@ import (
 	"cloud.google.com/go/datastore"
 )
 
-type dsClinic struct {
+// DSClinic ....
+type DSClinic struct {
 	projectID string
 	client    *datastore.Client
 }
 
 //NewClinicHandler return new database action
-func NewClinicHandler() *dsClinic {
-	return &dsClinic{projectID: "", client: nil}
+func NewClinicHandler() *DSClinic {
+	return &DSClinic{projectID: "", client: nil}
 }
 
-// Ensure dsClinic conforms to the ClinicRegistrationDatabase interface.
+// Ensure DSClinic conforms to the ClinicRegistrationDatabase interface.
 
-var _ contracts.ClinicRegistrationDatabase = &dsClinic{}
+var _ contracts.ClinicRegistrationDatabase = &DSClinic{}
 
 // InitializeDataBase ....
-func (db *dsClinic) InitializeDataBase(ctx context.Context, projectID string) error {
+func (db *DSClinic) InitializeDataBase(ctx context.Context, projectID string) error {
 	serviceAccountSD := os.Getenv("GOOGLE_APPLICATION_CREDENTIALS")
 	if serviceAccountSD == "" {
 		return fmt.Errorf("Failed to get right credentials for superdentist backend")
@@ -56,15 +57,15 @@ func (db *dsClinic) InitializeDataBase(ctx context.Context, projectID string) er
 }
 
 // AddClinicRegistration ....
-func (db *dsClinic) AddClinicRegistration(ctx context.Context, clinic *contracts.ClinicRegistrationData, uID string) error {
+func (db *DSClinic) AddClinicRegistration(ctx context.Context, clinic *contracts.ClinicRegistrationData, uID string) error {
 	parentKey := datastore.NameKey("ClinicAdmin", uID, nil)
-	if global.Options.DSName!= "" {
+	if global.Options.DSName != "" {
 		parentKey.Namespace = global.Options.DSName
 	}
 	primaryKey := datastore.NameKey("ClinicAdmin", clinic.EmailID, parentKey)
-	if global.Options.DSName!= "" {
+	if global.Options.DSName != "" {
 		primaryKey.Namespace = global.Options.DSName
-	}	
+	}
 	allPrimaryClinics := make([]contracts.ClinicRegistrationData, 0)
 	qP := datastore.NewQuery("ClinicAdmin").Ancestor(primaryKey)
 	if global.Options.DSName != "" {
@@ -85,13 +86,13 @@ func (db *dsClinic) AddClinicRegistration(ctx context.Context, clinic *contracts
 }
 
 // VerifyClinicInDatastore ..
-func (db *dsClinic) VerifyClinicInDatastore(ctx context.Context, emailID string, uID string) error {
+func (db *DSClinic) VerifyClinicInDatastore(ctx context.Context, emailID string, uID string) error {
 	parentKey := datastore.NameKey("ClinicAdmin", uID, nil)
-	if global.Options.DSName!= "" {
+	if global.Options.DSName != "" {
 		parentKey.Namespace = global.Options.DSName
 	}
 	pk := datastore.NameKey("ClinicAdmin", emailID, parentKey)
-	if global.Options.DSName!= "" {
+	if global.Options.DSName != "" {
 		pk.Namespace = global.Options.DSName
 	}
 	clinic := &contracts.ClinicRegistrationData{}
@@ -108,6 +109,6 @@ func (db *dsClinic) VerifyClinicInDatastore(ctx context.Context, emailID string,
 }
 
 // Close closes the database.
-func (db *dsClinic) Close() error {
+func (db *DSClinic) Close() error {
 	return db.client.Close()
 }
