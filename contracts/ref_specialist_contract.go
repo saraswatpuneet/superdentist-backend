@@ -18,17 +18,26 @@ type DOB struct {
 	Day   string `json:"day" valid:"required"`
 }
 
+// Subscriber ...
+type Subscriber struct {
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
+	DOB       DOB    `json:"dob"`
+}
+
 // PatientDentalInsurance ....
 type PatientDentalInsurance struct {
-	Company  string `json:"company"`
-	MemberID string `json:"memberId"`
+	Company    string     `json:"company"`
+	MemberID   string     `json:"memberId"`
+	Subscriber Subscriber `json:"subscriber"`
 }
 
 // PatientMedicalInsurance ....
 type PatientMedicalInsurance struct {
-	Company     string `json:"company"`
-	GroupNumber string `json:"groupNumber"`
-	MemberID    string `json:"memberId"`
+	Company     string     `json:"company"`
+	GroupNumber string     `json:"groupNumber"`
+	MemberID    string     `json:"memberId"`
+	Subscriber  Subscriber `json:"subscriber"`
 }
 
 // Patient ....
