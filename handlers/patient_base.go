@@ -64,28 +64,14 @@ func registerPatientInDB(documentFiles *multipart.Form) error {
 			}
 		case "dentalInsurance":
 			dentalInsurance := make([]contracts.PatientDentalInsurance, 0)
-			for _, dI := range fieldValue {
-				var dInsurance contracts.PatientDentalInsurance
-				err := json.Unmarshal([]byte(dI), &dInsurance)
-				if err == nil {
-					dentalInsurance = append(dentalInsurance, dInsurance)
-				}
-			}
-
-			if len(dentalInsurance) > 0 {
+			err := json.Unmarshal([]byte(fieldValue[0]), &dentalInsurance)
+			if len(dentalInsurance) > 0 && err == nil {
 				patientDetails.DentalInsurance = dentalInsurance
 			}
 		case "medicalInsurance":
 			medicalInsurance := make([]contracts.PatientMedicalInsurance, 0)
-			for _, dI := range fieldValue {
-				var dInsurance contracts.PatientMedicalInsurance
-				err := json.Unmarshal([]byte(dI), &dInsurance)
-				if err == nil {
-					medicalInsurance = append(medicalInsurance, dInsurance)
-				}
-			}
-
-			if len(medicalInsurance) > 0 {
+			err := json.Unmarshal([]byte(fieldValue[0]), &medicalInsurance)
+			if len(medicalInsurance) > 0 && err == nil {
 				patientDetails.MedicalInsurance = medicalInsurance
 			}
 		}
