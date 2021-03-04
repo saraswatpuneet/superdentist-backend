@@ -45,6 +45,35 @@ func RegisterPatientInformation(c *gin.Context) {
 		constants.RESPONSDE_JSON_ERROR: nil,
 	})
 }
+
+// GetAllPatientsForClinic ....
+func GetAllPatientsForClinic(c *gin.Context) {
+	// Stage 1  Load the incoming request
+	log.Infof("Creating Referral")
+	gproject := googleprojectlib.GetGoogleProjectID()
+	ctx := c.Request.Context()
+	ctx, span := trace.StartSpan(ctx, "Register incoming request for clinic")
+	defer span.End()
+	// here is we have referral id
+	addressID := c.Param("addressId")
+	patientDB := datastoredb.NewPatientHandler()
+	err := patientDB.InitializeDataBase(ctx, gproject)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	patients := patientDB.GetPatientByAddressID(ctx, addressID)
+	c.JSON(http.StatusOK, gin.H{
+		constants.RESPONSE_JSON_DATA:   patients,
+		constants.RESPONSDE_JSON_ERROR: nil,
+	})
+}
 func registerPatientInDB(documentFiles *multipart.Form) error {
 	var patientDetails contracts.Patient
 	refID := ""
@@ -86,7 +115,6 @@ func registerPatientInDB(documentFiles *multipart.Form) error {
 	ctx := context.Background()
 	var dsReferral *contracts.DSReferral
 	if refID != "" {
-		refID = strings.Replace(refID, "_", "-", -1)
 		dsRefC := datastoredb.NewReferralHandler()
 		err := dsRefC.InitializeDataBase(ctx, gproject)
 		if err != nil {
