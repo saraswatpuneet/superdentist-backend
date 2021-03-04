@@ -131,7 +131,7 @@ func registerPatientInDB(documentFiles *multipart.Form) error {
 		log.Errorf("Failed to created patient information: %v", err.Error())
 		return err
 	}
-	patientFolder := key.Name
+	patientFolder := key
 	if documentFiles != nil {
 		for _, fheaders := range documentFiles.File {
 			for _, hdr := range fheaders {

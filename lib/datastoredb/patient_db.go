@@ -54,39 +54,16 @@ func (db *DSPatient) InitializeDataBase(ctx context.Context, projectID string) e
 }
 
 // AddPatientInformation ....
-func (db DSPatient) AddPatientInformation(ctx context.Context, patient contracts.Patient) (*datastore.Key, error) {
+func (db DSPatient) AddPatientInformation(ctx context.Context, patient contracts.Patient) (string, error) {
 	patientID, _ := uuid.NewUUID()
 	pIDString := patientID.String()
 	pKey := datastore.NameKey("PatientDetails", pIDString, nil)
 	if global.Options.DSName != "" {
 		pKey.Namespace = global.Options.DSName
 	}
-	qP := datastore.NewQuery("PatientDetails")
-	if patient.Phone != "" {
-		qP = qP.Filter("Phone =", patient.Phone)
+	_, err := db.client.Put(ctx, pKey, &patient)
+	if err != nil {
+		return "", err
 	}
-	if patient.FirstName != "" {
-		qP = qP.Filter("FirstName =", patient.FirstName)
-	}
-
-	if patient.LastName != "" {
-		qP = qP.Filter("LastName =", patient.LastName)
-	}
-	allPatients := make([]contracts.Patient, 0)
-	outputKey := pKey
-	keys, err := db.client.GetAll(ctx, qP, &allPatients)
-	if err != nil || len(keys) < 1 {
-		_, err := db.client.Put(ctx, pKey, &patient)
-		if err != nil {
-			return nil, err
-		}
-	} else {
-		firstKey := keys[0]
-		_, err := db.client.Put(ctx, firstKey, &patient)
-		if err != nil {
-			return nil, err
-		}
-		outputKey = firstKey
-	}
-	return outputKey, nil
+	return pIDString, nil
 }
