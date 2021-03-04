@@ -1673,12 +1673,8 @@ func ProcessComments(ctx context.Context, gproject string, referralID string, re
 		}
 		if dsReferral.PatientPhone != "" {
 			message1 := ""
-			message2 := ""
 			message1 = fmt.Sprintf(constants.PATIENT_MESSAGE, dsReferral.PatientFirstName+" "+dsReferral.PatientLastName,
 				dsReferral.ToClinicName, dsReferral.ToClinicAddress, dsReferral.ToClinicPhone, sendPatientComments)
-			if dsReferral.CommunicationText != "" {
-				message2 = dsReferral.CommunicationText
-			}
 			fromPhone := ""
 			if dsReferral.CommunicationPhone == "" {
 				fromPhone = global.Options.ReferralPhone
@@ -1686,9 +1682,6 @@ func ProcessComments(ctx context.Context, gproject string, referralID string, re
 				fromPhone = dsReferral.CommunicationPhone
 			}
 			err = clientSMS.SendSMS(fromPhone, dsReferral.PatientPhone, message1)
-			if message2 != "" {
-				err = clientSMS.SendSMS(fromPhone, dsReferral.PatientPhone, message2)
-			}
 		}
 
 	}

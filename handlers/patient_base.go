@@ -20,6 +20,7 @@ import (
 	"github.com/superdentist/superdentist-backend/contracts"
 	"github.com/superdentist/superdentist-backend/lib/datastoredb"
 	"github.com/superdentist/superdentist-backend/lib/googleprojectlib"
+	"github.com/superdentist/superdentist-backend/lib/sms"
 	"github.com/superdentist/superdentist-backend/lib/storage"
 	"go.opencensus.io/trace"
 )
@@ -175,6 +176,18 @@ func registerPatientInDB(documentFiles *multipart.Form) error {
 		if err != nil {
 			log.Errorf("Failed to created patient information: %v", err.Error())
 			return err
+		}
+	}
+	if dsReferral.CommunicationText != "" && dsReferral.CommunicationPhone != "" {
+		clientSMS := sms.NewSMSClient()
+		err = clientSMS.InitializeSMSClient()
+		if err != nil {
+			log.Errorf("Failed to send SMS: %v", err.Error())
+			return err
+		}
+		message2 := dsReferral.CommunicationText
+		if message2 != "" {
+			err = clientSMS.SendSMS(dsReferral.CommunicationPhone, dsReferral.PatientPhone, message2)
 		}
 	}
 	return nil
