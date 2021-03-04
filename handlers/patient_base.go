@@ -28,7 +28,7 @@ import (
 // RegisterPatientInformation ....
 func RegisterPatientInformation(c *gin.Context) {
 	// Stage 1  Load the incoming request
-	log.Infof("Creating Referral")
+	log.Infof("Patient Stuff")
 	ctx := c.Request.Context()
 	ctx, span := trace.StartSpan(ctx, "Register incoming request for clinic")
 	defer span.End()
@@ -49,7 +49,7 @@ func RegisterPatientInformation(c *gin.Context) {
 // GetAllPatientsForClinic ....
 func GetAllPatientsForClinic(c *gin.Context) {
 	// Stage 1  Load the incoming request
-	log.Infof("Creating Referral")
+	log.Infof("Patient Stuff")
 	gproject := googleprojectlib.GetGoogleProjectID()
 	ctx := c.Request.Context()
 	ctx, span := trace.StartSpan(ctx, "Register incoming request for clinic")
@@ -74,6 +74,53 @@ func GetAllPatientsForClinic(c *gin.Context) {
 		constants.RESPONSDE_JSON_ERROR: nil,
 	})
 }
+
+// AddPatientNotes ....
+func AddPatientNotes(c *gin.Context) {
+	// Stage 1  Load the incoming request
+	log.Infof("Patient Stuff")
+	ctx := c.Request.Context()
+	ctx, span := trace.StartSpan(ctx, "Register incoming request for clinic")
+	defer span.End()
+	// TODO finish the logic
+	c.JSON(http.StatusOK, gin.H{
+		constants.RESPONSE_JSON_DATA:   "patient registration successful",
+		constants.RESPONSDE_JSON_ERROR: nil,
+	})
+}
+
+// UploadPatientDocuments ....
+func UploadPatientDocuments(c *gin.Context) {
+	// Stage 1  Load the incoming request
+	log.Infof("Patient Stuff")
+	ctx := c.Request.Context()
+	ctx, span := trace.StartSpan(ctx, "Register incoming request for clinic")
+	defer span.End()
+	// here is we have referral id
+	pID := c.Param("patientId")
+
+	const _24K = 256 << 20
+	var documentFiles *multipart.Form
+	if err := c.Request.ParseMultipartForm(_24K); err == nil {
+		documentFiles = c.Request.MultipartForm
+	}
+	err := uploadPatientDocs(ctx, pID, documentFiles)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		constants.RESPONSE_JSON_DATA:   "patient registration successful",
+		constants.RESPONSDE_JSON_ERROR: nil,
+	})
+}
+
 func registerPatientInDB(documentFiles *multipart.Form) error {
 	var patientDetails contracts.Patient
 	refID := ""
@@ -216,6 +263,62 @@ func registerPatientInDB(documentFiles *multipart.Form) error {
 		message2 := dsReferral.CommunicationText
 		if message2 != "" {
 			err = clientSMS.SendSMS(dsReferral.CommunicationPhone, dsReferral.PatientPhone, message2)
+		}
+	}
+	return nil
+}
+
+func uploadPatientDocs(ctx context.Context, patientFolder string, documentFiles *multipart.Form) error {
+	gproject := googleprojectlib.GetGoogleProjectID()
+	storageC := storage.NewStorageHandler()
+	err := storageC.InitializeStorageClient(ctx, gproject)
+	if err != nil {
+		log.Errorf("Failed to created patient information: %v", err.Error())
+		return err
+	}
+	if documentFiles != nil {
+		for _, fheaders := range documentFiles.File {
+			for _, hdr := range fheaders {
+				// open uploaded
+				var infile multipart.File
+				if infile, err = hdr.Open(); err != nil {
+
+					log.Errorf("Failed to created patient information: %v", err.Error())
+					return err
+
+				}
+				fileName := hdr.Filename
+
+				reader, err := storageC.DownloadSingleFile(ctx, patientFolder, constants.SD_PATIENT_BUCKET, fileName)
+				if err == nil && reader != nil {
+					timeNow := time.Now()
+					stripFile := strings.Split(fileName, ".")
+					name := stripFile[0]
+					name += strconv.Itoa(timeNow.Year()) + timeNow.Month().String() + strconv.Itoa(timeNow.Day()) + strconv.Itoa(timeNow.Second())
+					fileName = name + "." + stripFile[1]
+				}
+				bucketPath := patientFolder + "/" + fileName
+				buckerW, err := storageC.UploadToGCSPatient(ctx, bucketPath)
+				if err != nil {
+					log.Errorf("Failed to created patient information: %v", err.Error())
+					return err
+				}
+				imageBuffer := bytes.NewBuffer(nil)
+				if _, err := io.Copy(imageBuffer, infile); err != nil {
+
+					log.Errorf("Failed to created patient information: %v", err.Error())
+					return err
+
+				}
+				currentBytes := imageBuffer.Bytes()
+				io.Copy(buckerW, bytes.NewReader(currentBytes))
+				buckerW.Close()
+			}
+		}
+		err = storageC.ZipFile(ctx, patientFolder, constants.SD_PATIENT_BUCKET)
+		if err != nil {
+			log.Errorf("Failed to created patient information: %v", err.Error())
+			return err
 		}
 	}
 	return nil
