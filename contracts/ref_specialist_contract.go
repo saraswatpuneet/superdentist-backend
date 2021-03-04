@@ -50,10 +50,10 @@ type Patient struct {
 	SSN              string                    `json:"ssn"`
 	DentalInsurance  []PatientDentalInsurance  `datastore:"dentalInsurance,noindex"`
 	MedicalInsurance []PatientMedicalInsurance `datastore:"medicalInsurance,noindex"`
-	ReferredFromName string                    `json:"referredFromName" valid:"required"`
-	ReferredToName   string                    `json:"referredToName" valid:"required"`
-	ReferredFrom     string                    `json:"referredFrom" valid:"required"`
-	ReferredTo       string                    `json:"referredTo" valid:"required"`
+	GDName           string                    `json:"gdName" valid:"required"`
+	SP               string                    `json:"sp" valid:"required"`
+	GD               string                    `json:"gd" valid:"required"`
+	SPName           string                    `json:"spName" valid:"required"`
 	ReferralID       string                    `json:"referralId" valid:"required"`
 }
 

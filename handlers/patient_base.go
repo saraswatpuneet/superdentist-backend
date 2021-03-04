@@ -99,17 +99,17 @@ func registerPatientInDB(documentFiles *multipart.Form) error {
 			return err
 		}
 		if dsReferral.FromAddressID != "" {
-			patientDetails.ReferredFrom = dsReferral.FromAddressID
+			patientDetails.GD = dsReferral.FromAddressID
 		} else {
-			patientDetails.ReferredFrom = dsReferral.FromPlaceID
+			patientDetails.GD = dsReferral.FromPlaceID
 		}
 		if dsReferral.ToAddressID != "" {
-			patientDetails.ReferredTo = dsReferral.ToAddressID
+			patientDetails.SP = dsReferral.ToAddressID
 		} else {
-			patientDetails.ReferredTo = dsReferral.ToPlaceID
+			patientDetails.SP = dsReferral.ToPlaceID
 		}
-		patientDetails.ReferredFromName = dsReferral.FromClinicName
-		patientDetails.ReferredToName = dsReferral.ToClinicName
+		patientDetails.GDName = dsReferral.FromClinicName
+		patientDetails.SPName = dsReferral.ToClinicName
 		patientDetails.ReferralID = refID
 	} else {
 		return fmt.Errorf("bad referral id provided")
