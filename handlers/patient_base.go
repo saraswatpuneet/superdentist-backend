@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"mime/multipart"
 	"net/http"
@@ -30,6 +31,7 @@ func RegisterPatientInformation(c *gin.Context) {
 	ctx := c.Request.Context()
 	ctx, span := trace.StartSpan(ctx, "Register incoming request for clinic")
 	defer span.End()
+	// here is we have referral id
 
 	const _24K = 256 << 20
 	var documentFiles *multipart.Form
@@ -44,6 +46,7 @@ func RegisterPatientInformation(c *gin.Context) {
 }
 func registerPatientInDB(documentFiles *multipart.Form) error {
 	var patientDetails contracts.Patient
+	refID := ""
 	for fieldName, fieldValue := range documentFiles.Value {
 		switch fieldName {
 		case "firstName":
@@ -74,11 +77,44 @@ func registerPatientInDB(documentFiles *multipart.Form) error {
 			if len(medicalInsurance) > 0 && err == nil {
 				patientDetails.MedicalInsurance = medicalInsurance
 			}
+		case "referralId":
+			refID = fieldValue[0]
 		}
 	}
 	gproject := googleprojectlib.GetGoogleProjectID()
-	storageC := storage.NewStorageHandler()
 	ctx := context.Background()
+	var dsReferral *contracts.DSReferral
+	if refID != "" {
+		refID = strings.Replace(refID, "_", "-", -1)
+		dsRefC := datastoredb.NewReferralHandler()
+		err := dsRefC.InitializeDataBase(ctx, gproject)
+		if err != nil {
+			log.Errorf("Failed to created patient information: %v", err.Error())
+			return err
+		}
+		dsReferral, err = dsRefC.GetReferral(ctx, refID)
+		if err != nil {
+			log.Errorf("Failed to created patient information: %v", err.Error())
+			return err
+		}
+		if dsReferral.FromAddressID != "" {
+			patientDetails.ReferredFrom = dsReferral.FromAddressID
+		} else {
+			patientDetails.ReferredFrom = dsReferral.FromPlaceID
+		}
+		if dsReferral.ToAddressID != "" {
+			patientDetails.ReferredTo = dsReferral.ToAddressID
+		} else {
+			patientDetails.ReferredTo = dsReferral.ToPlaceID
+		}
+		patientDetails.ReferredFromName = dsReferral.FromClinicName
+		patientDetails.ReferredToName = dsReferral.ToClinicName
+		patientDetails.ReferralID = refID
+	} else {
+		return fmt.Errorf("bad referral id provided")
+	}
+
+	storageC := storage.NewStorageHandler()
 	err := storageC.InitializeStorageClient(ctx, gproject)
 	if err != nil {
 		log.Errorf("Failed to created patient information: %v", err.Error())
