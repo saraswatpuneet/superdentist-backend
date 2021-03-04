@@ -42,6 +42,7 @@ type PatientMedicalInsurance struct {
 
 // Patient ....
 type Patient struct {
+	PatientID        string                    `json:"patientId" valid:"required"`
 	FirstName        string                    `json:"firstName" valid:"required"`
 	LastName         string                    `json:"lastName" valid:"required"`
 	Dob              DOB                       `json:"dob"`

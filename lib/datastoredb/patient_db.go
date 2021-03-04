@@ -61,6 +61,7 @@ func (db DSPatient) AddPatientInformation(ctx context.Context, patient contracts
 	if global.Options.DSName != "" {
 		pKey.Namespace = global.Options.DSName
 	}
+	patient.PatientID = pIDString
 	_, err := db.client.Put(ctx, pKey, &patient)
 	if err != nil {
 		return "", err
@@ -69,21 +70,21 @@ func (db DSPatient) AddPatientInformation(ctx context.Context, patient contracts
 }
 
 // GetPatientByAddressID ...
-func (db DSPatient) GetPatientByAddressID(ctx context.Context, addressID string) ([]contracts.Patient) {
+func (db DSPatient) GetPatientByAddressID(ctx context.Context, addressID string) []contracts.Patient {
 	patients := make([]contracts.Patient, 0)
 	patients1 := make([]contracts.Patient, 0)
 	patients2 := make([]contracts.Patient, 0)
 
 	qP := datastore.NewQuery("PatientDetails")
 	qP = qP.Filter("GD =", addressID)
-	db.client.GetAll(ctx,qP,&patients1)
+	db.client.GetAll(ctx, qP, &patients1)
 	qP = datastore.NewQuery("PatientDetails")
 	qP = qP.Filter("SP =", addressID)
-	db.client.GetAll(ctx,qP,&patients2)
-	if len(patients1) > 0  {
+	db.client.GetAll(ctx, qP, &patients2)
+	if len(patients1) > 0 {
 		patients = append(patients, patients1...)
 	}
-	if len(patients2) > 0  {
+	if len(patients2) > 0 {
 		patients = append(patients, patients2...)
 	}
 	return patients
