@@ -1193,6 +1193,9 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 			if err != nil {
 				log.Errorf("deconv error: %v", err.Error())
 			}
+			if res != nil {
+				ocrText = res.Body
+			}
 			patientIndex := -1
 			wordFields := strings.Fields(ocrText)
 			for i, word := range wordFields {
@@ -1213,9 +1216,6 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 		}
 		buckerW.Close()
 		docIDNames = append(docIDNames, fileName)
-	}
-	if res != nil {
-		ocrText = res.Body
 	}
 
 	if patientFirstName != "" {
