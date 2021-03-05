@@ -48,7 +48,7 @@ type Patient struct {
 	Dob              DOB                       `json:"dob"`
 	Email            string                    `json:"email" valid:"required"`
 	Phone            string                    `json:"phone" valid:"required"`
-	SSN              string                    `json:"ssn"`
+	SSN              string                    `json:"_"`
 	DentalInsurance  []PatientDentalInsurance  `datastore:"dentalInsurance,noindex"`
 	MedicalInsurance []PatientMedicalInsurance `datastore:"medicalInsurance,noindex"`
 	GDName           string                    `json:"gdName" valid:"required"`
