@@ -160,6 +160,35 @@ func UploadPatientDocuments(c *gin.Context) {
 	})
 }
 
+// ProcessPatientSpreadSheet ....
+func ProcessPatientSpreadSheet(c *gin.Context) {
+	// Stage 1  Load the incoming request
+	log.Infof("Patient Stuff")
+	ctx := c.Request.Context()
+	ctx, span := trace.StartSpan(ctx, "Register incoming request for clinic")
+	defer span.End()
+	// here is we have referral id
+
+	const _24K = 256 << 20
+	var documentFiles *multipart.Form
+	if err := c.Request.ParseMultipartForm(_24K); err == nil {
+		documentFiles = c.Request.MultipartForm
+	}
+	if documentFiles == nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: fmt.Errorf("no sheets provided to backend to process"),
+			},
+		)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		constants.RESPONSE_JSON_DATA:   "patient registration successful",
+		constants.RESPONSDE_JSON_ERROR: nil,
+	})
+}
 func registerPatientInDB(documentFiles *multipart.Form) error {
 	var patientDetails contracts.Patient
 	refID := ""
