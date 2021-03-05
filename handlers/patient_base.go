@@ -15,6 +15,7 @@ import (
 	//"github.com/otiai10/gosseract/v2"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	log "github.com/sirupsen/logrus"
 	"github.com/superdentist/superdentist-backend/constants"
 	"github.com/superdentist/superdentist-backend/contracts"
@@ -80,9 +81,47 @@ func AddPatientNotes(c *gin.Context) {
 	// Stage 1  Load the incoming request
 	log.Infof("Patient Stuff")
 	ctx := c.Request.Context()
+	// here is we have referral id
+	pID := c.Param("patientId")
+
 	ctx, span := trace.StartSpan(ctx, "Register incoming request for clinic")
 	defer span.End()
-	// TODO finish the logic
+	var patientNotes map[string]interface{}
+	if err := c.ShouldBindWith(&patientNotes, binding.JSON); err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: fmt.Errorf("Bad data sent to backened"),
+			},
+		)
+		return
+	}
+	gproject := googleprojectlib.GetGoogleProjectID()
+
+	patientDB := datastoredb.NewPatientHandler()
+	err := patientDB.InitializeDataBase(ctx, gproject)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: fmt.Errorf("Bad data sent to backened"),
+			},
+		)
+		return
+	}
+	err = patientDB.AddPatientNotes(ctx, pID, patientNotes)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: fmt.Errorf("Bad data sent to backened"),
+			},
+		)
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{
 		constants.RESPONSE_JSON_DATA:   "patient registration successful",
 		constants.RESPONSDE_JSON_ERROR: nil,
