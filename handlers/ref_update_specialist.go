@@ -1226,6 +1226,7 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 		dsReferral.PatientFirstName = "Treament"
 		dsReferral.PatientLastName = "Summary"
 	}
+	log.Infof("PatientName: %s", dsReferral.PatientFirstName+dsReferral.PatientLastName)
 	// try to find existing patient summary
 	var existingReferralMain *contracts.DSReferral
 	var existingSummary *contracts.DSReferral
