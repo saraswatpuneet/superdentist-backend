@@ -1399,13 +1399,10 @@ func ScheduleDemo(c *gin.Context) {
 	}
 
 	sgClient.SendLiveDemoRequest(data)
-	c.AbortWithStatusJSON(
-		http.StatusOK,
-		gin.H{
-			constants.RESPONSE_JSON_DATA:   nil,
-			constants.RESPONSDE_JSON_ERROR: err.Error(),
-		},
-	)
+	c.JSON(http.StatusOK, gin.H{
+		constants.RESPONSE_JSON_DATA:   "scheduled",
+		constants.RESPONSDE_JSON_ERROR: nil,
+	})
 	return
 }
 
