@@ -1376,7 +1376,14 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 func ScheduleDemo(c *gin.Context) {
 	var data map[string]interface{}
 	if err := c.ShouldBindWith(&data, binding.JSON); err != nil {
-		log.Infof("error demo: %v", err)
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
 	}
 	sgClient := sendgrid.NewSendGridClient()
 	err := sgClient.InitializeSendGridClient()
@@ -1392,7 +1399,14 @@ func ScheduleDemo(c *gin.Context) {
 	}
 
 	sgClient.SendLiveDemoRequest(data)
-
+	c.AbortWithStatusJSON(
+		http.StatusOK,
+		gin.H{
+			constants.RESPONSE_JSON_DATA:   nil,
+			constants.RESPONSDE_JSON_ERROR: err.Error(),
+		},
+	)
+	return
 }
 
 // TextRecievedPatient ...
