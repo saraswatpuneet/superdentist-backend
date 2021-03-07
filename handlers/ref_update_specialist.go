@@ -1390,10 +1390,9 @@ func ScheduleDemo(c *gin.Context) {
 		)
 		return
 	}
-	if data["bot-field"]== nil || data["bot-field"] == "" {
-		delete(data, "bot-field")
-		sgClient.SendLiveDemoRequest(data)
-	}
+
+	sgClient.SendLiveDemoRequest(data)
+
 }
 
 // TextRecievedPatient ...
