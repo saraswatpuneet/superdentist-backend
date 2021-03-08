@@ -56,6 +56,7 @@ type Patient struct {
 	GD               string                    `json:"gd" valid:"required"`
 	SPName           string                    `json:"spName" valid:"required"`
 	ReferralID       string                    `json:"referralId" valid:"required"`
+	DueDate          string                    `json:"dueDate"`
 }
 
 // ChatBox ....
