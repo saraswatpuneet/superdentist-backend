@@ -40,6 +40,8 @@ type PatientMedicalInsurance struct {
 	Subscriber  Subscriber `json:"subscriber"`
 }
 
+// notes: clinic info, tax id, group npi, provider name, provider npi,
+
 // Patient ....
 type Patient struct {
 	PatientID        string                    `json:"patientId" valid:"required"`
@@ -57,6 +59,8 @@ type Patient struct {
 	SPName           string                    `json:"spName" valid:"required"`
 	ReferralID       string                    `json:"referralId" valid:"required"`
 	DueDate          string                    `json:"dueDate"`
+	SameDay          bool                      `json:"sameDay"`
+	Status           string                    `json:"status"`
 }
 
 // ChatBox ....

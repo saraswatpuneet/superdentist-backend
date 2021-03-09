@@ -15,6 +15,8 @@ type PhysicalClinicsRegistration struct {
 	Address      string   `json:"address" valid:"required"`
 	EmailAddress string   `json:"emailAddress" valid:"required"`
 	PhoneNumber  string   `json:"phoneNumber" valid:"required"`
+	TaxID        string   `json:"taxId"`
+	GroupNPI     string   `json:"groupNpi"`
 	Specialty    []string `json:"specialty"`
 	Favorites    []string `json:"favorites"`
 }
@@ -36,15 +38,15 @@ type ClinicJoinDetails struct {
 // PhysicalClinicMapLocation ....
 type PhysicalClinicMapLocation struct {
 	PhysicalClinicsRegistration
-	Location       ClinicLocation
-	IsVerified     bool
-	Geohash        string `json:"-"`
-	Precision      int    `json:"-"`
-	PlaceID        string
-	AutoEmail      string   `json:"-"`
-	TwilioNumber   string   `json:"-"`
-	CustomText     string   `json:"-"`
-	Domain         []string `json:"-"`
+	Location     ClinicLocation
+	IsVerified   bool
+	Geohash      string `json:"-"`
+	Precision    int    `json:"-"`
+	PlaceID      string
+	AutoEmail    string   `json:"-"`
+	TwilioNumber string   `json:"-"`
+	CustomText   string   `json:"-"`
+	Domain       []string `json:"-"`
 }
 
 // QRStoreSchema ....
