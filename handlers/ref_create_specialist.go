@@ -339,12 +339,18 @@ func processReferral(referralDetails contracts.ReferralDetails, gproject string,
 				commentReasons.MessageID = currentID.String()
 				commentReasons.Channel = "c2c"
 				commentReasons.Text = "New QR based referral is created."
-				commentReasons.Files = docIDNames
 				location, _ := time.LoadLocation(zone[0])
 				commentReasons.TimeStamp = time.Now().In(location).UTC().UnixNano() / int64(time.Millisecond)
 				commentReasons.UserID = fromClinic.EmailAddress
 				updatedComm = append(updatedComm, commentReasons)
-
+				currentID, _ = uuid.NewUUID()
+				commentReasons.MessageID = currentID.String()
+				commentReasons.Channel = "c2c"
+				commentReasons.Text = "QR snapshot attached."
+				commentReasons.Files = docIDNames
+				commentReasons.TimeStamp = time.Now().In(location).UTC().UnixNano() / int64(time.Millisecond)
+				commentReasons.UserID = fromClinic.EmailAddress
+				updatedComm = append(updatedComm, commentReasons)
 				if ocrText != "" {
 					var commentReasons contracts.Comment
 					currentID, _ := uuid.NewUUID()
