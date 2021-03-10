@@ -431,11 +431,11 @@ func processReferral(referralDetails contracts.ReferralDetails, gproject string,
 		log.Errorf("Failed to created referral: %v", err.Error())
 		return nil, nil
 	}
-	err = clinicDB.AddPatientInformation(ctx, referralDetails.Patient)
-	if err != nil {
-		log.Errorf("Failed to create patient information: %v", err.Error())
-		return nil, nil
-	}
+	//err = clinicDB.AddPatientInformation(ctx, referralDetails.Patient)
+	//if err != nil {
+	//	log.Errorf("Failed to create patient information: %v", err.Error())
+	//	return nil, nil
+	//}
 	return &dsReferral, &returnComments
 }
 
