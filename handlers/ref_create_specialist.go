@@ -339,6 +339,7 @@ func processReferral(referralDetails contracts.ReferralDetails, gproject string,
 				commentReasons.MessageID = currentID.String()
 				commentReasons.Channel = "c2c"
 				commentReasons.Text = "New QR based referral is created."
+				commentReasons.Files = docIDNames
 				location, _ := time.LoadLocation(zone[0])
 				commentReasons.TimeStamp = time.Now().In(location).UTC().UnixNano() / int64(time.Millisecond)
 				commentReasons.UserID = fromClinic.EmailAddress
