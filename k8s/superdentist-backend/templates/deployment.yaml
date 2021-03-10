@@ -63,6 +63,8 @@ spec:
             value: '+17373772180'
           - name: SD_ADMIN_EMAIL_REPLYTO
             value: referralsdev@mailer.superdentist.io
+          - name: SD_BASE_URL
+            value: https://dev.superdentist.io
           - name: SD_PATIENT_REF_CONF
             value: d-789db895f1464d7ab85f3abd8ff14a90
           - name: SD_SPECIALIZT_REF_CONF
