@@ -27,6 +27,7 @@ import (
 	"github.com/superdentist/superdentist-backend/lib/datastoredb"
 	"github.com/superdentist/superdentist-backend/lib/gmaps"
 	"github.com/superdentist/superdentist-backend/lib/googleprojectlib"
+	"github.com/superdentist/superdentist-backend/lib/identity"
 	"github.com/superdentist/superdentist-backend/lib/sendgrid"
 	"github.com/superdentist/superdentist-backend/lib/storage"
 	"go.opencensus.io/trace"
@@ -160,6 +161,29 @@ func QRReferral(c *gin.Context) {
 		documentFiles = c.Request.MultipartForm
 	}
 	go processReferral(referralDetails, gproject, true, documentFiles)
+	userID, err := getUserDetailsAnonymous(ctx, c.Request)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusUnauthorized,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	idAuth, err := identity.NewIDPEP(ctx, gproject)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	idAuth.DeleteAnonymousUser(ctx, userID)
 	c.JSON(http.StatusOK, gin.H{
 		constants.RESPONSE_JSON_DATA:   "referral created successfully.",
 		constants.RESPONSDE_JSON_ERROR: nil,

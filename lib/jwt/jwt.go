@@ -133,7 +133,10 @@ func GetUserID(r *http.Request) (string, error) {
 	if subid != "" {
 		return subid, nil
 	}
-
+	subid = claims.Get("user_id").AsString()
+	if subid != "" {
+		return subid, nil
+	}
 	return claims.Get("sub").AsString(), nil
 }
 

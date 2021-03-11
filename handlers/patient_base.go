@@ -21,6 +21,7 @@ import (
 	"github.com/superdentist/superdentist-backend/contracts"
 	"github.com/superdentist/superdentist-backend/lib/datastoredb"
 	"github.com/superdentist/superdentist-backend/lib/googleprojectlib"
+	"github.com/superdentist/superdentist-backend/lib/identity"
 	"github.com/superdentist/superdentist-backend/lib/sms"
 	"github.com/superdentist/superdentist-backend/lib/storage"
 	"go.opencensus.io/trace"
@@ -41,6 +42,30 @@ func RegisterPatientInformation(c *gin.Context) {
 		documentFiles = c.Request.MultipartForm
 	}
 	go registerPatientInDB(documentFiles)
+	gproject := googleprojectlib.GetGoogleProjectID()
+	userID, err := getUserDetailsAnonymous(ctx, c.Request)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusUnauthorized,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	idAuth, err := identity.NewIDPEP(ctx, gproject)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	idAuth.DeleteAnonymousUser(ctx, userID)
 	c.JSON(http.StatusOK, gin.H{
 		constants.RESPONSE_JSON_DATA:   "patient registration successful",
 		constants.RESPONSDE_JSON_ERROR: nil,
@@ -276,7 +301,7 @@ func registerPatientInDB(documentFiles *multipart.Form) error {
 		return err
 	}
 	patientFolder := key
-	if documentFiles != nil && documentFiles.File!=nil && len(documentFiles.File) > 0 {
+	if documentFiles != nil && documentFiles.File != nil && len(documentFiles.File) > 0 {
 		for _, fheaders := range documentFiles.File {
 			for _, hdr := range fheaders {
 				// open uploaded

@@ -93,6 +93,23 @@ func (id *IDP) GetUserByEmail(ctx context.Context, email string) (*auth.UserReco
 	return currentUser, nil
 }
 
+// DeleteAnonymousUser ...
+func (id *IDP) DeleteAnonymousUser(ctx context.Context, userID string) error {
+	var err error
+	if id.tClient != nil {
+		err = id.tClient.DeleteUser(ctx, userID)
+		if err != nil {
+			return err
+		}
+	} else {
+		err = id.client.DeleteUser(ctx, userID)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // GetVerificationURL ...
 func (id *IDP) GetVerificationURL(ctx context.Context, email string) (string, error) {
 	contURL := global.Options.ContinueURL
