@@ -276,7 +276,7 @@ func registerPatientInDB(documentFiles *multipart.Form) error {
 		return err
 	}
 	patientFolder := key
-	if documentFiles != nil {
+	if documentFiles != nil && documentFiles.File!=nil && len(documentFiles.File) > 0 {
 		for _, fheaders := range documentFiles.File {
 			for _, hdr := range fheaders {
 				// open uploaded
