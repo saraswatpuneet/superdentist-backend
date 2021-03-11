@@ -1695,7 +1695,7 @@ func ProcessComments(ctx context.Context, gproject string, referralID string, re
 			}
 			err = clientSMS.SendSMS(fromPhone, dsReferral.PatientPhone, message1)
 			message2 := "Please submit your insurance information here to receive an accurate co-pay: "
-			message2 += os.Getenv("SD_BASE_URL") + "/secure/insurance/" + dsReferral.ReferralID
+			message2 += os.Getenv("SD_BASE_URL") + "/secure/insurance?referral=" + dsReferral.ReferralID
 			err = clientSMS.SendSMS(fromPhone, dsReferral.PatientPhone, message2)
 
 		}
