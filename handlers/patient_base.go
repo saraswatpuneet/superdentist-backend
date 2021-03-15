@@ -24,6 +24,7 @@ import (
 	"github.com/superdentist/superdentist-backend/lib/identity"
 	"github.com/superdentist/superdentist-backend/lib/sms"
 	"github.com/superdentist/superdentist-backend/lib/storage"
+	"github.com/tealeg/xlsx"
 	"go.opencensus.io/trace"
 )
 
@@ -193,6 +194,7 @@ func ProcessPatientSpreadSheet(c *gin.Context) {
 	ctx, span := trace.StartSpan(ctx, "Register incoming request for clinic")
 	defer span.End()
 	// here is we have referral id
+	gproject := googleprojectlib.GetGoogleProjectID()
 
 	const _24K = 256 << 20
 	var documentFiles *multipart.Form
@@ -209,7 +211,7 @@ func ProcessPatientSpreadSheet(c *gin.Context) {
 		)
 		return
 	}
-	err := processSpreadSheet(documentFiles)
+	err := processSpreadSheet(ctx, gproject, documentFiles)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
@@ -429,14 +431,137 @@ func uploadPatientDocs(ctx context.Context, patientFolder string, documentFiles 
 	return nil
 }
 
-func processSpreadSheet(documentFiles *multipart.Form) error {
+func processSpreadSheet(ctx context.Context, gproject string, documentFiles *multipart.Form) error {
 	var dueDate int64
+	var addressID string
 	for fieldName, fieldValue := range documentFiles.Value {
 		switch fieldName {
 		case "dueDate":
 			dueDate, _ = strconv.ParseInt(fieldValue[0], 10, 64)
+		case "addressId":
+			addressID = fieldValue[0]
 		}
 	}
+	var err error
 	log.Infof("Due Date: %v", dueDate)
+	if addressID == "" || dueDate <= 0 {
+		return fmt.Errorf("missing required information: check clinic address id (addressId) or due date (dueDate)")
+	}
+	for _, xlFileValue := range documentFiles.File {
+
+		for _, hdr := range xlFileValue {
+			// open uploaded
+			var infile multipart.File
+			if infile, err = hdr.Open(); err != nil {
+
+				log.Errorf("Failed to created patient information: %v", err.Error())
+				return err
+
+			}
+			fileName := hdr.Filename
+			splitNameFile := strings.Split(fileName, ".")
+			foundSheet := false
+			switch splitNameFile[len(splitNameFile)-1] {
+			case "csv", "xlsx":
+				foundSheet = true
+			}
+			if !foundSheet {
+				continue
+			}
+			xlBytes := bytes.NewBuffer(nil)
+			if _, err := io.Copy(xlBytes, infile); err != nil {
+
+				log.Errorf("Failed to create patient information via excel file: %v", err.Error())
+				return err
+
+			}
+			xlFile, err := xlsx.OpenBinary(xlBytes.Bytes())
+			if err != nil {
+				log.Errorf("Failed to create patient information via excel file: %v", err.Error())
+				return err
+			}
+			err = processXlDocument(ctx, gproject, addressID, dueDate, xlFile)
+			// read the file
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+func processXlDocument(ctx context.Context, gproject string, addressID string, dueDate int64, xlFile *xlsx.File) error {
+	columnMap := make(map[int]string)
+	patientDB := datastoredb.NewPatientHandler()
+	err := patientDB.InitializeDataBase(ctx, gproject)
+	if err != nil {
+		log.Errorf("Failed to created patient information: %v", err.Error())
+		return err
+	}
+	for _, sheet := range xlFile.Sheets {
+		if sheet.Hidden {
+			continue
+		}
+		for i, row := range sheet.Rows {
+			for j, cell := range row.Cells {
+				text := strings.TrimSpace(cell.String())
+				if i == 0 {
+					columnMap[j] = strings.ToLower(text)
+				} else {
+					var patientInfo contracts.Patient
+					patientInfo.DueDate = dueDate
+					switch columnMap[j] {
+					case "time":
+						patientInfo.AppointmentTime = text
+					case "name":
+						splitName := strings.Split(text, ",")
+						patientInfo.LastName = splitName[0]
+						patientInfo.FirstName = splitName[1]
+					case "dob":
+						splitDOB := strings.Split(text, "/")
+						patientInfo.Dob = contracts.DOB{
+							Year:  splitDOB[2],
+							Day:   splitDOB[1],
+							Month: splitDOB[0],
+						}
+					case "subscriber":
+						var subscriber contracts.Subscriber
+						splitName := strings.Split(text, ",")
+						subscriber.LastName = splitName[0]
+						subscriber.FirstName = splitName[1]
+						patientInfo.DentalInsurance = make([]contracts.PatientDentalInsurance, 0)
+						var dInsurance contracts.PatientDentalInsurance
+						dInsurance.Subscriber = subscriber
+						patientInfo.DentalInsurance = append(patientInfo.DentalInsurance, dInsurance)
+					case "subscriber dob":
+						if len(patientInfo.DentalInsurance) > 0 {
+							splitDOB := strings.Split(text, "/")
+							sdob := contracts.DOB{
+								Year:  splitDOB[2],
+								Day:   splitDOB[1],
+								Month: splitDOB[0],
+							}
+							for i, insurance := range patientInfo.DentalInsurance {
+								insurance.Subscriber.DOB = sdob
+								patientInfo.DentalInsurance[i] = insurance
+							}
+						}
+					case "insurance":
+						for i, insurance := range patientInfo.DentalInsurance {
+							insurance.Company = text
+							patientInfo.DentalInsurance[i] = insurance
+						}
+					case "id":
+						for i, insurance := range patientInfo.DentalInsurance {
+							insurance.MemberID = text
+							patientInfo.DentalInsurance[i] = insurance
+						}
+					}
+					patientInfo.GD = addressID
+					patientDB.AddPatientInformation(ctx, patientInfo)
+				}
+			}
+		}
+	}
 	return nil
 }
