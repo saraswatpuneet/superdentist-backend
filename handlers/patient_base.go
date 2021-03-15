@@ -211,6 +211,7 @@ func ProcessPatientSpreadSheet(c *gin.Context) {
 		)
 		return
 	}
+	
 	err := processSpreadSheet(ctx, gproject, documentFiles)
 	if err != nil {
 		c.AbortWithStatusJSON(
