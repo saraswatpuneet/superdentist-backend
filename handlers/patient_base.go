@@ -209,11 +209,23 @@ func ProcessPatientSpreadSheet(c *gin.Context) {
 		)
 		return
 	}
+	err := processSpreadSheet(documentFiles)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{
 		constants.RESPONSE_JSON_DATA:   "patient registration successful",
 		constants.RESPONSDE_JSON_ERROR: nil,
 	})
 }
+
 func registerPatientInDB(documentFiles *multipart.Form) error {
 	var patientDetails contracts.Patient
 	refID := ""
@@ -414,5 +426,17 @@ func uploadPatientDocs(ctx context.Context, patientFolder string, documentFiles 
 			return err
 		}
 	}
+	return nil
+}
+
+func processSpreadSheet(documentFiles *multipart.Form) error {
+	var dueDate int64
+	for fieldName, fieldValue := range documentFiles.Value {
+		switch fieldName {
+		case "dueDate":
+			dueDate, _ = strconv.ParseInt(fieldValue[0], 10, 64)
+		}
+	}
+	log.Infof("Due Date: %v", dueDate)
 	return nil
 }

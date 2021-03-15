@@ -58,7 +58,8 @@ type Patient struct {
 	GD               string                    `json:"gd" valid:"required"`
 	SPName           string                    `json:"spName" valid:"required"`
 	ReferralID       string                    `json:"referralId" valid:"required"`
-	DueDate          string                    `json:"dueDate"`
+	DueDate          int64                     `json:"dueDate"`
+	AppointmentTime  int64                     `json:"appointmentTime"`
 	SameDay          bool                      `json:"sameDay"`
 	Status           string                    `json:"status"`
 }
