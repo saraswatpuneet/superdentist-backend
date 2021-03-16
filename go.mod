@@ -20,7 +20,7 @@ require (
 	github.com/go-playground/validator/v10 v10.4.1 // indirect
 	github.com/google/uuid v1.2.0
 	github.com/gorilla/websocket v1.4.2
-	github.com/grokify/html-strip-tags-go v0.0.1
+	github.com/grokify/html-strip-tags-go v0.0.1 // indirect
 	github.com/johnfercher/maroto v0.29.0
 	github.com/json-iterator/go v1.1.10 // indirect
 	github.com/jung-kurt/gofpdf v1.16.2 // indirect
@@ -34,7 +34,7 @@ require (
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.1 // indirect
 	github.com/nyaruka/phonenumbers v1.0.61
-	github.com/otiai10/gosseract/v2 v2.3.1
+	github.com/otiai10/gosseract/v2 v2.3.1 // indirect
 	github.com/ruudk/golang-pdf417 v0.0.0-20201230142125-a7e3863a1245 // indirect
 	github.com/sendgrid/rest v2.6.2+incompatible // indirect
 	github.com/sendgrid/sendgrid-go v3.7.2+incompatible

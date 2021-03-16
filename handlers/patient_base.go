@@ -3,6 +3,7 @@ package handlers
 import (
 	"bytes"
 	"context"
+	"encoding/csv"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -24,7 +25,6 @@ import (
 	"github.com/superdentist/superdentist-backend/lib/identity"
 	"github.com/superdentist/superdentist-backend/lib/sms"
 	"github.com/superdentist/superdentist-backend/lib/storage"
-	"github.com/tealeg/xlsx"
 	"go.opencensus.io/trace"
 )
 
@@ -211,7 +211,7 @@ func ProcessPatientSpreadSheet(c *gin.Context) {
 		)
 		return
 	}
-	
+
 	err := processSpreadSheet(ctx, gproject, documentFiles)
 	if err != nil {
 		c.AbortWithStatusJSON(
@@ -476,12 +476,8 @@ func processSpreadSheet(ctx context.Context, gproject string, documentFiles *mul
 				return err
 
 			}
-			xlFile, err := xlsx.OpenBinary(xlBytes.Bytes())
-			if err != nil {
-				log.Errorf("Failed to create patient information via excel file: %v", err.Error())
-				return err
-			}
-			err = processXlDocument(ctx, gproject, addressID, dueDate, xlFile)
+			csvReader := csv.NewReader(xlBytes)
+			err = processXlDocument(ctx, gproject, addressID, dueDate, csvReader)
 			// read the file
 			if err != nil {
 				return err
@@ -491,7 +487,7 @@ func processSpreadSheet(ctx context.Context, gproject string, documentFiles *mul
 	return nil
 }
 
-func processXlDocument(ctx context.Context, gproject string, addressID string, dueDate int64, xlFile *xlsx.File) error {
+func processXlDocument(ctx context.Context, gproject string, addressID string, dueDate int64, xlFile *csv.Reader) error {
 	columnMap := make(map[int]string)
 	patientDB := datastoredb.NewPatientHandler()
 	err := patientDB.InitializeDataBase(ctx, gproject)
@@ -499,70 +495,78 @@ func processXlDocument(ctx context.Context, gproject string, addressID string, d
 		log.Errorf("Failed to created patient information: %v", err.Error())
 		return err
 	}
-	for _, sheet := range xlFile.Sheets {
-		if sheet.Hidden {
-			continue
+	// Iterate through the records
+	counter := 0
+	for {
+		// Read each record from csv
+		record, err := xlFile.Read()
+		if err == io.EOF {
+			break
 		}
-		for i, row := range sheet.Rows {
-			for j, cell := range row.Cells {
-				text := strings.TrimSpace(cell.String())
-				if i == 0 {
-					columnMap[j] = strings.ToLower(text)
-				} else {
-					var patientInfo contracts.Patient
-					patientInfo.DueDate = dueDate
-					switch columnMap[j] {
-					case "time":
-						patientInfo.AppointmentTime = text
-					case "name":
-						splitName := strings.Split(text, ",")
-						patientInfo.LastName = splitName[0]
-						patientInfo.FirstName = splitName[1]
-					case "dob":
+		if err != nil {
+			log.Errorf("Failed to created patient information: %v", err.Error())
+			return err
+		}
+		var patientInfo contracts.Patient
+		for i, text := range record {
+			if counter == 0 {
+				columnMap[i] = strings.ToLower(text)
+			} else {
+				patientInfo.DueDate = dueDate
+				switch columnMap[i] {
+				case "time":
+					patientInfo.AppointmentTime = text
+				case "name":
+					splitName := strings.Split(text, ",")
+					patientInfo.LastName = splitName[0]
+					patientInfo.FirstName = splitName[1]
+				case "dob":
+					splitDOB := strings.Split(text, "/")
+					patientInfo.Dob = contracts.DOB{
+						Year:  splitDOB[2],
+						Day:   splitDOB[1],
+						Month: splitDOB[0],
+					}
+				case "subscriber":
+					var subscriber contracts.Subscriber
+					splitName := strings.Split(text, ",")
+					subscriber.LastName = splitName[0]
+					subscriber.FirstName = splitName[1]
+					patientInfo.DentalInsurance = make([]contracts.PatientDentalInsurance, 0)
+					var dInsurance contracts.PatientDentalInsurance
+					dInsurance.Subscriber = subscriber
+					patientInfo.DentalInsurance = append(patientInfo.DentalInsurance, dInsurance)
+				case "subscriber dob":
+					if len(patientInfo.DentalInsurance) > 0 {
 						splitDOB := strings.Split(text, "/")
-						patientInfo.Dob = contracts.DOB{
+						sdob := contracts.DOB{
 							Year:  splitDOB[2],
 							Day:   splitDOB[1],
 							Month: splitDOB[0],
 						}
-					case "subscriber":
-						var subscriber contracts.Subscriber
-						splitName := strings.Split(text, ",")
-						subscriber.LastName = splitName[0]
-						subscriber.FirstName = splitName[1]
-						patientInfo.DentalInsurance = make([]contracts.PatientDentalInsurance, 0)
-						var dInsurance contracts.PatientDentalInsurance
-						dInsurance.Subscriber = subscriber
-						patientInfo.DentalInsurance = append(patientInfo.DentalInsurance, dInsurance)
-					case "subscriber dob":
-						if len(patientInfo.DentalInsurance) > 0 {
-							splitDOB := strings.Split(text, "/")
-							sdob := contracts.DOB{
-								Year:  splitDOB[2],
-								Day:   splitDOB[1],
-								Month: splitDOB[0],
-							}
-							for i, insurance := range patientInfo.DentalInsurance {
-								insurance.Subscriber.DOB = sdob
-								patientInfo.DentalInsurance[i] = insurance
-							}
-						}
-					case "insurance":
 						for i, insurance := range patientInfo.DentalInsurance {
-							insurance.Company = text
-							patientInfo.DentalInsurance[i] = insurance
-						}
-					case "id":
-						for i, insurance := range patientInfo.DentalInsurance {
-							insurance.MemberID = text
+							insurance.Subscriber.DOB = sdob
 							patientInfo.DentalInsurance[i] = insurance
 						}
 					}
-					patientInfo.GD = addressID
-					patientDB.AddPatientInformation(ctx, patientInfo)
+				case "insurance":
+					for i, insurance := range patientInfo.DentalInsurance {
+						insurance.Company = text
+						patientInfo.DentalInsurance[i] = insurance
+					}
+				case "id":
+					for i, insurance := range patientInfo.DentalInsurance {
+						insurance.MemberID = text
+						patientInfo.DentalInsurance[i] = insurance
+					}
 				}
 			}
 		}
+		if counter > 0 && patientInfo.FirstName != "" {
+			patientInfo.GD = addressID
+			patientDB.AddPatientInformation(ctx, patientInfo)
+		}
+		counter++
 	}
 	return nil
 }
