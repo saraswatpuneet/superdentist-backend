@@ -51,6 +51,7 @@ func SDRouter() (*gin.Engine, error) {
 	{
 		// All data query related APIs: Basic stuff R
 		clinicGroup.GET("/getClinics", handlers.GetPhysicalClinics)
+		clinicGroup.GET("/getAll", handlers.GetAllClinicNameAddressID)
 		clinicGroup.GET("/getDoctors/:addressId", handlers.GetClinicDoctors)
 		clinicGroup.GET("/getAllDoctors", handlers.GetAllDoctors)
 		clinicGroup.POST("/getNearbySpecialists", handlers.GetNearbySpeialists)
