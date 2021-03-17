@@ -97,7 +97,10 @@ func SDRouter() (*gin.Engine, error) {
 		patientGroup.POST("/files/:patientId", handlers.UploadPatientDocuments)
 		patientGroup.POST("/processSheet", handlers.ProcessPatientSpreadSheet)
 
-
+	}
+	insuranceGroup := version1.Group("/insurance")
+	{
+		insuranceGroup.GET("/practiceCodes", handlers.GetAllPracticeCodesCats)
 	}
 	{
 		// All wesocket related routing goes here follow the pattern

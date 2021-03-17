@@ -52,6 +52,7 @@ RUN apt-get install -y -qq \
 # See https://github.com/tesseract-ocr/tessdata for the list of available languages.
 # If you want to download these traineddata via `wget`, don't forget to locate
 # downloaded traineddata under ${TESSDATA_PREFIX}/tessdata.
+COPY --from=builder /go/src/app/d_codes.json ./codes/
 
 COPY --from=builder /go/src/app/superdentist-backend /usr/bin/
 EXPOSE 8090
