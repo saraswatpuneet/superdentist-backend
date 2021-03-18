@@ -1,1528 +1,1931 @@
 {
-    "categories":{
-        "category1": {
-            "range": "D0100-D0999",
-            "name": "DIAGNOSTIC",
-            "breakdowns": [
-                {
-                    "code": "D0120",
-                    "name": "Periodic Oral Evaluation"
-                  },
-                  {
-                    "code": "D0140",
-                    "name": "Limited Oral Eval Prob Focused"
-                  },
-                  {
-                    "code": "D0145",
-                    "name": "Oral Eval Pt Under 3 Yrs, Counsel Primary"
-                  },
-                  {
-                    "code": "D0150",
-                    "name": "Compsve Oral Eval- New/Est Pat"
-                  },
-                  {
-                    "code": "D0160",
-                    "name": "Detailed & Ext Oral Eval By Rp"
-                  },
-                  {
-                    "code": "D0170",
-                    "name": "Re-Evaluation- Limited"
-                  },
-                  {
-                    "code": "D0171",
-                    "name": "Re-Evaluation - Post-Operative Office Visit"
-                  },
-                  {
-                    "code": "D0180",
-                    "name": "Compsve Perio Eval New/Est Pat"
-                  },
-                  {
-                    "code": "D0210",
-                    "name": "Intraoral - Complete Series Of Radiographic Images"
-                  },
-                  {
-                    "code": "D0220",
-                    "name": "Intraoral - Peripical First Radiographic Image"
-                  },
-                  {
-                    "code": "D0230",
-                    "name": "Intraoral - Peripical Each Addl Radiographic Image"
-                  },
-                  {
-                    "code": "D0240",
-                    "name": "Intraoral - Occlusal Radiographic Image"
-                  },
-                  {
-                    "code": "D0270",
-                    "name": "Bitewing - Single Radiographic Image"
-                  },
-                  {
-                    "code": "D0272",
-                    "name": "Bitewings - Two Radiographic Images"
-                  },
-                  {
-                    "code": "D0273",
-                    "name": "Bitewings - Three Radiographic Images"
-                  },
-                  {
-                    "code": "D0274",
-                    "name": "Bitewings - Four Radiographic Images"
-                  },
-                  {
-                    "code": "D0277",
-                    "name": "Vertical Bitewings - 7-8 Radiographic Images"
-                  },
-                  {
-                    "code": "D0330",
-                    "name": "Panoramic Radiographic Image"
-                  },
-                  {
-                    "code": "D0340",
-                    "name": "2D Cephalometric Radiographic Image"
-                  },
-                  {
-                    "code": "D0350",
-                    "name": "2D Oral/Facial Photographic Image-Intraoral/Extrao"
-                  },
-                  {
-                    "code": "D0364",
-                    "name": "Cone Beam CT Limited View - Less Than Whole Jaw"
-                  },
-                  {
-                    "code": "D0365",
-                    "name": "Cone Beam CT Full Arch View - Mandible"
-                  },
-                  {
-                    "code": "D0366",
-                    "name": "Cone Beam CT Full Arch View - Maxilla W/wo Cranium"
-                  },
-                  {
-                    "code": "D0367",
-                    "name": "Cone Beam CT Full 2 Jaw View W/wo Cranium"
-                  },
-                  {
-                    "code": "D0419",
-                    "name": "Assessment Of Salivary Flow By Measurement"
-                  },
-                  {
-                    "code": "D0460",
-                    "name": "Pulp Vitality Tests"
-                  },
-                  {
-                    "code": "D0470",
-                    "name": "Diagnostic Casts"
-                  },
-                  {
-                    "code": "D0472",
-                    "name": "Accession - Gross"
-                  }
-            ]
+  "key": "categories",
+  "label": "Categories",
+  "breakDownKeys": [
+    "D0100-D0999",
+    "D1000-D1999",
+    "D2000-D2999",
+    "D3000-D3999",
+    "D4000-D4999",
+    "D5000-D5999",
+    "D5900-D5999",
+    "D6000-D6199",
+    "D6200-D6999",
+    "D7000-D7999",
+    "D8000-D8999",
+    "D9000-D10000"
+  ],
+  "breakDowns": {
+    "D0100-D0999": {
+      "key": "D0100-D0999",
+      "label": "DIAGNOSTIC",
+      "breakDownKeys": [
+        "D0120",
+        "D0140",
+        "D0145",
+        "D0150",
+        "D0160",
+        "D0170",
+        "D0171",
+        "D0180",
+        "D0210",
+        "D0220",
+        "D0230",
+        "D0240",
+        "D0270",
+        "D0272",
+        "D0273",
+        "D0274",
+        "D0277",
+        "D0330",
+        "D0340",
+        "D0350",
+        "D0364",
+        "D0365",
+        "D0366",
+        "D0367",
+        "D0419",
+        "D0460",
+        "D0470",
+        "D0472"
+      ],
+      "breakDowns": {
+        "D0120": {
+          "key": "D0120",
+          "label": "Periodic Oral Evaluation"
         },
-        "category2": {
-            "range": "D1000-D1999",
-            "name": "PREVENTIVE",
-            "breakdowns":[
-                {
-                    "code": "D1110",
-                    "name": "Prophylaxis - Adult"
-                  },
-                  {
-                    "code": "D1120",
-                    "name": "Prophylaxis - Child"
-                  },
-                  {
-                    "code": "D1206",
-                    "name": "Topical Application Of Fluoride Varnish"
-                  },
-                  {
-                    "code": "D1330",
-                    "name": "Oral Hygiene Instructions"
-                  },
-                  {
-                    "code": "D1351",
-                    "name": "Sealant - Per Tooth"
-                  },
-                  {
-                    "code": "D1352",
-                    "name": "Prev Resin Restoratn In Mod-high Caries Pt (Perman"
-                  },
-                  {
-                    "code": "D1353",
-                    "name": "Sealant Repair - Per Tooth"
-                  },
-                  {
-                    "code": "D1354",
-                    "name": "Interim Caries Arresting Medcmnt Applctn-Per Tooth"
-                  },
-                  {
-                    "code": "D1551",
-                    "name": "Re-Cement/Re-Bond Bilateral Space Maintainer - Max"
-                  },
-                  {
-                    "code": "D1552",
-                    "name": "Re-cement/Re-Bond Bilateral Space Maintainer-Mand"
-                  },
-                  {
-                    "code": "D1553",
-                    "name": "Recement/Rebond Unilateral Space Maint - Per Quad"
-                  },
-                  {
-                    "code": "D1556",
-                    "name": "Remove Fixed Unilateral Space Maintainer- Per Quad"
-                  },
-                  {
-                    "code": "D1557",
-                    "name": "Remove Fixed Unilateral Space Maintainer - Max"
-                  },
-                  {
-                    "code": "D1558",
-                    "name": "Remove Fixed Bilateral Space Maintainer - Mand"
-                  },
-                  {
-                    "code": "D1575",
-                    "name": "Distal Shoe Space Maintainer-Fixed-Unilateral"
-                  }
-            ]
+        "D0140": {
+          "key": "D0140",
+          "label": "Limited Oral Eval Prob Focused"
         },
-        "category3":{
-            "range": "D2000-D2999",
-            "name": "RESTORATIVE",
-            "breakdowns": [
-                {
-                    "code": "D2330",
-                    "name": "Resin Composite One Surface Anterior"
-                  },
-                  {
-                    "code": "D2331",
-                    "name": "Resin Composite Two Surfaces Anterior"
-                  },
-                  {
-                    "code": "D2332",
-                    "name": "Resin Composite Three Surfaces Anterior"
-                  },
-                  {
-                    "code": "D2335",
-                    "name": "Resin Composite Four/More Surf Anterior"
-                  },
-                  {
-                    "code": "D2390",
-                    "name": "Resin Composite Crown Anterior"
-                  },
-                  {
-                    "code": "D2391",
-                    "name": "Resin Composite One Surface Posterior"
-                  },
-                  {
-                    "code": "D2392",
-                    "name": "Resin Composite Two Surfaces Posterior"
-                  },
-                  {
-                    "code": "D2393",
-                    "name": "Resin Composite Three Surfaces Posterior"
-                  },
-                  {
-                    "code": "D2394",
-                    "name": "Resin Composite Four/More Surfaces Posterior"
-                  },
-                  {
-                    "code": "D2610",
-                    "name": "Inlay Porcelain/Ceramic One Surface"
-                  },
-                  {
-                    "code": "D2620",
-                    "name": "Inlay Porcelain/Ceramic Two Surfaces"
-                  },
-                  {
-                    "code": "D2630",
-                    "name": "Inlay Porcelain/Ceramic Three+ Surfaces"
-                  },
-                  {
-                    "code": "D2642",
-                    "name": "Onlay Porcelain/Ceramic Two Surfaces"
-                  },
-                  {
-                    "code": "D2643",
-                    "name": "Onlay Porcelain/Ceramic Three Surfaces"
-                  },
-                  {
-                    "code": "D2644",
-                    "name": "Onlay Porcelain/Ceramic Four+ Surfaces"
-                  },
-                  {
-                    "code": "D2740",
-                    "name": "Crown Porcelain/Ceramic"
-                  },
-                  {
-                    "code": "D2750",
-                    "name": "Crown Porcelain Fused High Noble Metal"
-                  },
-                  {
-                    "code": "D2752",
-                    "name": "Crown Porcelain Fused Noble Metal"
-                  },
-                  {
-                    "code": "D2753",
-                    "name": "Crown- Porcelain Fused To Titanium/titanium Alloys"
-                  },
-                  {
-                    "code": "D2753A",
-                    "name": "Crown - Porcelain Fused To Titanium/Titanium Alloy"
-                  },
-                  {
-                    "code": "D2790",
-                    "name": "Crown Full Cast High Noble Metal"
-                  },
-                  {
-                    "code": "D2799",
-                    "name": "Provisional Crown - Further TX/Completion Necessar"
-                  },
-                  {
-                    "code": "D2910",
-                    "name": "Recement Or Rebond Inlay/Onlay/Veneer/Partial Cvrg"
-                  },
-                  {
-                    "code": "D2915",
-                    "name": "Recement Or Rebond Indirect Fab Or Prefab Post/Cor"
-                  },
-                  {
-                    "code": "D2920",
-                    "name": "Recement Or Rebond Crown"
-                  },
-                  {
-                    "code": "D2921",
-                    "name": "Reattachment Of Tooth Fragment, Incisal Edge/Cusp"
-                  },
-                  {
-                    "code": "D2929",
-                    "name": "Prefabricated Porcelain/Ceramic Crown - Primary"
-                  },
-                  {
-                    "code": "D2940",
-                    "name": "Protective Restoration"
-                  },
-                  {
-                    "code": "D2950",
-                    "name": "Core Buildup, Including Any Pins When Required"
-                  },
-                  {
-                    "code": "D2954",
-                    "name": "Prefab Post & Core (Addition To Crown)"
-                  },
-                  {
-                    "code": "D2955",
-                    "name": "Post Removal"
-                  },
-                  {
-                    "code": "D2960",
-                    "name": "Labial Veneer Resin Laminate Chair"
-                  },
-                  {
-                    "code": "D2962",
-                    "name": "Labial Veneer Porcelain Laminate Lab"
-                  },
-                  {
-                    "code": "D2975",
-                    "name": "Coping"
-                  },
-                  {
-                    "code": "D2980",
-                    "name": "Crown Repair - Restorative Material Failure"
-                  },
-                  {
-                    "code": "D2982",
-                    "name": "Onlay Repair - Restorative Material Failure"
-                  },
-                  {
-                    "code": "D2983",
-                    "name": "Veneer Repair - Restorative Material Failure"
-                  },
-                  {
-                    "code": "D2990",
-                    "name": "Resin Infiltration Incipient Smooth Surface Lesion"
-                  },
-                  {
-                    "code": "D2999",
-                    "name": "Unspec Rest Proc/Rpt"
-                  }
-            ]
+        "D0145": {
+          "key": "D0145",
+          "label": "Oral Eval Pt Under 3 Yrs, Counsel Primary"
         },
-        "category4": {
-            "range": "D3000-D3999",
-            "name": "ENDODONTICS",
-            "breakdowns": [
-                {
-                    "code": "D3110",
-                    "name": "Pulp Cap Direct"
-                  },
-                  {
-                    "code": "D3120",
-                    "name": "Pulp Cap Indirect"
-                  },
-                  {
-                    "code": "D3220",
-                    "name": "Therapeutic Pulpotomy"
-                  },
-                  {
-                    "code": "D3221",
-                    "name": "Pulpal Debridement Prem/Prim"
-                  },
-                  {
-                    "code": "D3230",
-                    "name": "Pulpal Therapy Anterior Primy"
-                  },
-                  {
-                    "code": "D3240",
-                    "name": "Pulpal Therapy Posterior Primy"
-                  },
-                  {
-                    "code": "D3310",
-                    "name": "Endodontic Therapy, Anterior Tooth"
-                  },
-                  {
-                    "code": "D3320",
-                    "name": "Endodontic Therapy, Premolar Tooth"
-                  },
-                  {
-                    "code": "D3330",
-                    "name": "Endodontic Therapy, Molar Tooth"
-                  },
-                  {
-                    "code": "D3331",
-                    "name": "Treatment Of Root Canal Obstruction"
-                  },
-                  {
-                    "code": "D3332",
-                    "name": "Incomp Endo Therapy Inperable"
-                  },
-                  {
-                    "code": "D3333",
-                    "name": "Endo - Internal Root Repair"
-                  },
-                  {
-                    "code": "D3346",
-                    "name": "Retreat RCT/Anterior"
-                  },
-                  {
-                    "code": "D3347",
-                    "name": "Retreatment-Previous Root Canal Therapy-Premolar"
-                  },
-                  {
-                    "code": "D3348",
-                    "name": "Retreat RCT/Molar"
-                  },
-                  {
-                    "code": "D3351",
-                    "name": "Apexification/Recalcification - Initial Visit"
-                  },
-                  {
-                    "code": "D3352",
-                    "name": "Apexification/Recalcification - Interim Medication"
-                  },
-                  {
-                    "code": "D3353",
-                    "name": "Apexification/Recalcification (Final)"
-                  },
-                  {
-                    "code": "D3410",
-                    "name": "Apicoectomy - Anterior"
-                  },
-                  {
-                    "code": "D3421",
-                    "name": "Apicoectomy - Premolar (First Root)"
-                  },
-                  {
-                    "code": "D3425",
-                    "name": "Apicoectomy - Molar (First Root)"
-                  },
-                  {
-                    "code": "D3426",
-                    "name": "Apicoectomy - Each Additional Root"
-                  },
-                  {
-                    "code": "D3910",
-                    "name": "Sur Proc Isoltn Tooth W/Rubdam"
-                  },
-                  {
-                    "code": "D3920",
-                    "name": "Hemisection Not Incl RCT"
-                  },
-                  {
-                    "code": "D3950",
-                    "name": "Canal Preparation- Perfmd Post"
-                  },
-                  {
-                    "code": "D3999",
-                    "name": "Unspecified Endo By Report"
-                  }
-            ]
+        "D0150": {
+          "key": "D0150",
+          "label": "Compsve Oral Eval- New/Est Pat"
         },
-        "category5": {
-            "range": "D4000-D4999",
-            "name": "PERIODONTICS",
-            "breakdowns": [
-                {
-                    "code": "D4210",
-                    "name": "Gingect/Gingipsty 4+T/Per Quad"
-                  },
-                  {
-                    "code": "D4211",
-                    "name": "Ginvect/Gingipsty 1-3t Pr Quad"
-                  },
-                  {
-                    "code": "D4212",
-                    "name": "Gingect/Gingipsty For Restorative Proc, Per Tooth"
-                  },
-                  {
-                    "code": "D4230",
-                    "name": "Anatomical Crown Exposure 4+T/Bound Space,Per Quad"
-                  },
-                  {
-                    "code": "D4231",
-                    "name": "Anatomical Crown Exposure 1-3T/Bound Space PerQuad"
-                  },
-                  {
-                    "code": "D4240",
-                    "name": "Gingiv Flap Rtpln 4+T/Per Quad"
-                  },
-                  {
-                    "code": "D4241",
-                    "name": "Gingi Flap Rtpln 1-3t Pr Quad"
-                  },
-                  {
-                    "code": "D4245",
-                    "name": "Apically Position Flap"
-                  },
-                  {
-                    "code": "D4249",
-                    "name": "Clinical Crwn Lngthng Hard Tis"
-                  },
-                  {
-                    "code": "D4260",
-                    "name": "Osseous Surgery 4+T/Per Quad"
-                  },
-                  {
-                    "code": "D4261",
-                    "name": "Osseous Surgery 1-3t Pr Quad"
-                  },
-                  {
-                    "code": "D4263",
-                    "name": "Bone Replacement Graft-Retained Natural Tooth, 1st"
-                  },
-                  {
-                    "code": "D4264",
-                    "name": "Bone Replacement Graft-Retained Natural Tooth,Addl"
-                  },
-                  {
-                    "code": "D4265",
-                    "name": "Bio Materials Aid Tissue Regen"
-                  },
-                  {
-                    "code": "D4266",
-                    "name": "Guided Tissue Regen Resorbable"
-                  },
-                  {
-                    "code": "D4267",
-                    "name": "Guided Tissue Regen Nonresorba"
-                  },
-                  {
-                    "code": "D4268",
-                    "name": "Surgical Revise Proc Per Tooth"
-                  },
-                  {
-                    "code": "D4270",
-                    "name": "Pedicle Soft Tissue Graft"
-                  },
-                  {
-                    "code": "D4273",
-                    "name": "Autogenous CT Graft-1st Tooth/Implant/Endentulous"
-                  },
-                  {
-                    "code": "D4274",
-                    "name": "Mesial/Distal Wedge Procedure, Single Tooth"
-                  },
-                  {
-                    "code": "D4275",
-                    "name": "Non-Autogenous CT Graft- 1st Tooth/Implant/Endentu"
-                  },
-                  {
-                    "code": "D4276",
-                    "name": "Combined CT & Double Pedicle Graft, Per Tooth"
-                  },
-                  {
-                    "code": "D4277",
-                    "name": "Free Soft Tissue Graft - First Tooth In Graft"
-                  },
-                  {
-                    "code": "D4278",
-                    "name": "Free Soft Tissue Graft - Addl Tooth In Graft"
-                  },
-                  {
-                    "code": "D4283",
-                    "name": "Autogenous CT Graft-Ea Contig Tooth In Site"
-                  },
-                  {
-                    "code": "D4285",
-                    "name": "Non-Autogenous CT Graft-Ea Contig Tooth In Site"
-                  },
-                  {
-                    "code": "D4320",
-                    "name": "Provis Splinting Intracoronal"
-                  },
-                  {
-                    "code": "D4321",
-                    "name": "Provsnl Splinting Extracoronal"
-                  },
-                  {
-                    "code": "D4341",
-                    "name": "Perio Sclg Rt Pln 4+T/Per Quad"
-                  },
-                  {
-                    "code": "D4342",
-                    "name": "Perio Sclg Rt Pln 1-3t Pr Quad"
-                  },
-                  {
-                    "code": "D4346",
-                    "name": "Scaling Generalized Mod/Severe Gingival Inflam-FM"
-                  },
-                  {
-                    "code": "D4355",
-                    "name": "Full Mouth Debridement - Subsequent Visit"
-                  },
-                  {
-                    "code": "D4381",
-                    "name": "Localized Delivery Antimicrobial Agents Controlled"
-                  },
-                  {
-                    "code": "D4910",
-                    "name": "Periodontal Maintenance"
-                  },
-                  {
-                    "code": "D4920",
-                    "name": "Unscheduled Dressing Change"
-                  },
-                  {
-                    "code": "D4921",
-                    "name": "Gingival Irrigation - Per Quadrant"
-                  },
-                  {
-                    "code": "D4999",
-                    "name": "Unspecified Perio Pr By Rp"
-                  }
-            ]
+        "D0160": {
+          "key": "D0160",
+          "label": "Detailed & Ext Oral Eval By Rp"
         },
-        "category6":{
-            "range": "D5000-D5999",
-            "name": "PROSTHODONTICS",
-            "breakdowns":[
-                {
-                    "code": "D5110",
-                    "name": "Complete Denture - Maxillary"
-                  },
-                  {
-                    "code": "D5120",
-                    "name": "Complete Denture - Mandibular"
-                  },
-                  {
-                    "code": "D5130",
-                    "name": "Immediate Denture - Maxillary"
-                  },
-                  {
-                    "code": "D5140",
-                    "name": "Immediate Denture - Mandibular"
-                  },
-                  {
-                    "code": "D5211",
-                    "name": "Max Partial Denture Resin Base"
-                  },
-                  {
-                    "code": "D5212",
-                    "name": "Man Partial Denture Resin Base"
-                  },
-                  {
-                    "code": "D5213",
-                    "name": "Max Partial Denture Cast Metal"
-                  },
-                  {
-                    "code": "D5214",
-                    "name": "Man Partial Denture Cast Metal"
-                  },
-                  {
-                    "code": "D5221",
-                    "name": "Immediate Maxillary Partial Denture - Resin Base"
-                  },
-                  {
-                    "code": "D5222",
-                    "name": "Immediate Mandibular Partial Denture - Resin Base"
-                  },
-                  {
-                    "code": "D5223",
-                    "name": "Immediate Maxillary Partial Denture - Cast Metal"
-                  },
-                  {
-                    "code": "D5224",
-                    "name": "Immediate Mandibular Partial Denture - Cast Metal"
-                  },
-                  {
-                    "code": "D5225",
-                    "name": "Max Partial Denture - Flex Bas"
-                  },
-                  {
-                    "code": "D5226",
-                    "name": "Man Partial Denture - Flex Bas"
-                  },
-                  {
-                    "code": "D5282",
-                    "name": "Removable Unilateral Prtl Dntr-One Pc Cst Mtl, Max"
-                  },
-                  {
-                    "code": "D5283",
-                    "name": "Removable Unilateral Prtl Dntr-One Pc Cst Mtl, Man"
-                  },
-                  {
-                    "code": "D5284",
-                    "name": "Removable Unilateral Part Dent-flex Base- Per Quad"
-                  },
-                  {
-                    "code": "D5286",
-                    "name": "Removable Unilateral Part Dent- Resin - Per Quad"
-                  },
-                  {
-                    "code": "D5410",
-                    "name": "Adjust Complete Denture Maxil"
-                  },
-                  {
-                    "code": "D5411",
-                    "name": "Adjust Complete Denture Mand"
-                  },
-                  {
-                    "code": "D5421",
-                    "name": "Adjust Partial Denture Max"
-                  },
-                  {
-                    "code": "D5422",
-                    "name": "Adjust Partial Denture Mand"
-                  },
-                  {
-                    "code": "D5511",
-                    "name": "Repair Broken Complete Denture Base, Mandibular"
-                  },
-                  {
-                    "code": "D5512",
-                    "name": "Repair Broken Complete Denture Base, Maxillary"
-                  },
-                  {
-                    "code": "D5520",
-                    "name": "Replace Missing Or Brkn Teeth"
-                  },
-                  {
-                    "code": "D5611",
-                    "name": "Repair Resin Partial Denture Base, Mandibular"
-                  },
-                  {
-                    "code": "D5612",
-                    "name": "Repair Resin Partial Denture Base, Maxillary"
-                  },
-                  {
-                    "code": "D5621",
-                    "name": "Repair Cast Partial Denture Base, Mandibular"
-                  },
-                  {
-                    "code": "D5622",
-                    "name": "Repair Cast Partial Denture Base, Maxillary"
-                  },
-                  {
-                    "code": "D5630",
-                    "name": "Repair Or Replace Broken Clasp - Per Tooth"
-                  },
-                  {
-                    "code": "D5640",
-                    "name": "Replace Broken Teeth-Per Tooth"
-                  },
-                  {
-                    "code": "D5650",
-                    "name": "Add Tooth To Existng Part Dent"
-                  },
-                  {
-                    "code": "D5660",
-                    "name": "Add Clasp To Existng Part Dent - Per Tooth"
-                  },
-                  {
-                    "code": "D5670",
-                    "name": "Max-Replace All Tth & Acrylic"
-                  },
-                  {
-                    "code": "D5671",
-                    "name": "Mand-Replace All Tth & Acrylic"
-                  },
-                  {
-                    "code": "D5710",
-                    "name": "Rebase Complete Maxil Denture"
-                  },
-                  {
-                    "code": "D5711",
-                    "name": "Rebase Complete Mandib Denture"
-                  },
-                  {
-                    "code": "D5720",
-                    "name": "Rebase Max Partial Denture"
-                  },
-                  {
-                    "code": "D5721",
-                    "name": "Rebase Mand Partial Denture"
-                  },
-                  {
-                    "code": "D5730",
-                    "name": "Reline Complete Max Dent Chair"
-                  },
-                  {
-                    "code": "D5731",
-                    "name": "Reline Complete Man Dent Chair"
-                  },
-                  {
-                    "code": "D5740",
-                    "name": "Reline Max Partial Dent Chair"
-                  },
-                  {
-                    "code": "D5741",
-                    "name": "Reline Mand Partial Dent Chair"
-                  },
-                  {
-                    "code": "D5750",
-                    "name": "Reline Complete Max Dent Lab"
-                  },
-                  {
-                    "code": "D5751",
-                    "name": "Reline Complete Mand Dent Lab"
-                  },
-                  {
-                    "code": "D5760",
-                    "name": "Reline Max Partial Denture Lab"
-                  },
-                  {
-                    "code": "D5761",
-                    "name": "Reline Mand Partial Dent Lab"
-                  },
-                  {
-                    "code": "D5810",
-                    "name": "Interim Complete Dr (Max)"
-                  },
-                  {
-                    "code": "D5811",
-                    "name": "Interim Complete Dr (Mand)"
-                  },
-                  {
-                    "code": "D5820",
-                    "name": "Interim Partial Dr (Max)"
-                  },
-                  {
-                    "code": "D5821",
-                    "name": "Interim Partial Dr (Mand)"
-                  },
-                  {
-                    "code": "D5850",
-                    "name": "Tissue Condtn (Max)"
-                  },
-                  {
-                    "code": "D5851",
-                    "name": "Tissue Condtn (Mand)"
-                  },
-                  {
-                    "code": "D5862",
-                    "name": "Precision Attachment"
-                  },
-                  {
-                    "code": "D5863",
-                    "name": "Overdenture - Complete Maxillary"
-                  },
-                  {
-                    "code": "D5864",
-                    "name": "Overdenture - Partial Maxillary"
-                  },
-                  {
-                    "code": "D5865",
-                    "name": "Overdenture - Complete Mandibular"
-                  },
-                  {
-                    "code": "D5866",
-                    "name": "Overdenture - Partial Mandibular"
-                  },
-                  {
-                    "code": "D5867",
-                    "name": "Repl Of Replcable Part Of Atta"
-                  },
-                  {
-                    "code": "D5875",
-                    "name": "Modified Of Removable Prosthes"
-                  },
-                  {
-                    "code": "D5876",
-                    "name": "Add Metl Substructr To Acrylic Full Dent(per Arch)"
-                  }
-            ]
+        "D0170": {
+          "key": "D0170",
+          "label": "Re-Evaluation- Limited"
         },
-        "category7": {
-            "range": "D5900-D5999",
-            "name": "MAXILLOFACIAL PROSTHETICS",
-            "breakdowns": [
-                {
-                    "code": "D5931",
-                    "name": "Obturator prosthesis, surgical"
-                },
-                {
-                    "code": "D5932",
-                    "name": "Obturator prosthesis, definitive"
-                },
-                {
-                    "code": "D5933",
-                    "name": "Obturator prosthesis, modification"
-                },
-                {
-                    "code": "D5936",
-                    "name": "Obturator prosthesis, interim"
-                }
-            ]
+        "D0171": {
+          "key": "D0171",
+          "label": "Re-Evaluation - Post-Operative Office Visit"
         },
-        "category8": {
-            "range": "D6000-D6199",
-            "name": "IMPLANTS",
-            "breakdowns": [
-                {
-                    "code": "D6010",
-                    "name": "Surgical Placement Implant - Endosteal"
-                  },
-                  {
-                    "code": "D6011",
-                    "name": "Second Stage Implant Surgery"
-                  },
-                  {
-                    "code": "D6012",
-                    "name": "Surg Plcmnt-Interim-Endosteal Implant"
-                  },
-                  {
-                    "code": "D6051",
-                    "name": "Interim Abutment"
-                  },
-                  {
-                    "code": "D6052",
-                    "name": "Semi-Precision Attachment Abutment"
-                  },
-                  {
-                    "code": "D6055",
-                    "name": "Connecting Bar - Implant Or Abutment Supported"
-                  },
-                  {
-                    "code": "D6057",
-                    "name": "Custom Fabricated Abutment"
-                  },
-                  {
-                    "code": "D6058",
-                    "name": "Abutment Supported Porcelain/Ceramic Crown"
-                  },
-                  {
-                    "code": "D6059",
-                    "name": "Abutment Supported Porc Fused To Metal Crown-HNM"
-                  },
-                  {
-                    "code": "D6061",
-                    "name": "Abutment Supported Porc Fused To Metal Crown- NM"
-                  },
-                  {
-                    "code": "D6062",
-                    "name": "Abutment Supported Cast Metal Crown - HNM"
-                  },
-                  {
-                    "code": "D6064",
-                    "name": "Abutment Supported Cast Metal Crown - NM"
-                  },
-                  {
-                    "code": "D6068",
-                    "name": "Abutment Supported Retainer Porcelain/Ceramic FPD"
-                  },
-                  {
-                    "code": "D6080",
-                    "name": "Implant Maintenance Procedures (Removed/Reinserted"
-                  },
-                  {
-                    "code": "D6082",
-                    "name": "Imp Supported Crn- Porcelain Fused To Base Alloys"
-                  },
-                  {
-                    "code": "D6082A",
-                    "name": "Imp Supported Crn- Porc Fused To Base Alloys"
-                  },
-                  {
-                    "code": "D6083",
-                    "name": "Imp Supported Crn- Porcelain Fused To Noble Alloys"
-                  },
-                  {
-                    "code": "D6083A",
-                    "name": "Imp Supported Crn- Porc Fused To Noble Alloys"
-                  },
-                  {
-                    "code": "D6084",
-                    "name": "Imp Supported Crn- Porc Fused To Titanium/alloys"
-                  },
-                  {
-                    "code": "D6084A",
-                    "name": "Imp Supported Crn- Porc Fused To Titanium/alloys"
-                  },
-                  {
-                    "code": "D6086",
-                    "name": "Imp Supported Crn - Predominately Base Alloys"
-                  },
-                  {
-                    "code": "D6086A",
-                    "name": "Imp Supported Crn- Predominately Base Alloys"
-                  },
-                  {
-                    "code": "D6087",
-                    "name": "Imp Supported Crown - Noble Alloys"
-                  },
-                  {
-                    "code": "D6087A",
-                    "name": "Imp Supported Crown - Noble Alloys"
-                  },
-                  {
-                    "code": "D6088",
-                    "name": "Imp Supported Crn- Titanium/Titanium Alloys"
-                  },
-                  {
-                    "code": "D6088A",
-                    "name": "Imp Supported Crn- Titanium/Titanium Alloys"
-                  },
-                  {
-                    "code": "D6091",
-                    "name": "Replcmnt Attchmntt-Imp/Abut Supp Prosth - Per Atta"
-                  },
-                  {
-                    "code": "D6092",
-                    "name": "Recement Or Rebond Implant/Abutment Supported Crwn"
-                  },
-                  {
-                    "code": "D6093",
-                    "name": "Recement Or Rebond Implant/Abutment Supported FPD"
-                  },
-                  {
-                    "code": "D6095",
-                    "name": "Repair Implant Abutment"
-                  },
-                  {
-                    "code": "D6097",
-                    "name": "Abut Supported Crn- Porc Fused To Titanium/alloys"
-                  },
-                  {
-                    "code": "D6098",
-                    "name": "Imp Sup Retainer-Porc Fused To Base Alloys"
-                  },
-                  {
-                    "code": "D6099",
-                    "name": "Imp Sup Retainer FPD- Porc Fused To Noble Alloys"
-                  },
-                  {
-                    "code": "D6100",
-                    "name": "Implant Removal"
-                  },
-                  {
-                    "code": "D6101",
-                    "name": "Debridement Of Periimplant Defect, Clean Exposed"
-                  },
-                  {
-                    "code": "D6102",
-                    "name": "Debridement/Osseous Contour Periimplant Defect"
-                  },
-                  {
-                    "code": "D6103",
-                    "name": "Bone Graft For Repair Of Periimplant Defect"
-                  },
-                  {
-                    "code": "D6104",
-                    "name": "Bone Graft At Time Of Implant Placement"
-                  },
-                  {
-                    "code": "D6110",
-                    "name": "Implant/Abutment Supp Remv Dent - Edentulous Maxil"
-                  },
-                  {
-                    "code": "D6111",
-                    "name": "Implant/Abutment Supp Remv Dent - Edentulous Mand"
-                  },
-                  {
-                    "code": "D6112",
-                    "name": "Implant/Abutment Supp Rmv Dent - Part Edentlus Max"
-                  },
-                  {
-                    "code": "D6113",
-                    "name": "Implant/Abutment Supp Rmv Dent - Part Edentlus Man"
-                  },
-                  {
-                    "code": "D6114",
-                    "name": "Implant/Abutment Supp Fixed Dent - Edentulous Max"
-                  },
-                  {
-                    "code": "D6115",
-                    "name": "Implant/Abutment Supp Fixed Dent - Edentulous Mand"
-                  },
-                  {
-                    "code": "D6116",
-                    "name": "Implant/Abutment Supp Fixd Dent - Part Edentls Max"
-                  },
-                  {
-                    "code": "D6117",
-                    "name": "Implant/Abutment Supp Fixd Dent - Part Edentls Man"
-                  },
-                  {
-                    "code": "D6118",
-                    "name": "Implant/Abutment Supp Interim Fixd Dent-Mandibular"
-                  },
-                  {
-                    "code": "D6119",
-                    "name": "Implant/Abutment Supp Interim Fixd Dent-Maxillary"
-                  },
-                  {
-                    "code": "D6120",
-                    "name": "Imp Sup Retainer - Porc Fused To Titanium/alloys"
-                  },
-                  {
-                    "code": "D6120A",
-                    "name": "Imp Sup Retainer - Porc Fused To Titanium/alloys"
-                  },
-                  {
-                    "code": "D6121",
-                    "name": "Imp Sup Retainer For Metal FPD- Base Alloys"
-                  },
-                  {
-                    "code": "D6121A",
-                    "name": "Imp Sup Retainer For Metal FPD - Base Alloys"
-                  },
-                  {
-                    "code": "D6122",
-                    "name": "Imp Sup Retainer For Metal FPD - Noble Alloys"
-                  },
-                  {
-                    "code": "D6122A",
-                    "name": "Imp Sup Retainer For Metal FPD- Noble Alloys"
-                  },
-                  {
-                    "code": "D6123",
-                    "name": "Imp Sup Retainer For Metal FPD- Titanium/alloys"
-                  },
-                  {
-                    "code": "D6123A",
-                    "name": "Imp Sup Retainer For Metal FPD- Titanium/alloys"
-                  },
-                  {
-                    "code": "D6195",
-                    "name": "Abut Sup Retainer- Porc Fused To Titanium/alloys"
-                  }
-            ]
+        "D0180": {
+          "key": "D0180",
+          "label": "Compsve Perio Eval New/Est Pat"
         },
-        "category9": {
-            "range": "D6200-D6999",
-            "name": "PROSTHODONTICS",
-            "breakdowns":[
-                {
-                    "code": "D6240",
-                    "name": "Pontic Porcln Fused Hi Nobl Mt"
-                  },
-                  {
-                    "code": "D6242",
-                    "name": "Pontic Prcln Fused Noble Metal"
-                  },
-                  {
-                    "code": "D6243",
-                    "name": "Pontic - Porc Fused To Titanium/Titanium Alloys"
-                  },
-                  {
-                    "code": "D6243A",
-                    "name": "Pontic - Porc Fused To Titanium/Titanium Alloys"
-                  },
-                  {
-                    "code": "D6245",
-                    "name": "Pontic Porcelain/Ceramic"
-                  },
-                  {
-                    "code": "D6545",
-                    "name": "Retainer FPD - Cast/Mtl Resin"
-                  },
-                  {
-                    "code": "D6740",
-                    "name": "Retainer Crown - Porcelain/Ceramic"
-                  },
-                  {
-                    "code": "D6750",
-                    "name": "Retainer Crown - Porclain Fused Hi Noble Metal"
-                  },
-                  {
-                    "code": "D6752",
-                    "name": "Retainer Crown - Porclain Fused Noble Metal"
-                  },
-                  {
-                    "code": "D6753",
-                    "name": "Retainer Crown- Porc Fused To Titanium/alloys"
-                  },
-                  {
-                    "code": "D6753A",
-                    "name": "Retainer Crown- Porc Fused To Titanium/alloys"
-                  },
-                  {
-                    "code": "D6784",
-                    "name": "3/4 Retainer Crown- Titanium/Titanium Alloys"
-                  },
-                  {
-                    "code": "D6793",
-                    "name": "Provisional Retainer Crown - Further TX/Comp Neces"
-                  },
-                  {
-                    "code": "D6920",
-                    "name": "Connector Bar"
-                  },
-                  {
-                    "code": "D6930",
-                    "name": "Recement Or Rebond Fixed Partial Denture"
-                  },
-                  {
-                    "code": "D6940",
-                    "name": "Stress Breaker"
-                  },
-                  {
-                    "code": "D6950",
-                    "name": "Precision Attachment"
-                  },
-                  {
-                    "code": "D6980",
-                    "name": "Fixed Partial Denture Repair - Further TX/Completi"
-                  },
-                  {
-                    "code": "D6985",
-                    "name": "Pediatric Partial Denture Fixd"
-                  },
-                  {
-                    "code": "D6999B",
-                    "name": "ERA REPLACEMENT"
-                  }
-            ]
+        "D0210": {
+          "key": "D0210",
+          "label": "Intraoral - Complete Series Of Radiographic Images"
         },
-        "category10": {
-            "range": "D7000-D7999",
-            "name": "ORAL AND MAXILLOFACIAL SURGERY",
-            "breakdowns":[
-                {
-                    "code": "D7111",
-                    "name": "Extraction, Coronal Remnants - Primary Tooth"
-                  },
-                  {
-                    "code": "D7140",
-                    "name": "Extract Erpted Th/Expsed Root"
-                  },
-                  {
-                    "code": "D7210",
-                    "name": "Extraction, Erupted Tooth Require Removal/Sectioni"
-                  },
-                  {
-                    "code": "D7220",
-                    "name": "Remov Impacted Tooth Soft Tiss"
-                  },
-                  {
-                    "code": "D7230",
-                    "name": "Remov Impacted Th Partial Bony"
-                  },
-                  {
-                    "code": "D7240",
-                    "name": "Remov Impacted Th Complet Bony"
-                  },
-                  {
-                    "code": "D7241",
-                    "name": "Remov Impt Th Cmp Bny W/Compli"
-                  },
-                  {
-                    "code": "D7250",
-                    "name": "Removal Of Residual Tooth Roots(Cutting Procedure\""
-                  },
-                  {
-                    "code": "D7251",
-                    "name": "Coronectomy - Intentional Partial Tooth Removal"
-                  },
-                  {
-                    "code": "D7260",
-                    "name": "Oroantral Fistula Closure"
-                  },
-                  {
-                    "code": "D7261",
-                    "name": "Prim Closure Sinus Perforation"
-                  },
-                  {
-                    "code": "D7270",
-                    "name": "Tooth Reimplant/Stabilization"
-                  },
-                  {
-                    "code": "D7272",
-                    "name": "Tooth Transplantation"
-                  },
-                  {
-                    "code": "D7280",
-                    "name": "Exposure Of An Unerupted Tooth"
-                  },
-                  {
-                    "code": "D7282",
-                    "name": "Mobilization Of Erupted Tooth"
-                  },
-                  {
-                    "code": "D7283",
-                    "name": "Place Device For Eruption For Impacted Tooth"
-                  },
-                  {
-                    "code": "D7285",
-                    "name": "Incisional Biopsy Of Oral Tissue - Hard(Bone/tooth"
-                  },
-                  {
-                    "code": "D7286",
-                    "name": "Incisional Biopsy Of Oral Tissue - Soft"
-                  },
-                  {
-                    "code": "D7310",
-                    "name": "Alveo W Extractions 4+Th/Per Quad"
-                  },
-                  {
-                    "code": "D7311",
-                    "name": "Alveoplasty W/ Extraction - 1-3Tth/Quad"
-                  },
-                  {
-                    "code": "D7320",
-                    "name": "Alveo W/O Extractions 4+Th/Per Quad"
-                  },
-                  {
-                    "code": "D7321",
-                    "name": "Alveoplasty W/O Extraction - 1-3Tth/Quad"
-                  },
-                  {
-                    "code": "D7340",
-                    "name": "Vistibuolplasty Simple"
-                  },
-                  {
-                    "code": "D7350",
-                    "name": "Vestibuloplasty Complete"
-                  },
-                  {
-                    "code": "D7472",
-                    "name": "Removal Of Torus Palatinus"
-                  },
-                  {
-                    "code": "D7473",
-                    "name": "Removal Of Torus Mandibularis"
-                  },
-                  {
-                    "code": "D7510",
-                    "name": "I&D Of Abscess - Intraoral Soft"
-                  },
-                  {
-                    "code": "D7511",
-                    "name": "I&D Of Abscess - Intraoral Soft, Complicated"
-                  },
-                  {
-                    "code": "D7922",
-                    "name": "Intra-socket Bio Dressing For Hemostasis, Per Site"
-                  },
-                  {
-                    "code": "D7951",
-                    "name": "Sinus Augmentation Via A Lateral Open Approach"
-                  },
-                  {
-                    "code": "D7952",
-                    "name": "Sinus Augmentation Via A Vertical Approach"
-                  },
-                  {
-                    "code": "D7953",
-                    "name": "Bone Rplcmnt Graft For Ridge Pres - Per Site"
-                  },
-                  {
-                    "code": "D7960",
-                    "name": "Frenulectomy / Frenectomy / Frenotomy"
-                  },
-                  {
-                    "code": "D7963",
-                    "name": "Frenuloplasty"
-                  }
-            ]
+        "D0220": {
+          "key": "D0220",
+          "label": "Intraoral - Peripical First Radiographic Image"
         },
-        "category11": {
-            "range": "D8000-D8999",
-            "name": "ORTHODONTICS",
-            "breakdowns":[
-                {
-                    "code": "D8696",
-                    "name": "Repair Of Ortho Appliance - Maxillary"
-                  },
-                  {
-                    "code": "D8697",
-                    "name": "Repair Of Ortho Appliance - Mandibular"
-                  },
-                  {
-                    "code": "D8698",
-                    "name": "Re-Cement/Re-Bond Fixed Retainer - Maxillary"
-                  },
-                  {
-                    "code": "D8699",
-                    "name": "Re-Cement/Re-Bond Fixed Retainer - Mandibular"
-                  },
-                  {
-                    "code": "D8701",
-                    "name": "Repair Fixed Retainer, Includes Reattachment- Max"
-                  },
-                  {
-                    "code": "D8702",
-                    "name": "Repair Fixed Retainer, Includes Reattachment- Mand"
-                  },
-                  {
-                    "code": "D8703",
-                    "name": "Replace Lost/broken Retainer - Max"
-                  },
-                  {
-                    "code": "D8704",
-                    "name": "Replace Lost/Broken Retainer - Mand"
-                  }
-            ]
+        "D0230": {
+          "key": "D0230",
+          "label": "Intraoral - Peripical Each Addl Radiographic Image"
         },
-        "category12": {
-            "range": "D9000-D10000",
-            "name": "ADJUNCTIVE GENERAL SERVICES",
-            "breakdowns":[
-                {
-                    "code": "D9110",
-                    "name": "Emergency Treatment/Palliative"
-                  },
-                  {
-                    "code": "D9120",
-                    "name": "Fixed Partial Denture Sectioning"
-                  },
-                  {
-                    "code": "D9230",
-                    "name": "Inhalation Of Nitrous Oxide (Anxiolysis, Analgesia"
-                  },
-                  {
-                    "code": "D9310",
-                    "name": "Consultation - Diag Srvc Other Than Reqstg Prvdr"
-                  },
-                  {
-                    "code": "D9430",
-                    "name": "Office Visit For Observation"
-                  },
-                  {
-                    "code": "D9440",
-                    "name": "Office Visit After Hours"
-                  },
-                  {
-                    "code": "D9630",
-                    "name": "Drugs/Medicaments Dispensed In Office For Home Use"
-                  },
-                  {
-                    "code": "D9910",
-                    "name": "Application Of Desensitizing"
-                  },
-                  {
-                    "code": "D9911",
-                    "name": "Apply Desensitizing Resin"
-                  },
-                  {
-                    "code": "D9930",
-                    "name": "Treatment Of Complications"
-                  },
-                  {
-                    "code": "D9931",
-                    "name": "Cleaning And Inspection Of A Removable Appliance"
-                  },
-                  {
-                    "code": "D9932",
-                    "name": "Cleaning/Inspection Removable Compl Dent, Maxilla"
-                  },
-                  {
-                    "code": "D9933",
-                    "name": "Cleaning/Inspection Removable Compl Dent, Mandibul"
-                  },
-                  {
-                    "code": "D9934",
-                    "name": "Cleaning/Inspection Removable Partial Dent, Maxill"
-                  },
-                  {
-                    "code": "D9935",
-                    "name": "Cleaning/Inspection Removable Partial Dent, Mandib"
-                  },
-                  {
-                    "code": "D9943",
-                    "name": "Occlusal Guard Adjustment"
-                  },
-                  {
-                    "code": "D9944",
-                    "name": "Occlusal Guard - Hard Appliance, Full Arch"
-                  },
-                  {
-                    "code": "D9945",
-                    "name": "Occlusal Guard - Soft Appliance, Full Arch"
-                  },
-                  {
-                    "code": "D9946",
-                    "name": "Occlusal Guard - Hard Appliance, Partial Arch"
-                  },
-                  {
-                    "code": "D9951",
-                    "name": "Occlusal Adjustment Limited"
-                  },
-                  {
-                    "code": "D9952",
-                    "name": "Occlusal Adjustment Complete"
-                  },
-                  {
-                    "code": "D9961",
-                    "name": "Duplicate/Copy Patient's Records"
-                  },
-                  {
-                    "code": "D9970",
-                    "name": "Enamel Microabrasion"
-                  },
-                  {
-                    "code": "D9971",
-                    "name": "Odontoplasty 1-2 Teeth"
-                  },
-                  {
-                    "code": "D9972",
-                    "name": "External Bleaching(ZOOM)Per Arch, In Office"
-                  },
-                  {
-                    "code": "D9975",
-                    "name": "External Bleaching Home Application, Per Arch"
-                  },
-                  {
-                    "code": "D9986",
-                    "name": "Missed Appointment"
-                  },
-                  {
-                    "code": "D9987",
-                    "name": "Cancelled Appointment"
-                  },
-                  {
-                    "code": "D9994",
-                    "name": "Dental Case Mgmt - Pt Education For OH Literacy"
-                  },
-                  {
-                    "code": "D9995",
-                    "name": "Teledentistry Synchronous; Real Time Encounter"
-                  },
-                  {
-                    "code": "D9996",
-                    "name": "Teledentistry Asynchronous; Subsequent Review"
-                  },
-                  {
-                    "code": "D9997",
-                    "name": "Dental Case Mgmt- Pts W/special Health Care Needs"
-                  },
-                  {
-                    "code": "D9999",
-                    "name": "Unspecified Adjunctive Procedure"
-                  },
-                  {
-                    "code": "D9999A",
-                    "name": "QuickSplint"
-                  }
-            ]
+        "D0240": {
+          "key": "D0240",
+          "label": "Intraoral - Occlusal Radiographic Image"
+        },
+        "D0270": {
+          "key": "D0270",
+          "label": "Bitewing - Single Radiographic Image"
+        },
+        "D0272": {
+          "key": "D0272",
+          "label": "Bitewings - Two Radiographic Images"
+        },
+        "D0273": {
+          "key": "D0273",
+          "label": "Bitewings - Three Radiographic Images"
+        },
+        "D0274": {
+          "key": "D0274",
+          "label": "Bitewings - Four Radiographic Images"
+        },
+        "D0277": {
+          "key": "D0277",
+          "label": "Vertical Bitewings - 7-8 Radiographic Images"
+        },
+        "D0330": {
+          "key": "D0330",
+          "label": "Panoramic Radiographic Image"
+        },
+        "D0340": {
+          "key": "D0340",
+          "label": "2D Cephalometric Radiographic Image"
+        },
+        "D0350": {
+          "key": "D0350",
+          "label": "2D Oral/Facial Photographic Image-Intraoral/Extrao"
+        },
+        "D0364": {
+          "key": "D0364",
+          "label": "Cone Beam CT Limited View - Less Than Whole Jaw"
+        },
+        "D0365": {
+          "key": "D0365",
+          "label": "Cone Beam CT Full Arch View - Mandible"
+        },
+        "D0366": {
+          "key": "D0366",
+          "label": "Cone Beam CT Full Arch View - Maxilla W/wo Cranium"
+        },
+        "D0367": {
+          "key": "D0367",
+          "label": "Cone Beam CT Full 2 Jaw View W/wo Cranium"
+        },
+        "D0419": {
+          "key": "D0419",
+          "label": "Assessment Of Salivary Flow By Measurement"
+        },
+        "D0460": {
+          "key": "D0460",
+          "label": "Pulp Vitality Tests"
+        },
+        "D0470": {
+          "key": "D0470",
+          "label": "Diagnostic Casts"
+        },
+        "D0472": {
+          "key": "D0472",
+          "label": "Accession - Gross"
         }
+      }
+    },
+    "D1000-D1999": {
+      "key": "D1000-D1999",
+      "label": "PREVENTIVE",
+      "breakDownKeys": [
+        "D1110",
+        "D1120",
+        "D1206",
+        "D1330",
+        "D1351",
+        "D1352",
+        "D1353",
+        "D1354",
+        "D1551",
+        "D1552",
+        "D1553",
+        "D1556",
+        "D1557",
+        "D1558",
+        "D1575"
+      ],
+      "breakDowns": {
+        "D1110": {
+          "key": "D1110",
+          "label": "Prophylaxis - Adult"
+        },
+        "D1120": {
+          "key": "D1120",
+          "label": "Prophylaxis - Child"
+        },
+        "D1206": {
+          "key": "D1206",
+          "label": "Topical Application Of Fluoride Varnish"
+        },
+        "D1330": {
+          "key": "D1330",
+          "label": "Oral Hygiene Instructions"
+        },
+        "D1351": {
+          "key": "D1351",
+          "label": "Sealant - Per Tooth"
+        },
+        "D1352": {
+          "key": "D1352",
+          "label": "Prev Resin Restoratn In Mod-high Caries Pt (Perman"
+        },
+        "D1353": {
+          "key": "D1353",
+          "label": "Sealant Repair - Per Tooth"
+        },
+        "D1354": {
+          "key": "D1354",
+          "label": "Interim Caries Arresting Medcmnt Applctn-Per Tooth"
+        },
+        "D1551": {
+          "key": "D1551",
+          "label": "Re-Cement/Re-Bond Bilateral Space Maintainer - Max"
+        },
+        "D1552": {
+          "key": "D1552",
+          "label": "Re-cement/Re-Bond Bilateral Space Maintainer-Mand"
+        },
+        "D1553": {
+          "key": "D1553",
+          "label": "Recement/Rebond Unilateral Space Maint - Per Quad"
+        },
+        "D1556": {
+          "key": "D1556",
+          "label": "Remove Fixed Unilateral Space Maintainer- Per Quad"
+        },
+        "D1557": {
+          "key": "D1557",
+          "label": "Remove Fixed Unilateral Space Maintainer - Max"
+        },
+        "D1558": {
+          "key": "D1558",
+          "label": "Remove Fixed Bilateral Space Maintainer - Mand"
+        },
+        "D1575": {
+          "key": "D1575",
+          "label": "Distal Shoe Space Maintainer-Fixed-Unilateral"
+        }
+      }
+    },
+    "D2000-D2999": {
+      "key": "D2000-D2999",
+      "label": "RESTORATIVE",
+      "breakDownKeys": [
+        "D2330",
+        "D2331",
+        "D2332",
+        "D2335",
+        "D2390",
+        "D2391",
+        "D2392",
+        "D2393",
+        "D2394",
+        "D2610",
+        "D2620",
+        "D2630",
+        "D2642",
+        "D2643",
+        "D2644",
+        "D2740",
+        "D2750",
+        "D2752",
+        "D2753",
+        "D2753A",
+        "D2790",
+        "D2799",
+        "D2910",
+        "D2915",
+        "D2920",
+        "D2921",
+        "D2929",
+        "D2940",
+        "D2950",
+        "D2954",
+        "D2955",
+        "D2960",
+        "D2962",
+        "D2975",
+        "D2980",
+        "D2982",
+        "D2983",
+        "D2990",
+        "D2999"
+      ],
+      "breakDowns": {
+        "D2330": {
+          "key": "D2330",
+          "label": "Resin Composite One Surface Anterior"
+        },
+        "D2331": {
+          "key": "D2331",
+          "label": "Resin Composite Two Surfaces Anterior"
+        },
+        "D2332": {
+          "key": "D2332",
+          "label": "Resin Composite Three Surfaces Anterior"
+        },
+        "D2335": {
+          "key": "D2335",
+          "label": "Resin Composite Four/More Surf Anterior"
+        },
+        "D2390": {
+          "key": "D2390",
+          "label": "Resin Composite Crown Anterior"
+        },
+        "D2391": {
+          "key": "D2391",
+          "label": "Resin Composite One Surface Posterior"
+        },
+        "D2392": {
+          "key": "D2392",
+          "label": "Resin Composite Two Surfaces Posterior"
+        },
+        "D2393": {
+          "key": "D2393",
+          "label": "Resin Composite Three Surfaces Posterior"
+        },
+        "D2394": {
+          "key": "D2394",
+          "label": "Resin Composite Four/More Surfaces Posterior"
+        },
+        "D2610": {
+          "key": "D2610",
+          "label": "Inlay Porcelain/Ceramic One Surface"
+        },
+        "D2620": {
+          "key": "D2620",
+          "label": "Inlay Porcelain/Ceramic Two Surfaces"
+        },
+        "D2630": {
+          "key": "D2630",
+          "label": "Inlay Porcelain/Ceramic Three+ Surfaces"
+        },
+        "D2642": {
+          "key": "D2642",
+          "label": "Onlay Porcelain/Ceramic Two Surfaces"
+        },
+        "D2643": {
+          "key": "D2643",
+          "label": "Onlay Porcelain/Ceramic Three Surfaces"
+        },
+        "D2644": {
+          "key": "D2644",
+          "label": "Onlay Porcelain/Ceramic Four+ Surfaces"
+        },
+        "D2740": {
+          "key": "D2740",
+          "label": "Crown Porcelain/Ceramic"
+        },
+        "D2750": {
+          "key": "D2750",
+          "label": "Crown Porcelain Fused High Noble Metal"
+        },
+        "D2752": {
+          "key": "D2752",
+          "label": "Crown Porcelain Fused Noble Metal"
+        },
+        "D2753": {
+          "key": "D2753",
+          "label": "Crown- Porcelain Fused To Titanium/titanium Alloys"
+        },
+        "D2753A": {
+          "key": "D2753A",
+          "label": "Crown - Porcelain Fused To Titanium/Titanium Alloy"
+        },
+        "D2790": {
+          "key": "D2790",
+          "label": "Crown Full Cast High Noble Metal"
+        },
+        "D2799": {
+          "key": "D2799",
+          "label": "Provisional Crown - Further TX/Completion Necessar"
+        },
+        "D2910": {
+          "key": "D2910",
+          "label": "Recement Or Rebond Inlay/Onlay/Veneer/Partial Cvrg"
+        },
+        "D2915": {
+          "key": "D2915",
+          "label": "Recement Or Rebond Indirect Fab Or Prefab Post/Cor"
+        },
+        "D2920": {
+          "key": "D2920",
+          "label": "Recement Or Rebond Crown"
+        },
+        "D2921": {
+          "key": "D2921",
+          "label": "Reattachment Of Tooth Fragment, Incisal Edge/Cusp"
+        },
+        "D2929": {
+          "key": "D2929",
+          "label": "Prefabricated Porcelain/Ceramic Crown - Primary"
+        },
+        "D2940": {
+          "key": "D2940",
+          "label": "Protective Restoration"
+        },
+        "D2950": {
+          "key": "D2950",
+          "label": "Core Buildup, Including Any Pins When Required"
+        },
+        "D2954": {
+          "key": "D2954",
+          "label": "Prefab Post & Core (Addition To Crown)"
+        },
+        "D2955": {
+          "key": "D2955",
+          "label": "Post Removal"
+        },
+        "D2960": {
+          "key": "D2960",
+          "label": "Labial Veneer Resin Laminate Chair"
+        },
+        "D2962": {
+          "key": "D2962",
+          "label": "Labial Veneer Porcelain Laminate Lab"
+        },
+        "D2975": {
+          "key": "D2975",
+          "label": "Coping"
+        },
+        "D2980": {
+          "key": "D2980",
+          "label": "Crown Repair - Restorative Material Failure"
+        },
+        "D2982": {
+          "key": "D2982",
+          "label": "Onlay Repair - Restorative Material Failure"
+        },
+        "D2983": {
+          "key": "D2983",
+          "label": "Veneer Repair - Restorative Material Failure"
+        },
+        "D2990": {
+          "key": "D2990",
+          "label": "Resin Infiltration Incipient Smooth Surface Lesion"
+        },
+        "D2999": {
+          "key": "D2999",
+          "label": "Unspec Rest Proc/Rpt"
+        }
+      }
+    },
+    "D3000-D3999": {
+      "key": "D3000-D3999",
+      "label": "ENDODONTICS",
+      "breakDownKeys": [
+        "D3110",
+        "D3120",
+        "D3220",
+        "D3221",
+        "D3230",
+        "D3240",
+        "D3310",
+        "D3320",
+        "D3330",
+        "D3331",
+        "D3332",
+        "D3333",
+        "D3346",
+        "D3347",
+        "D3348",
+        "D3351",
+        "D3352",
+        "D3353",
+        "D3410",
+        "D3421",
+        "D3425",
+        "D3426",
+        "D3910",
+        "D3920",
+        "D3950",
+        "D3999"
+      ],
+      "breakDowns": {
+        "D3110": {
+          "key": "D3110",
+          "label": "Pulp Cap Direct"
+        },
+        "D3120": {
+          "key": "D3120",
+          "label": "Pulp Cap Indirect"
+        },
+        "D3220": {
+          "key": "D3220",
+          "label": "Therapeutic Pulpotomy"
+        },
+        "D3221": {
+          "key": "D3221",
+          "label": "Pulpal Debridement Prem/Prim"
+        },
+        "D3230": {
+          "key": "D3230",
+          "label": "Pulpal Therapy Anterior Primy"
+        },
+        "D3240": {
+          "key": "D3240",
+          "label": "Pulpal Therapy Posterior Primy"
+        },
+        "D3310": {
+          "key": "D3310",
+          "label": "Endodontic Therapy, Anterior Tooth"
+        },
+        "D3320": {
+          "key": "D3320",
+          "label": "Endodontic Therapy, Premolar Tooth"
+        },
+        "D3330": {
+          "key": "D3330",
+          "label": "Endodontic Therapy, Molar Tooth"
+        },
+        "D3331": {
+          "key": "D3331",
+          "label": "Treatment Of Root Canal Obstruction"
+        },
+        "D3332": {
+          "key": "D3332",
+          "label": "Incomp Endo Therapy Inperable"
+        },
+        "D3333": {
+          "key": "D3333",
+          "label": "Endo - Internal Root Repair"
+        },
+        "D3346": {
+          "key": "D3346",
+          "label": "Retreat RCT/Anterior"
+        },
+        "D3347": {
+          "key": "D3347",
+          "label": "Retreatment-Previous Root Canal Therapy-Premolar"
+        },
+        "D3348": {
+          "key": "D3348",
+          "label": "Retreat RCT/Molar"
+        },
+        "D3351": {
+          "key": "D3351",
+          "label": "Apexification/Recalcification - Initial Visit"
+        },
+        "D3352": {
+          "key": "D3352",
+          "label": "Apexification/Recalcification - Interim Medication"
+        },
+        "D3353": {
+          "key": "D3353",
+          "label": "Apexification/Recalcification (Final)"
+        },
+        "D3410": {
+          "key": "D3410",
+          "label": "Apicoectomy - Anterior"
+        },
+        "D3421": {
+          "key": "D3421",
+          "label": "Apicoectomy - Premolar (First Root)"
+        },
+        "D3425": {
+          "key": "D3425",
+          "label": "Apicoectomy - Molar (First Root)"
+        },
+        "D3426": {
+          "key": "D3426",
+          "label": "Apicoectomy - Each Additional Root"
+        },
+        "D3910": {
+          "key": "D3910",
+          "label": "Sur Proc Isoltn Tooth W/Rubdam"
+        },
+        "D3920": {
+          "key": "D3920",
+          "label": "Hemisection Not Incl RCT"
+        },
+        "D3950": {
+          "key": "D3950",
+          "label": "Canal Preparation- Perfmd Post"
+        },
+        "D3999": {
+          "key": "D3999",
+          "label": "Unspecified Endo By Report"
+        }
+      }
+    },
+    "D4000-D4999": {
+      "key": "D4000-D4999",
+      "label": "PERIODONTICS",
+      "breakDownKeys": [
+        "D4210",
+        "D4211",
+        "D4212",
+        "D4230",
+        "D4231",
+        "D4240",
+        "D4241",
+        "D4245",
+        "D4249",
+        "D4260",
+        "D4261",
+        "D4263",
+        "D4264",
+        "D4265",
+        "D4266",
+        "D4267",
+        "D4268",
+        "D4270",
+        "D4273",
+        "D4274",
+        "D4275",
+        "D4276",
+        "D4277",
+        "D4278",
+        "D4283",
+        "D4285",
+        "D4320",
+        "D4321",
+        "D4341",
+        "D4342",
+        "D4346",
+        "D4355",
+        "D4381",
+        "D4910",
+        "D4920",
+        "D4921",
+        "D4999"
+      ],
+      "breakDowns": {
+        "D4210": {
+          "key": "D4210",
+          "label": "Gingect/Gingipsty 4+T/Per Quad"
+        },
+        "D4211": {
+          "key": "D4211",
+          "label": "Ginvect/Gingipsty 1-3t Pr Quad"
+        },
+        "D4212": {
+          "key": "D4212",
+          "label": "Gingect/Gingipsty For Restorative Proc, Per Tooth"
+        },
+        "D4230": {
+          "key": "D4230",
+          "label": "Anatomical Crown Exposure 4+T/Bound Space,Per Quad"
+        },
+        "D4231": {
+          "key": "D4231",
+          "label": "Anatomical Crown Exposure 1-3T/Bound Space PerQuad"
+        },
+        "D4240": {
+          "key": "D4240",
+          "label": "Gingiv Flap Rtpln 4+T/Per Quad"
+        },
+        "D4241": {
+          "key": "D4241",
+          "label": "Gingi Flap Rtpln 1-3t Pr Quad"
+        },
+        "D4245": {
+          "key": "D4245",
+          "label": "Apically Position Flap"
+        },
+        "D4249": {
+          "key": "D4249",
+          "label": "Clinical Crwn Lngthng Hard Tis"
+        },
+        "D4260": {
+          "key": "D4260",
+          "label": "Osseous Surgery 4+T/Per Quad"
+        },
+        "D4261": {
+          "key": "D4261",
+          "label": "Osseous Surgery 1-3t Pr Quad"
+        },
+        "D4263": {
+          "key": "D4263",
+          "label": "Bone Replacement Graft-Retained Natural Tooth, 1st"
+        },
+        "D4264": {
+          "key": "D4264",
+          "label": "Bone Replacement Graft-Retained Natural Tooth,Addl"
+        },
+        "D4265": {
+          "key": "D4265",
+          "label": "Bio Materials Aid Tissue Regen"
+        },
+        "D4266": {
+          "key": "D4266",
+          "label": "Guided Tissue Regen Resorbable"
+        },
+        "D4267": {
+          "key": "D4267",
+          "label": "Guided Tissue Regen Nonresorba"
+        },
+        "D4268": {
+          "key": "D4268",
+          "label": "Surgical Revise Proc Per Tooth"
+        },
+        "D4270": {
+          "key": "D4270",
+          "label": "Pedicle Soft Tissue Graft"
+        },
+        "D4273": {
+          "key": "D4273",
+          "label": "Autogenous CT Graft-1st Tooth/Implant/Endentulous"
+        },
+        "D4274": {
+          "key": "D4274",
+          "label": "Mesial/Distal Wedge Procedure, Single Tooth"
+        },
+        "D4275": {
+          "key": "D4275",
+          "label": "Non-Autogenous CT Graft- 1st Tooth/Implant/Endentu"
+        },
+        "D4276": {
+          "key": "D4276",
+          "label": "Combined CT & Double Pedicle Graft, Per Tooth"
+        },
+        "D4277": {
+          "key": "D4277",
+          "label": "Free Soft Tissue Graft - First Tooth In Graft"
+        },
+        "D4278": {
+          "key": "D4278",
+          "label": "Free Soft Tissue Graft - Addl Tooth In Graft"
+        },
+        "D4283": {
+          "key": "D4283",
+          "label": "Autogenous CT Graft-Ea Contig Tooth In Site"
+        },
+        "D4285": {
+          "key": "D4285",
+          "label": "Non-Autogenous CT Graft-Ea Contig Tooth In Site"
+        },
+        "D4320": {
+          "key": "D4320",
+          "label": "Provis Splinting Intracoronal"
+        },
+        "D4321": {
+          "key": "D4321",
+          "label": "Provsnl Splinting Extracoronal"
+        },
+        "D4341": {
+          "key": "D4341",
+          "label": "Perio Sclg Rt Pln 4+T/Per Quad"
+        },
+        "D4342": {
+          "key": "D4342",
+          "label": "Perio Sclg Rt Pln 1-3t Pr Quad"
+        },
+        "D4346": {
+          "key": "D4346",
+          "label": "Scaling Generalized Mod/Severe Gingival Inflam-FM"
+        },
+        "D4355": {
+          "key": "D4355",
+          "label": "Full Mouth Debridement - Subsequent Visit"
+        },
+        "D4381": {
+          "key": "D4381",
+          "label": "Localized Delivery Antimicrobial Agents Controlled"
+        },
+        "D4910": {
+          "key": "D4910",
+          "label": "Periodontal Maintenance"
+        },
+        "D4920": {
+          "key": "D4920",
+          "label": "Unscheduled Dressing Change"
+        },
+        "D4921": {
+          "key": "D4921",
+          "label": "Gingival Irrigation - Per Quadrant"
+        },
+        "D4999": {
+          "key": "D4999",
+          "label": "Unspecified Perio Pr By Rp"
+        }
+      }
+    },
+    "D5000-D5999": {
+      "key": "D5000-D5999",
+      "label": "PROSTHODONTICS",
+      "breakDownKeys": [
+        "D5110",
+        "D5120",
+        "D5130",
+        "D5140",
+        "D5211",
+        "D5212",
+        "D5213",
+        "D5214",
+        "D5221",
+        "D5222",
+        "D5223",
+        "D5224",
+        "D5225",
+        "D5226",
+        "D5282",
+        "D5283",
+        "D5284",
+        "D5286",
+        "D5410",
+        "D5411",
+        "D5421",
+        "D5422",
+        "D5511",
+        "D5512",
+        "D5520",
+        "D5611",
+        "D5612",
+        "D5621",
+        "D5622",
+        "D5630",
+        "D5640",
+        "D5650",
+        "D5660",
+        "D5670",
+        "D5671",
+        "D5710",
+        "D5711",
+        "D5720",
+        "D5721",
+        "D5730",
+        "D5731",
+        "D5740",
+        "D5741",
+        "D5750",
+        "D5751",
+        "D5760",
+        "D5761",
+        "D5810",
+        "D5811",
+        "D5820",
+        "D5821",
+        "D5850",
+        "D5851",
+        "D5862",
+        "D5863",
+        "D5864",
+        "D5865",
+        "D5866",
+        "D5867",
+        "D5875",
+        "D5876"
+      ],
+      "breakDowns": {
+        "D5110": {
+          "key": "D5110",
+          "label": "Complete Denture - Maxillary"
+        },
+        "D5120": {
+          "key": "D5120",
+          "label": "Complete Denture - Mandibular"
+        },
+        "D5130": {
+          "key": "D5130",
+          "label": "Immediate Denture - Maxillary"
+        },
+        "D5140": {
+          "key": "D5140",
+          "label": "Immediate Denture - Mandibular"
+        },
+        "D5211": {
+          "key": "D5211",
+          "label": "Max Partial Denture Resin Base"
+        },
+        "D5212": {
+          "key": "D5212",
+          "label": "Man Partial Denture Resin Base"
+        },
+        "D5213": {
+          "key": "D5213",
+          "label": "Max Partial Denture Cast Metal"
+        },
+        "D5214": {
+          "key": "D5214",
+          "label": "Man Partial Denture Cast Metal"
+        },
+        "D5221": {
+          "key": "D5221",
+          "label": "Immediate Maxillary Partial Denture - Resin Base"
+        },
+        "D5222": {
+          "key": "D5222",
+          "label": "Immediate Mandibular Partial Denture - Resin Base"
+        },
+        "D5223": {
+          "key": "D5223",
+          "label": "Immediate Maxillary Partial Denture - Cast Metal"
+        },
+        "D5224": {
+          "key": "D5224",
+          "label": "Immediate Mandibular Partial Denture - Cast Metal"
+        },
+        "D5225": {
+          "key": "D5225",
+          "label": "Max Partial Denture - Flex Bas"
+        },
+        "D5226": {
+          "key": "D5226",
+          "label": "Man Partial Denture - Flex Bas"
+        },
+        "D5282": {
+          "key": "D5282",
+          "label": "Removable Unilateral Prtl Dntr-One Pc Cst Mtl, Max"
+        },
+        "D5283": {
+          "key": "D5283",
+          "label": "Removable Unilateral Prtl Dntr-One Pc Cst Mtl, Man"
+        },
+        "D5284": {
+          "key": "D5284",
+          "label": "Removable Unilateral Part Dent-flex Base- Per Quad"
+        },
+        "D5286": {
+          "key": "D5286",
+          "label": "Removable Unilateral Part Dent- Resin - Per Quad"
+        },
+        "D5410": {
+          "key": "D5410",
+          "label": "Adjust Complete Denture Maxil"
+        },
+        "D5411": {
+          "key": "D5411",
+          "label": "Adjust Complete Denture Mand"
+        },
+        "D5421": {
+          "key": "D5421",
+          "label": "Adjust Partial Denture Max"
+        },
+        "D5422": {
+          "key": "D5422",
+          "label": "Adjust Partial Denture Mand"
+        },
+        "D5511": {
+          "key": "D5511",
+          "label": "Repair Broken Complete Denture Base, Mandibular"
+        },
+        "D5512": {
+          "key": "D5512",
+          "label": "Repair Broken Complete Denture Base, Maxillary"
+        },
+        "D5520": {
+          "key": "D5520",
+          "label": "Replace Missing Or Brkn Teeth"
+        },
+        "D5611": {
+          "key": "D5611",
+          "label": "Repair Resin Partial Denture Base, Mandibular"
+        },
+        "D5612": {
+          "key": "D5612",
+          "label": "Repair Resin Partial Denture Base, Maxillary"
+        },
+        "D5621": {
+          "key": "D5621",
+          "label": "Repair Cast Partial Denture Base, Mandibular"
+        },
+        "D5622": {
+          "key": "D5622",
+          "label": "Repair Cast Partial Denture Base, Maxillary"
+        },
+        "D5630": {
+          "key": "D5630",
+          "label": "Repair Or Replace Broken Clasp - Per Tooth"
+        },
+        "D5640": {
+          "key": "D5640",
+          "label": "Replace Broken Teeth-Per Tooth"
+        },
+        "D5650": {
+          "key": "D5650",
+          "label": "Add Tooth To Existng Part Dent"
+        },
+        "D5660": {
+          "key": "D5660",
+          "label": "Add Clasp To Existng Part Dent - Per Tooth"
+        },
+        "D5670": {
+          "key": "D5670",
+          "label": "Max-Replace All Tth & Acrylic"
+        },
+        "D5671": {
+          "key": "D5671",
+          "label": "Mand-Replace All Tth & Acrylic"
+        },
+        "D5710": {
+          "key": "D5710",
+          "label": "Rebase Complete Maxil Denture"
+        },
+        "D5711": {
+          "key": "D5711",
+          "label": "Rebase Complete Mandib Denture"
+        },
+        "D5720": {
+          "key": "D5720",
+          "label": "Rebase Max Partial Denture"
+        },
+        "D5721": {
+          "key": "D5721",
+          "label": "Rebase Mand Partial Denture"
+        },
+        "D5730": {
+          "key": "D5730",
+          "label": "Reline Complete Max Dent Chair"
+        },
+        "D5731": {
+          "key": "D5731",
+          "label": "Reline Complete Man Dent Chair"
+        },
+        "D5740": {
+          "key": "D5740",
+          "label": "Reline Max Partial Dent Chair"
+        },
+        "D5741": {
+          "key": "D5741",
+          "label": "Reline Mand Partial Dent Chair"
+        },
+        "D5750": {
+          "key": "D5750",
+          "label": "Reline Complete Max Dent Lab"
+        },
+        "D5751": {
+          "key": "D5751",
+          "label": "Reline Complete Mand Dent Lab"
+        },
+        "D5760": {
+          "key": "D5760",
+          "label": "Reline Max Partial Denture Lab"
+        },
+        "D5761": {
+          "key": "D5761",
+          "label": "Reline Mand Partial Dent Lab"
+        },
+        "D5810": {
+          "key": "D5810",
+          "label": "Interim Complete Dr (Max)"
+        },
+        "D5811": {
+          "key": "D5811",
+          "label": "Interim Complete Dr (Mand)"
+        },
+        "D5820": {
+          "key": "D5820",
+          "label": "Interim Partial Dr (Max)"
+        },
+        "D5821": {
+          "key": "D5821",
+          "label": "Interim Partial Dr (Mand)"
+        },
+        "D5850": {
+          "key": "D5850",
+          "label": "Tissue Condtn (Max)"
+        },
+        "D5851": {
+          "key": "D5851",
+          "label": "Tissue Condtn (Mand)"
+        },
+        "D5862": {
+          "key": "D5862",
+          "label": "Precision Attachment"
+        },
+        "D5863": {
+          "key": "D5863",
+          "label": "Overdenture - Complete Maxillary"
+        },
+        "D5864": {
+          "key": "D5864",
+          "label": "Overdenture - Partial Maxillary"
+        },
+        "D5865": {
+          "key": "D5865",
+          "label": "Overdenture - Complete Mandibular"
+        },
+        "D5866": {
+          "key": "D5866",
+          "label": "Overdenture - Partial Mandibular"
+        },
+        "D5867": {
+          "key": "D5867",
+          "label": "Repl Of Replcable Part Of Atta"
+        },
+        "D5875": {
+          "key": "D5875",
+          "label": "Modified Of Removable Prosthes"
+        },
+        "D5876": {
+          "key": "D5876",
+          "label": "Add Metl Substructr To Acrylic Full Dent(per Arch)"
+        }
+      }
+    },
+    "D5900-D5999": {
+      "key": "D5900-D5999",
+      "label": "MAXILLOFACIAL PROSTHETICS",
+      "breakDownKeys": [
+        "D5931",
+        "D5932",
+        "D5933",
+        "D5936"
+      ],
+      "breakDowns": {
+        "D5931": {
+          "key": "D5931",
+          "label": "Obturator prosthesis, surgical"
+        },
+        "D5932": {
+          "key": "D5932",
+          "label": "Obturator prosthesis, definitive"
+        },
+        "D5933": {
+          "key": "D5933",
+          "label": "Obturator prosthesis, modification"
+        },
+        "D5936": {
+          "key": "D5936",
+          "label": "Obturator prosthesis, interim"
+        }
+      }
+    },
+    "D6000-D6199": {
+      "key": "D6000-D6199",
+      "label": "IMPLANTS",
+      "breakDownKeys": [
+        "D6010",
+        "D6011",
+        "D6012",
+        "D6051",
+        "D6052",
+        "D6055",
+        "D6057",
+        "D6058",
+        "D6059",
+        "D6061",
+        "D6062",
+        "D6064",
+        "D6068",
+        "D6080",
+        "D6082",
+        "D6082A",
+        "D6083",
+        "D6083A",
+        "D6084",
+        "D6084A",
+        "D6086",
+        "D6086A",
+        "D6087",
+        "D6087A",
+        "D6088",
+        "D6088A",
+        "D6091",
+        "D6092",
+        "D6093",
+        "D6095",
+        "D6097",
+        "D6098",
+        "D6099",
+        "D6100",
+        "D6101",
+        "D6102",
+        "D6103",
+        "D6104",
+        "D6110",
+        "D6111",
+        "D6112",
+        "D6113",
+        "D6114",
+        "D6115",
+        "D6116",
+        "D6117",
+        "D6118",
+        "D6119",
+        "D6120",
+        "D6120A",
+        "D6121",
+        "D6121A",
+        "D6122",
+        "D6122A",
+        "D6123",
+        "D6123A",
+        "D6195"
+      ],
+      "breakDowns": {
+        "D6010": {
+          "key": "D6010",
+          "label": "Surgical Placement Implant - Endosteal"
+        },
+        "D6011": {
+          "key": "D6011",
+          "label": "Second Stage Implant Surgery"
+        },
+        "D6012": {
+          "key": "D6012",
+          "label": "Surg Plcmnt-Interim-Endosteal Implant"
+        },
+        "D6051": {
+          "key": "D6051",
+          "label": "Interim Abutment"
+        },
+        "D6052": {
+          "key": "D6052",
+          "label": "Semi-Precision Attachment Abutment"
+        },
+        "D6055": {
+          "key": "D6055",
+          "label": "Connecting Bar - Implant Or Abutment Supported"
+        },
+        "D6057": {
+          "key": "D6057",
+          "label": "Custom Fabricated Abutment"
+        },
+        "D6058": {
+          "key": "D6058",
+          "label": "Abutment Supported Porcelain/Ceramic Crown"
+        },
+        "D6059": {
+          "key": "D6059",
+          "label": "Abutment Supported Porc Fused To Metal Crown-HNM"
+        },
+        "D6061": {
+          "key": "D6061",
+          "label": "Abutment Supported Porc Fused To Metal Crown- NM"
+        },
+        "D6062": {
+          "key": "D6062",
+          "label": "Abutment Supported Cast Metal Crown - HNM"
+        },
+        "D6064": {
+          "key": "D6064",
+          "label": "Abutment Supported Cast Metal Crown - NM"
+        },
+        "D6068": {
+          "key": "D6068",
+          "label": "Abutment Supported Retainer Porcelain/Ceramic FPD"
+        },
+        "D6080": {
+          "key": "D6080",
+          "label": "Implant Maintenance Procedures (Removed/Reinserted"
+        },
+        "D6082": {
+          "key": "D6082",
+          "label": "Imp Supported Crn- Porcelain Fused To Base Alloys"
+        },
+        "D6082A": {
+          "key": "D6082A",
+          "label": "Imp Supported Crn- Porc Fused To Base Alloys"
+        },
+        "D6083": {
+          "key": "D6083",
+          "label": "Imp Supported Crn- Porcelain Fused To Noble Alloys"
+        },
+        "D6083A": {
+          "key": "D6083A",
+          "label": "Imp Supported Crn- Porc Fused To Noble Alloys"
+        },
+        "D6084": {
+          "key": "D6084",
+          "label": "Imp Supported Crn- Porc Fused To Titanium/alloys"
+        },
+        "D6084A": {
+          "key": "D6084A",
+          "label": "Imp Supported Crn- Porc Fused To Titanium/alloys"
+        },
+        "D6086": {
+          "key": "D6086",
+          "label": "Imp Supported Crn - Predominately Base Alloys"
+        },
+        "D6086A": {
+          "key": "D6086A",
+          "label": "Imp Supported Crn- Predominately Base Alloys"
+        },
+        "D6087": {
+          "key": "D6087",
+          "label": "Imp Supported Crown - Noble Alloys"
+        },
+        "D6087A": {
+          "key": "D6087A",
+          "label": "Imp Supported Crown - Noble Alloys"
+        },
+        "D6088": {
+          "key": "D6088",
+          "label": "Imp Supported Crn- Titanium/Titanium Alloys"
+        },
+        "D6088A": {
+          "key": "D6088A",
+          "label": "Imp Supported Crn- Titanium/Titanium Alloys"
+        },
+        "D6091": {
+          "key": "D6091",
+          "label": "Replcmnt Attchmntt-Imp/Abut Supp Prosth - Per Atta"
+        },
+        "D6092": {
+          "key": "D6092",
+          "label": "Recement Or Rebond Implant/Abutment Supported Crwn"
+        },
+        "D6093": {
+          "key": "D6093",
+          "label": "Recement Or Rebond Implant/Abutment Supported FPD"
+        },
+        "D6095": {
+          "key": "D6095",
+          "label": "Repair Implant Abutment"
+        },
+        "D6097": {
+          "key": "D6097",
+          "label": "Abut Supported Crn- Porc Fused To Titanium/alloys"
+        },
+        "D6098": {
+          "key": "D6098",
+          "label": "Imp Sup Retainer-Porc Fused To Base Alloys"
+        },
+        "D6099": {
+          "key": "D6099",
+          "label": "Imp Sup Retainer FPD- Porc Fused To Noble Alloys"
+        },
+        "D6100": {
+          "key": "D6100",
+          "label": "Implant Removal"
+        },
+        "D6101": {
+          "key": "D6101",
+          "label": "Debridement Of Periimplant Defect, Clean Exposed"
+        },
+        "D6102": {
+          "key": "D6102",
+          "label": "Debridement/Osseous Contour Periimplant Defect"
+        },
+        "D6103": {
+          "key": "D6103",
+          "label": "Bone Graft For Repair Of Periimplant Defect"
+        },
+        "D6104": {
+          "key": "D6104",
+          "label": "Bone Graft At Time Of Implant Placement"
+        },
+        "D6110": {
+          "key": "D6110",
+          "label": "Implant/Abutment Supp Remv Dent - Edentulous Maxil"
+        },
+        "D6111": {
+          "key": "D6111",
+          "label": "Implant/Abutment Supp Remv Dent - Edentulous Mand"
+        },
+        "D6112": {
+          "key": "D6112",
+          "label": "Implant/Abutment Supp Rmv Dent - Part Edentlus Max"
+        },
+        "D6113": {
+          "key": "D6113",
+          "label": "Implant/Abutment Supp Rmv Dent - Part Edentlus Man"
+        },
+        "D6114": {
+          "key": "D6114",
+          "label": "Implant/Abutment Supp Fixed Dent - Edentulous Max"
+        },
+        "D6115": {
+          "key": "D6115",
+          "label": "Implant/Abutment Supp Fixed Dent - Edentulous Mand"
+        },
+        "D6116": {
+          "key": "D6116",
+          "label": "Implant/Abutment Supp Fixd Dent - Part Edentls Max"
+        },
+        "D6117": {
+          "key": "D6117",
+          "label": "Implant/Abutment Supp Fixd Dent - Part Edentls Man"
+        },
+        "D6118": {
+          "key": "D6118",
+          "label": "Implant/Abutment Supp Interim Fixd Dent-Mandibular"
+        },
+        "D6119": {
+          "key": "D6119",
+          "label": "Implant/Abutment Supp Interim Fixd Dent-Maxillary"
+        },
+        "D6120": {
+          "key": "D6120",
+          "label": "Imp Sup Retainer - Porc Fused To Titanium/alloys"
+        },
+        "D6120A": {
+          "key": "D6120A",
+          "label": "Imp Sup Retainer - Porc Fused To Titanium/alloys"
+        },
+        "D6121": {
+          "key": "D6121",
+          "label": "Imp Sup Retainer For Metal FPD- Base Alloys"
+        },
+        "D6121A": {
+          "key": "D6121A",
+          "label": "Imp Sup Retainer For Metal FPD - Base Alloys"
+        },
+        "D6122": {
+          "key": "D6122",
+          "label": "Imp Sup Retainer For Metal FPD - Noble Alloys"
+        },
+        "D6122A": {
+          "key": "D6122A",
+          "label": "Imp Sup Retainer For Metal FPD- Noble Alloys"
+        },
+        "D6123": {
+          "key": "D6123",
+          "label": "Imp Sup Retainer For Metal FPD- Titanium/alloys"
+        },
+        "D6123A": {
+          "key": "D6123A",
+          "label": "Imp Sup Retainer For Metal FPD- Titanium/alloys"
+        },
+        "D6195": {
+          "key": "D6195",
+          "label": "Abut Sup Retainer- Porc Fused To Titanium/alloys"
+        }
+      }
+    },
+    "D6200-D6999": {
+      "key": "D6200-D6999",
+      "label": "PROSTHODONTICS",
+      "breakDownKeys": [
+        "D6240",
+        "D6242",
+        "D6243",
+        "D6243A",
+        "D6245",
+        "D6545",
+        "D6740",
+        "D6750",
+        "D6752",
+        "D6753",
+        "D6753A",
+        "D6784",
+        "D6793",
+        "D6920",
+        "D6930",
+        "D6940",
+        "D6950",
+        "D6980",
+        "D6985",
+        "D6999B"
+      ],
+      "breakDowns": {
+        "D6240": {
+          "key": "D6240",
+          "label": "Pontic Porcln Fused Hi Nobl Mt"
+        },
+        "D6242": {
+          "key": "D6242",
+          "label": "Pontic Prcln Fused Noble Metal"
+        },
+        "D6243": {
+          "key": "D6243",
+          "label": "Pontic - Porc Fused To Titanium/Titanium Alloys"
+        },
+        "D6243A": {
+          "key": "D6243A",
+          "label": "Pontic - Porc Fused To Titanium/Titanium Alloys"
+        },
+        "D6245": {
+          "key": "D6245",
+          "label": "Pontic Porcelain/Ceramic"
+        },
+        "D6545": {
+          "key": "D6545",
+          "label": "Retainer FPD - Cast/Mtl Resin"
+        },
+        "D6740": {
+          "key": "D6740",
+          "label": "Retainer Crown - Porcelain/Ceramic"
+        },
+        "D6750": {
+          "key": "D6750",
+          "label": "Retainer Crown - Porclain Fused Hi Noble Metal"
+        },
+        "D6752": {
+          "key": "D6752",
+          "label": "Retainer Crown - Porclain Fused Noble Metal"
+        },
+        "D6753": {
+          "key": "D6753",
+          "label": "Retainer Crown- Porc Fused To Titanium/alloys"
+        },
+        "D6753A": {
+          "key": "D6753A",
+          "label": "Retainer Crown- Porc Fused To Titanium/alloys"
+        },
+        "D6784": {
+          "key": "D6784",
+          "label": "3/4 Retainer Crown- Titanium/Titanium Alloys"
+        },
+        "D6793": {
+          "key": "D6793",
+          "label": "Provisional Retainer Crown - Further TX/Comp Neces"
+        },
+        "D6920": {
+          "key": "D6920",
+          "label": "Connector Bar"
+        },
+        "D6930": {
+          "key": "D6930",
+          "label": "Recement Or Rebond Fixed Partial Denture"
+        },
+        "D6940": {
+          "key": "D6940",
+          "label": "Stress Breaker"
+        },
+        "D6950": {
+          "key": "D6950",
+          "label": "Precision Attachment"
+        },
+        "D6980": {
+          "key": "D6980",
+          "label": "Fixed Partial Denture Repair - Further TX/Completi"
+        },
+        "D6985": {
+          "key": "D6985",
+          "label": "Pediatric Partial Denture Fixd"
+        },
+        "D6999B": {
+          "key": "D6999B",
+          "label": "ERA REPLACEMENT"
+        }
+      }
+    },
+    "D7000-D7999": {
+      "key": "D7000-D7999",
+      "label": "ORAL AND MAXILLOFACIAL SURGERY",
+      "breakDownKeys": [
+        "D7111",
+        "D7140",
+        "D7210",
+        "D7220",
+        "D7230",
+        "D7240",
+        "D7241",
+        "D7250",
+        "D7251",
+        "D7260",
+        "D7261",
+        "D7270",
+        "D7272",
+        "D7280",
+        "D7282",
+        "D7283",
+        "D7285",
+        "D7286",
+        "D7310",
+        "D7311",
+        "D7320",
+        "D7321",
+        "D7340",
+        "D7350",
+        "D7472",
+        "D7473",
+        "D7510",
+        "D7511",
+        "D7922",
+        "D7951",
+        "D7952",
+        "D7953",
+        "D7960",
+        "D7963"
+      ],
+      "breakDowns": {
+        "D7111": {
+          "key": "D7111",
+          "label": "Extraction, Coronal Remnants - Primary Tooth"
+        },
+        "D7140": {
+          "key": "D7140",
+          "label": "Extract Erpted Th/Expsed Root"
+        },
+        "D7210": {
+          "key": "D7210",
+          "label": "Extraction, Erupted Tooth Require Removal/Sectioni"
+        },
+        "D7220": {
+          "key": "D7220",
+          "label": "Remov Impacted Tooth Soft Tiss"
+        },
+        "D7230": {
+          "key": "D7230",
+          "label": "Remov Impacted Th Partial Bony"
+        },
+        "D7240": {
+          "key": "D7240",
+          "label": "Remov Impacted Th Complet Bony"
+        },
+        "D7241": {
+          "key": "D7241",
+          "label": "Remov Impt Th Cmp Bny W/Compli"
+        },
+        "D7250": {
+          "key": "D7250",
+          "label": "Removal Of Residual Tooth Roots(Cutting Procedure)"
+        },
+        "D7251": {
+          "key": "D7251",
+          "label": "Coronectomy - Intentional Partial Tooth Removal"
+        },
+        "D7260": {
+          "key": "D7260",
+          "label": "Oroantral Fistula Closure"
+        },
+        "D7261": {
+          "key": "D7261",
+          "label": "Prim Closure Sinus Perforation"
+        },
+        "D7270": {
+          "key": "D7270",
+          "label": "Tooth Reimplant/Stabilization"
+        },
+        "D7272": {
+          "key": "D7272",
+          "label": "Tooth Transplantation"
+        },
+        "D7280": {
+          "key": "D7280",
+          "label": "Exposure Of An Unerupted Tooth"
+        },
+        "D7282": {
+          "key": "D7282",
+          "label": "Mobilization Of Erupted Tooth"
+        },
+        "D7283": {
+          "key": "D7283",
+          "label": "Place Device For Eruption For Impacted Tooth"
+        },
+        "D7285": {
+          "key": "D7285",
+          "label": "Incisional Biopsy Of Oral Tissue - Hard(Bone/tooth"
+        },
+        "D7286": {
+          "key": "D7286",
+          "label": "Incisional Biopsy Of Oral Tissue - Soft"
+        },
+        "D7310": {
+          "key": "D7310",
+          "label": "Alveo W Extractions 4+Th/Per Quad"
+        },
+        "D7311": {
+          "key": "D7311",
+          "label": "Alveoplasty W/ Extraction - 1-3Tth/Quad"
+        },
+        "D7320": {
+          "key": "D7320",
+          "label": "Alveo W/O Extractions 4+Th/Per Quad"
+        },
+        "D7321": {
+          "key": "D7321",
+          "label": "Alveoplasty W/O Extraction - 1-3Tth/Quad"
+        },
+        "D7340": {
+          "key": "D7340",
+          "label": "Vistibuolplasty Simple"
+        },
+        "D7350": {
+          "key": "D7350",
+          "label": "Vestibuloplasty Complete"
+        },
+        "D7472": {
+          "key": "D7472",
+          "label": "Removal Of Torus Palatinus"
+        },
+        "D7473": {
+          "key": "D7473",
+          "label": "Removal Of Torus Mandibularis"
+        },
+        "D7510": {
+          "key": "D7510",
+          "label": "I&D Of Abscess - Intraoral Soft"
+        },
+        "D7511": {
+          "key": "D7511",
+          "label": "I&D Of Abscess - Intraoral Soft, Complicated"
+        },
+        "D7922": {
+          "key": "D7922",
+          "label": "Intra-socket Bio Dressing For Hemostasis, Per Site"
+        },
+        "D7951": {
+          "key": "D7951",
+          "label": "Sinus Augmentation Via A Lateral Open Approach"
+        },
+        "D7952": {
+          "key": "D7952",
+          "label": "Sinus Augmentation Via A Vertical Approach"
+        },
+        "D7953": {
+          "key": "D7953",
+          "label": "Bone Rplcmnt Graft For Ridge Pres - Per Site"
+        },
+        "D7960": {
+          "key": "D7960",
+          "label": "Frenulectomy / Frenectomy / Frenotomy"
+        },
+        "D7963": {
+          "key": "D7963",
+          "label": "Frenuloplasty"
+        }
+      }
+    },
+    "D8000-D8999": {
+      "key": "D8000-D8999",
+      "label": "ORTHODONTICS",
+      "breakDownKeys": [
+        "D8696",
+        "D8697",
+        "D8698",
+        "D8699",
+        "D8701",
+        "D8702",
+        "D8703",
+        "D8704"
+      ],
+      "breakDowns": {
+        "D8696": {
+          "key": "D8696",
+          "label": "Repair Of Ortho Appliance - Maxillary"
+        },
+        "D8697": {
+          "key": "D8697",
+          "label": "Repair Of Ortho Appliance - Mandibular"
+        },
+        "D8698": {
+          "key": "D8698",
+          "label": "Re-Cement/Re-Bond Fixed Retainer - Maxillary"
+        },
+        "D8699": {
+          "key": "D8699",
+          "label": "Re-Cement/Re-Bond Fixed Retainer - Mandibular"
+        },
+        "D8701": {
+          "key": "D8701",
+          "label": "Repair Fixed Retainer, Includes Reattachment- Max"
+        },
+        "D8702": {
+          "key": "D8702",
+          "label": "Repair Fixed Retainer, Includes Reattachment- Mand"
+        },
+        "D8703": {
+          "key": "D8703",
+          "label": "Replace Lost/broken Retainer - Max"
+        },
+        "D8704": {
+          "key": "D8704",
+          "label": "Replace Lost/Broken Retainer - Mand"
+        }
+      }
+    },
+    "D9000-D10000": {
+      "key": "D9000-D10000",
+      "label": "ADJUNCTIVE GENERAL SERVICES",
+      "breakDownKeys": [
+        "D9110",
+        "D9120",
+        "D9230",
+        "D9310",
+        "D9430",
+        "D9440",
+        "D9630",
+        "D9910",
+        "D9911",
+        "D9930",
+        "D9931",
+        "D9932",
+        "D9933",
+        "D9934",
+        "D9935",
+        "D9943",
+        "D9944",
+        "D9945",
+        "D9946",
+        "D9951",
+        "D9952",
+        "D9961",
+        "D9970",
+        "D9971",
+        "D9972",
+        "D9975",
+        "D9986",
+        "D9987",
+        "D9994",
+        "D9995",
+        "D9996",
+        "D9997",
+        "D9999",
+        "D9999A"
+      ],
+      "breakDowns": {
+        "D9110": {
+          "key": "D9110",
+          "label": "Emergency Treatment/Palliative"
+        },
+        "D9120": {
+          "key": "D9120",
+          "label": "Fixed Partial Denture Sectioning"
+        },
+        "D9230": {
+          "key": "D9230",
+          "label": "Inhalation Of Nitrous Oxide (Anxiolysis, Analgesia"
+        },
+        "D9310": {
+          "key": "D9310",
+          "label": "Consultation - Diag Srvc Other Than Reqstg Prvdr"
+        },
+        "D9430": {
+          "key": "D9430",
+          "label": "Office Visit For Observation"
+        },
+        "D9440": {
+          "key": "D9440",
+          "label": "Office Visit After Hours"
+        },
+        "D9630": {
+          "key": "D9630",
+          "label": "Drugs/Medicaments Dispensed In Office For Home Use"
+        },
+        "D9910": {
+          "key": "D9910",
+          "label": "Application Of Desensitizing"
+        },
+        "D9911": {
+          "key": "D9911",
+          "label": "Apply Desensitizing Resin"
+        },
+        "D9930": {
+          "key": "D9930",
+          "label": "Treatment Of Complications"
+        },
+        "D9931": {
+          "key": "D9931",
+          "label": "Cleaning And Inspection Of A Removable Appliance"
+        },
+        "D9932": {
+          "key": "D9932",
+          "label": "Cleaning/Inspection Removable Compl Dent, Maxilla"
+        },
+        "D9933": {
+          "key": "D9933",
+          "label": "Cleaning/Inspection Removable Compl Dent, Mandibul"
+        },
+        "D9934": {
+          "key": "D9934",
+          "label": "Cleaning/Inspection Removable Partial Dent, Maxill"
+        },
+        "D9935": {
+          "key": "D9935",
+          "label": "Cleaning/Inspection Removable Partial Dent, Mandib"
+        },
+        "D9943": {
+          "key": "D9943",
+          "label": "Occlusal Guard Adjustment"
+        },
+        "D9944": {
+          "key": "D9944",
+          "label": "Occlusal Guard - Hard Appliance, Full Arch"
+        },
+        "D9945": {
+          "key": "D9945",
+          "label": "Occlusal Guard - Soft Appliance, Full Arch"
+        },
+        "D9946": {
+          "key": "D9946",
+          "label": "Occlusal Guard - Hard Appliance, Partial Arch"
+        },
+        "D9951": {
+          "key": "D9951",
+          "label": "Occlusal Adjustment Limited"
+        },
+        "D9952": {
+          "key": "D9952",
+          "label": "Occlusal Adjustment Complete"
+        },
+        "D9961": {
+          "key": "D9961",
+          "label": "Duplicate/Copy Patient's Records"
+        },
+        "D9970": {
+          "key": "D9970",
+          "label": "Enamel Microabrasion"
+        },
+        "D9971": {
+          "key": "D9971",
+          "label": "Odontoplasty 1-2 Teeth"
+        },
+        "D9972": {
+          "key": "D9972",
+          "label": "External Bleaching(ZOOM)Per Arch, In Office"
+        },
+        "D9975": {
+          "key": "D9975",
+          "label": "External Bleaching Home Application, Per Arch"
+        },
+        "D9986": {
+          "key": "D9986",
+          "label": "Missed Appointment"
+        },
+        "D9987": {
+          "key": "D9987",
+          "label": "Cancelled Appointment"
+        },
+        "D9994": {
+          "key": "D9994",
+          "label": "Dental Case Mgmt - Pt Education For OH Literacy"
+        },
+        "D9995": {
+          "key": "D9995",
+          "label": "Teledentistry Synchronous; Real Time Encounter"
+        },
+        "D9996": {
+          "key": "D9996",
+          "label": "Teledentistry Asynchronous; Subsequent Review"
+        },
+        "D9997": {
+          "key": "D9997",
+          "label": "Dental Case Mgmt- Pts W/special Health Care Needs"
+        },
+        "D9999": {
+          "key": "D9999",
+          "label": "Unspecified Adjunctive Procedure"
+        },
+        "D9999A": {
+          "key": "D9999A",
+          "label": "QuickSplint"
+        }
+      }
     }
+  }
 }
