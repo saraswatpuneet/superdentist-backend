@@ -24,6 +24,7 @@ import (
 	"github.com/superdentist/superdentist-backend/global"
 	"github.com/superdentist/superdentist-backend/lib/datastoredb"
 	"github.com/superdentist/superdentist-backend/lib/gmaps"
+	"github.com/superdentist/superdentist-backend/lib/googleprojectlib"
 	"github.com/superdentist/superdentist-backend/lib/storage"
 	"go.opencensus.io/trace"
 	"googlemaps.github.io/maps"
@@ -125,6 +126,7 @@ func GetAllClinicNameAddressID(c *gin.Context) {
 	})
 	clinicMetaDB.Close()
 }
+
 // GetClinicDoctors ... get doctors from specific clinic.
 func GetClinicDoctors(c *gin.Context) {
 	log.Infof("Get all doctors registered with specific physical clinic")
@@ -987,6 +989,110 @@ func RemoveFavoriteClinics(c *gin.Context) {
 		constants.RESPONSDE_JSON_ERROR: nil,
 	})
 	clinicMetaDB.Close()
+}
+
+// AddClinicPracticeCodes ....
+func AddClinicPracticeCodes(c *gin.Context) {
+	// Stage 1  Load the incoming request
+	log.Infof("Patient Stuff")
+	ctx := c.Request.Context()
+	// here is we have referral id
+	pID := c.Param("addressId")
+
+	ctx, span := trace.StartSpan(ctx, "Register incoming request for clinic")
+	defer span.End()
+	var clinicCodes map[string]interface{}
+	if err := c.ShouldBindWith(&clinicCodes, binding.JSON); err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: fmt.Errorf("Bad data sent to backened"),
+			},
+		)
+		return
+	}
+	gproject := googleprojectlib.GetGoogleProjectID()
+
+	clinicDB := datastoredb.NewClinicMetaHandler()
+	err := clinicDB.InitializeDataBase(ctx, gproject)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: fmt.Errorf("Bad data sent to backened"),
+			},
+		)
+		return
+	}
+	err = clinicDB.AddClinicPracticeCodes(ctx, pID, clinicCodes)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: fmt.Errorf("Bad data sent to backened"),
+			},
+		)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		constants.RESPONSE_JSON_DATA:   "clinic code registration successful",
+		constants.RESPONSDE_JSON_ERROR: nil,
+	})
+}
+
+// GetClinicPracticeCodes ....
+func GetClinicPracticeCodes(c *gin.Context) {
+	// Stage 1  Load the incoming request
+	log.Infof("Patient Stuff")
+	ctx := c.Request.Context()
+	// here is we have referral id
+	pID := c.Param("addressId")
+
+	ctx, span := trace.StartSpan(ctx, "Register incoming request for clinic")
+	defer span.End()
+	var clinicCodes map[string]interface{}
+	if err := c.ShouldBindWith(&clinicCodes, binding.JSON); err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: fmt.Errorf("Bad data sent to backened"),
+			},
+		)
+		return
+	}
+	gproject := googleprojectlib.GetGoogleProjectID()
+
+	clinicDB := datastoredb.NewClinicMetaHandler()
+	err := clinicDB.InitializeDataBase(ctx, gproject)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: fmt.Errorf("Bad data sent to backened"),
+			},
+		)
+		return
+	}
+	codeData, err := clinicDB.GetClinicPracticeCodes(ctx, pID)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: fmt.Errorf("Bad data sent to backened"),
+			},
+		)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		constants.RESPONSE_JSON_DATA:   codeData,
+		constants.RESPONSDE_JSON_ERROR: nil,
+	})
 }
 
 // Find takes a slice and looks for an element in it. If found it will
