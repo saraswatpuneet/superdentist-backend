@@ -244,6 +244,8 @@ func registerPatientInDB(documentFiles *multipart.Form) error {
 			patientDetails.Email = fieldValue[0]
 		case "ssn":
 			patientDetails.SSN = fieldValue[0]
+		case "zipCode":
+			patientDetails.ZipCode = fieldValue[0]
 		case "dob":
 			var dobStruct contracts.DOB
 			err := json.Unmarshal([]byte(fieldValue[0]), &dobStruct)
@@ -527,6 +529,12 @@ func processXlDocument(ctx context.Context, gproject string, addressID string, d
 						Day:   splitDOB[1],
 						Month: splitDOB[0],
 					}
+				case "patient zip":
+					patientInfo.ZipCode = text
+				case "zip":
+					patientInfo.ZipCode = text
+				case "zipcode":
+					patientInfo.ZipCode = text
 				case "subscriber":
 					var subscriber contracts.Subscriber
 					splitName := strings.Split(text, ",")
