@@ -456,7 +456,7 @@ func (db *DSClinicMeta) AddPMSUsedByClinics(ctx context.Context, clinicEmailID s
 }
 
 // AddClinicPracticeCodes ......
-func (db *DSClinicMeta) AddClinicPracticeCodes(ctx context.Context, clinicAddessID string, codeData map[string]interface{}) error {
+func (db *DSClinicMeta) AddClinicPracticeCodes(ctx context.Context, clinicAddessID string, codeData DynEnt) error {
 	parentKey := datastore.NameKey("ClinicPracticeCodes", clinicAddessID, nil)
 	if global.Options.DSName != "" {
 		parentKey.Namespace = global.Options.DSName
@@ -469,18 +469,19 @@ func (db *DSClinicMeta) AddClinicPracticeCodes(ctx context.Context, clinicAddess
 }
 
 // GetClinicPracticeCodes ......
-func (db *DSClinicMeta) GetClinicPracticeCodes(ctx context.Context, clinicAddessID string) (map[string]interface{}, error) {
+func (db *DSClinicMeta) GetClinicPracticeCodes(ctx context.Context, clinicAddessID string) (DynEnt, error) {
 	parentKey := datastore.NameKey("ClinicPracticeCodes", clinicAddessID, nil)
 	if global.Options.DSName != "" {
 		parentKey.Namespace = global.Options.DSName
 	}
-	codeData  := make(map[string]interface{})
+	var codeData DynEnt
 	err := db.client.Get(ctx, parentKey, &codeData)
 	if err != nil {
 		return nil, fmt.Errorf("cannot get clinic codes: %v", err)
 	}
 	return codeData, nil
 }
+
 // AddPMSAuthDetails ......
 func (db *DSClinicMeta) AddPMSAuthDetails(ctx context.Context, clinicEmailID string, clinicFBID string, pmsInformation contracts.PostPMSAuthDetails) error {
 	parentKey := datastore.NameKey("ClinicAdmin", clinicFBID, nil)
@@ -935,4 +936,21 @@ func (db *DSClinicMeta) GetFavoriteSpecialists(ctx context.Context, clinicEmailI
 // Close closes the database.
 func (db *DSClinicMeta) Close() error {
 	return db.client.Close()
+}
+
+type DynEnt map[string]interface{}
+
+func (d *DynEnt) Load(props []datastore.Property) error {
+	// Note: you might want to clear current values from the map or create a new map
+	for _, p := range props {
+		(*d)[p.Name] = p.Value
+	}
+	return nil
+}
+
+func (d *DynEnt) Save() (props []datastore.Property, err error) {
+	for k, v := range *d {
+		props = append(props, datastore.Property{Name: k, Value: v})
+	}
+	return
 }

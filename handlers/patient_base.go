@@ -137,6 +137,7 @@ func AddPatientNotes(c *gin.Context) {
 		)
 		return
 	}
+	patientNotes["PatientID"] = pID
 	err = patientDB.AddPatientNotes(ctx, pID, patientNotes)
 	if err != nil {
 		c.AbortWithStatusJSON(
