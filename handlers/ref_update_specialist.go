@@ -1516,7 +1516,7 @@ func TextRecievedPatient(c *gin.Context) {
 		if len(filePatients) > 0 {
 			commText.Channel = contracts.SPCBox
 			commText.Text = "New documents uploaded by " + dsReferral.PatientFirstName + " " + dsReferral.PatientLastName
-			commText.TimeStamp = time.Now().UTC().Unix()
+			commText.TimeStamp = time.Now().In(location).UTC().UnixNano() / int64(time.Millisecond)
 			id, _ := uuid.NewUUID()
 			commText.MessageID = id.String()
 			if dsReferral.PatientEmail != "" {
