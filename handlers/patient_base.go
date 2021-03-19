@@ -26,6 +26,7 @@ import (
 	"github.com/superdentist/superdentist-backend/lib/sms"
 	"github.com/superdentist/superdentist-backend/lib/storage"
 	"go.opencensus.io/trace"
+	"gopkg.in/ugjka/go-tz.v2/tz"
 )
 
 // RegisterPatientInformation ....
@@ -267,11 +268,33 @@ func registerPatientInDB(documentFiles *multipart.Form) error {
 			}
 		case "referralId":
 			refID = fieldValue[0]
+		case "addressId":
+			addId := fieldValue[0]
+			patientDetails.SameDay = true
+			patientDetails.AddressID = addId
 		}
 	}
 	gproject := googleprojectlib.GetGoogleProjectID()
 	ctx := context.Background()
 	var dsReferral *contracts.DSReferral
+	if patientDetails.AddressID != "" {
+		clinicDB := datastoredb.NewClinicMetaHandler()
+		err := clinicDB.InitializeDataBase(ctx, gproject)
+		if err != nil {
+			log.Errorf("Failed to initialize clinics: %v", err.Error())
+			return err
+		}
+		currentClinic, err := clinicDB.GetSingleClinic(ctx, patientDetails.AddressID)
+		if err != nil {
+			log.Errorf("Failed to get clinic: %v", err.Error())
+			return err
+		}
+		zone, err := tz.GetZone(tz.Point{
+			Lon: currentClinic.Location.Long, Lat: currentClinic.Location.Lat,
+		})
+		location, _ := time.LoadLocation(zone[0])
+		patientDetails.DueDate = time.Now().In(location).UTC().UnixNano() / int64(time.Millisecond)
+	}
 	if refID != "" {
 		dsRefC := datastoredb.NewReferralHandler()
 		err := dsRefC.InitializeDataBase(ctx, gproject)

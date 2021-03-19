@@ -89,6 +89,7 @@ func (db DSPatient) GetPatientByAddressID(ctx context.Context, addressID string)
 	patients := make([]contracts.Patient, 0)
 	patients1 := make([]contracts.Patient, 0)
 	patients2 := make([]contracts.Patient, 0)
+	patients3 := make([]contracts.Patient, 0)
 
 	qP := datastore.NewQuery("PatientDetails")
 	qP = qP.Filter("GD =", addressID)
@@ -96,11 +97,17 @@ func (db DSPatient) GetPatientByAddressID(ctx context.Context, addressID string)
 	qP = datastore.NewQuery("PatientDetails")
 	qP = qP.Filter("SP =", addressID)
 	db.client.GetAll(ctx, qP, &patients2)
+	qP = datastore.NewQuery("PatientDetails")
+	qP = qP.Filter("AddressID =", addressID)
+	db.client.GetAll(ctx, qP, &patients3)
 	if len(patients1) > 0 {
 		patients = append(patients, patients1...)
 	}
 	if len(patients2) > 0 {
 		patients = append(patients, patients2...)
+	}
+	if len(patients3) > 0 {
+		patients = append(patients, patients3...)
 	}
 	return patients
 }
