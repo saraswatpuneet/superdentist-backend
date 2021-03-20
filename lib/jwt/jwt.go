@@ -140,6 +140,19 @@ func GetUserID(r *http.Request) (string, error) {
 	return claims.Get("sub").AsString(), nil
 }
 
+func GetProviderID(r *http.Request) (string, error) {
+	claims, err := Claims(r)
+
+	if err != nil {
+		return "", err
+	}
+	userid := claims.Get("provider_id").AsString()
+	if userid != "" {
+		return userid, nil
+	}
+	return claims.Get("provider_id").AsString(), nil
+}
+
 //GetUserEmail get user email address from request while registering action/user it is useful
 func GetUserEmail(r *http.Request) (string, error) {
 	claims, err := Claims(r)

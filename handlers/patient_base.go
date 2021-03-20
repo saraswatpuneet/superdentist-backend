@@ -46,6 +46,7 @@ func RegisterPatientInformation(c *gin.Context) {
 	go registerPatientInDB(documentFiles)
 	gproject := googleprojectlib.GetGoogleProjectID()
 	userID, err := getUserDetailsAnonymous(ctx, c.Request)
+	providerID, err := getProviderID(ctx, c.Request)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusUnauthorized,
@@ -56,18 +57,20 @@ func RegisterPatientInformation(c *gin.Context) {
 		)
 		return
 	}
-	idAuth, err := identity.NewIDPEP(ctx, gproject)
-	if err != nil {
-		c.AbortWithStatusJSON(
-			http.StatusInternalServerError,
-			gin.H{
-				constants.RESPONSE_JSON_DATA:   nil,
-				constants.RESPONSDE_JSON_ERROR: err.Error(),
-			},
-		)
-		return
+	if providerID != "" && strings.Contains(providerID, "anonymous") {
+		idAuth, err := identity.NewIDPEP(ctx, gproject)
+		if err != nil {
+			c.AbortWithStatusJSON(
+				http.StatusInternalServerError,
+				gin.H{
+					constants.RESPONSE_JSON_DATA:   nil,
+					constants.RESPONSDE_JSON_ERROR: err.Error(),
+				},
+			)
+			return
+		}
+		idAuth.DeleteAnonymousUser(ctx, userID)
 	}
-	idAuth.DeleteAnonymousUser(ctx, userID)
 	c.JSON(http.StatusOK, gin.H{
 		constants.RESPONSE_JSON_DATA:   "patient registration successful",
 		constants.RESPONSDE_JSON_ERROR: nil,

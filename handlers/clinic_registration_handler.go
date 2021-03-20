@@ -800,6 +800,11 @@ func getUserDetailsAnonymous(ctx context.Context, request *http.Request) (string
 	userID, err := jwt.GetUserID(request)
 	return userID, err
 }
+
+func getProviderID(ctx context.Context, request *http.Request) (string , error) {
+	providerID, err := jwt.GetProviderID(request)
+	return providerID, err
+}
 func registerAndSendVerification(ctx context.Context, gproject string, clinicRegistrationReq contracts.ClinicRegistrationData) error {
 	sgClient := sendgrid.NewSendGridClient()
 	err := sgClient.InitializeSendGridClient()
