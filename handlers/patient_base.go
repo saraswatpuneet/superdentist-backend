@@ -389,7 +389,7 @@ func registerPatientInDB(documentFiles *multipart.Form) error {
 			return err
 		}
 	}
-	if dsReferral.CommunicationText != "" && dsReferral.CommunicationPhone != "" {
+	if patientDetails.AddressID == "" && dsReferral.CommunicationText != "" && dsReferral.CommunicationPhone != "" {
 		clientSMS := sms.NewSMSClient()
 		err = clientSMS.InitializeSMSClient()
 		if err != nil {
