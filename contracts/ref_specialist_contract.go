@@ -57,6 +57,7 @@ type Patient struct {
 	SP               string                    `json:"sp" valid:"required"`
 	GD               string                    `json:"gd" valid:"required"`
 	AddressID        string                    `json:"addressID" valid:"required"`
+	ClinicName       string                    `json:"clinicName" valid:"required"`
 	SPName           string                    `json:"spName" valid:"required"`
 	ReferralID       string                    `json:"referralId" valid:"required"`
 	DueDate          int64                     `json:"dueDate"`

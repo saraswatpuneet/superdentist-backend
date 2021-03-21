@@ -292,6 +292,7 @@ func registerPatientInDB(documentFiles *multipart.Form) error {
 			log.Errorf("Failed to get clinic: %v", err.Error())
 			return err
 		}
+		patientDetails.ClinicName = currentClinic.Name
 		zone, err := tz.GetZone(tz.Point{
 			Lon: currentClinic.Location.Long, Lat: currentClinic.Location.Lat,
 		})
