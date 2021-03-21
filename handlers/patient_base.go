@@ -323,8 +323,6 @@ func registerPatientInDB(documentFiles *multipart.Form) error {
 		patientDetails.GDName = dsReferral.FromClinicName
 		patientDetails.SPName = dsReferral.ToClinicName
 		patientDetails.ReferralID = refID
-	} else {
-		return fmt.Errorf("bad referral id provided")
 	}
 
 	storageC := storage.NewStorageHandler()
