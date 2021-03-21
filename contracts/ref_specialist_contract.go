@@ -76,6 +76,12 @@ const GDCBox ChatBox = "c2c"
 // SPCBox ....
 const SPCBox ChatBox = "c2p"
 
+// Thumbnails
+type Media struct {
+	Name  string
+	Image string
+}
+
 // Comment .....
 type Comment struct {
 	MessageID string   `json:"messageId"`
@@ -84,6 +90,7 @@ type Comment struct {
 	Channel   ChatBox  `json:"channel" valid:"required"`
 	UserID    string   `json:"userId" valid:"required"`
 	Files     []string `json:"file"`
+	Media     []Media  `json:"media"`
 }
 
 // Status ....

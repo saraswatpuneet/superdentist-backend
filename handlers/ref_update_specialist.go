@@ -3,7 +3,10 @@ package handlers
 import (
 	"bytes"
 	"context"
+	"encoding/base64"
 	"fmt"
+	"image/jpeg"
+	"image/png"
 	"io"
 	"io/ioutil"
 	"mime/multipart"
@@ -14,6 +17,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/nfnt/resize"
 	"gopkg.in/ugjka/go-tz.v2/tz"
 
 	"code.sajari.com/docconv"
@@ -489,6 +493,8 @@ func UploadDocuments(c *gin.Context) {
 		return
 	}
 	docIDNames := make([]string, 0)
+	docsMedia := make([]contracts.Media, 0)
+
 	// Stage 2 Upload files from
 	// parse request
 	const _24K = 256 << 20
@@ -529,7 +535,19 @@ func UploadDocuments(c *gin.Context) {
 					)
 					return
 				}
-				_, err = io.Copy(buckerW, infile)
+				imageBuffer := bytes.NewBuffer(nil)
+				if _, err := io.Copy(imageBuffer, infile); err != nil {
+					c.AbortWithStatusJSON(
+						http.StatusInternalServerError,
+						gin.H{
+							constants.RESPONSE_JSON_DATA:   nil,
+							constants.RESPONSDE_JSON_ERROR: err.Error(),
+						},
+					)
+					return
+				}
+				currentBytes := imageBuffer.Bytes()
+				_, err = io.Copy(buckerW, bytes.NewReader(currentBytes))
 				if err != nil {
 					c.AbortWithStatusJSON(
 						http.StatusInternalServerError,
@@ -541,6 +559,34 @@ func UploadDocuments(c *gin.Context) {
 					return
 				}
 				buckerW.Close()
+				extentionFile := strings.Split(fileName, ".")
+				ext := extentionFile[len(extentionFile)-1]
+				var docMedia contracts.Media
+				docMedia.Name = fileName
+				docMedia.Image = ""
+				switch strings.ToLower(ext) {
+				case "jpg", "jpeg":
+					img, err := jpeg.Decode(bytes.NewReader(currentBytes))
+					if err != nil {
+						resized := resize.Resize(1280, 720, img, resize.Lanczos3)
+						buf := new(bytes.Buffer)
+						err := jpeg.Encode(buf, resized, nil)
+						if err != nil {
+							docMedia.Image = base64.StdEncoding.EncodeToString(buf.Bytes())
+						}
+					}
+				case "png":
+					img, err := png.Decode(bytes.NewReader(currentBytes))
+					if err != nil {
+						resized := resize.Resize(1280, 720, img, resize.Lanczos3)
+						buf := new(bytes.Buffer)
+						err := jpeg.Encode(buf, resized, nil)
+						if err != nil {
+							docMedia.Image = base64.StdEncoding.EncodeToString(buf.Bytes())
+						}
+					}
+				}
+				docsMedia = append(docsMedia, docMedia)
 				docIDNames = append(docIDNames, fileName)
 			}
 		}
@@ -570,7 +616,8 @@ func UploadDocuments(c *gin.Context) {
 		return
 	}
 	var refComments contracts.ReferralComments
-	commentReasons.Files = docIDNames
+	//commentReasons.Files = docIDNames
+	commentReasons.Media = docsMedia
 	refComments.Comments = append(refComments.Comments, commentReasons)
 	_, err = ProcessComments(ctx, gproject, dsReferral.ReferralID, refComments)
 	if err != nil {
@@ -935,6 +982,8 @@ func ReceiveReferralMail(c *gin.Context) {
 	currentBody := parsedEmail.TextBody
 	currentComments := make([]contracts.Comment, 0)
 	docIDNames := make([]string, 0)
+	docsMedia := make([]contracts.Media, 0)
+
 	// Stage 2 Upload files from
 	// parse request
 	storageC := storage.NewStorageHandler()
@@ -971,11 +1020,45 @@ func ReceiveReferralMail(c *gin.Context) {
 			)
 			return
 		}
-		_, err = io.Copy(buckerW, attach.Data)
+		imageBuffer := bytes.NewBuffer(nil)
+		if _, err := io.Copy(imageBuffer, attach.Data); err != nil {
+			log.Errorf("Error processing email"+" "+fromEmail+" "+subject+" error:%v ", err.Error())
+
+		}
+		currentBytes := imageBuffer.Bytes()
+		_, err = io.Copy(buckerW, bytes.NewReader(currentBytes))
 		if err != nil {
 			log.Errorf("Error processing email"+" "+fromEmail+" "+subject+" error:%v ", err.Error())
 		}
 		buckerW.Close()
+		extentionFile := strings.Split(fileName, ".")
+		ext := extentionFile[len(extentionFile)-1]
+		var docMedia contracts.Media
+		docMedia.Name = fileName
+		docMedia.Image = ""
+		switch strings.ToLower(ext) {
+		case "jpg", "jpeg":
+			img, err := jpeg.Decode(bytes.NewReader(currentBytes))
+			if err != nil {
+				resized := resize.Resize(1280, 720, img, resize.Lanczos3)
+				buf := new(bytes.Buffer)
+				err := jpeg.Encode(buf, resized, nil)
+				if err != nil {
+					docMedia.Image = base64.StdEncoding.EncodeToString(buf.Bytes())
+				}
+			}
+		case "png":
+			img, err := png.Decode(bytes.NewReader(currentBytes))
+			if err != nil {
+				resized := resize.Resize(1280, 720, img, resize.Lanczos3)
+				buf := new(bytes.Buffer)
+				err := jpeg.Encode(buf, resized, nil)
+				if err != nil {
+					docMedia.Image = base64.StdEncoding.EncodeToString(buf.Bytes())
+				}
+			}
+		}
+		docsMedia = append(docsMedia, docMedia)
 		docIDNames = append(docIDNames, fileName)
 	}
 	clinicMetaDB := datastoredb.NewClinicMetaHandler()
@@ -1026,7 +1109,7 @@ func ReceiveReferralMail(c *gin.Context) {
 		}
 		id, _ := uuid.NewUUID()
 		uploadComment.MessageID = id.String()
-		uploadComment.Files = docIDNames
+		uploadComment.Media = docsMedia
 		uploadComment.Text = "New documents are uploaded by " + dsReferral.PatientFirstName + " " + dsReferral.PatientLastName
 		uploadComment.TimeStamp = time.Now().In(location).UTC().UnixNano() / int64(time.Millisecond)
 		currentComments = append(currentComments, uploadComment)
@@ -1146,6 +1229,7 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 	currentBody := parsedEmail.TextBody
 	currentComments := make([]contracts.Comment, 0)
 	docIDNames := make([]string, 0)
+	docsMedia := make([]contracts.Media, 0)
 	// Stage 2 Upload files from
 	// parse request
 	storageC := storage.NewStorageHandler()
@@ -1274,6 +1358,34 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 					log.Errorf("Error processing email"+" "+fromEmail+" "+subject+" error:%v ", err.Error())
 				}
 				buckerW.Close()
+				extentionFile := strings.Split(fileName, ".")
+				ext := extentionFile[len(extentionFile)-1]
+				var docMedia contracts.Media
+				docMedia.Name = fileName
+				docMedia.Image = ""
+				switch strings.ToLower(ext) {
+				case "jpg", "jpeg":
+					img, err := jpeg.Decode(bytes.NewReader(saveFileReader))
+					if err != nil {
+						resized := resize.Resize(1280, 720, img, resize.Lanczos3)
+						buf := new(bytes.Buffer)
+						err := jpeg.Encode(buf, resized, nil)
+						if err != nil {
+							docMedia.Image = base64.StdEncoding.EncodeToString(buf.Bytes())
+						}
+					}
+				case "png":
+					img, err := png.Decode(bytes.NewReader(saveFileReader))
+					if err != nil {
+						resized := resize.Resize(1280, 720, img, resize.Lanczos3)
+						buf := new(bytes.Buffer)
+						err := jpeg.Encode(buf, resized, nil)
+						if err != nil {
+							docMedia.Image = base64.StdEncoding.EncodeToString(buf.Bytes())
+						}
+					}
+				}
+				docsMedia = append(docsMedia, docMedia)
 				docIDNames = append(docIDNames, fileName)
 			}
 			if len(docIDNames) > 0 {
@@ -1309,7 +1421,7 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 		}
 		id, _ := uuid.NewUUID()
 		uploadComment.MessageID = id.String()
-		uploadComment.Files = docIDNames
+		uploadComment.Media = docsMedia
 		uploadComment.Text = "New documents are uploaded by " + dsReferral.ToClinicName
 		uploadComment.TimeStamp = time.Now().In(location).UTC().UnixNano() / int64(time.Millisecond)
 		currentComments = append(currentComments, uploadComment)
@@ -1511,6 +1623,8 @@ func TextRecievedPatient(c *gin.Context) {
 			}
 		}
 		docIDNames := make([]string, 0)
+		docsMedia := make([]contracts.Media, 0)
+
 		var commText contracts.Comment
 
 		if len(filePatients) > 0 {
@@ -1531,6 +1645,7 @@ func TextRecievedPatient(c *gin.Context) {
 			}
 			var counter int64
 			for fileName, fileBytes := range filePatients {
+				currentBytes, err := ioutil.ReadAll(*fileBytes)
 				counter++
 				extension := strings.Split(fileName, ".")[1]
 				fileName = dsReferral.PatientFirstName + strconv.Itoa(int(time.Now().UTC().Unix()+counter)) + "." + extension
@@ -1539,11 +1654,39 @@ func TextRecievedPatient(c *gin.Context) {
 				if err != nil {
 					log.Errorf("Error processing uploading text error:%v ", err.Error())
 				}
-				_, err = io.Copy(buckerW, *fileBytes)
+				_, err = io.Copy(buckerW, bytes.NewReader(currentBytes))
 				if err != nil {
 					log.Errorf("Error processing sms error:%v ", err.Error())
 				}
 				buckerW.Close()
+				extentionFile := strings.Split(fileName, ".")
+				ext := extentionFile[len(extentionFile)-1]
+				var docMedia contracts.Media
+				docMedia.Name = fileName
+				docMedia.Image = ""
+				switch strings.ToLower(ext) {
+				case "jpg", "jpeg":
+					img, err := jpeg.Decode(bytes.NewReader(currentBytes))
+					if err != nil {
+						resized := resize.Resize(1280, 720, img, resize.Lanczos3)
+						buf := new(bytes.Buffer)
+						err := jpeg.Encode(buf, resized, nil)
+						if err != nil {
+							docMedia.Image = base64.StdEncoding.EncodeToString(buf.Bytes())
+						}
+					}
+				case "png":
+					img, err := png.Decode(bytes.NewReader(currentBytes))
+					if err != nil {
+						resized := resize.Resize(1280, 720, img, resize.Lanczos3)
+						buf := new(bytes.Buffer)
+						err := jpeg.Encode(buf, resized, nil)
+						if err != nil {
+							docMedia.Image = base64.StdEncoding.EncodeToString(buf.Bytes())
+						}
+					}
+				}
+				docsMedia = append(docsMedia, docMedia)
 				(*fileBytes).Close()
 				docIDNames = append(docIDNames, fileName)
 			}
@@ -1553,7 +1696,7 @@ func TextRecievedPatient(c *gin.Context) {
 			}
 		}
 		if len(docIDNames) > 0 {
-			commText.Files = docIDNames
+			commText.Media = docsMedia
 			err = dsRefC.CreateMessage(ctx, dsReferral, []contracts.Comment{commText})
 			if err != nil {
 				log.Errorf("Error processing sms error:%v ", err.Error())

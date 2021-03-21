@@ -6,6 +6,8 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"image/jpeg"
+	"image/png"
 	"io"
 	"mime/multipart"
 	"net/http"
@@ -19,6 +21,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/google/uuid"
+	"github.com/nfnt/resize"
 	"github.com/nyaruka/phonenumbers"
 	log "github.com/sirupsen/logrus"
 	"github.com/superdentist/superdentist-backend/constants"
@@ -218,7 +221,9 @@ func processReferral(referralDetails contracts.ReferralDetails, gproject string,
 	}
 	currentRefUUID, _ := uuid.NewUUID()
 	uniqueRefID := currentRefUUID.String()
+	docsMedia := make([]contracts.Media, 0)
 	docIDNames := make([]string, 0)
+
 	// Stage 2 Upload files from
 	// parse request
 	//client := gosseract.NewClient()
@@ -265,6 +270,34 @@ func processReferral(referralDetails contracts.ReferralDetails, gproject string,
 				foundImage = true
 				io.Copy(buckerW, bytes.NewReader(currentBytes))
 				buckerW.Close()
+				extentionFile := strings.Split(fileName, ".")
+				ext := extentionFile[len(extentionFile)-1]
+				var docMedia contracts.Media
+				docMedia.Name = fileName
+				docMedia.Image = ""
+				switch strings.ToLower(ext) {
+				case "jpg", "jpeg":
+					img, err := jpeg.Decode(bytes.NewReader(currentBytes))
+					if err != nil {
+						resized := resize.Resize(1280, 720, img, resize.Lanczos3)
+						buf := new(bytes.Buffer)
+						err := jpeg.Encode(buf, resized, nil)
+						if err != nil {
+							docMedia.Image = base64.StdEncoding.EncodeToString(buf.Bytes())
+						}
+					}
+				case "png":
+					img, err := png.Decode(bytes.NewReader(currentBytes))
+					if err != nil {
+						resized := resize.Resize(1280, 720, img, resize.Lanczos3)
+						buf := new(bytes.Buffer)
+						err := jpeg.Encode(buf, resized, nil)
+						if err != nil {
+							docMedia.Image = base64.StdEncoding.EncodeToString(buf.Bytes())
+						}
+					}
+				}
+				docsMedia = append(docsMedia, docMedia)
 				docIDNames = append(docIDNames, fileName)
 			}
 		}
@@ -371,7 +404,8 @@ func processReferral(referralDetails contracts.ReferralDetails, gproject string,
 				commentReasons.MessageID = currentID.String()
 				commentReasons.Channel = "c2c"
 				commentReasons.Text = "QR snapshot attached."
-				commentReasons.Files = docIDNames
+				//commentReasons.Files = docIDNames
+				commentReasons.Media = docsMedia
 				commentReasons.TimeStamp = time.Now().In(location).UTC().UnixNano() / int64(time.Millisecond)
 				commentReasons.UserID = fromClinic.EmailAddress
 				updatedComm = append(updatedComm, commentReasons)
