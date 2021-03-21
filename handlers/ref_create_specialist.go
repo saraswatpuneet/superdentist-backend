@@ -278,21 +278,21 @@ func processReferral(referralDetails contracts.ReferralDetails, gproject string,
 				switch strings.ToLower(ext) {
 				case "jpg", "jpeg":
 					img, err := jpeg.Decode(bytes.NewReader(currentBytes))
-					if err != nil {
+					if err == nil {
 						resized := resize.Resize(1280, 720, img, resize.Lanczos3)
-						buf := new(bytes.Buffer)
+						buf := bytes.NewBuffer(nil)
 						err := jpeg.Encode(buf, resized, nil)
-						if err != nil {
+						if err == nil {
 							docMedia.Image = base64.StdEncoding.EncodeToString(buf.Bytes())
 						}
 					}
 				case "png":
 					img, err := png.Decode(bytes.NewReader(currentBytes))
-					if err != nil {
+					if err == nil {
 						resized := resize.Resize(1280, 720, img, resize.Lanczos3)
-						buf := new(bytes.Buffer)
+						buf := bytes.NewBuffer(nil)
 						err := jpeg.Encode(buf, resized, nil)
-						if err != nil {
+						if err == nil {
 							docMedia.Image = base64.StdEncoding.EncodeToString(buf.Bytes())
 						}
 					}

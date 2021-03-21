@@ -567,21 +567,21 @@ func UploadDocuments(c *gin.Context) {
 				switch strings.ToLower(ext) {
 				case "jpg", "jpeg":
 					img, err := jpeg.Decode(bytes.NewReader(currentBytes))
-					if err != nil {
+					if err == nil {
 						resized := resize.Resize(1280, 720, img, resize.Lanczos3)
-						buf := new(bytes.Buffer)
+						buf := bytes.NewBuffer(nil)
 						err := jpeg.Encode(buf, resized, nil)
-						if err != nil {
+						if err == nil {
 							docMedia.Image = base64.StdEncoding.EncodeToString(buf.Bytes())
 						}
 					}
 				case "png":
 					img, err := png.Decode(bytes.NewReader(currentBytes))
-					if err != nil {
+					if err == nil {
 						resized := resize.Resize(1280, 720, img, resize.Lanczos3)
-						buf := new(bytes.Buffer)
+						buf := bytes.NewBuffer(nil)
 						err := jpeg.Encode(buf, resized, nil)
-						if err != nil {
+						if err == nil {
 							docMedia.Image = base64.StdEncoding.EncodeToString(buf.Bytes())
 						}
 					}
@@ -1039,9 +1039,9 @@ func ReceiveReferralMail(c *gin.Context) {
 		switch strings.ToLower(ext) {
 		case "jpg", "jpeg":
 			img, err := jpeg.Decode(bytes.NewReader(currentBytes))
-			if err != nil {
+			if err == nil {
 				resized := resize.Resize(1280, 720, img, resize.Lanczos3)
-				buf := new(bytes.Buffer)
+				buf := bytes.NewBuffer(nil)
 				err := jpeg.Encode(buf, resized, nil)
 				if err != nil {
 					docMedia.Image = base64.StdEncoding.EncodeToString(buf.Bytes())
@@ -1049,9 +1049,9 @@ func ReceiveReferralMail(c *gin.Context) {
 			}
 		case "png":
 			img, err := png.Decode(bytes.NewReader(currentBytes))
-			if err != nil {
+			if err == nil {
 				resized := resize.Resize(1280, 720, img, resize.Lanczos3)
-				buf := new(bytes.Buffer)
+				buf := bytes.NewBuffer(nil)
 				err := jpeg.Encode(buf, resized, nil)
 				if err != nil {
 					docMedia.Image = base64.StdEncoding.EncodeToString(buf.Bytes())
@@ -1366,21 +1366,21 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 				switch strings.ToLower(ext) {
 				case "jpg", "jpeg":
 					img, err := jpeg.Decode(bytes.NewReader(saveFileReader))
-					if err != nil {
+					if err == nil {
 						resized := resize.Resize(1280, 720, img, resize.Lanczos3)
-						buf := new(bytes.Buffer)
+						buf := bytes.NewBuffer(nil)
 						err := jpeg.Encode(buf, resized, nil)
-						if err != nil {
+						if err == nil {
 							docMedia.Image = base64.StdEncoding.EncodeToString(buf.Bytes())
 						}
 					}
 				case "png":
 					img, err := png.Decode(bytes.NewReader(saveFileReader))
-					if err != nil {
+					if err == nil {
 						resized := resize.Resize(1280, 720, img, resize.Lanczos3)
-						buf := new(bytes.Buffer)
+						buf := bytes.NewBuffer(nil)
 						err := jpeg.Encode(buf, resized, nil)
-						if err != nil {
+						if err == nil {
 							docMedia.Image = base64.StdEncoding.EncodeToString(buf.Bytes())
 						}
 					}
@@ -1667,21 +1667,21 @@ func TextRecievedPatient(c *gin.Context) {
 				switch strings.ToLower(ext) {
 				case "jpg", "jpeg":
 					img, err := jpeg.Decode(bytes.NewReader(currentBytes))
-					if err != nil {
+					if err == nil {
 						resized := resize.Resize(1280, 720, img, resize.Lanczos3)
-						buf := new(bytes.Buffer)
+						buf := bytes.NewBuffer(nil)
 						err := jpeg.Encode(buf, resized, nil)
-						if err != nil {
+						if err == nil {
 							docMedia.Image = base64.StdEncoding.EncodeToString(buf.Bytes())
 						}
 					}
 				case "png":
 					img, err := png.Decode(bytes.NewReader(currentBytes))
-					if err != nil {
+					if err == nil {
 						resized := resize.Resize(1280, 720, img, resize.Lanczos3)
-						buf := new(bytes.Buffer)
+						buf := bytes.NewBuffer(nil)
 						err := jpeg.Encode(buf, resized, nil)
-						if err != nil {
+						if err == nil {
 							docMedia.Image = base64.StdEncoding.EncodeToString(buf.Bytes())
 						}
 					}
