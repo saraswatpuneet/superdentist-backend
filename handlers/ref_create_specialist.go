@@ -248,7 +248,7 @@ func processReferral(referralDetails contracts.ReferralDetails, gproject string,
 					stripFile := strings.Split(fileName, ".")
 					name := stripFile[0]
 					name += strconv.Itoa(timeNow.Year()) + timeNow.Month().String() + strconv.Itoa(timeNow.Day()) + strconv.Itoa(timeNow.Second())
-					fileName = name + "." + stripFile[len(stripFile) -1 ]
+					fileName = name + "." + stripFile[len(stripFile)-1]
 				}
 				bucketPath := uniqueRefID + "/" + fileName
 				buckerW, err := storageC.UploadToGCS(ctx, bucketPath)
@@ -279,7 +279,7 @@ func processReferral(referralDetails contracts.ReferralDetails, gproject string,
 				case "jpg", "jpeg":
 					img, err := jpeg.Decode(bytes.NewReader(currentBytes))
 					if err == nil {
-						resized := resize.Resize(1280, 720, img, resize.Lanczos3)
+						resized := resize.Resize(200, 200, img, resize.Lanczos3)
 						buf := bytes.NewBuffer(nil)
 						err := jpeg.Encode(buf, resized, nil)
 						if err == nil {
@@ -289,7 +289,7 @@ func processReferral(referralDetails contracts.ReferralDetails, gproject string,
 				case "png":
 					img, err := png.Decode(bytes.NewReader(currentBytes))
 					if err == nil {
-						resized := resize.Resize(1280, 720, img, resize.Lanczos3)
+						resized := resize.Resize(200, 200, img, resize.Lanczos3)
 						buf := bytes.NewBuffer(nil)
 						err := jpeg.Encode(buf, resized, nil)
 						if err == nil {

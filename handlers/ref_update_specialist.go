@@ -568,7 +568,7 @@ func UploadDocuments(c *gin.Context) {
 				case "jpg", "jpeg":
 					img, err := jpeg.Decode(bytes.NewReader(currentBytes))
 					if err == nil {
-						resized := resize.Resize(1280, 720, img, resize.Lanczos3)
+						resized := resize.Resize(200, 200, img, resize.Lanczos3)
 						buf := bytes.NewBuffer(nil)
 						err := jpeg.Encode(buf, resized, nil)
 						if err == nil {
@@ -578,7 +578,7 @@ func UploadDocuments(c *gin.Context) {
 				case "png":
 					img, err := png.Decode(bytes.NewReader(currentBytes))
 					if err == nil {
-						resized := resize.Resize(1280, 720, img, resize.Lanczos3)
+						resized := resize.Resize(200, 200, img, resize.Lanczos3)
 						buf := bytes.NewBuffer(nil)
 						err := jpeg.Encode(buf, resized, nil)
 						if err == nil {
@@ -1041,7 +1041,7 @@ func ReceiveReferralMail(c *gin.Context) {
 		case "jpg", "jpeg":
 			img, err := jpeg.Decode(bytes.NewReader(currentBytes))
 			if err == nil {
-				resized := resize.Resize(1280, 720, img, resize.Lanczos3)
+				resized := resize.Resize(200, 200, img, resize.Lanczos3)
 				buf := bytes.NewBuffer(nil)
 				err := jpeg.Encode(buf, resized, nil)
 				if err != nil {
@@ -1051,7 +1051,7 @@ func ReceiveReferralMail(c *gin.Context) {
 		case "png":
 			img, err := png.Decode(bytes.NewReader(currentBytes))
 			if err == nil {
-				resized := resize.Resize(1280, 720, img, resize.Lanczos3)
+				resized := resize.Resize(200, 200, img, resize.Lanczos3)
 				buf := bytes.NewBuffer(nil)
 				err := jpeg.Encode(buf, resized, nil)
 				if err != nil {
@@ -1369,7 +1369,7 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 				case "jpg", "jpeg":
 					img, err := jpeg.Decode(bytes.NewReader(saveFileReader))
 					if err == nil {
-						resized := resize.Resize(1280, 720, img, resize.Lanczos3)
+						resized := resize.Resize(200, 200, img, resize.Lanczos3)
 						buf := bytes.NewBuffer(nil)
 						err := jpeg.Encode(buf, resized, nil)
 						if err == nil {
@@ -1379,7 +1379,7 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 				case "png":
 					img, err := png.Decode(bytes.NewReader(saveFileReader))
 					if err == nil {
-						resized := resize.Resize(1280, 720, img, resize.Lanczos3)
+						resized := resize.Resize(200, 200, img, resize.Lanczos3)
 						buf := bytes.NewBuffer(nil)
 						err := jpeg.Encode(buf, resized, nil)
 						if err == nil {
@@ -1671,7 +1671,7 @@ func TextRecievedPatient(c *gin.Context) {
 				case "jpg", "jpeg":
 					img, err := jpeg.Decode(bytes.NewReader(currentBytes))
 					if err == nil {
-						resized := resize.Resize(1280, 720, img, resize.Lanczos3)
+						resized := resize.Resize(200, 200, img, resize.Lanczos3)
 						buf := bytes.NewBuffer(nil)
 						err := jpeg.Encode(buf, resized, nil)
 						if err == nil {
@@ -1681,7 +1681,7 @@ func TextRecievedPatient(c *gin.Context) {
 				case "png":
 					img, err := png.Decode(bytes.NewReader(currentBytes))
 					if err == nil {
-						resized := resize.Resize(1280, 720, img, resize.Lanczos3)
+						resized := resize.Resize(200, 200, img, resize.Lanczos3)
 						buf := bytes.NewBuffer(nil)
 						err := jpeg.Encode(buf, resized, nil)
 						if err == nil {
