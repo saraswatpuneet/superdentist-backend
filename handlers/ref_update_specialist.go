@@ -521,7 +521,7 @@ func UploadDocuments(c *gin.Context) {
 					stripFile := strings.Split(fileName, ".")
 					name := stripFile[0]
 					name += strconv.Itoa(timeNow.Year()) + timeNow.Month().String() + strconv.Itoa(timeNow.Day()) + strconv.Itoa(timeNow.Second())
-					fileName = name + "." + stripFile[len(stripFile)- 1]
+					fileName = name + "." + stripFile[len(stripFile)-1]
 				}
 				bucketPath := referralID + "/" + fileName
 				buckerW, err := storageC.UploadToGCS(ctx, bucketPath)
@@ -618,6 +618,7 @@ func UploadDocuments(c *gin.Context) {
 	var refComments contracts.ReferralComments
 	//commentReasons.Files = docIDNames
 	commentReasons.Media = docsMedia
+	commentReasons.Files = docIDNames
 	refComments.Comments = append(refComments.Comments, commentReasons)
 	_, err = ProcessComments(ctx, gproject, dsReferral.ReferralID, refComments)
 	if err != nil {
@@ -1006,7 +1007,7 @@ func ReceiveReferralMail(c *gin.Context) {
 			stripFile := strings.Split(fileName, ".")
 			name := stripFile[0]
 			name += strconv.Itoa(timeNow.Year()) + timeNow.Month().String() + strconv.Itoa(timeNow.Day()) + strconv.Itoa(timeNow.Second())
-			fileName = name + "." + stripFile[len(stripFile) -1 ]
+			fileName = name + "." + stripFile[len(stripFile)-1]
 		}
 		bucketPath := dsReferral.ReferralID + "/" + fileName
 		buckerW, err := storageC.UploadToGCS(ctx, bucketPath)
@@ -1110,6 +1111,7 @@ func ReceiveReferralMail(c *gin.Context) {
 		id, _ := uuid.NewUUID()
 		uploadComment.MessageID = id.String()
 		uploadComment.Media = docsMedia
+		uploadComment.Files = docIDNames
 		uploadComment.Text = "New documents are uploaded by " + dsReferral.PatientFirstName + " " + dsReferral.PatientLastName
 		uploadComment.TimeStamp = time.Now().In(location).UTC().UnixNano() / int64(time.Millisecond)
 		currentComments = append(currentComments, uploadComment)
@@ -1257,7 +1259,7 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 			stripFile := strings.Split(fileName, ".")
 			name := stripFile[0]
 			name += strconv.Itoa(timeNow.Year()) + timeNow.Month().String() + strconv.Itoa(timeNow.Day()) + strconv.Itoa(timeNow.Second())
-			fileName = name + "." + stripFile[len(stripFile) -1 ]
+			fileName = name + "." + stripFile[len(stripFile)-1]
 		}
 		bucketPath := dsReferral.ReferralID + "/" + fileName
 		saveFileReader, _ := ioutil.ReadAll(attch.Data)
@@ -1338,7 +1340,7 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 					stripFile := strings.Split(fileName, ".")
 					name := stripFile[0]
 					name += strconv.Itoa(timeNow.Year()) + timeNow.Month().String() + strconv.Itoa(timeNow.Day()) + strconv.Itoa(timeNow.Second())
-					fileName = name + "." + stripFile[len(stripFile) -1 ]
+					fileName = name + "." + stripFile[len(stripFile)-1]
 				}
 				bucketPath := existingReferralMain.ReferralID + "/" + fileName
 				saveFileReader, _ := ioutil.ReadAll(attch.Data)
@@ -1422,6 +1424,7 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 		id, _ := uuid.NewUUID()
 		uploadComment.MessageID = id.String()
 		uploadComment.Media = docsMedia
+		uploadComment.Files = docIDNames
 		uploadComment.Text = "New documents are uploaded by " + dsReferral.ToClinicName
 		uploadComment.TimeStamp = time.Now().In(location).UTC().UnixNano() / int64(time.Millisecond)
 		currentComments = append(currentComments, uploadComment)
@@ -1697,6 +1700,7 @@ func TextRecievedPatient(c *gin.Context) {
 		}
 		if len(docIDNames) > 0 {
 			commText.Media = docsMedia
+			commText.Files = docIDNames
 			err = dsRefC.CreateMessage(ctx, dsReferral, []contracts.Comment{commText})
 			if err != nil {
 				log.Errorf("Error processing sms error:%v ", err.Error())

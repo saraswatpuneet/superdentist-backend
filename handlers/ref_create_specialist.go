@@ -406,6 +406,7 @@ func processReferral(referralDetails contracts.ReferralDetails, gproject string,
 				commentReasons.Text = "QR snapshot attached."
 				//commentReasons.Files = docIDNames
 				commentReasons.Media = docsMedia
+				commentReasons.Files = docIDNames
 				commentReasons.TimeStamp = time.Now().In(location).UTC().UnixNano() / int64(time.Millisecond)
 				commentReasons.UserID = fromClinic.EmailAddress
 				updatedComm = append(updatedComm, commentReasons)
