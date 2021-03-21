@@ -79,7 +79,7 @@ const SPCBox ChatBox = "c2p"
 // Thumbnails
 type Media struct {
 	Name  string
-	Image string
+	Image string `datastore:",noindex"`
 }
 
 // Comment .....

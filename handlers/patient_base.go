@@ -363,7 +363,7 @@ func registerPatientInDB(documentFiles *multipart.Form) error {
 					stripFile := strings.Split(fileName, ".")
 					name := stripFile[0]
 					name += strconv.Itoa(timeNow.Year()) + timeNow.Month().String() + strconv.Itoa(timeNow.Day()) + strconv.Itoa(timeNow.Second())
-					fileName = name + "." + stripFile[1]
+					fileName = name + "." + stripFile[len(stripFile) -1 ]
 				}
 				bucketPath := patientFolder + "/" + fileName
 				buckerW, err := storageC.UploadToGCSPatient(ctx, bucketPath)
@@ -431,7 +431,7 @@ func uploadPatientDocs(ctx context.Context, patientFolder string, documentFiles 
 					stripFile := strings.Split(fileName, ".")
 					name := stripFile[0]
 					name += strconv.Itoa(timeNow.Year()) + timeNow.Month().String() + strconv.Itoa(timeNow.Day()) + strconv.Itoa(timeNow.Second())
-					fileName = name + "." + stripFile[1]
+					fileName = name + "." + stripFile[len(stripFile) -1 ]
 				}
 				bucketPath := patientFolder + "/" + fileName
 				buckerW, err := storageC.UploadToGCSPatient(ctx, bucketPath)

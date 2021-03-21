@@ -248,7 +248,7 @@ func processReferral(referralDetails contracts.ReferralDetails, gproject string,
 					stripFile := strings.Split(fileName, ".")
 					name := stripFile[0]
 					name += strconv.Itoa(timeNow.Year()) + timeNow.Month().String() + strconv.Itoa(timeNow.Day()) + strconv.Itoa(timeNow.Second())
-					fileName = name + "." + stripFile[1]
+					fileName = name + "." + stripFile[len(stripFile) -1 ]
 				}
 				bucketPath := uniqueRefID + "/" + fileName
 				buckerW, err := storageC.UploadToGCS(ctx, bucketPath)

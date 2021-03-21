@@ -521,7 +521,7 @@ func UploadDocuments(c *gin.Context) {
 					stripFile := strings.Split(fileName, ".")
 					name := stripFile[0]
 					name += strconv.Itoa(timeNow.Year()) + timeNow.Month().String() + strconv.Itoa(timeNow.Day()) + strconv.Itoa(timeNow.Second())
-					fileName = name + "." + stripFile[1]
+					fileName = name + "." + stripFile[len(stripFile)- 1]
 				}
 				bucketPath := referralID + "/" + fileName
 				buckerW, err := storageC.UploadToGCS(ctx, bucketPath)
@@ -1006,7 +1006,7 @@ func ReceiveReferralMail(c *gin.Context) {
 			stripFile := strings.Split(fileName, ".")
 			name := stripFile[0]
 			name += strconv.Itoa(timeNow.Year()) + timeNow.Month().String() + strconv.Itoa(timeNow.Day()) + strconv.Itoa(timeNow.Second())
-			fileName = name + "." + stripFile[1]
+			fileName = name + "." + stripFile[len(stripFile) -1 ]
 		}
 		bucketPath := dsReferral.ReferralID + "/" + fileName
 		buckerW, err := storageC.UploadToGCS(ctx, bucketPath)
@@ -1257,7 +1257,7 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 			stripFile := strings.Split(fileName, ".")
 			name := stripFile[0]
 			name += strconv.Itoa(timeNow.Year()) + timeNow.Month().String() + strconv.Itoa(timeNow.Day()) + strconv.Itoa(timeNow.Second())
-			fileName = name + "." + stripFile[1]
+			fileName = name + "." + stripFile[len(stripFile) -1 ]
 		}
 		bucketPath := dsReferral.ReferralID + "/" + fileName
 		saveFileReader, _ := ioutil.ReadAll(attch.Data)
@@ -1338,7 +1338,7 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 					stripFile := strings.Split(fileName, ".")
 					name := stripFile[0]
 					name += strconv.Itoa(timeNow.Year()) + timeNow.Month().String() + strconv.Itoa(timeNow.Day()) + strconv.Itoa(timeNow.Second())
-					fileName = name + "." + stripFile[1]
+					fileName = name + "." + stripFile[len(stripFile) -1 ]
 				}
 				bucketPath := existingReferralMain.ReferralID + "/" + fileName
 				saveFileReader, _ := ioutil.ReadAll(attch.Data)
