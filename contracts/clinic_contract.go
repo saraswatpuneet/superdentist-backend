@@ -23,35 +23,6 @@ type GetNearbySpecialists struct {
 	Cursor         string `json:"cursor"`
 }
 
-// ClinicBreakDowns1 ....
-type ClinicBreakDowns1 struct {
-	Key           string   `json:"key"`
-	Label         string   `json:"label"`
-	BreakDownKeys []string `json:"breakDownKeys"`
-}
-
-// ClinicBreakDowns2 .....
-type ClinicBreakDowns2 struct {
-	Key   string `json:"key"`
-	Label string `json:"label"`
-}
-
-// ClinicBreakDowns3 .....
-type ClinicBreakDowns3 struct {
-	Key           string                       `json:"key"`
-	Label         string                       `json:"label"`
-	BreakDowns    map[string]ClinicBreakDowns2 `json:"breakDowns"`
-	BreakDownKeys []string                     `json:"breakDownKeys"`
-}
-
-type FurtherBreakDowns map[string]ClinicBreakDowns3
-
-// ClinicPracticeCodes .....
-type ClinicPracticeCodes struct {
-	ClinicBreakDowns1
-	FurtherBreakDowns `json:"breakDowns"`
-}
-
 // AddFavoriteClinics ...
 type AddFavoriteClinics struct {
 	PlaceIDs []string `json:"placeIds" valid:"required"`

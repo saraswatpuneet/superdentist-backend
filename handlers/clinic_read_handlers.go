@@ -1001,7 +1001,7 @@ func AddClinicPracticeCodes(c *gin.Context) {
 
 	ctx, span := trace.StartSpan(ctx, "Register incoming request for clinic")
 	defer span.End()
-	var clinicCodes contracts.ClinicPracticeCodes
+	var clinicCodes map[string]interface{}
 	if err := c.ShouldBindWith(&clinicCodes, binding.JSON); err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusBadRequest,
