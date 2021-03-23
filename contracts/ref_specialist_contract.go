@@ -51,8 +51,8 @@ type Patient struct {
 	Email            string                    `json:"email" valid:"required"`
 	Phone            string                    `json:"phone" valid:"required"`
 	SSN              string                    `json:"_"`
-	DentalInsurance  []PatientDentalInsurance  `datastore:"dentalInsurance,noindex"`
-	MedicalInsurance []PatientMedicalInsurance `datastore:"medicalInsurance,noindex"`
+	DentalInsurance  []PatientDentalInsurance  `json:"dentalInsurance" datastore:"dentalInsurance,noindex"`
+	MedicalInsurance []PatientMedicalInsurance `json:"medicalInsurance" datastore:"medicalInsurance,noindex"`
 	GDName           string                    `json:"gdName" valid:"required"`
 	SP               string                    `json:"sp" valid:"required"`
 	GD               string                    `json:"gd" valid:"required"`
