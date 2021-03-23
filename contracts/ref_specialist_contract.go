@@ -38,6 +38,7 @@ type PatientMedicalInsurance struct {
 	GroupNumber string     `json:"groupNumber"`
 	MemberID    string     `json:"memberId"`
 	Subscriber  Subscriber `json:"subscriber"`
+	SSN         string     `json:"ssn"`
 }
 
 // notes: clinic info, tax id, group npi, provider name, provider npi,
