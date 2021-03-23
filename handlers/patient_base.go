@@ -280,13 +280,14 @@ func registerPatientInDB(documentFiles *multipart.Form) error {
 	gproject := googleprojectlib.GetGoogleProjectID()
 	ctx := context.Background()
 	var dsReferral *contracts.DSReferral
+	clinicDB := datastoredb.NewClinicMetaHandler()
+	err := clinicDB.InitializeDataBase(ctx, gproject)
+	if err != nil {
+		log.Errorf("Failed to initialize clinics: %v", err.Error())
+		return err
+	}
 	if patientDetails.AddressID != "" {
-		clinicDB := datastoredb.NewClinicMetaHandler()
-		err := clinicDB.InitializeDataBase(ctx, gproject)
-		if err != nil {
-			log.Errorf("Failed to initialize clinics: %v", err.Error())
-			return err
-		}
+
 		currentClinic, err := clinicDB.GetSingleClinic(ctx, patientDetails.AddressID)
 		if err != nil {
 			log.Errorf("Failed to get clinic: %v", err.Error())
@@ -298,6 +299,8 @@ func registerPatientInDB(documentFiles *multipart.Form) error {
 		})
 		location, _ := time.LoadLocation(zone[0])
 		patientDetails.DueDate = time.Now().In(location).UTC().UnixNano() / int64(time.Millisecond)
+		patientDetails.CreatedOn = patientDetails.DueDate
+		patientDetails.CreationDate = time.Now().In(location).Format("2006-01-02 15:04:05")
 	}
 	if refID != "" {
 		dsRefC := datastoredb.NewReferralHandler()
@@ -313,6 +316,17 @@ func registerPatientInDB(documentFiles *multipart.Form) error {
 		}
 		if dsReferral.FromAddressID != "" {
 			patientDetails.GD = dsReferral.FromAddressID
+			currentClinic, err := clinicDB.GetSingleClinic(ctx, patientDetails.GD)
+			if err != nil {
+				log.Errorf("Failed to get clinic: %v", err.Error())
+				return err
+			}
+			zone, err := tz.GetZone(tz.Point{
+				Lon: currentClinic.Location.Long, Lat: currentClinic.Location.Lat,
+			})
+			location, _ := time.LoadLocation(zone[0])
+			patientDetails.CreatedOn = patientDetails.DueDate
+			patientDetails.CreationDate = time.Now().In(location).Format("2006-01-02 15:04:05")
 		} else {
 			patientDetails.GD = dsReferral.FromPlaceID
 		}
@@ -327,7 +341,7 @@ func registerPatientInDB(documentFiles *multipart.Form) error {
 	}
 
 	storageC := storage.NewStorageHandler()
-	err := storageC.InitializeStorageClient(ctx, gproject)
+	err = storageC.InitializeStorageClient(ctx, gproject)
 	if err != nil {
 		log.Errorf("Failed to created patient information: %v", err.Error())
 		return err
@@ -363,7 +377,7 @@ func registerPatientInDB(documentFiles *multipart.Form) error {
 					stripFile := strings.Split(fileName, ".")
 					name := stripFile[0]
 					name += strconv.Itoa(timeNow.Year()) + timeNow.Month().String() + strconv.Itoa(timeNow.Day()) + strconv.Itoa(timeNow.Second())
-					fileName = name + "." + stripFile[len(stripFile) -1 ]
+					fileName = name + "." + stripFile[len(stripFile)-1]
 				}
 				bucketPath := patientFolder + "/" + fileName
 				buckerW, err := storageC.UploadToGCSPatient(ctx, bucketPath)
@@ -431,7 +445,7 @@ func uploadPatientDocs(ctx context.Context, patientFolder string, documentFiles 
 					stripFile := strings.Split(fileName, ".")
 					name := stripFile[0]
 					name += strconv.Itoa(timeNow.Year()) + timeNow.Month().String() + strconv.Itoa(timeNow.Day()) + strconv.Itoa(timeNow.Second())
-					fileName = name + "." + stripFile[len(stripFile) -1 ]
+					fileName = name + "." + stripFile[len(stripFile)-1]
 				}
 				bucketPath := patientFolder + "/" + fileName
 				buckerW, err := storageC.UploadToGCSPatient(ctx, bucketPath)

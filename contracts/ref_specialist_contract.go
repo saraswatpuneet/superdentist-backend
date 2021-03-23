@@ -65,6 +65,8 @@ type Patient struct {
 	SameDay          bool                      `json:"sameDay"`
 	Status           string                    `json:"status"`
 	ZipCode          string                    `json:"zipCode"`
+	CreatedOn        int64                     `json:"createdOn"`
+	CreationDate     string                    `json:"creationDate"`
 }
 
 // ChatBox ....
