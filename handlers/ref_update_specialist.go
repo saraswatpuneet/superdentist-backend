@@ -1170,7 +1170,10 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 	log.Errorf(emails)
 	parsedEmail, err := pe.Parse(strings.NewReader(emails))
 	fromEmail := parsedEmail.From[0].Address
+	log.Info("From: %v", fromEmail)
 	toEmail := parsedEmail.To[0].Address
+	log.Info("To: %v", toEmail)
+
 	subject := parsedEmail.Subject
 	ctx := c.Request.Context()
 	gproject := googleprojectlib.GetGoogleProjectID()
