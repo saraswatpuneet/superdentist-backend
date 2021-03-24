@@ -1,6 +1,7 @@
 package sendgrid
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -52,10 +53,18 @@ func (sgc *ClientSendGrid) SendLiveDemoRequest(data map[string]interface{}) {
 // SendPatientDetailsToParth ....
 func (sgc *ClientSendGrid) SendPatientDetailsToParth(data contracts.Patient) {
 	from := mail.NewEmail("New Patient Registered", "superdentist.admin@superdentist.io")
-	subject := "New Patient Information For: "+ data.FirstName + " "+ data.LastName 
+	subject := "New Patient Information For: " + data.FirstName + " " + data.LastName
 	to := mail.NewEmail("Parth Patel", "parth@superdentist.io")
 	currentString, _ := json.Marshal(data)
-	message := mail.NewSingleEmail(from, subject, to, string(currentString), "")
+	var prettyJSON bytes.Buffer
+
+	err := json.Indent(&prettyJSON, currentString, "", " ")
+	var message *mail.SGMailV3
+	if err != nil {
+		message = mail.NewSingleEmail(from, subject, to, string(currentString), "")
+	} else {
+		message = mail.NewSingleEmail(from, subject, to, string(prettyJSON.Bytes()), "")
+	}
 	sgc.client.Send(message)
 }
 
