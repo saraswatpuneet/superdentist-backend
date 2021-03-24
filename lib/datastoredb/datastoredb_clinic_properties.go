@@ -456,7 +456,7 @@ func (db *DSClinicMeta) AddPMSUsedByClinics(ctx context.Context, clinicEmailID s
 }
 
 // AddClinicPracticeCodes ......
-func (db *DSClinicMeta) AddClinicPracticeCodes(ctx context.Context, clinicAddessID string, codeData DynEnt) error {
+func (db *DSClinicMeta) AddClinicPracticeCodes(ctx context.Context, clinicAddessID string, codeData contracts.ClinicSpecificCodes) error {
 	parentKey := datastore.NameKey("ClinicPracticeCodes", clinicAddessID, nil)
 	if global.Options.DSName != "" {
 		parentKey.Namespace = global.Options.DSName
@@ -469,17 +469,17 @@ func (db *DSClinicMeta) AddClinicPracticeCodes(ctx context.Context, clinicAddess
 }
 
 // GetClinicPracticeCodes ......
-func (db *DSClinicMeta) GetClinicPracticeCodes(ctx context.Context, clinicAddessID string) (DynEnt, error) {
+func (db *DSClinicMeta) GetClinicPracticeCodes(ctx context.Context, clinicAddessID string) (*contracts.ClinicSpecificCodes, error) {
 	parentKey := datastore.NameKey("ClinicPracticeCodes", clinicAddessID, nil)
 	if global.Options.DSName != "" {
 		parentKey.Namespace = global.Options.DSName
 	}
-	var codeData DynEnt
+	var codeData contracts.ClinicSpecificCodes
 	err := db.client.Get(ctx, parentKey, &codeData)
 	if err != nil {
 		return nil, fmt.Errorf("cannot get clinic codes: %v", err)
 	}
-	return codeData, nil
+	return &codeData, nil
 }
 
 // AddPMSAuthDetails ......

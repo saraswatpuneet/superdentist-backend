@@ -1001,7 +1001,7 @@ func AddClinicPracticeCodes(c *gin.Context) {
 
 	ctx, span := trace.StartSpan(ctx, "Register incoming request for clinic")
 	defer span.End()
-	var clinicCodes map[string]interface{}
+	var clinicCodes []contracts.SelectedDentalCodes
 	if err := c.ShouldBindWith(&clinicCodes, binding.JSON); err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusBadRequest,
@@ -1026,7 +1026,9 @@ func AddClinicPracticeCodes(c *gin.Context) {
 		)
 		return
 	}
-	err = clinicDB.AddClinicPracticeCodes(ctx, pID, clinicCodes)
+	var cPracticeCodes contracts.ClinicSpecificCodes
+	cPracticeCodes.PracticeCodes = clinicCodes
+	err = clinicDB.AddClinicPracticeCodes(ctx, pID, cPracticeCodes)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusBadRequest,
@@ -1053,17 +1055,6 @@ func GetClinicPracticeCodes(c *gin.Context) {
 
 	ctx, span := trace.StartSpan(ctx, "Register incoming request for clinic")
 	defer span.End()
-	var clinicCodes map[string]interface{}
-	if err := c.ShouldBindWith(&clinicCodes, binding.JSON); err != nil {
-		c.AbortWithStatusJSON(
-			http.StatusBadRequest,
-			gin.H{
-				constants.RESPONSE_JSON_DATA:   nil,
-				constants.RESPONSDE_JSON_ERROR: fmt.Errorf("Bad data sent to backened"),
-			},
-		)
-		return
-	}
 	gproject := googleprojectlib.GetGoogleProjectID()
 
 	clinicDB := datastoredb.NewClinicMetaHandler()
@@ -1090,7 +1081,7 @@ func GetClinicPracticeCodes(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
-		constants.RESPONSE_JSON_DATA:   codeData,
+		constants.RESPONSE_JSON_DATA:   codeData.PracticeCodes,
 		constants.RESPONSDE_JSON_ERROR: nil,
 	})
 }

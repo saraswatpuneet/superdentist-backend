@@ -70,6 +70,15 @@ type Patient struct {
 	CreationDate     string                    `json:"creationDate"`
 }
 
+// SelectedDentalCodes ....
+type SelectedDentalCodes struct {
+	GroupID string   `json:"groupId"`
+	CodeIds []string `json:"codeIds"`
+}
+
+type ClinicSpecificCodes  struct {
+	PracticeCodes [] SelectedDentalCodes `json:"practiceCodes"`
+}
 // ChatBox ....
 type ChatBox string
 
