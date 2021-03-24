@@ -1282,20 +1282,19 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 			}
 			if res != nil {
 				ocrText = res.Body
-			}
-			patientIndex := -1
-			wordFields := strings.Fields(ocrText)
-			for i, word := range wordFields {
-				if strings.ToLower(word) == "patient" {
-					patientIndex = i
-					break
+				patientIndex := -1
+				wordFields := strings.Fields(ocrText)
+				for i, word := range wordFields {
+					if strings.ToLower(word) == "patient" {
+						patientIndex = i
+						break
+					}
+				}
+				if patientIndex >= 0 {
+					patientFirstName = strings.Title(strings.ToLower(wordFields[patientIndex+1]))
+					patientLastName = strings.Title(strings.ToLower(wordFields[patientIndex+2]))
 				}
 			}
-			if patientIndex >= 0 {
-				patientFirstName = strings.Title(strings.ToLower(wordFields[patientIndex+1]))
-				patientLastName = strings.Title(strings.ToLower(wordFields[patientIndex+2]))
-			}
-
 		}
 		_, err = io.Copy(buckerW, bytes.NewReader(saveFileReader))
 		if err != nil {
