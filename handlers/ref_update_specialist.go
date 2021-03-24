@@ -1173,7 +1173,8 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 	log.Info("From: %v", fromEmail)
 	toEmail := parsedEmail.To[0].Address
 	log.Info("To: %v", toEmail)
-
+	ccEmail := parsedEmail.Cc[0].Address
+	log.Info("CC %v", ccEmail)
 	subject := parsedEmail.Subject
 	ctx := c.Request.Context()
 	gproject := googleprojectlib.GetGoogleProjectID()
@@ -1188,6 +1189,9 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 	if err != nil {
 		log.Errorf("No clinics found for incoming email: %v", err.Error())
 		return
+	}
+	if strings.Contains(fromEmail, "cloud-protect.net") {
+		fromEmail = "info@penndios.com"
 	}
 	domainName := strings.Split(fromEmail, "@")[1]
 	var dsReferral contracts.DSReferral
