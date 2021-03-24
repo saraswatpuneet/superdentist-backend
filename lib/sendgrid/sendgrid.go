@@ -52,7 +52,7 @@ func (sgc *ClientSendGrid) SendLiveDemoRequest(data map[string]interface{}) {
 // SendPatientDetailsToParth ....
 func (sgc *ClientSendGrid) SendPatientDetailsToParth(data contracts.Patient) {
 	from := mail.NewEmail("New Patient Registered", "superdentist.admin@superdentist.io")
-	subject := "New Patient Information"
+	subject := "New Patient Information For: "+ data.FirstName + " "+ data.LastName 
 	to := mail.NewEmail("Parth Patel", "parth@superdentist.io")
 	currentString, _ := json.Marshal(data)
 	message := mail.NewSingleEmail(from, subject, to, string(currentString), "")
