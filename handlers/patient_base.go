@@ -20,9 +20,11 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/superdentist/superdentist-backend/constants"
 	"github.com/superdentist/superdentist-backend/contracts"
+	"github.com/superdentist/superdentist-backend/global"
 	"github.com/superdentist/superdentist-backend/lib/datastoredb"
 	"github.com/superdentist/superdentist-backend/lib/googleprojectlib"
 	"github.com/superdentist/superdentist-backend/lib/identity"
+	"github.com/superdentist/superdentist-backend/lib/sendgrid"
 	"github.com/superdentist/superdentist-backend/lib/sms"
 	"github.com/superdentist/superdentist-backend/lib/storage"
 	"go.opencensus.io/trace"
@@ -414,6 +416,12 @@ func registerPatientInDB(documentFiles *multipart.Form) error {
 		if message2 != "" {
 			err = clientSMS.SendSMS(dsReferral.CommunicationPhone, dsReferral.PatientPhone, message2)
 		}
+	}
+	if global.Options.DSName == "sdprod" {
+		sgClient := sendgrid.NewSendGridClient()
+		sgClient.InitializeSendGridClient()
+
+		sgClient.SendPatientDetailsToParth(patientDetails)
 	}
 	return nil
 }

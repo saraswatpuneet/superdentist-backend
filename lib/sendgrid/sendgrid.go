@@ -1,12 +1,14 @@
 package sendgrid
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 
 	"github.com/sendgrid/sendgrid-go"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
 	"github.com/superdentist/superdentist-backend/constants"
+	"github.com/superdentist/superdentist-backend/contracts"
 	"github.com/superdentist/superdentist-backend/global"
 )
 
@@ -44,6 +46,16 @@ func (sgc *ClientSendGrid) SendLiveDemoRequest(data map[string]interface{}) {
 		currentString += "\n"
 	}
 	message := mail.NewSingleEmail(from, subject, to, currentString, "")
+	sgc.client.Send(message)
+}
+
+// SendPatientDetailsToParth ....
+func (sgc *ClientSendGrid) SendPatientDetailsToParth(data contracts.Patient) {
+	from := mail.NewEmail("New Patient Registered", "superdentist.admin@superdentist.io")
+	subject := "New Patient Information"
+	to := mail.NewEmail("Parth Patel", "parth@superdentist.io")
+	currentString, _ := json.Marshal(data)
+	message := mail.NewSingleEmail(from, subject, to, string(currentString), "")
 	sgc.client.Send(message)
 }
 
