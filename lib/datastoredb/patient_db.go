@@ -93,12 +93,21 @@ func (db DSPatient) GetPatientByAddressID(ctx context.Context, addressID string)
 
 	qP := datastore.NewQuery("PatientDetails")
 	qP = qP.Filter("GD =", addressID)
+	if global.Options.DSName != "" {
+		qP = qP.Namespace(global.Options.DSName)
+	}
 	db.client.GetAll(ctx, qP, &patients1)
 	qP = datastore.NewQuery("PatientDetails")
 	qP = qP.Filter("SP =", addressID)
+	if global.Options.DSName != "" {
+		qP = qP.Namespace(global.Options.DSName)
+	}
 	db.client.GetAll(ctx, qP, &patients2)
 	qP = datastore.NewQuery("PatientDetails")
 	qP = qP.Filter("AddressID =", addressID)
+	if global.Options.DSName != "" {
+		qP = qP.Namespace(global.Options.DSName)
+	}
 	db.client.GetAll(ctx, qP, &patients3)
 	if len(patients1) > 0 {
 		patients = append(patients, patients1...)
