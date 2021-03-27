@@ -54,9 +54,8 @@ func (db *DSPatient) InitializeDataBase(ctx context.Context, projectID string) e
 }
 
 // AddPatientInformation ....
-func (db DSPatient) AddPatientInformation(ctx context.Context, patient contracts.Patient) (string, error) {
-	patientID, _ := uuid.NewUUID()
-	pIDString := patientID.String()
+func (db DSPatient) AddPatientInformation(ctx context.Context, patient contracts.Patient, pIDString string) (string, error) {
+	
 	pKey := datastore.NameKey("PatientDetails", pIDString, nil)
 	if global.Options.DSName != "" {
 		pKey.Namespace = global.Options.DSName

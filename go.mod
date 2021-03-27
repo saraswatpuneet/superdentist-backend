@@ -3,7 +3,7 @@ module github.com/superdentist/superdentist-backend
 go 1.14
 
 require (
-	cloud.google.com/go v0.75.0
+	cloud.google.com/go v0.80.0
 	cloud.google.com/go/datastore v1.4.0
 	cloud.google.com/go/firestore v1.4.0 // indirect
 	cloud.google.com/go/storage v1.12.0
@@ -47,17 +47,17 @@ require (
 	github.com/ttacon/builder v0.0.0-20170518171403-c099f663e1c2 // indirect
 	github.com/ttacon/libphonenumber v1.1.0 // indirect
 	github.com/ugorji/go v1.2.3 // indirect
-	go.opencensus.io v0.22.5
+	go.opencensus.io v0.23.0
 	golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad // indirect
-	golang.org/x/net v0.0.0-20210119194325-5f4716e94777 // indirect
-	golang.org/x/oauth2 v0.0.0-20210126194326-f9ce19ea3013
-	golang.org/x/sys v0.0.0-20210124154548-22da62e12c0c // indirect
+	golang.org/x/net v0.0.0-20210326220855-61e056675ecf // indirect
+	golang.org/x/oauth2 v0.0.0-20210323180902-22b0adad7558
+	golang.org/x/sys v0.0.0-20210326220804-49726bf1d181 // indirect
 	golang.org/x/text v0.3.5 // indirect
 	golang.org/x/time v0.0.0-20201208040808-7e3f01d25324 // indirect
 	golang.org/x/tools v0.1.0 // indirect
-	google.golang.org/api v0.37.0
-	google.golang.org/genproto v0.0.0-20210126160654-44e461bb6506 // indirect
-	google.golang.org/grpc v1.35.0 // indirect
+	google.golang.org/api v0.43.0
+	google.golang.org/genproto v0.0.0-20210325224202-eed09b1b5210 // indirect
+	google.golang.org/grpc v1.36.1 // indirect
 	googlemaps.github.io/maps v1.3.1
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/tylerb/graceful.v1 v1.2.15

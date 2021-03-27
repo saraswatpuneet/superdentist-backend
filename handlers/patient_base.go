@@ -17,12 +17,14 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
+	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
 	"github.com/superdentist/superdentist-backend/constants"
 	"github.com/superdentist/superdentist-backend/contracts"
 	"github.com/superdentist/superdentist-backend/global"
 	"github.com/superdentist/superdentist-backend/lib/datastoredb"
 	"github.com/superdentist/superdentist-backend/lib/googleprojectlib"
+	"github.com/superdentist/superdentist-backend/lib/gsheets"
 	"github.com/superdentist/superdentist-backend/lib/identity"
 	"github.com/superdentist/superdentist-backend/lib/sendgrid"
 	"github.com/superdentist/superdentist-backend/lib/sms"
@@ -354,7 +356,10 @@ func registerPatientInDB(documentFiles *multipart.Form) error {
 		log.Errorf("Failed to created patient information: %v", err.Error())
 		return err
 	}
-	key, err := patientDB.AddPatientInformation(ctx, patientDetails)
+	patientID, _ := uuid.NewUUID()
+	pIDString := patientID.String()
+	patientDetails.PatientID = pIDString
+	key, err := patientDB.AddPatientInformation(ctx, patientDetails, pIDString)
 	if err != nil {
 		log.Errorf("Failed to created patient information: %v", err.Error())
 		return err
@@ -405,7 +410,7 @@ func registerPatientInDB(documentFiles *multipart.Form) error {
 			return err
 		}
 	}
-	if patientDetails.AddressID == "" && dsReferral.CommunicationText != "" && dsReferral.CommunicationPhone != "" {
+	if dsReferral != nil && patientDetails.AddressID == "" && dsReferral.CommunicationText != "" && dsReferral.CommunicationPhone != "" {
 		clientSMS := sms.NewSMSClient()
 		err = clientSMS.InitializeSMSClient()
 		if err != nil {
@@ -420,9 +425,11 @@ func registerPatientInDB(documentFiles *multipart.Form) error {
 	if global.Options.DSName == "sdprod" {
 		sgClient := sendgrid.NewSendGridClient()
 		sgClient.InitializeSendGridClient()
-
 		sgClient.SendPatientDetailsToParth(patientDetails)
 	}
+	googleSheet := gsheets.NewSheetsHandler()
+	googleSheet.InitializeSheetsClient(ctx, gproject)
+	err = googleSheet.WritePatientoGSheet(patientDetails, "12A93KjDeO4eVEUYwunzLZxKx4HkqjI19HrCDjhp85Q8")
 	return nil
 }
 
@@ -620,7 +627,10 @@ func processXlDocument(ctx context.Context, gproject string, addressID string, d
 		}
 		if counter > 0 && patientInfo.FirstName != "" {
 			patientInfo.GD = addressID
-			patientDB.AddPatientInformation(ctx, patientInfo)
+			patientID, _ := uuid.NewUUID()
+			pIDString := patientID.String()
+			patientInfo.PatientID = pIDString
+			patientDB.AddPatientInformation(ctx, patientInfo, pIDString)
 		}
 		counter++
 	}
