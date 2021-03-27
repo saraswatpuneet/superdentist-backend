@@ -3,6 +3,7 @@ package gsheets
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/superdentist/superdentist-backend/contracts"
 	"github.com/superdentist/superdentist-backend/lib/helpers"
@@ -50,18 +51,18 @@ func (sc *Client) InitializeSheetsClient(ctx context.Context, projectID string) 
 func (sc *Client) WritePatientoGSheet(patient contracts.Patient, sheetID string) error {
 	var vr sheets.ValueRange
 	var pValues []interface{}
-	pValues = append(pValues, patient.FirstName)
-	pValues = append(pValues, patient.LastName)
+	pValues = append(pValues, patient.CreationDate)
+	pValues = append(pValues, patient.CreationDate)
 	if patient.ClinicName != "" {
 		pValues = append(pValues, patient.ClinicName)
 
 	} else if patient.GDName != "" {
 		pValues = append(pValues, patient.GDName+"Referred To "+patient.SPName)
 	}
-	pValues = append(pValues, patient.Phone)
-	pValues = append(pValues, patient.ZipCode)
+	pValues = append(pValues, patient.FirstName)
+	pValues = append(pValues, patient.LastName)
 	pValues = append(pValues, patient.Dob.Month+"/"+patient.Dob.Day+"/"+patient.Dob.Year)
-	pValues = append(pValues, patient.CreationDate)
+	pValues = append(pValues, patient.ZipCode)
 	if len(patient.DentalInsurance) > 0 {
 		currentDI := "Dental Insurances: "
 		for _, dI := range patient.DentalInsurance {
@@ -90,7 +91,13 @@ func (sc *Client) WritePatientoGSheet(patient contracts.Patient, sheetID string)
 	} else {
 		pValues = append(pValues, "Medical Insurances: Missing")
 	}
+	if patient.DueDate> 0: {
+		pValues = append(pValues, time.Unix(patient.DueDate*int64(time.Millisecond), 0))
+	} else {
+		pValues = append(pValues, time.Now())
 
+	}
+	pValues = append(pValues, patient.Status)
 	vr.Values = append(vr.Values, pValues)
 	_, err := sc.client.Spreadsheets.Values.Append(sheetID, "A:AF", &vr).ValueInputOption("RAW").Do()
 	if err != nil {
