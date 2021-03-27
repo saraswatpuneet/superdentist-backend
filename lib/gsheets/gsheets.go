@@ -91,7 +91,7 @@ func (sc *Client) WritePatientoGSheet(patient contracts.Patient, sheetID string)
 	} else {
 		pValues = append(pValues, "Medical Insurances: Missing")
 	}
-	if patient.DueDate> 0: {
+	if patient.DueDate> 0 {
 		pValues = append(pValues, time.Unix(patient.DueDate*int64(time.Millisecond), 0))
 	} else {
 		pValues = append(pValues, time.Now())
