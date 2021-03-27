@@ -68,6 +68,19 @@ func (db DSPatient) AddPatientInformation(ctx context.Context, patient contracts
 	return pIDString, nil
 }
 
+// GetPatientInformation ....
+func (db DSPatient) GetAddPatientNotes(ctx context.Context, pIDString string) (map[string]interface{}, error) {
+	regularInterface := make(map[string]interface{})
+	pKey := datastore.NameKey("PatientNotes", pIDString, nil)
+	if global.Options.DSName != "" {
+		pKey.Namespace = global.Options.DSName
+	}
+	err := db.client.Get(ctx, pKey, &regularInterface)
+	if err != nil {
+		return regularInterface, err
+	}
+	return regularInterface, nil
+}
 // AddPatientNotes ....
 func (db DSPatient) AddPatientNotes(ctx context.Context, pID string, notes DynEnt) error {
 	notesID, _ := uuid.NewUUID()

@@ -163,6 +163,47 @@ func AddPatientNotes(c *gin.Context) {
 	})
 }
 
+// GetPatientNotes ....
+func GetPatientNotes(c *gin.Context) {
+	// Stage 1  Load the incoming request
+	log.Infof("Patient Stuff")
+	ctx := c.Request.Context()
+	// here is we have referral id
+	pID := c.Param("patientId")
+
+	ctx, span := trace.StartSpan(ctx, "Register incoming request for clinic")
+	defer span.End()
+	gproject := googleprojectlib.GetGoogleProjectID()
+
+	patientDB := datastoredb.NewPatientHandler()
+	err := patientDB.InitializeDataBase(ctx, gproject)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: fmt.Errorf("Bad data sent to backened"),
+			},
+		)
+		return
+	}
+	notes, err := patientDB.GetAddPatientNotes(ctx, pID)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: fmt.Errorf("Bad data sent to backened"),
+			},
+		)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		constants.RESPONSE_JSON_DATA:   notes,
+		constants.RESPONSDE_JSON_ERROR: nil,
+	})
+}
+
 // UploadPatientDocuments ....
 func UploadPatientDocuments(c *gin.Context) {
 	// Stage 1  Load the incoming request
