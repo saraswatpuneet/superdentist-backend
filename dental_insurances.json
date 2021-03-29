@@ -1,0 +1,2066 @@
+[
+  {
+    "id": "3M",
+    "name": "3M Dental Services",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ]
+  },
+  {
+    "id": "32_BJ",
+    "name": "32 BJ",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "AARP",
+    "name": "AARP Dental Insurance Plan",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "ADMINISTRATIVE_SERVICES_ONLY",
+    "name": "Administrative Services Only (ASO)",
+    "features": [
+      "eligibility",
+      "claim_submission"
+    ]
+  },
+  {
+    "id": "ADVANTICA",
+    "name": "Advantica",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ]
+  },
+  {
+    "id": "AETNA_DENTAL_PLANS",
+    "name": "Aetna Dental Plans",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "AFFINITY_HEALTH",
+    "name": "Affinity Health Plan",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "ALIERA",
+    "name": "Aliera Health Care",
+    "features": [
+      "eligibility",
+      "claim_submission"
+    ]
+  },
+  {
+    "id": "ALLEGIANCE",
+    "name": "Allegiance Benefit Plan Management, Inc.",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "ALTUS",
+    "name": "Altus Dental",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "AMERIGROUP_GA",
+    "name": "Amerigroup of Georgia",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "AMERIGROUP_WA_MEDICARE",
+    "name": "Amerigroup - WA Medicare",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "AMERITAS",
+    "name": "Ameritas Life Insurance Corp.",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "AMERITAS_NEW_YORK",
+    "name": "Ameritas Life Insurance Corp. of New York",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "ANTHEM",
+    "name": "Anthem",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "ANTHEM_BCBS_CALIFORNIA",
+    "name": "Blue Cross of California - Anthem",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "ANTHEM_BCBS_COLORADO",
+    "name": "Blue Cross Blue Shield of Colorado - Anthem",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "ANTHEM_BCBS_CONNECTICUT",
+    "name": "Blue Cross Blue Shield of Connecticut - Anthem",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "ANTHEM_BCBS_GEORGIA",
+    "name": "Blue Cross Blue Shield of Georgia - Anthem",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "ANTHEM_BCBS_INDIANA",
+    "name": "Blue Cross Blue Shield of Indiana - Anthem",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "ANTHEM_BCBS_KENTUCKY",
+    "name": "Blue Cross Blue Shield of Kentucky - Anthem",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "ANTHEM_BCBS_MAINE",
+    "name": "Blue Cross Blue Shield of Maine - Anthem",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "ANTHEM_BCBS_NEVADA",
+    "name": "Blue Cross Blue Shield of Nevada - Anthem",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "ANTHEM_BCBS_NEW_HAMPSHIRE",
+    "name": "Blue Cross Blue Shield of New Hampshire - Anthem",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "ANTHEM_BCBS_OHIO",
+    "name": "Blue Cross Blue Shield of Ohio - Anthem",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "ANTHEM_BCBS_VIRGINIA",
+    "name": "Blue Cross Blue Shield of Virginia - Anthem",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "ANTHEM_BCBS_WISCONSIN_FEP",
+    "name": "Blue Cross Blue Shield of Wisconsin FEP - Anthem",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "BCBS_ALABAMA",
+    "name": "Blue Cross Blue Shield of Alabama",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ]
+  },
+  {
+    "id": "BCBS_ARIZONA",
+    "name": "Blue Cross Blue Shield of Arizona",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "BCBS_ARKANSAS",
+    "name": "Blue Cross Blue Shield of Arkansas",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "BCBS_DELAWARE",
+    "name": "Blue Cross Blue Shield of Delaware (UCCI)",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "BCBS_ILLINOIS",
+    "name": "Blue Cross Blue Shield of Illinois",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "era"
+    ]
+  },
+  {
+    "id": "BCBS_KANSAS",
+    "name": "Blue Cross Blue Shield of Kansas",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ]
+  },
+  {
+    "id": "BCBS_KANSAS_CITY_MO",
+    "name": "Blue Cross Blue Shield of Kansas City (MO)",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ]
+  },
+  {
+    "id": "BCBS_LOUISIANA",
+    "name": "Blue Cross Blue Shield of Louisiana Advantage Plus Network",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "BCBS_MASSACHUSETTS",
+    "name": "Blue Cross Blue Shield of Massachusetts",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "BCBS_MICHIGAN",
+    "name": "Blue Cross Blue Shield of Michigan",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "era"
+    ]
+  },
+  {
+    "id": "BCBS_MONTANA",
+    "name": "Blue Cross Blue Shield of Montana",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ]
+  },
+  {
+    "id": "BCBS_ND",
+    "name": "Blue Cross Blue Shield of North Dakota",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "BCBS_NEW_MEXICO",
+    "name": "Blue Cross Blue Shield of New Mexico",
+    "features": [
+      "eligibility",
+      "claim_submission"
+    ]
+  },
+  {
+    "id": "BCBS_OKLAHOMA",
+    "name": "Blue Cross Blue Shield of Oklahoma",
+    "features": [
+      "eligibility",
+      "claim_submission"
+    ]
+  },
+  {
+    "id": "BCBS_OREGON",
+    "name": "Blue Cross Blue Shield of Oregon/ Regence",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "BCBS_RHODE_ISLAND",
+    "name": "Blue Cross Blue Shield of Rhode Island",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "BCBS_SOUTH_CAROLINA",
+    "name": "Blue Cross Blue Shield of South Carolina",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "BCBS_SOUTH_CAROLINA_FEP",
+    "name": "Blue Cross Blue Shield of South Carolina (FEP)",
+    "features": [
+      "eligibility",
+      "claim_submission"
+    ]
+  },
+  {
+    "id": "BCBS_TENNESSEE",
+    "name": "Blue Cross Blue Shield of Tennessee",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "BCBS_TEXAS",
+    "name": "Blue Cross Blue Shield of Texas",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "era"
+    ]
+  },
+  {
+    "id": "BCBS_WISCONSIN",
+    "name": "Blue Cross Blue Shield of Wisconsin",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ]
+  },
+  {
+    "id": "BCBS_WY",
+    "name": "Blue Cross Blue Shield of Wyoming",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "BCBS_WY_UCCI",
+    "name": "Blue Cross Blue Shield of Wyoming FEP (UCCI)",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "BLUE_ADVANTAGE",
+    "name": "Blue Advantage",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "BLUE_CARE",
+    "name": "Blue Care Family Plan",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status"
+    ]
+  },
+  {
+    "id": "BLUE_SHIELD_CALIFORNIA_FEDERAL",
+    "name": "Blue Shield of California Federal Plan",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ]
+  },
+  {
+    "id": "BLUE_SHIELD_IDAHO",
+    "name": "Blue Shield of Idaho / Regence",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "BLUE_SHIELD_WASHINGTON",
+    "name": "Blue Shield of Washington / Regence of Washington Health",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "CIGNA",
+    "name": "CIGNA",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "CIGNA_INTERNATIONAL",
+    "name": "CIGNA International",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "CIGNA_SELECT",
+    "name": "Cigna Select (Formerly known as Great West)",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "COMMUNITY_UNITED_HEALTHCARE",
+    "name": "United Healthcare Community Plan",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "era"
+    ]
+  },
+  {
+    "id": "COMPBENEFITS_AND_HUMANA_SPECIALTY_BENEFITS",
+    "name": "CompBenefits and Humana Specialty Benefits",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ]
+  },
+  {
+    "id": "CONNECTICUT_GENERAL_CIGNA",
+    "name": "Connecticut General (CIGNA)",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "COUNCIL_CARPENTERS_WELFARE_FUND",
+    "name": "Indiana/Kentucky/Ohio Regional Council of Carpenters Welfare Fund",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ]
+  },
+  {
+    "id": "DD_ALABAMA",
+    "name": "Delta Dental Ins. Co. - Alabama",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "DD_CALIFORNIA",
+    "name": "Delta Dental of California",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "DD_COLORADO",
+    "name": "Delta Dental of Colorado",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ]
+  },
+  {
+    "id": "DD_CONNECTICUT",
+    "name": "Delta Dental of Connecticut",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "DD_DELAWARE",
+    "name": "Delta Dental of Delaware",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "DD_FLORIDA",
+    "name": "Delta Dental Ins. Co. - Florida",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "DD_GEORGIA",
+    "name": "Delta Dental Ins. Co. - Georgia",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "DD_INDIANA",
+    "name": "Delta Dental of Indiana",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ]
+  },
+  {
+    "id": "DD_IOWA",
+    "name": "Delta Dental of Iowa - Government Programs",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ]
+  },
+  {
+    "id": "DD_KY",
+    "name": "Delta Dental of Kentucky",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ]
+  },
+  {
+    "id": "DD_LOUISIANA",
+    "name": "Delta Dental Ins. Co. - Louisiana",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "DD_MARYLAND",
+    "name": "Delta Dental of Maryland",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "DD_MICHIGAN",
+    "name": "Delta Dental of Michigan",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ]
+  },
+  {
+    "id": "DD_MINNESOTA",
+    "name": "Delta Dental of Minnesota",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ]
+  },
+  {
+    "id": "DD_MISSISSIPPI",
+    "name": "Delta Dental Ins. Co. - Mississippi",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "DD_MISSOURI",
+    "name": "Delta Dental of Missouri",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ]
+  },
+  {
+    "id": "DD_MONTANA",
+    "name": "Delta Dental Ins. Co. - Montana",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "DD_NEBRASKA",
+    "name": "Delta Dental of Nebraska",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ]
+  },
+  {
+    "id": "DD_NEVADA",
+    "name": "Delta Dental Ins. Co. - Nevada",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "DD_NEW_JERSEY",
+    "name": "Delta Dental of New Jersey",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "DD_NEW_MEXICO",
+    "name": "Delta Dental of New Mexico",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ]
+  },
+  {
+    "id": "DD_NEW_YORK",
+    "name": "Delta Dental of New York",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "DD_NORTH_CAROLINA",
+    "name": "Delta Dental of North Carolina",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ]
+  },
+  {
+    "id": "DD_NORTH_DAKOTA",
+    "name": "Delta Dental of North Dakota",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ]
+  },
+  {
+    "id": "DD_NORTHEAST",
+    "name": "Delta Dental (Northeast - ME, NH, and VT)",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "DD_OHIO",
+    "name": "Delta Dental of Ohio",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ]
+  },
+  {
+    "id": "DD_OKLAHOMA",
+    "name": "Delta Dental of Oklahoma",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "DD_PENNSYLVANIA",
+    "name": "Delta Dental of Pennsylvania",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "DD_PUERTO_RICO",
+    "name": "Delta Dental of Puerto Rico",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "DD_RHODE_ISLAND",
+    "name": "Delta Dental of Rhode Island",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "DD_TENNESSEE",
+    "name": "Delta Dental of Tennessee",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ]
+  },
+  {
+    "id": "DD_TEXAS",
+    "name": "Delta Dental Ins. Co. - Texas",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "DD_TRICARE",
+    "name": "Delta Dental - Tricare Retiree",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "DD_UTAH",
+    "name": "Delta Dental Ins. Co. - Utah",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "DD_VIRGINIA",
+    "name": "Delta Dental of Virginia",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "DD_WASHINGTON",
+    "name": "Delta Dental of Washington",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "DD_WASHINGTON_DC",
+    "name": "Delta Dental of Washington DC",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "DD_WEST_VIRGINIA",
+    "name": "Delta Dental of West Virginia",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "DDIC",
+    "name": "DDIC",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "DECARE",
+    "name": "Decare Dental Health International (DDHI)",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "DELTA_DENTAL_SOUTH_CAROLINA",
+    "name": "Delta Dental of South Carolina",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ]
+  },
+  {
+    "id": "DELTACARE_USA_ENCOUNTERS",
+    "name": "DeltaCare USA - Encounters",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "DENTAL_GUARD_PREFERRED",
+    "name": "Dental Guard Preferred",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "DENTAQUEST_GOVERNMENT",
+    "name": "DentaQuest - Government",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "era"
+    ]
+  },
+  {
+    "id": "DESERET_MUTUAL_BENEFIT_ADMINISTRATORS",
+    "name": "Deseret Mutual Benefit Administrators (DMBA)",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "DIRECT_DENTAL",
+    "name": "Direct Dental Administrators, Inc.",
+    "features": [
+      "eligibility",
+      "claim_submission"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "FIRST_RELIANCE_STANDARD",
+    "name": "First Reliance Standard",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "FLORIDA_COMBINED_LIFE",
+    "name": "Florida Combined Life (Dental)",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "GOLDEN_WEST",
+    "name": "Golden West Dental",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status"
+    ]
+  },
+  {
+    "id": "GUARDIAN",
+    "name": "Guardian Life Insurance Co. of America",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "HAWAII_DENTAL_SERVICE",
+    "name": "Hawaii Dental Service",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "HDS_MEDICAID",
+    "name": "HDS Medicaid",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "HEALTHCARE_HIGHWAYS",
+    "name": "Healthcare Highways",
+    "features": [
+      "eligibility",
+      "claim_submission"
+    ]
+  },
+  {
+    "id": "HEALTHCHOICE_OKLAHOMA",
+    "name": "HealthChoice Oklahoma",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "era"
+    ]
+  },
+  {
+    "id": "HEALTHSCOPE",
+    "name": "HealthScope Benefits",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "era"
+    ]
+  },
+  {
+    "id": "HEALTHSCOPE_ACPMO",
+    "name": "HealthScope Benefits/ACPMO",
+    "features": [
+      "eligibility",
+      "claim_submission"
+    ]
+  },
+  {
+    "id": "HEALTHSCOPE_EHC",
+    "name": "HealthScope Benefits / EHC Repricing",
+    "features": [
+      "eligibility",
+      "claim_submission"
+    ]
+  },
+  {
+    "id": "HEALTHSCOPE_MORRIS",
+    "name": "HealthScope Benefits/ Morris Associates",
+    "features": [
+      "eligibility",
+      "claim_submission"
+    ]
+  },
+  {
+    "id": "HEALTHSCOPE_TRIBUTE",
+    "name": "HealthScope Benefits (Tribute Health Plan)",
+    "features": [
+      "eligibility",
+      "claim_submission"
+    ]
+  },
+  {
+    "id": "HEALTHSOURCE_PROVIDENT",
+    "name": "Healthsource Provident",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "HERSHEY_HEALTHSMILE",
+    "name": "Hershey Healthsmile",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "HUMANA",
+    "name": "Humana",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "HUMANA_COMPBENEFITS_FEDERAL_PLAN_DENTAL",
+    "name": "Humana CompBenefits Federal Plan Dental",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ]
+  },
+  {
+    "id": "HUMANA_SPECIALTY_BENEFITS_FLORIDA_HEALTHY_KIDS_DENTAL",
+    "name": "Humana Specialty Benefits Florida Healthy Kids Dental",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status"
+    ]
+  },
+  {
+    "id": "HUMANA_SPECIALTY_BENEFITS_STATE_FLORIDA_DENTAL",
+    "name": "Humana Specialty Benefits State of Florida Dental",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status"
+    ]
+  },
+  {
+    "id": "INTERNATIONAL_BROTHERHOOD_ELECTRICAL_WORKERS",
+    "name": "International Brotherhood of Electrical Workers (IBEW), Local 38 Health & Welfare Fund",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ]
+  },
+  {
+    "id": "MANAGED_DENTALGUARD",
+    "name": "Managed DentalGuard",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "MCNA",
+    "name": "Managed Care of North America, Inc. (MCNA)",
+    "features": [
+      "eligibility",
+      "claim_submission"
+    ]
+  },
+  {
+    "id": "MEDICAID_ALABAMA",
+    "name": "Medicaid of Alabama",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "MEDICAID_CONNECTICUT",
+    "name": "Medicaid of Connecticut",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ]
+  },
+  {
+    "id": "MEDICAID_INDIANA",
+    "name": "Medicaid of Indiana",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ]
+  },
+  {
+    "id": "MEDICAID_MICHIGAN",
+    "name": "Medicaid of Michigan",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "era"
+    ]
+  },
+  {
+    "id": "MEDICAID_MINNESOTA",
+    "name": "Medicaid of Minnesota",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "era"
+    ]
+  },
+  {
+    "id": "MEDICAID_NEW_YORK",
+    "name": "Medicaid of New York",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ]
+  },
+  {
+    "id": "MEDICAID_TENNESSEE_BLUECARE",
+    "name": "Medicaid of Tennessee, BlueCare",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "MEDICAID_TEXAS_DENTAQUEST",
+    "name": "Medicaid of Texas - DentaQuest",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "MEDICAID_TX",
+    "name": "Medicaid of Texas - MCNA",
+    "features": [
+      "eligibility",
+      "claim_submission"
+    ]
+  },
+  {
+    "id": "MEDICAID_UTAH",
+    "name": "Medicaid of Utah",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "MEDICAID_VIRGINIA_HEALTHKEEPERS",
+    "name": "Medicaid of Virginia, HealthKeepers Plus",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "MEDICAID_WASHINGTON",
+    "name": "Medicaid of Washington",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ]
+  },
+  {
+    "id": "MEDICAID_WISCONSIN_DENTAQUEST",
+    "name": "Medicaid of Wisconsin - DentaQuest",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "MEDICAID_WISCONSIN_HUMANA_TDC",
+    "name": "Medicaid of Wisconsin, Humana / TDC",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "MEDICAID_WISCONSIN_PRIMECARE",
+    "name": "Medicaid of Wisconsin, PrimeCare",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "METLIFE",
+    "name": "MetLife",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "MINNESOTA_BLUE_CROSS_DENTAL_(UCCI)",
+    "name": "Minnesota Blue Cross Dental (UCCI)",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "MOLINA",
+    "name": "Molina",
+    "features": [
+      "eligibility",
+      "claim_submission"
+    ]
+  },
+  {
+    "id": "NDDS",
+    "name": "North Dakota Dental Service",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "OKLAHOMA_DRS",
+    "name": "Oklahoma DRS Doc",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "PHOENIX_HEALTH_DENTAQUEST",
+    "name": "Phoenix Health Plans (DentaQuest)",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "PHYSICIANS_MUTUAL",
+    "name": "Physicians Mutual (Dental)",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "PRIMECARE_WISCONSIN",
+    "name": "PrimeCare, Wisconsin State and Federal Employees and Medicaid",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "PRIMEWEST",
+    "name": "PrimeWest",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "PRINCIPAL",
+    "name": "Principal",
+    "features": [
+      "eligibility",
+      "claim_submission"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "PUBLIC_EMPLOYEE_HEALTH_PROGRAM",
+    "name": "Public Employee Health Program (PEHP)",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "REGENCE_BCBS_OREGON_OUT",
+    "name": "Regence Blue Cross/Blue Shield of Oregon (out of State Providers)",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "RELIANCE_STANDARD_LIFE",
+    "name": "Reliance Standard Life",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "SECURIAN_DENTAL",
+    "name": "Securian Dental",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "SECURIAN/PATRIOT_DENTAL",
+    "name": "Securian/Patriot Dental",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "SELECTHEALTH",
+    "name": "SelectHealth",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "SKYGEN",
+    "name": "Skygen USA",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "era"
+    ]
+  },
+  {
+    "id": "STANDARD_INSURANCE",
+    "name": "Standard Insurance",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "STANDARD_INSURANCE_NEW_YORK",
+    "name": "Standard Insurance Co. of New York",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "SUN_LIFE_FINANCIAL",
+    "name": "Sun Life Financial (United Concordia)",
+    "features": [
+      "eligibility",
+      "claim_submission"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "TRICARE_ACTIVE_RESERVISTS",
+    "name": "Tricare Active Reservists",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ]
+  },
+  {
+    "id": "TRICARE_DENTAL_PROGRAM",
+    "name": "TRICARE Dental Program (TDP)",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "TRICARE_RETIREE_DENTAL_PROGRAM",
+    "name": "Tricare Retiree Dental Program",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "TRIGON_BCBS_COLORADO",
+    "name": "Trigon - Blue Cross/Blue Shield of Colorado",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ]
+  },
+  {
+    "id": "TRIGON_BCBS_VIRGINIA",
+    "name": "Trigon - Blue Cross/Blue Shield of Virginia",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ]
+  },
+  {
+    "id": "UFT_WELFARE_FUND",
+    "name": "UFT Welfare Fund",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "UNICARE",
+    "name": "UniCare",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ]
+  },
+  {
+    "id": "UNITED_CONCORDIA",
+    "name": "United Concordia Companies, Inc.",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "UNITED_CONCORDIA_ENCOUNTERS",
+    "name": "United Concordia (Encounters)",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "UNITED_CONCORDIA_FEDERAL_EMPLOYEES_PROGRAM",
+    "name": "United Concordia - Federal Employees Program",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "UNITED_CONCORDIA_PA_BLUE_SHIELD",
+    "name": "United Concordia - Dental Plus - PA Blue Shield",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "UNITED_CONCORDIA_TRICARE_DENTAL_PLAN",
+    "name": "United Concordia - Tricare Dental Plan",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "claim_status",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "UNITED_HEALTHCARE",
+    "name": "United Healthcare",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  },
+  {
+    "id": "UNITED_HEALTHCARE_GLOBAL",
+    "name": "United Healthcare Global (Inside U.S.)",
+    "features": [
+      "eligibility",
+      "claim_submission",
+      "era"
+    ],
+    "eligibility_and_benefits_data": [
+      "benefits"
+    ]
+  }
+]

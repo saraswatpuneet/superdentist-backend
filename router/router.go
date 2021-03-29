@@ -105,6 +105,9 @@ func SDRouter() (*gin.Engine, error) {
 	insuranceGroup := version1.Group("/insurance")
 	{
 		insuranceGroup.GET("/practiceCodes", handlers.GetAllPracticeCodesCats)
+		insuranceGroup.GET("/dentalInsurance", handlers.GetAllDentalInsurances)
+		insuranceGroup.GET("/medicalInsurance", handlers.GetAllMedicalInsurances)
+
 	}
 	{
 		// All wesocket related routing goes here follow the pattern
