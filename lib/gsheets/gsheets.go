@@ -66,7 +66,7 @@ func (sc *Client) WritePatientoGSheet(patient contracts.Patient, sheetID string)
 	if len(patient.DentalInsurance) > 0 {
 		currentDI := "Dental Insurances: "
 		for _, dI := range patient.DentalInsurance {
-			currentDI += " Company: " + dI.Company + "MemberID: " + dI.MemberID
+			currentDI += " Company: " + dI.Company + " MemberID: " + dI.MemberID
 			if dI.Subscriber.FirstName != "" {
 				currentDI += " Subscriber Name: " + dI.Subscriber.FirstName + " " + dI.Subscriber.LastName
 				currentDI += " Subscriber DOB: " + dI.Subscriber.DOB.Month + "/" + dI.Subscriber.DOB.Month + "/" + dI.Subscriber.DOB.Year
@@ -80,7 +80,7 @@ func (sc *Client) WritePatientoGSheet(patient contracts.Patient, sheetID string)
 	if len(patient.MedicalInsurance) > 0 {
 		currentMI := " Medical Insurances: "
 		for _, dI := range patient.MedicalInsurance {
-			currentMI += "Company: " + dI.Company + "MemberID: " + dI.MemberID + "SSN: " + dI.SSN
+			currentMI += "Company: " + dI.Company + " MemberID: " + dI.MemberID + " SSN: " + dI.SSN
 			if dI.Subscriber.FirstName != "" {
 				currentMI += " Subscriber Name: " + dI.Subscriber.FirstName + " " + dI.Subscriber.LastName
 				currentMI += " Subscriber DOB: " + dI.Subscriber.DOB.Month + "/" + dI.Subscriber.DOB.Month + "/" + dI.Subscriber.DOB.Year
