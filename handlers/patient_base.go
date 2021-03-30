@@ -404,6 +404,9 @@ func registerPatientInDB(documentFiles *multipart.Form) error {
 		return err
 	}
 	patientFolder := key
+	googleSheet := gsheets.NewSheetsHandler()
+	googleSheet.InitializeSheetsClient(ctx, gproject)
+	googleSheet.WritePatientoGSheet(patientDetails, "12A93KjDeO4eVEUYwunzLZxKx4HkqjI19HrCDjhp85Q8")
 	if documentFiles != nil && documentFiles.File != nil && len(documentFiles.File) > 0 {
 		for _, fheaders := range documentFiles.File {
 			for _, hdr := range fheaders {
@@ -461,9 +464,6 @@ func registerPatientInDB(documentFiles *multipart.Form) error {
 			err = clientSMS.SendSMS(dsReferral.CommunicationPhone, dsReferral.PatientPhone, message2)
 		}
 	}
-	googleSheet := gsheets.NewSheetsHandler()
-	googleSheet.InitializeSheetsClient(ctx, gproject)
-	err = googleSheet.WritePatientoGSheet(patientDetails, "12A93KjDeO4eVEUYwunzLZxKx4HkqjI19HrCDjhp85Q8")
 	return nil
 }
 
