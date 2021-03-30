@@ -406,7 +406,10 @@ func registerPatientInDB(documentFiles *multipart.Form) error {
 	patientFolder := key
 	googleSheet := gsheets.NewSheetsHandler()
 	googleSheet.InitializeSheetsClient(ctx, gproject)
-	googleSheet.WritePatientoGSheet(patientDetails, "12A93KjDeO4eVEUYwunzLZxKx4HkqjI19HrCDjhp85Q8")
+	err = googleSheet.WritePatientoGSheet(patientDetails, "12A93KjDeO4eVEUYwunzLZxKx4HkqjI19HrCDjhp85Q8")
+	if err!= nil {
+		log.Errorf("Sheet write error: %v", err.Error())
+	}
 	if documentFiles != nil && documentFiles.File != nil && len(documentFiles.File) > 0 {
 		for _, fheaders := range documentFiles.File {
 			for _, hdr := range fheaders {
