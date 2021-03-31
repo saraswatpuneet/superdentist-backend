@@ -1086,6 +1086,101 @@ func GetClinicPracticeCodes(c *gin.Context) {
 	})
 }
 
+// AddClinicPracticeCodes ....
+func AddClinicPracticeCodesHistory(c *gin.Context) {
+	// Stage 1  Load the incoming request
+	log.Infof("Patient Stuff")
+	ctx := c.Request.Context()
+	// here is we have referral id
+	pID := c.Param("addressId")
+
+	ctx, span := trace.StartSpan(ctx, "Register incoming request for clinic")
+	defer span.End()
+	var clinicCodes []contracts.SelectedDentalCodes
+	if err := c.ShouldBindWith(&clinicCodes, binding.JSON); err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: fmt.Errorf("Bad data sent to backened"),
+			},
+		)
+		return
+	}
+	gproject := googleprojectlib.GetGoogleProjectID()
+
+	clinicDB := datastoredb.NewClinicMetaHandler()
+	err := clinicDB.InitializeDataBase(ctx, gproject)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: fmt.Errorf("Bad data sent to backened"),
+			},
+		)
+		return
+	}
+	var cPracticeCodes contracts.ClinicSpecificCodes
+	cPracticeCodes.PracticeCodes = clinicCodes
+	err = clinicDB.AddClinicPracticeCodesHistory(ctx, pID, cPracticeCodes)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: fmt.Errorf("Bad data sent to backened"),
+			},
+		)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		constants.RESPONSE_JSON_DATA:   "clinic code registration successful",
+		constants.RESPONSDE_JSON_ERROR: nil,
+	})
+}
+
+// GetClinicPracticeCodesHistory ....
+func GetClinicPracticeCodesHistory(c *gin.Context) {
+	// Stage 1  Load the incoming request
+	log.Infof("Patient Stuff")
+	ctx := c.Request.Context()
+	// here is we have referral id
+	pID := c.Param("addressId")
+
+	ctx, span := trace.StartSpan(ctx, "Register incoming request for clinic")
+	defer span.End()
+	gproject := googleprojectlib.GetGoogleProjectID()
+
+	clinicDB := datastoredb.NewClinicMetaHandler()
+	err := clinicDB.InitializeDataBase(ctx, gproject)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: fmt.Errorf("Bad data sent to backened"),
+			},
+		)
+		return
+	}
+	codeData, err := clinicDB.GetClinicPracticeCodesHistory(ctx, pID)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: fmt.Errorf("Bad data sent to backened"),
+			},
+		)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		constants.RESPONSE_JSON_DATA:   codeData.PracticeCodes,
+		constants.RESPONSDE_JSON_ERROR: nil,
+	})
+}
+
 // Find takes a slice and looks for an element in it. If found it will
 // return it's key, otherwise it will return -1 and a bool of false.
 func Find(slice []string, val string) bool {

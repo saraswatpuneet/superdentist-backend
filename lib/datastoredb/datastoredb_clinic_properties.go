@@ -482,6 +482,32 @@ func (db *DSClinicMeta) GetClinicPracticeCodes(ctx context.Context, clinicAddess
 	return &codeData, nil
 }
 
+// AddClinicPracticeCodes ......
+func (db *DSClinicMeta) AddClinicPracticeCodesHistory(ctx context.Context, clinicAddessID string, codeData contracts.ClinicSpecificCodes) error {
+	parentKey := datastore.NameKey("ClinicPracticeCodesHistory", clinicAddessID, nil)
+	if global.Options.DSName != "" {
+		parentKey.Namespace = global.Options.DSName
+	}
+	_, err := db.client.Put(ctx, parentKey, &codeData)
+	if err != nil {
+		return fmt.Errorf("cannot register clinic codes: %v", err)
+	}
+	return nil
+}
+
+// GetClinicPracticeCodes ......
+func (db *DSClinicMeta) GetClinicPracticeCodesHistory(ctx context.Context, clinicAddessID string) (*contracts.ClinicSpecificCodes, error) {
+	parentKey := datastore.NameKey("ClinicPracticeCodesHistory", clinicAddessID, nil)
+	if global.Options.DSName != "" {
+		parentKey.Namespace = global.Options.DSName
+	}
+	var codeData contracts.ClinicSpecificCodes
+	err := db.client.Get(ctx, parentKey, &codeData)
+	if err != nil {
+		return nil, fmt.Errorf("cannot get clinic codes: %v", err)
+	}
+	return &codeData, nil
+}
 // AddPMSAuthDetails ......
 func (db *DSClinicMeta) AddPMSAuthDetails(ctx context.Context, clinicEmailID string, clinicFBID string, pmsInformation contracts.PostPMSAuthDetails) error {
 	parentKey := datastore.NameKey("ClinicAdmin", clinicFBID, nil)

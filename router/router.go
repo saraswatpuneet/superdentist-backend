@@ -62,8 +62,8 @@ func SDRouter() (*gin.Engine, error) {
 		clinicGroup.POST("/removeFavorites/:addressId", handlers.RemoveFavoriteClinics)
 		clinicGroup.POST("/practiceCodes/:addressId", handlers.AddClinicPracticeCodes)
 		clinicGroup.GET("/practiceCodes/:addressId", handlers.GetClinicPracticeCodes)
-
-
+		clinicGroup.POST("/practiceCodesHistory/:addressId", handlers.AddClinicPracticeCodesHistory)
+		clinicGroup.GET("/practiceCodesHistory/:addressId", handlers.GetClinicPracticeCodesHistory)
 	}
 	referralGroup := version1.Group("/")
 	{
