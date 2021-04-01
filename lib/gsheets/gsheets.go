@@ -69,7 +69,7 @@ func (sc *Client) WritePatientoGSheet(patient contracts.Patient, sheetID string)
 			currentDI += " Company: " + dI.Company + " MemberID: " + dI.MemberID
 			if dI.Subscriber.FirstName != "" {
 				currentDI += " Subscriber Name: " + dI.Subscriber.FirstName + " " + dI.Subscriber.LastName
-				currentDI += " Subscriber DOB: " + dI.Subscriber.DOB.Month + "/" + dI.Subscriber.DOB.Month + "/" + dI.Subscriber.DOB.Year
+				currentDI += " Subscriber DOB: " + dI.Subscriber.DOB.Month + "/" + dI.Subscriber.DOB.Day + "/" + dI.Subscriber.DOB.Year
 
 			}
 		}
@@ -83,7 +83,7 @@ func (sc *Client) WritePatientoGSheet(patient contracts.Patient, sheetID string)
 			currentMI += "Company: " + dI.Company + " MemberID: " + dI.MemberID + " SSN: " + dI.SSN
 			if dI.Subscriber.FirstName != "" {
 				currentMI += " Subscriber Name: " + dI.Subscriber.FirstName + " " + dI.Subscriber.LastName
-				currentMI += " Subscriber DOB: " + dI.Subscriber.DOB.Month + "/" + dI.Subscriber.DOB.Month + "/" + dI.Subscriber.DOB.Year
+				currentMI += " Subscriber DOB: " + dI.Subscriber.DOB.Month + "/" + dI.Subscriber.DOB.Day + "/" + dI.Subscriber.DOB.Year
 
 			}
 		}
