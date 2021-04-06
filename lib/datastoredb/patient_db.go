@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/google/uuid"
 	"github.com/superdentist/superdentist-backend/contracts"
 	"github.com/superdentist/superdentist-backend/global"
 	"github.com/superdentist/superdentist-backend/lib/helpers"
@@ -55,7 +54,7 @@ func (db *DSPatient) InitializeDataBase(ctx context.Context, projectID string) e
 
 // AddPatientInformation ....
 func (db DSPatient) AddPatientInformation(ctx context.Context, patient contracts.Patient, pIDString string) (string, error) {
-	
+
 	pKey := datastore.NameKey("PatientDetails", pIDString, nil)
 	if global.Options.DSName != "" {
 		pKey.Namespace = global.Options.DSName
@@ -69,8 +68,9 @@ func (db DSPatient) AddPatientInformation(ctx context.Context, patient contracts
 }
 
 // GetPatientInformation ....
-func (db DSPatient) GetAddPatientNotes(ctx context.Context, pIDString string) (map[string]interface{}, error) {
-	regularInterface := make(map[string]interface{})
+func (db DSPatient) GetAddPatientNotes(ctx context.Context, pIDString string) (contracts.Notes, error) {
+	var regularInterface contracts.Notes
+
 	pKey := datastore.NameKey("PatientNotes", pIDString, nil)
 	if global.Options.DSName != "" {
 		pKey.Namespace = global.Options.DSName
@@ -81,11 +81,10 @@ func (db DSPatient) GetAddPatientNotes(ctx context.Context, pIDString string) (m
 	}
 	return regularInterface, nil
 }
+
 // AddPatientNotes ....
-func (db DSPatient) AddPatientNotes(ctx context.Context, pID string, notes DynEnt) error {
-	notesID, _ := uuid.NewUUID()
-	notesIDString := notesID.String()
-	pKey := datastore.NameKey("PatientNotes", notesIDString, nil)
+func (db DSPatient) AddPatientNotes(ctx context.Context, notes contracts.Notes) error {
+	pKey := datastore.NameKey("PatientNotes", notes.PatientID, nil)
 	if global.Options.DSName != "" {
 		pKey.Namespace = global.Options.DSName
 	}

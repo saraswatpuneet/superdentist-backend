@@ -76,9 +76,16 @@ type SelectedDentalCodes struct {
 	CodeIds []string `json:"codeIds"`
 }
 
-type ClinicSpecificCodes  struct {
-	PracticeCodes [] SelectedDentalCodes `json:"practiceCodes"`
+// Notes ...
+type Notes struct {
+	PatientID string `json:"patientId"`
+	Details   string `json:"details" datastore:",noindex"`
 }
+
+type ClinicSpecificCodes struct {
+	PracticeCodes []SelectedDentalCodes `json:"practiceCodes"`
+}
+
 // ChatBox ....
 type ChatBox string
 

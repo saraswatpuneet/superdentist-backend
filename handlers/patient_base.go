@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"mime/multipart"
 	"net/http"
 	"strconv"
@@ -16,7 +17,6 @@ import (
 	//"github.com/otiai10/gosseract/v2"
 
 	"github.com/gin-gonic/gin"
-	"github.com/gin-gonic/gin/binding"
 	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
 	"github.com/superdentist/superdentist-backend/constants"
@@ -118,21 +118,8 @@ func AddPatientNotes(c *gin.Context) {
 
 	ctx, span := trace.StartSpan(ctx, "Register incoming request for clinic")
 	defer span.End()
-	var patientNotes map[string]interface{}
-	if err := c.ShouldBindWith(&patientNotes, binding.JSON); err != nil {
-		c.AbortWithStatusJSON(
-			http.StatusBadRequest,
-			gin.H{
-				constants.RESPONSE_JSON_DATA:   nil,
-				constants.RESPONSDE_JSON_ERROR: fmt.Errorf("Bad data sent to backened"),
-			},
-		)
-		return
-	}
-	gproject := googleprojectlib.GetGoogleProjectID()
-
-	patientDB := datastoredb.NewPatientHandler()
-	err := patientDB.InitializeDataBase(ctx, gproject)
+	var patientNotes contracts.Notes
+	bodyBytes, err := ioutil.ReadAll(c.Request.Body)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusBadRequest,
@@ -143,8 +130,23 @@ func AddPatientNotes(c *gin.Context) {
 		)
 		return
 	}
-	patientNotes["PatientID"] = pID
-	err = patientDB.AddPatientNotes(ctx, pID, patientNotes)
+	patientNotes.Details = string(bodyBytes)
+	gproject := googleprojectlib.GetGoogleProjectID()
+
+	patientDB := datastoredb.NewPatientHandler()
+	err = patientDB.InitializeDataBase(ctx, gproject)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: fmt.Errorf("Bad data sent to backened"),
+			},
+		)
+		return
+	}
+	patientNotes.PatientID = pID
+	err = patientDB.AddPatientNotes(ctx, patientNotes)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusBadRequest,
@@ -197,7 +199,7 @@ func GetPatientNotes(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
-		constants.RESPONSE_JSON_DATA:   notes,
+		constants.RESPONSE_JSON_DATA:   notes.Details,
 		constants.RESPONSDE_JSON_ERROR: nil,
 	})
 }
