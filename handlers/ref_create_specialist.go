@@ -279,7 +279,7 @@ func processReferral(referralDetails contracts.ReferralDetails, gproject string,
 				case "jpg", "jpeg":
 					img, err := jpeg.Decode(bytes.NewReader(currentBytes))
 					if err == nil {
-						resized := resize.Resize(200, 200, img, resize.Lanczos3)
+						resized := resize.Thumbnail(200, 0, img, resize.Lanczos3)
 						buf := bytes.NewBuffer(nil)
 						err := jpeg.Encode(buf, resized, nil)
 						if err == nil {
@@ -289,7 +289,7 @@ func processReferral(referralDetails contracts.ReferralDetails, gproject string,
 				case "png":
 					img, err := png.Decode(bytes.NewReader(currentBytes))
 					if err == nil {
-						resized := resize.Resize(200, 200, img, resize.Lanczos3)
+						resized := resize.Resize(200, 0, img, resize.Lanczos3)
 						buf := bytes.NewBuffer(nil)
 						err := jpeg.Encode(buf, resized, nil)
 						if err == nil {

@@ -163,6 +163,48 @@ func AddPatientNotes(c *gin.Context) {
 	})
 }
 
+// UpdatePatientStatus ....
+func UpdatePatientStatus(c *gin.Context) {
+	// Stage 1  Load the incoming request
+	log.Infof("Patient Stuff")
+	ctx := c.Request.Context()
+	// here is we have referral id
+	pID := c.Param("patientId")
+	status := c.Query("status")
+
+	ctx, span := trace.StartSpan(ctx, "Updating Patient Status")
+	defer span.End()
+	gproject := googleprojectlib.GetGoogleProjectID()
+
+	patientDB := datastoredb.NewPatientHandler()
+	err := patientDB.InitializeDataBase(ctx, gproject)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: fmt.Errorf("Bad data sent to backened"),
+			},
+		)
+		return
+	}
+	err = patientDB.UpdatePatientStatus(ctx, pID, status)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: fmt.Errorf("Bad data sent to backened"),
+			},
+		)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		constants.RESPONSE_JSON_DATA:   "patient status update successful",
+		constants.RESPONSDE_JSON_ERROR: nil,
+	})
+}
+
 // GetPatientNotes ....
 func GetPatientNotes(c *gin.Context) {
 	// Stage 1  Load the incoming request

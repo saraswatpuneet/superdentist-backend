@@ -97,6 +97,7 @@ func SDRouter() (*gin.Engine, error) {
 		patientGroup.POST("/registration", handlers.RegisterPatientInformation)
 		patientGroup.GET("/list/:addressId", handlers.GetAllPatientsForClinic)
 		patientGroup.POST("/notes/:patientId", handlers.AddPatientNotes)
+		patientGroup.POST("/status/:patientId", handlers.AddPatientNotes)
 		patientGroup.GET("/notes/:patientId", handlers.GetPatientNotes)
 		patientGroup.POST("/files/:patientId", handlers.UploadPatientDocuments)
 		patientGroup.POST("/processSheet", handlers.ProcessPatientSpreadSheet)

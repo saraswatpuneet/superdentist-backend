@@ -131,3 +131,35 @@ func (db DSPatient) GetPatientByAddressID(ctx context.Context, addressID string)
 	}
 	return patients
 }
+
+// GetPatientByID ...
+func (db DSPatient) GetPatientByID(ctx context.Context, pID string) (*contracts.Patient, *datastore.Key, error) {
+	patients := make([]contracts.Patient, 0)
+
+	qP := datastore.NewQuery("PatientDetails")
+	qP = qP.Filter("PatientID =", pID)
+	if global.Options.DSName != "" {
+		qP = qP.Namespace(global.Options.DSName)
+	}
+	keys, err := db.client.GetAll(ctx, qP, &patients)
+	if err != nil {
+		return nil, nil, err
+	}
+	patient := patients[0]
+	key := keys[0]
+	return &patient, key, nil
+}
+
+// UpdatePatientStatus
+func (db DSPatient) UpdatePatientStatus(ctx context.Context, pID string, status string) error {
+	patient, _, err := db.GetPatientByID(ctx, pID)
+	if err != nil {
+		return err
+	}
+	patient.Status = status
+	_, err = db.AddPatientInformation(ctx, *patient, pID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
