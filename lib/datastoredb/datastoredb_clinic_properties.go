@@ -83,6 +83,7 @@ func (db DSClinicMeta) AddPhysicalAddessressToClinic(ctx context.Context, clinic
 	if global.Options.DSName != "" {
 		primaryKey.Namespace = global.Options.DSName
 	}
+	var existingClinic *contracts.PhysicalClinicMapLocation
 	returnedAddress := make([]contracts.PhysicalClinicsRegistration, 0)
 	for _, address := range addresses {
 		addrID, err := guuid.NewUUID()
@@ -90,35 +91,38 @@ func (db DSClinicMeta) AddPhysicalAddessressToClinic(ctx context.Context, clinic
 		if err != nil {
 			return nil, fmt.Errorf("cannot register clinic with sd: %v", err)
 		}
-		splitAddress := strings.Split(address.Address, ",")[0]
-
-		gmapAddress, err := mapsClient.FindPlacesFromText(address.Name + " " + splitAddress)
+		placeID := ""
+		phone := ""
 		location := contracts.ClinicLocation{
 			Lat:  0.0,
 			Long: 0.0,
 		}
-		placeID := ""
-		phone := ""
-		if err == nil && len(gmapAddress.Results) > 0 {
-			for idx, gAddress := range gmapAddress.Results {
-				splitG := strings.Split(gAddress.FormattedAddress, ",")[0]
-				splitA := strings.Split(address.Address, ",")[0]
-				if splitG == splitA {
-					currentLocation := gmapAddress.Results[idx]
-					location.Lat = currentLocation.Geometry.Location.Lat
-					location.Long = currentLocation.Geometry.Location.Lng
-					placeID = currentLocation.PlaceID
-					gPlace, _ := mapsClient.FindPlaceFromID(placeID)
-					if gPlace != nil {
-						phone = gPlace.FormattedPhoneNumber
+		if strings.ToLower(address.Type) == "agent" {
+			splitAddress := strings.Split(address.Address, ",")[0]
+
+			gmapAddress, err := mapsClient.FindPlacesFromText(address.Name + " " + splitAddress)
+
+			if err == nil && len(gmapAddress.Results) > 0 {
+				for idx, gAddress := range gmapAddress.Results {
+					splitG := strings.Split(gAddress.FormattedAddress, ",")[0]
+					splitA := strings.Split(address.Address, ",")[0]
+					if splitG == splitA {
+						currentLocation := gmapAddress.Results[idx]
+						location.Lat = currentLocation.Geometry.Location.Lat
+						location.Long = currentLocation.Geometry.Location.Lng
+						placeID = currentLocation.PlaceID
+						gPlace, _ := mapsClient.FindPlaceFromID(placeID)
+						if gPlace != nil {
+							phone = gPlace.FormattedPhoneNumber
+						}
+						break
 					}
-					break
 				}
 			}
-		}
-		existingClinic, err := db.GetSingleClinicViaPlace(ctx, placeID)
-		if err == nil && existingClinic != nil && existingClinic.AddressID != "" {
-			address.AddressID = existingClinic.AddressID
+			existingClinic, err := db.GetSingleClinicViaPlace(ctx, placeID)
+			if err == nil && existingClinic != nil && existingClinic.AddressID != "" {
+				address.AddressID = existingClinic.AddressID
+			}
 		}
 		addressKey := datastore.NameKey("ClinicAddress", address.AddressID, primaryKey)
 		if global.Options.DSName != "" {
@@ -139,7 +143,9 @@ func (db DSClinicMeta) AddPhysicalAddessressToClinic(ctx context.Context, clinic
 			autoEmail := strings.Replace(address.AddressID, "-", "", -1) + "@clinic.superdentist.io"
 			currentLocWithMap.AutoEmail = autoEmail
 		}
-		currentLocWithMap.PhoneNumber = phone
+		if phone != "" {
+			currentLocWithMap.PhoneNumber = phone
+		}
 		_, err = db.client.Put(ctx, addressKey, &currentLocWithMap)
 		if err != nil {
 			return nil, fmt.Errorf("cannot register clinic with sd: %v", err)
@@ -508,6 +514,7 @@ func (db *DSClinicMeta) GetClinicPracticeCodesHistory(ctx context.Context, clini
 	}
 	return &codeData, nil
 }
+
 // AddPMSAuthDetails ......
 func (db *DSClinicMeta) AddPMSAuthDetails(ctx context.Context, clinicEmailID string, clinicFBID string, pmsInformation contracts.PostPMSAuthDetails) error {
 	parentKey := datastore.NameKey("ClinicAdmin", clinicFBID, nil)
