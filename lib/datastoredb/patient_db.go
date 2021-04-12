@@ -151,7 +151,7 @@ func (db DSPatient) GetPatientByID(ctx context.Context, pID string) (*contracts.
 }
 
 // UpdatePatientStatus
-func (db DSPatient) UpdatePatientStatus(ctx context.Context, pID string, status string) error {
+func (db DSPatient) UpdatePatientStatus(ctx context.Context, pID string, status contracts.PatientStatus) error {
 	patient, _, err := db.GetPatientByID(ctx, pID)
 	if err != nil {
 		return err
