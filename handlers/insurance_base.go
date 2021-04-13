@@ -59,7 +59,7 @@ func GetAllDentalInsurances(c *gin.Context) {
 	ctx := c.Request.Context()
 	ctx, span := trace.StartSpan(ctx, "Return all insurance codes")
 	defer span.End()
-	jsonFile, err := os.Open("dental_insurances.json")
+	jsonFile, err := os.Open("./insurance/dental_insurances.json")
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
