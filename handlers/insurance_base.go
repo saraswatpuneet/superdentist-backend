@@ -59,7 +59,7 @@ func GetAllDentalInsurances(c *gin.Context) {
 	ctx := c.Request.Context()
 	ctx, span := trace.StartSpan(ctx, "Return all insurance codes")
 	defer span.End()
-	jsonFile, err := os.Open("./insurance/dental_insurances.json")
+	jsonFile, err := os.Open("dental_insurances.json")
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
@@ -71,7 +71,7 @@ func GetAllDentalInsurances(c *gin.Context) {
 		return
 	}
 	jsonBytes, _ := ioutil.ReadAll(jsonFile)
-	codeMapping := make(map[string]interface{}, 0)
+	codeMapping := make([]map[string]interface{}, 0)
 	err = json.Unmarshal(jsonBytes, &codeMapping)
 	if err != nil {
 		c.AbortWithStatusJSON(
@@ -108,7 +108,7 @@ func GetAllMedicalInsurances(c *gin.Context) {
 		return
 	}
 	jsonBytes, _ := ioutil.ReadAll(jsonFile)
-	codeMapping := make(map[string]interface{}, 0)
+	codeMapping := make([]map[string]interface{}, 0)
 	err = json.Unmarshal(jsonBytes, &codeMapping)
 	if err != nil {
 		c.AbortWithStatusJSON(
