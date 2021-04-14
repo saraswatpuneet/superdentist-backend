@@ -30,6 +30,7 @@ type PatientDentalInsurance struct {
 	Company    string     `json:"company"`
 	MemberID   string     `json:"memberId"`
 	Subscriber Subscriber `json:"subscriber"`
+	CompanyID  string     `json:"companyId"`
 }
 
 // PatientMedicalInsurance ....
