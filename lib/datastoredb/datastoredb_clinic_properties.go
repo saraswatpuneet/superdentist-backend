@@ -310,8 +310,20 @@ func (db DSClinicMeta) DeleteClinicJoinURL(ctx context.Context, places []string)
 }
 
 // UpdatePhysicalAddessressToClinic ....
-func (db DSClinicMeta) UpdatePhysicalAddessressToClinic(ctx context.Context, clinicFBID string, clinicUpdated contracts.PhysicalClinicMapLocation, key *datastore.Key) error {
-	_, err := db.client.Put(ctx, key, &clinicUpdated)
+func (db DSClinicMeta) UpdatePhysicalAddessressToClinic(ctx context.Context, clinicFBID string, clinicUpdated contracts.PhysicalClinicMapLocation) error {
+	parentKey := datastore.NameKey("ClinicAdmin", clinicFBID, nil)
+	if global.Options.DSName != "" {
+		parentKey.Namespace = global.Options.DSName
+	}
+	primaryKey := datastore.NameKey("ClinicAdmin", clinicUpdated.EmailAddress, parentKey)
+	if global.Options.DSName != "" {
+		primaryKey.Namespace = global.Options.DSName
+	}
+	addressKey := datastore.NameKey("ClinicAddress", clinicUpdated.AddressID, primaryKey)
+	if global.Options.DSName != "" {
+		addressKey.Namespace = global.Options.DSName
+	}
+	_, err := db.client.Put(ctx, addressKey, &clinicUpdated)
 	if err != nil {
 		return fmt.Errorf("update clinic failed: %v", err)
 	}
