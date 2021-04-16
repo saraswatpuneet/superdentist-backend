@@ -97,7 +97,7 @@ func (db DSClinicMeta) AddPhysicalAddessressToClinic(ctx context.Context, clinic
 			Lat:  0.0,
 			Long: 0.0,
 		}
-		if strings.ToLower(address.Type) == "agent" {
+		if !strings.Contains(strings.ToLower(address.Type), "agent") {
 			splitAddress := strings.Split(address.Address, ",")[0]
 
 			gmapAddress, err := mapsClient.FindPlacesFromText(address.Name + " " + splitAddress)
