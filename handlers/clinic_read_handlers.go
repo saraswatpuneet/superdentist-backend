@@ -444,7 +444,7 @@ func AddFavoriteClinics(c *gin.Context) {
 		)
 		return
 	}
-	currentClinic,_,  err := clinicMetaDB.GetSingleClinicViaIDKey(ctx, addressID)
+	currentClinic, _, err := clinicMetaDB.GetSingleClinicViaIDKey(ctx, addressID)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
@@ -456,14 +456,15 @@ func AddFavoriteClinics(c *gin.Context) {
 		return
 	}
 	updatedFavorites := make([]string, 0)
-	for _, favID := range currentClinic.Favorites {
-		exists := Find(currentClinic.Favorites, favID)
-		if !exists {
-			updatedFavorites = append(updatedFavorites, favID)
-		}
-	}
-	if len(currentClinic.Favorites) == 0{
+	if len(currentClinic.Favorites) == 0 {
 		updatedFavorites = favoriteAdd.PlaceIDs
+	} else {
+		for _, favID := range favoriteAdd.PlaceIDs {
+			exists := Find(currentClinic.Favorites, favID)
+			if !exists {
+				updatedFavorites = append(updatedFavorites, favID)
+			}
+		}
 	}
 	currentClinic.Favorites = append(currentClinic.Favorites, updatedFavorites...)
 	err = clinicMetaDB.UpdatePhysicalAddessressToClinic(ctx, userID, *currentClinic)
@@ -950,7 +951,7 @@ func RemoveFavoriteClinics(c *gin.Context) {
 		)
 		return
 	}
-	currentClinic,_,  err := clinicMetaDB.GetSingleClinicViaIDKey(ctx, addressID)
+	currentClinic, _, err := clinicMetaDB.GetSingleClinicViaIDKey(ctx, addressID)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
