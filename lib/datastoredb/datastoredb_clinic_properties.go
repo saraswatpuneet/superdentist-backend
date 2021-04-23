@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"log"
 	"os"
 	"strings"
 
@@ -16,6 +17,7 @@ import (
 	"github.com/superdentist/superdentist-backend/lib/geohash"
 	"github.com/superdentist/superdentist-backend/lib/gmaps"
 	"github.com/superdentist/superdentist-backend/lib/helpers"
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 )
 
@@ -729,6 +731,37 @@ func (db *DSClinicMeta) GetAllClinicsMeta(ctx context.Context) ([]contracts.Phys
 		return nil, fmt.Errorf("clinic with given address id not found: %v", err)
 	}
 	return returnedAddresses, nil
+}
+
+// GetAllClinicsMetaPaginate ....
+func (db *DSClinicMeta) GetAllClinicsMetaPaginate(ctx context.Context, pageSize int, cursor string) ([]contracts.PhysicalClinicMapLocation, string, error) {
+	returnedAddresses := make([]contracts.PhysicalClinicMapLocation, 0)
+	qP := datastore.NewQuery("ClinicAddress").Limit(pageSize)
+	if global.Options.DSName != "" {
+		qP = qP.Namespace(global.Options.DSName)
+	}
+	if cursor != "" {
+		cursor, err := datastore.DecodeCursor(cursor)
+		if err != nil {
+			log.Fatalf("Bad cursor %q: %v", cursor, err)
+		}
+		qP = qP.Start(cursor)
+	}
+	iteratorClinics := db.client.Run(ctx, qP)
+	var address contracts.PhysicalClinicMapLocation
+	_, err := iteratorClinics.Next(&address)
+	for err == nil {
+		returnedAddresses = append(returnedAddresses, address)
+		_, err = iteratorClinics.Next(&address)
+	}
+	if err != iterator.Done {
+		return nil, "", err
+	}
+	nextCursor, err := iteratorClinics.Cursor()
+	if err != nil {
+		return returnedAddresses, "", err
+	}
+	return returnedAddresses, nextCursor.String(), nil
 }
 
 // GetAllClinicsByAutoEmail ....

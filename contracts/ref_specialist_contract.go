@@ -77,6 +77,12 @@ type Patient struct {
 	CreationDate     string                    `json:"creationDate"`
 }
 
+// PatientList ....
+type PatientList struct {
+	Patients []Patient `json:"patients"`
+	Cursor   string    `json:"cursor"`
+}
+
 // SelectedDentalCodes ....
 type SelectedDentalCodes struct {
 	GroupID string   `json:"groupId"`
@@ -186,6 +192,13 @@ type DSReferral struct {
 	IsQR               bool      `json:"isQR" valid:"required"`
 	SummaryText        string    `datastore:"SummaryText,noindex"`
 	IsNew              bool      `json:"-"`
+}
+
+// AllReferrals ....
+
+type AllReferrals struct {
+	Referralls []DSReferral `json:"referrals"`
+	Cursor     string       `json:"cursor"`
 }
 
 // SMS is returned after a text/sms message is posted to Twilio

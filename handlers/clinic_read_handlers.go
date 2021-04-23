@@ -84,6 +84,11 @@ func GetPhysicalClinics(c *gin.Context) {
 func GetAllClinicNameAddressID(c *gin.Context) {
 	log.Infof("Get all clinics associated with admin")
 	ctx := c.Request.Context()
+	pageSize, err := strconv.Atoi(c.Query("pageSize"))
+	if err != nil {
+		pageSize = 0
+	}
+	cursor := c.Query("cursor")
 	_, _, gproject, err := getUserDetails(ctx, c.Request)
 	if err != nil {
 		c.AbortWithStatusJSON(
@@ -109,21 +114,42 @@ func GetAllClinicNameAddressID(c *gin.Context) {
 		)
 		return
 	}
-	registeredClinics, err := clinicMetaDB.GetAllClinicsMeta(ctx)
-	if err != nil {
-		c.AbortWithStatusJSON(
-			http.StatusInternalServerError,
-			gin.H{
-				constants.RESPONSE_JSON_DATA:   nil,
-				constants.RESPONSDE_JSON_ERROR: err.Error(),
-			},
-		)
-		return
+	if pageSize == 0 {
+		registeredClinics, err := clinicMetaDB.GetAllClinicsMeta(ctx)
+		if err != nil {
+			c.AbortWithStatusJSON(
+				http.StatusInternalServerError,
+				gin.H{
+					constants.RESPONSE_JSON_DATA:   nil,
+					constants.RESPONSDE_JSON_ERROR: err.Error(),
+				},
+			)
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{
+			constants.RESPONSE_JSON_DATA:   registeredClinics,
+			constants.RESPONSDE_JSON_ERROR: nil,
+		})
+	} else {
+		registeredClinics, cursor, err := clinicMetaDB.GetAllClinicsMetaPaginate(ctx, pageSize, cursor)
+		if err != nil {
+			c.AbortWithStatusJSON(
+				http.StatusInternalServerError,
+				gin.H{
+					constants.RESPONSE_JSON_DATA:   nil,
+					constants.RESPONSDE_JSON_ERROR: err.Error(),
+				},
+			)
+			return
+		}
+		var results contracts.ClinicList
+		results.Clinics = registeredClinics
+		results.Cursor = cursor
+		c.JSON(http.StatusOK, gin.H{
+			constants.RESPONSE_JSON_DATA:   results,
+			constants.RESPONSDE_JSON_ERROR: nil,
+		})
 	}
-	c.JSON(http.StatusOK, gin.H{
-		constants.RESPONSE_JSON_DATA:   registeredClinics,
-		constants.RESPONSDE_JSON_ERROR: nil,
-	})
 	clinicMetaDB.Close()
 }
 
@@ -708,6 +734,7 @@ func GetFavoriteClinics(c *gin.Context) {
 	ctx, span := trace.StartSpan(ctx, "Get all clinics favorited by current clinic")
 	defer span.End()
 	addressID := c.Param("addressId")
+
 	if addressID == "" {
 		c.AbortWithStatusJSON(
 			http.StatusBadRequest,

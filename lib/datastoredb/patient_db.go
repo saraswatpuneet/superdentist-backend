@@ -3,7 +3,9 @@ package datastoredb
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
+	"strings"
 
 	"github.com/superdentist/superdentist-backend/contracts"
 	"github.com/superdentist/superdentist-backend/global"
@@ -101,7 +103,6 @@ func (db DSPatient) GetPatientByAddressID(ctx context.Context, addressID string)
 	patients1 := make([]contracts.Patient, 0)
 	patients2 := make([]contracts.Patient, 0)
 	patients3 := make([]contracts.Patient, 0)
-
 	qP := datastore.NewQuery("PatientDetails")
 	qP = qP.Filter("GD =", addressID)
 	if global.Options.DSName != "" {
@@ -130,6 +131,90 @@ func (db DSPatient) GetPatientByAddressID(ctx context.Context, addressID string)
 		patients = append(patients, patients3...)
 	}
 	return patients
+}
+
+// GetPatientByAddressIDPaginate ...
+func (db DSPatient) GetPatientByAddressIDPaginate(ctx context.Context, addressID string, pageSize int, cursor string) ([]contracts.Patient, string) {
+	patients := make([]contracts.Patient, 0)
+	cursors := strings.Split(cursor, "cursor_")
+	mainCursor := ""
+	qP := datastore.NewQuery("PatientDetails").Limit(pageSize)
+	qP = qP.Filter("GD =", addressID)
+	if global.Options.DSName != "" {
+		qP = qP.Namespace(global.Options.DSName)
+	}
+	cursor1 := cursors[0]
+	if cursor1 != "" {
+		cursor, err := datastore.DecodeCursor(cursor1)
+		if err != nil {
+			log.Fatalf("Bad cursor %q: %v", cursor, err)
+		}
+		qP = qP.Start(cursor)
+	}
+	iteratorPatient := db.client.Run(ctx, qP)
+	var onePatient contracts.Patient
+	_, err := iteratorPatient.Next(&onePatient)
+	for err == nil {
+		patients = append(patients, onePatient)
+		_, err = iteratorPatient.Next(&onePatient)
+	}
+	nextCursor, err := iteratorPatient.Cursor()
+	if err != nil {
+		mainCursor += "cursor_" + ""
+	} else {
+		mainCursor += "cursor_" + nextCursor.String()
+	}
+	qP = datastore.NewQuery("PatientDetails").Limit(pageSize)
+	qP = qP.Filter("SP =", addressID)
+	if global.Options.DSName != "" {
+		qP = qP.Namespace(global.Options.DSName)
+	}
+	cursor2 := cursors[1]
+	if cursor2 != "" {
+		cursor, err := datastore.DecodeCursor(cursor2)
+		if err != nil {
+			log.Fatalf("Bad cursor %q: %v", cursor, err)
+		}
+		qP = qP.Start(cursor)
+	}
+	iteratorPatient = db.client.Run(ctx, qP)
+	_, err = iteratorPatient.Next(&onePatient)
+	for err == nil {
+		patients = append(patients, onePatient)
+		_, err = iteratorPatient.Next(&onePatient)
+	}
+	nextCursor, err = iteratorPatient.Cursor()
+	if err != nil {
+		mainCursor += "cursor_" + ""
+	} else {
+		mainCursor += "cursor_" + nextCursor.String()
+	}
+	qP = datastore.NewQuery("PatientDetails").Limit(pageSize)
+	qP = qP.Filter("AddressID =", addressID)
+	if global.Options.DSName != "" {
+		qP = qP.Namespace(global.Options.DSName)
+	}
+	cursor3 := cursors[2]
+	if cursor3 != "" {
+		cursor, err := datastore.DecodeCursor(cursor3)
+		if err != nil {
+			log.Fatalf("Bad cursor %q: %v", cursor, err)
+		}
+		qP = qP.Start(cursor)
+	}
+	iteratorPatient = db.client.Run(ctx, qP)
+	_, err = iteratorPatient.Next(&onePatient)
+	for err == nil {
+		patients = append(patients, onePatient)
+		_, err = iteratorPatient.Next(&onePatient)
+	}
+	nextCursor, err = iteratorPatient.Cursor()
+	if err != nil {
+		mainCursor += "cursor_" + ""
+	} else {
+		mainCursor += "cursor_" + nextCursor.String()
+	}
+	return patients, mainCursor
 }
 
 // GetPatientByID ...

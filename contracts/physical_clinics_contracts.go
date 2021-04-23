@@ -48,6 +48,10 @@ type PhysicalClinicMapLocation struct {
 	CustomText   string   `json:"-"`
 	Domain       []string `json:"-"`
 }
+type ClinicList struct {
+	Clinics [] PhysicalClinicMapLocation `json:"clinics"`
+	Cursor string `json:"cursor"`
+}
 
 // QRStoreSchema ....
 type QRStoreSchema struct {

@@ -91,7 +91,12 @@ func GetAllPatientsForClinic(c *gin.Context) {
 	// here is we have referral id
 	addressID := c.Param("addressId")
 	patientDB := datastoredb.NewPatientHandler()
-	err := patientDB.InitializeDataBase(ctx, gproject)
+	pageSize, err := strconv.Atoi(c.Query("pageSize"))
+	if err != nil {
+		pageSize = 0
+	}
+	cursor := c.Query("cursor")
+	err = patientDB.InitializeDataBase(ctx, gproject)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
@@ -102,11 +107,22 @@ func GetAllPatientsForClinic(c *gin.Context) {
 		)
 		return
 	}
-	patients := patientDB.GetPatientByAddressID(ctx, addressID)
-	c.JSON(http.StatusOK, gin.H{
-		constants.RESPONSE_JSON_DATA:   patients,
-		constants.RESPONSDE_JSON_ERROR: nil,
-	})
+	if pageSize == 0 {
+		patients := patientDB.GetPatientByAddressID(ctx, addressID)
+		c.JSON(http.StatusOK, gin.H{
+			constants.RESPONSE_JSON_DATA:   patients,
+			constants.RESPONSDE_JSON_ERROR: nil,
+		})
+	} else {
+		patients, cursor := patientDB.GetPatientByAddressIDPaginate(ctx, addressID, pageSize, cursor)
+		var patientsList contracts.PatientList
+		patientsList.Patients = patients
+		patientsList.Cursor = cursor
+		c.JSON(http.StatusOK, gin.H{
+			constants.RESPONSE_JSON_DATA:   patients,
+			constants.RESPONSDE_JSON_ERROR: nil,
+		})
+	}
 }
 
 // AddPatientNotes ....

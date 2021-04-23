@@ -9,6 +9,7 @@ import (
 	"github.com/superdentist/superdentist-backend/contracts"
 	"github.com/superdentist/superdentist-backend/global"
 	"github.com/superdentist/superdentist-backend/lib/helpers"
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 
 	"cloud.google.com/go/datastore"
@@ -187,6 +188,40 @@ func (db *DSReferral) GetAllReferralsGD(ctx context.Context, addressID string) (
 	return returnedReferrals, nil
 }
 
+// GetAllReferralsGDPaginate .....
+func (db *DSReferral) GetAllReferralsGDPaginate(ctx context.Context, addressID string, pageSize int, cursor string) ([]contracts.DSReferral, string, error) {
+	returnedReferrals := make([]contracts.DSReferral, 0)
+	qP := datastore.NewQuery("ClinicReferrals").Limit(pageSize)
+	if global.Options.DSName != "" {
+		qP = qP.Namespace(global.Options.DSName)
+	}
+	if cursor != "" {
+		cursor, err := datastore.DecodeCursor(cursor)
+		if err != nil {
+			return returnedReferrals, "", err
+		}
+		qP = qP.Start(cursor)
+	}
+	if addressID != "" {
+		qP = qP.Filter("FromAddressID =", addressID).Filter("IsDirty =", false)
+	}
+	iteratorClinics := db.client.Run(ctx, qP)
+	var referral contracts.DSReferral
+	_, err := iteratorClinics.Next(&referral)
+	for err == nil {
+		returnedReferrals = append(returnedReferrals, referral)
+		_, err = iteratorClinics.Next(&referral)
+	}
+	if err != iterator.Done {
+		return returnedReferrals, "", err
+	}
+	nextCursor, err := iteratorClinics.Cursor()
+	if err != nil {
+		return returnedReferrals, "", err
+	}
+	return returnedReferrals, nextCursor.String(), nil
+}
+
 // GetAllTreamentSummaryGD .....
 func (db *DSReferral) GetAllTreamentSummaryGD(ctx context.Context, placeID string) ([]contracts.DSReferral, error) {
 	returnedReferrals := make([]contracts.DSReferral, 0)
@@ -208,17 +243,52 @@ func (db *DSReferral) GetAllTreamentSummaryGD(ctx context.Context, placeID strin
 func (db *DSReferral) GetAllReferralsSP(ctx context.Context, addressID string, clinicName string) ([]contracts.DSReferral, error) {
 	returnedReferrals := make([]contracts.DSReferral, 0)
 	qP := datastore.NewQuery("ClinicReferrals")
-	if addressID != "" {
-		qP = qP.Filter("ToPlaceID =", addressID).Filter("IsDirty =", false)
-	}
 	if global.Options.DSName != "" {
 		qP = qP.Namespace(global.Options.DSName)
+	}
+	if addressID != "" {
+		qP = qP.Filter("ToPlaceID =", addressID).Filter("IsDirty =", false)
 	}
 	_, err := db.client.GetAll(ctx, qP, &returnedReferrals)
 	if err != nil {
 		return returnedReferrals, fmt.Errorf("no referrals found: %v", err)
 	}
 	return returnedReferrals, nil
+}
+
+
+// GetAllReferralsSPPaginate .....
+func (db *DSReferral) GetAllReferralsSPPaginate(ctx context.Context, addressID string, clinicName string, pageSize int, cursor string) ([]contracts.DSReferral, string, error) {
+	returnedReferrals := make([]contracts.DSReferral, 0)
+	qP := datastore.NewQuery("ClinicReferrals").Limit(pageSize)
+	if global.Options.DSName != "" {
+		qP = qP.Namespace(global.Options.DSName)
+	}
+	if cursor != "" {
+		cursor, err := datastore.DecodeCursor(cursor)
+		if err != nil {
+			return returnedReferrals, "", err
+		}
+		qP = qP.Start(cursor)
+	}
+	if addressID != "" {
+		qP = qP.Filter("ToPlaceID =", addressID).Filter("IsDirty =", false)
+	}
+	iteratorClinics := db.client.Run(ctx, qP)
+	var referral contracts.DSReferral
+	_, err := iteratorClinics.Next(&referral)
+	for err == nil {
+		returnedReferrals = append(returnedReferrals, referral)
+		_, err = iteratorClinics.Next(&referral)
+	}
+	if err != iterator.Done {
+		return returnedReferrals, "", err
+	}
+	nextCursor, err := iteratorClinics.Cursor()
+	if err != nil {
+		return returnedReferrals, "", err
+	}
+	return returnedReferrals, nextCursor.String(), nil
 }
 
 // DeleteReferral .....

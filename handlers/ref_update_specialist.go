@@ -753,6 +753,11 @@ func GetAllReferralsGD(c *gin.Context) {
 	log.Infof("Get all referrals")
 
 	addressID := c.Query("addressId")
+	pageSize, err := strconv.Atoi(c.Query("pageSize"))
+	if err != nil {
+		pageSize = 0
+	}
+	cursor := c.Query("cursor")
 	ctx := c.Request.Context()
 	_, _, gproject, err := getUserDetails(ctx, c.Request)
 	if err != nil {
@@ -801,35 +806,71 @@ func GetAllReferralsGD(c *gin.Context) {
 		return
 	}
 	dsReferrals := make([]contracts.DSReferral, 0)
-	dsReferrals, err = dsRefC.GetAllReferralsGD(ctx, addressID)
-	if err != nil {
-		c.AbortWithStatusJSON(
-			http.StatusNotFound,
-			gin.H{
-				constants.RESPONSE_JSON_DATA:   nil,
-				constants.RESPONSDE_JSON_ERROR: err.Error(),
-			},
-		)
-		return
-	}
-	treatmentSummary, err := dsRefC.GetAllTreamentSummaryGD(ctx, currentClinic.PlaceID)
-	mapGDStuff := make(map[string]contracts.DSReferral)
-	for _, ref := range dsReferrals {
-		mapGDStuff[ref.ReferralID] = ref
-	}
-	if err == nil && treatmentSummary != nil && len(treatmentSummary) > 0 {
-		for _, ref := range treatmentSummary {
+	if pageSize == 0 {
+		dsReferrals, err = dsRefC.GetAllReferralsGD(ctx, addressID)
+		if err != nil {
+			c.AbortWithStatusJSON(
+				http.StatusNotFound,
+				gin.H{
+					constants.RESPONSE_JSON_DATA:   nil,
+					constants.RESPONSDE_JSON_ERROR: err.Error(),
+				},
+			)
+			return
+		}
+		treatmentSummary, err := dsRefC.GetAllTreamentSummaryGD(ctx, currentClinic.PlaceID)
+		mapGDStuff := make(map[string]contracts.DSReferral)
+		for _, ref := range dsReferrals {
 			mapGDStuff[ref.ReferralID] = ref
 		}
-		dsReferrals = make([]contracts.DSReferral, 0)
-		for _, ref := range mapGDStuff {
-			dsReferrals = append(dsReferrals, ref)
+		if err == nil && treatmentSummary != nil && len(treatmentSummary) > 0 {
+			for _, ref := range treatmentSummary {
+				mapGDStuff[ref.ReferralID] = ref
+			}
+			dsReferrals = make([]contracts.DSReferral, 0)
+			for _, ref := range mapGDStuff {
+				dsReferrals = append(dsReferrals, ref)
+			}
 		}
+		c.JSON(http.StatusOK, gin.H{
+			constants.RESPONSE_JSON_DATA:   dsReferrals,
+			constants.RESPONSDE_JSON_ERROR: nil,
+		})
+	} else {
+		dsReferrals, cursor, err = dsRefC.GetAllReferralsGDPaginate(ctx, addressID, pageSize, cursor)
+		if err != nil {
+			c.AbortWithStatusJSON(
+				http.StatusNotFound,
+				gin.H{
+					constants.RESPONSE_JSON_DATA:   nil,
+					constants.RESPONSDE_JSON_ERROR: err.Error(),
+				},
+			)
+			return
+		}
+		treatmentSummary, err := dsRefC.GetAllTreamentSummaryGD(ctx, currentClinic.PlaceID)
+		mapGDStuff := make(map[string]contracts.DSReferral)
+		for _, ref := range dsReferrals {
+			mapGDStuff[ref.ReferralID] = ref
+		}
+		if err == nil && treatmentSummary != nil && len(treatmentSummary) > 0 {
+			for _, ref := range treatmentSummary {
+				mapGDStuff[ref.ReferralID] = ref
+			}
+			dsReferrals = make([]contracts.DSReferral, 0)
+			for _, ref := range mapGDStuff {
+				dsReferrals = append(dsReferrals, ref)
+			}
+		}
+		var allReferrals contracts.AllReferrals
+		allReferrals.Referralls = dsReferrals
+		allReferrals.Cursor = cursor
+		c.JSON(http.StatusOK, gin.H{
+			constants.RESPONSE_JSON_DATA:   allReferrals,
+			constants.RESPONSDE_JSON_ERROR: nil,
+		})
 	}
-	c.JSON(http.StatusOK, gin.H{
-		constants.RESPONSE_JSON_DATA:   dsReferrals,
-		constants.RESPONSDE_JSON_ERROR: nil,
-	})
+
 }
 
 // GetAllReferralsSP ....
@@ -837,6 +878,11 @@ func GetAllReferralsSP(c *gin.Context) {
 	log.Infof("Get all referrals")
 
 	addressID := c.Query("placeId")
+	pageSize, err := strconv.Atoi(c.Query("pageSize"))
+	if err != nil {
+		pageSize = 0
+	}
+	cursor := c.Query("cursor")
 	ctx := c.Request.Context()
 	_, _, gproject, err := getUserDetails(ctx, c.Request)
 	if err != nil {
@@ -884,21 +930,46 @@ func GetAllReferralsSP(c *gin.Context) {
 		)
 		return
 	}
-	dsReferrals, err := dsRefC.GetAllReferralsSP(ctx, currentClinic.PlaceID, currentClinic.Name)
-	if err != nil {
-		c.AbortWithStatusJSON(
-			http.StatusNotFound,
-			gin.H{
-				constants.RESPONSE_JSON_DATA:   nil,
-				constants.RESPONSDE_JSON_ERROR: err.Error(),
-			},
-		)
-		return
+	if pageSize == 0 {
+		dsReferrals, err := dsRefC.GetAllReferralsSP(ctx, currentClinic.PlaceID, currentClinic.Name)
+		if err != nil {
+			c.AbortWithStatusJSON(
+				http.StatusNotFound,
+				gin.H{
+					constants.RESPONSE_JSON_DATA:   nil,
+					constants.RESPONSDE_JSON_ERROR: err.Error(),
+				},
+			)
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{
+			constants.RESPONSE_JSON_DATA:   dsReferrals,
+			constants.RESPONSDE_JSON_ERROR: nil,
+		})
+	} else {
+		dsReferrals, cursor, err := dsRefC.GetAllReferralsSPPaginate(ctx, currentClinic.PlaceID, currentClinic.Name, pageSize, cursor)
+		if err != nil {
+			c.AbortWithStatusJSON(
+				http.StatusNotFound,
+				gin.H{
+					constants.RESPONSE_JSON_DATA:   nil,
+					constants.RESPONSDE_JSON_ERROR: err.Error(),
+				},
+			)
+			return
+		}
+		var allReferrals contracts.AllReferrals
+		allReferrals.Referralls = dsReferrals
+		allReferrals.Cursor = cursor
+		c.JSON(http.StatusOK, gin.H{
+			constants.RESPONSE_JSON_DATA:   allReferrals,
+			constants.RESPONSDE_JSON_ERROR: nil,
+		})
+		c.JSON(http.StatusOK, gin.H{
+			constants.RESPONSE_JSON_DATA:   dsReferrals,
+			constants.RESPONSDE_JSON_ERROR: nil,
+		})
 	}
-	c.JSON(http.StatusOK, gin.H{
-		constants.RESPONSE_JSON_DATA:   dsReferrals,
-		constants.RESPONSDE_JSON_ERROR: nil,
-	})
 }
 
 // GetOneReferral ....
