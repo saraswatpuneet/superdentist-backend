@@ -15,7 +15,6 @@ import (
 	"strings"
 	"time"
 
-
 	"gopkg.in/ugjka/go-tz.v2/tz"
 
 	"github.com/disintegration/imaging"
