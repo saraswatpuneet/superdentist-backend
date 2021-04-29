@@ -14,7 +14,7 @@ import (
 	"strings"
 	"time"
 
-	//"github.com/otiai10/gosseract/v2"
+
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"

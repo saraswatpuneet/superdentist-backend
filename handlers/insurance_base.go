@@ -2,7 +2,7 @@ package handlers
 
 import (
 
-	//"github.com/otiai10/gosseract/v2"
+
 
 	"encoding/json"
 	"io/ioutil"

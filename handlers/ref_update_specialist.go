@@ -16,8 +16,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/disintegration/imaging"
 	"github.com/google/uuid"
-	"github.com/nfnt/resize"
 	"gopkg.in/ugjka/go-tz.v2/tz"
 
 	"code.sajari.com/docconv"
@@ -568,7 +568,7 @@ func UploadDocuments(c *gin.Context) {
 				case "jpg", "jpeg":
 					img, err := jpeg.Decode(bytes.NewReader(currentBytes))
 					if err == nil {
-						resized := resize.Resize(200, 0, img, resize.Lanczos3)
+						resized := imaging.Resize(img, 200, 0, imaging.Lanczos)
 						buf := bytes.NewBuffer(nil)
 						err := jpeg.Encode(buf, resized, nil)
 						if err == nil {
@@ -578,7 +578,7 @@ func UploadDocuments(c *gin.Context) {
 				case "png":
 					img, err := png.Decode(bytes.NewReader(currentBytes))
 					if err == nil {
-						resized := resize.Resize(200, 0, img, resize.Lanczos3)
+						resized := imaging.Resize(img, 200, 0, imaging.Lanczos)
 						buf := bytes.NewBuffer(nil)
 						err := jpeg.Encode(buf, resized, nil)
 						if err == nil {
@@ -1112,7 +1112,7 @@ func ReceiveReferralMail(c *gin.Context) {
 		case "jpg", "jpeg":
 			img, err := jpeg.Decode(bytes.NewReader(currentBytes))
 			if err == nil {
-				resized := resize.Resize(200, 0, img, resize.Lanczos3)
+				resized := imaging.Resize(img, 200, 0, imaging.Lanczos)
 				buf := bytes.NewBuffer(nil)
 				err := jpeg.Encode(buf, resized, nil)
 				if err != nil {
@@ -1122,7 +1122,7 @@ func ReceiveReferralMail(c *gin.Context) {
 		case "png":
 			img, err := png.Decode(bytes.NewReader(currentBytes))
 			if err == nil {
-				resized := resize.Resize(200, 0, img, resize.Lanczos3)
+				resized := imaging.Resize(img, 200, 0, imaging.Lanczos)
 				buf := bytes.NewBuffer(nil)
 				err := jpeg.Encode(buf, resized, nil)
 				if err != nil {
@@ -1446,7 +1446,7 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 				case "jpg", "jpeg":
 					img, err := jpeg.Decode(bytes.NewReader(saveFileReader))
 					if err == nil {
-						resized := resize.Resize(200, 0, img, resize.Lanczos3)
+						resized := imaging.Resize(img, 200, 0, imaging.Lanczos)
 						buf := bytes.NewBuffer(nil)
 						err := jpeg.Encode(buf, resized, nil)
 						if err == nil {
@@ -1456,7 +1456,7 @@ func ReceiveAutoSummaryMail(c *gin.Context) {
 				case "png":
 					img, err := png.Decode(bytes.NewReader(saveFileReader))
 					if err == nil {
-						resized := resize.Resize(200, 0, img, resize.Lanczos3)
+						resized := imaging.Resize(img, 200, 0, imaging.Lanczos)
 						buf := bytes.NewBuffer(nil)
 						err := jpeg.Encode(buf, resized, nil)
 						if err == nil {
@@ -1748,7 +1748,7 @@ func TextRecievedPatient(c *gin.Context) {
 				case "jpg", "jpeg":
 					img, err := jpeg.Decode(bytes.NewReader(currentBytes))
 					if err == nil {
-						resized := resize.Resize(200, 0, img, resize.Lanczos3)
+						resized := imaging.Resize(img, 200, 0, imaging.Lanczos)
 						buf := bytes.NewBuffer(nil)
 						err := jpeg.Encode(buf, resized, nil)
 						if err == nil {
@@ -1758,7 +1758,7 @@ func TextRecievedPatient(c *gin.Context) {
 				case "png":
 					img, err := png.Decode(bytes.NewReader(currentBytes))
 					if err == nil {
-						resized := resize.Resize(200, 0, img, resize.Lanczos3)
+						resized := imaging.Resize(img, 200, 0, imaging.Lanczos)
 						buf := bytes.NewBuffer(nil)
 						err := jpeg.Encode(buf, resized, nil)
 						if err == nil {

@@ -15,13 +15,13 @@ import (
 	"strings"
 	"time"
 
-	//"github.com/otiai10/gosseract/v2"
+
 	"gopkg.in/ugjka/go-tz.v2/tz"
 
+	"github.com/disintegration/imaging"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/google/uuid"
-	"github.com/nfnt/resize"
 	"github.com/nyaruka/phonenumbers"
 	log "github.com/sirupsen/logrus"
 	"github.com/superdentist/superdentist-backend/constants"
@@ -226,8 +226,7 @@ func processReferral(referralDetails contracts.ReferralDetails, gproject string,
 
 	// Stage 2 Upload files from
 	// parse request
-	//client := gosseract.NewClient()
-	//defer client.Close()
+
 	foundImage := false
 	if documentFiles != nil {
 		for _, fheaders := range documentFiles.File {
@@ -279,17 +278,19 @@ func processReferral(referralDetails contracts.ReferralDetails, gproject string,
 				case "jpg", "jpeg":
 					img, err := jpeg.Decode(bytes.NewReader(currentBytes))
 					if err == nil {
-						resized := resize.Thumbnail(200, 0, img, resize.Lanczos3)
+						resized := imaging.Resize(img, 200, 0, imaging.Lanczos)
+
 						buf := bytes.NewBuffer(nil)
 						err := jpeg.Encode(buf, resized, nil)
 						if err == nil {
 							docMedia.Image = base64.StdEncoding.EncodeToString(buf.Bytes())
+							log.Info(docMedia.Image)
 						}
 					}
 				case "png":
 					img, err := png.Decode(bytes.NewReader(currentBytes))
 					if err == nil {
-						resized := resize.Resize(200, 0, img, resize.Lanczos3)
+						resized := imaging.Resize(img, 200, 0, imaging.Lanczos)
 						buf := bytes.NewBuffer(nil)
 						err := jpeg.Encode(buf, resized, nil)
 						if err == nil {
