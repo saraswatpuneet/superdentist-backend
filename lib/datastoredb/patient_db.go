@@ -86,7 +86,7 @@ func (db DSPatient) GetAddPatientNotes(ctx context.Context, pIDString string) (c
 
 // AddPatientNotes ....
 func (db DSPatient) AddPatientNotes(ctx context.Context, notes contracts.Notes) error {
-	pKey := datastore.NameKey("PatientNotes", notes.PatientID, nil)
+	pKey := datastore.NameKey("PatientNotes", notes.PatientID+notes.Type, nil)
 	if global.Options.DSName != "" {
 		pKey.Namespace = global.Options.DSName
 	}
@@ -236,8 +236,8 @@ func (db DSPatient) GetPatientByID(ctx context.Context, pID string) (*contracts.
 }
 
 // UpdatePatientStatus
-func (db DSPatient) UpdatePatientStatus(ctx context.Context, pID string, status contracts.PatientStatus) error {
-	patient, _, err := db.GetPatientByID(ctx, pID)
+func (db DSPatient) UpdatePatientStatus(ctx context.Context, pID string, status contracts.PatientStatus, notesType string) error {
+	patient, _, err := db.GetPatientByID(ctx, pID+notesType)
 	if err != nil {
 		return err
 	}

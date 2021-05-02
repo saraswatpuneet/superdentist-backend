@@ -92,6 +92,7 @@ type SelectedDentalCodes struct {
 // Notes ...
 type Notes struct {
 	PatientID string `json:"patientId"`
+	Type string 
 	Details   string `json:"details" datastore:",noindex"`
 }
 

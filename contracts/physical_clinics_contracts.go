@@ -19,6 +19,7 @@ type PhysicalClinicsRegistration struct {
 	GroupNPI     string   `json:"groupNpi"`
 	Specialty    []string `json:"specialty"`
 	Favorites    []string `json:"favorites"`
+	InsuranceDue int      `json:"insuranceDue"`
 }
 
 //ClinicAddressResponse ....
@@ -49,8 +50,8 @@ type PhysicalClinicMapLocation struct {
 	Domain       []string `json:"-"`
 }
 type ClinicList struct {
-	Clinics [] PhysicalClinicMapLocation `json:"clinics"`
-	Cursor string `json:"cursor"`
+	Clinics []PhysicalClinicMapLocation `json:"clinics"`
+	Cursor  string                      `json:"cursor"`
 }
 
 // QRStoreSchema ....

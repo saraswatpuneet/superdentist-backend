@@ -14,8 +14,6 @@ import (
 	"strings"
 	"time"
 
-
-
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/google/uuid"
@@ -132,7 +130,7 @@ func AddPatientNotes(c *gin.Context) {
 	ctx := c.Request.Context()
 	// here is we have referral id
 	pID := c.Param("patientId")
-
+	notesType := c.Query("notesType")
 	ctx, span := trace.StartSpan(ctx, "Register incoming request for clinic")
 	defer span.End()
 	var patientNotes contracts.Notes
@@ -148,6 +146,7 @@ func AddPatientNotes(c *gin.Context) {
 		return
 	}
 	patientNotes.Details = string(bodyBytes)
+	patientNotes.Type = notesType
 	gproject := googleprojectlib.GetGoogleProjectID()
 
 	patientDB := datastoredb.NewPatientHandler()
@@ -187,6 +186,7 @@ func UpdatePatientStatus(c *gin.Context) {
 	ctx := c.Request.Context()
 	// here is we have referral id
 	pID := c.Param("patientId")
+	notesType := c.Query("notesType")
 	ctx, span := trace.StartSpan(ctx, "Updating Patient Status")
 	defer span.End()
 	gproject := googleprojectlib.GetGoogleProjectID()
@@ -213,7 +213,7 @@ func UpdatePatientStatus(c *gin.Context) {
 		)
 		return
 	}
-	err = patientDB.UpdatePatientStatus(ctx, pID, pStatus)
+	err = patientDB.UpdatePatientStatus(ctx, pID, pStatus, notesType)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusBadRequest,
@@ -237,7 +237,7 @@ func GetPatientNotes(c *gin.Context) {
 	ctx := c.Request.Context()
 	// here is we have referral id
 	pID := c.Param("patientId")
-
+	notesType := c.Query("notesType")
 	ctx, span := trace.StartSpan(ctx, "Register incoming request for clinic")
 	defer span.End()
 	gproject := googleprojectlib.GetGoogleProjectID()
@@ -254,7 +254,7 @@ func GetPatientNotes(c *gin.Context) {
 		)
 		return
 	}
-	notes, err := patientDB.GetAddPatientNotes(ctx, pID)
+	notes, err := patientDB.GetAddPatientNotes(ctx, pID+notesType)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusBadRequest,
