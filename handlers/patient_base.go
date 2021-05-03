@@ -123,6 +123,49 @@ func GetAllPatientsForClinic(c *gin.Context) {
 	}
 }
 
+// GetAllPatientsForClinic ....
+func GetSinglePatientForClinic(c *gin.Context) {
+	// Stage 1  Load the incoming request
+	log.Infof("Patient Stuff")
+	gproject := googleprojectlib.GetGoogleProjectID()
+	ctx := c.Request.Context()
+	ctx, span := trace.StartSpan(ctx, "Register incoming request for clinic")
+	defer span.End()
+	// here is we have referral id
+	pID := c.Param("patientId")
+	patientDB := datastoredb.NewPatientHandler()
+
+	err := patientDB.InitializeDataBase(ctx, gproject)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+
+	patients, _, err := patientDB.GetPatientByID(ctx, pID)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		constants.RESPONSE_JSON_DATA:   patients,
+		constants.RESPONSDE_JSON_ERROR: nil,
+	})
+
+}
+
 // AddPatientNotes ....
 func AddPatientNotes(c *gin.Context) {
 	// Stage 1  Load the incoming request

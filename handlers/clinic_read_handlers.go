@@ -153,6 +153,66 @@ func GetAllClinicNameAddressID(c *gin.Context) {
 	clinicMetaDB.Close()
 }
 
+// GetAllClinicNameAddressID ... after registering clinic main account we add multiple locations etc.
+func GetSingleClinicID(c *gin.Context) {
+	log.Infof("Get all clinics associated with admin")
+	ctx := c.Request.Context()
+	addressID := c.Param("addressId")
+	if addressID == "" {
+		c.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: "clinic address id not provided",
+			},
+		)
+		return
+	}
+	_, _, gproject, err := getUserDetails(ctx, c.Request)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	ctx, span := trace.StartSpan(ctx, "Get all clinics associated with admin")
+	defer span.End()
+	clinicMetaDB := datastoredb.NewClinicMetaHandler()
+	err = clinicMetaDB.InitializeDataBase(ctx, gproject)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+
+	registeredClinics, err := clinicMetaDB.GetSingleClinic(ctx, addressID)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		constants.RESPONSE_JSON_DATA:   registeredClinics,
+		constants.RESPONSDE_JSON_ERROR: nil,
+	})
+
+	clinicMetaDB.Close()
+}
+
 // GetClinicDoctors ... get doctors from specific clinic.
 func GetClinicDoctors(c *gin.Context) {
 	log.Infof("Get all doctors registered with specific physical clinic")
