@@ -146,7 +146,7 @@ func (db DSPatient) GetPatientByAddressIDPaginate(ctx context.Context, addressID
 	if global.Options.DSName != "" {
 		qP = qP.Namespace(global.Options.DSName)
 	}
-	cursor1 := cursors[0]
+	cursor1 := cursors[1]
 	if cursor1 != "" {
 		cursor, err := datastore.DecodeCursor(cursor1)
 		if err != nil {
@@ -172,7 +172,7 @@ func (db DSPatient) GetPatientByAddressIDPaginate(ctx context.Context, addressID
 	if global.Options.DSName != "" {
 		qP = qP.Namespace(global.Options.DSName)
 	}
-	cursor2 := cursors[1]
+	cursor2 := cursors[2]
 	if cursor2 != "" {
 		cursor, err := datastore.DecodeCursor(cursor2)
 		if err != nil {
@@ -197,7 +197,7 @@ func (db DSPatient) GetPatientByAddressIDPaginate(ctx context.Context, addressID
 	if global.Options.DSName != "" {
 		qP = qP.Namespace(global.Options.DSName)
 	}
-	cursor3 := cursors[2]
+	cursor3 := cursors[3]
 	if cursor3 != "" {
 		cursor, err := datastore.DecodeCursor(cursor3)
 		if err != nil {
