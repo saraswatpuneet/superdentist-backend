@@ -117,7 +117,7 @@ func GetAllPatientsForClinic(c *gin.Context) {
 		patientsList.Patients = patients
 		patientsList.Cursor = cursor
 		c.JSON(http.StatusOK, gin.H{
-			constants.RESPONSE_JSON_DATA:   patients,
+			constants.RESPONSE_JSON_DATA:   patientsList,
 			constants.RESPONSDE_JSON_ERROR: nil,
 		})
 	}

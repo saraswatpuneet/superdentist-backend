@@ -136,6 +136,9 @@ func (db DSPatient) GetPatientByAddressID(ctx context.Context, addressID string)
 // GetPatientByAddressIDPaginate ...
 func (db DSPatient) GetPatientByAddressIDPaginate(ctx context.Context, addressID string, pageSize int, cursor string) ([]contracts.Patient, string) {
 	patients := make([]contracts.Patient, 0)
+	if cursor == ""{
+		cursor = "cursor_"+ "cursor_"+ "cursor_"
+	}
 	cursors := strings.Split(cursor, "cursor_")
 	mainCursor := ""
 	qP := datastore.NewQuery("PatientDetails").Limit(pageSize)
