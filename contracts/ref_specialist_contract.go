@@ -55,7 +55,7 @@ type PatientStatus struct {
 // InsuranceStatus ....
 type InsuranceStatus struct {
 	Label string `json:"label" default:"pending"`
-	Value string `json:"value" default:"pending"`
+	Value string `json:"value" default:"Pending"`
 }
 // Patient ....
 type Patient struct {
