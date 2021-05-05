@@ -27,19 +27,21 @@ type Subscriber struct {
 
 // PatientDentalInsurance ....
 type PatientDentalInsurance struct {
-	Company    string     `json:"company"`
-	MemberID   string     `json:"memberId"`
-	Subscriber Subscriber `json:"subscriber"`
-	CompanyID  string     `json:"companyId"`
+	Company    string        `json:"company"`
+	MemberID   string        `json:"memberId"`
+	Subscriber Subscriber    `json:"subscriber"`
+	CompanyID  string        `json:"companyId"`
+	Status     InsuranceStatus `json:"status"`
 }
 
 // PatientMedicalInsurance ....
 type PatientMedicalInsurance struct {
-	Company     string     `json:"company"`
-	GroupNumber string     `json:"groupNumber"`
-	MemberID    string     `json:"memberId"`
-	Subscriber  Subscriber `json:"subscriber"`
-	SSN         string     `json:"ssn"`
+	Company     string        `json:"company"`
+	GroupNumber string        `json:"groupNumber"`
+	MemberID    string        `json:"memberId"`
+	Subscriber  Subscriber    `json:"subscriber"`
+	SSN         string        `json:"ssn"`
+	Status      InsuranceStatus `json:"status"`
 }
 
 // notes: clinic info, tax id, group npi, provider name, provider npi,
@@ -50,6 +52,11 @@ type PatientStatus struct {
 	Value string `json:"value"`
 }
 
+// InsuranceStatus ....
+type InsuranceStatus struct {
+	Label string `json:"label" default:"pending"`
+	Value string `json:"value" default:"pending"`
+}
 // Patient ....
 type Patient struct {
 	PatientID        string                    `json:"patientId" valid:"required"`
@@ -92,7 +99,7 @@ type SelectedDentalCodes struct {
 // Notes ...
 type Notes struct {
 	PatientID string `json:"patientId"`
-	Type string 
+	Type      string
 	Details   string `json:"details" datastore:",noindex"`
 }
 
