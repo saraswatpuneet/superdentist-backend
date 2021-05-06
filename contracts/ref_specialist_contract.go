@@ -31,7 +31,7 @@ type PatientDentalInsurance struct {
 	MemberID   string        `json:"memberId"`
 	Subscriber Subscriber    `json:"subscriber"`
 	CompanyID  string        `json:"companyId"`
-	Status     InsuranceStatus `json:"status"`
+	Status     PatientStatus `json:"status"`
 }
 
 // PatientMedicalInsurance ....
@@ -41,7 +41,7 @@ type PatientMedicalInsurance struct {
 	MemberID    string        `json:"memberId"`
 	Subscriber  Subscriber    `json:"subscriber"`
 	SSN         string        `json:"ssn"`
-	Status      InsuranceStatus `json:"status"`
+	Status      PatientStatus `json:"status"`
 }
 
 // notes: clinic info, tax id, group npi, provider name, provider npi,
@@ -52,11 +52,6 @@ type PatientStatus struct {
 	Value string `json:"value"`
 }
 
-// InsuranceStatus ....
-type InsuranceStatus struct {
-	Label string `json:"label" default:"pending"`
-	Value string `json:"value" default:"Pending"`
-}
 // Patient ....
 type Patient struct {
 	PatientID        string                    `json:"patientId" valid:"required"`

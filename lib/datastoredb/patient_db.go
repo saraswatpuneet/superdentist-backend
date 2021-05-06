@@ -136,8 +136,8 @@ func (db DSPatient) GetPatientByAddressID(ctx context.Context, addressID string)
 // GetPatientByAddressIDPaginate ...
 func (db DSPatient) GetPatientByAddressIDPaginate(ctx context.Context, addressID string, pageSize int, cursor string) ([]contracts.Patient, string) {
 	patients := make([]contracts.Patient, 0)
-	if cursor == ""{
-		cursor = "cursor_"+ "cursor_"+ "cursor_"
+	if cursor == "" {
+		cursor = "cursor_" + "cursor_" + "cursor_"
 	}
 	cursors := strings.Split(cursor, "cursor_")
 	mainCursor := ""
@@ -239,12 +239,26 @@ func (db DSPatient) GetPatientByID(ctx context.Context, pID string) (*contracts.
 }
 
 // UpdatePatientStatus
-func (db DSPatient) UpdatePatientStatus(ctx context.Context, pID string, status contracts.PatientStatus, notesType string) error {
-	patient, _, err := db.GetPatientByID(ctx, pID+notesType)
+func (db DSPatient) UpdatePatientStatus(ctx context.Context, pID string, status contracts.PatientStatus, memberID string) error {
+	patient, _, err := db.GetPatientByID(ctx, pID)
 	if err != nil {
 		return err
 	}
 	patient.Status = status
+	if len(patient.DentalInsurance) > 0 {
+		for idx, dI := range patient.DentalInsurance {
+			if dI.MemberID == memberID {
+				patient.DentalInsurance[idx].Status = status
+			}
+		}
+	}
+	if len(patient.MedicalInsurance) > 0 {
+		for idx, mI := range patient.MedicalInsurance {
+			if mI.MemberID == memberID || mI.GroupNumber == memberID || mI.SSN == memberID {
+				patient.MedicalInsurance[idx].Status = status
+			}
+		}
+	}
 	_, err = db.AddPatientInformation(ctx, *patient, pID)
 	if err != nil {
 		return err

@@ -229,7 +229,7 @@ func UpdatePatientStatus(c *gin.Context) {
 	ctx := c.Request.Context()
 	// here is we have referral id
 	pID := c.Param("patientId")
-	notesType := c.Query("notesType")
+	memberID := c.Query("memberId")
 	ctx, span := trace.StartSpan(ctx, "Updating Patient Status")
 	defer span.End()
 	gproject := googleprojectlib.GetGoogleProjectID()
@@ -256,7 +256,7 @@ func UpdatePatientStatus(c *gin.Context) {
 		)
 		return
 	}
-	err = patientDB.UpdatePatientStatus(ctx, pID, pStatus, notesType)
+	err = patientDB.UpdatePatientStatus(ctx, pID, pStatus, memberID)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusBadRequest,
