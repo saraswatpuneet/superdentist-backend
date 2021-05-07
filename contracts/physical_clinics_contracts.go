@@ -51,7 +51,9 @@ type PhysicalClinicMapLocation struct {
 }
 type ClinicList struct {
 	Clinics []PhysicalClinicMapLocation `json:"clinics"`
-	Cursor  string                      `json:"cursor"`
+	CursorPrev  string                      `json:"cursorPrev"`
+	CursorNext  string                      `json:"cursorNext"`
+
 }
 
 // QRStoreSchema ....

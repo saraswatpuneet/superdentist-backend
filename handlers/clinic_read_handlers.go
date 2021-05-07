@@ -89,6 +89,7 @@ func GetAllClinicNameAddressID(c *gin.Context) {
 		pageSize = 0
 	}
 	cursor := c.Query("cursor")
+	cursorPrev := cursor
 	_, _, gproject, err := getUserDetails(ctx, c.Request)
 	if err != nil {
 		c.AbortWithStatusJSON(
@@ -144,7 +145,9 @@ func GetAllClinicNameAddressID(c *gin.Context) {
 		}
 		var results contracts.ClinicList
 		results.Clinics = registeredClinics
-		results.Cursor = cursor
+		results.CursorPrev = cursorPrev
+		results.CursorNext = cursor
+
 		c.JSON(http.StatusOK, gin.H{
 			constants.RESPONSE_JSON_DATA:   results,
 			constants.RESPONSDE_JSON_ERROR: nil,

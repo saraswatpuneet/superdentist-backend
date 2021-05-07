@@ -77,12 +77,14 @@ type Patient struct {
 	ZipCode          string                    `json:"zipCode"`
 	CreatedOn        int64                     `json:"createdOn"`
 	CreationDate     string                    `json:"creationDate"`
+	AgentID          string                    `json:"agentId"`
 }
 
 // PatientList ....
 type PatientList struct {
-	Patients []Patient `json:"patients"`
-	Cursor   string    `json:"cursor"`
+	Patients   []Patient `json:"patients"`
+	CursorNext string    `json:"cursorNext"`
+	CursorPrev string    `json:"cursorPrev"`
 }
 
 // SelectedDentalCodes ....
@@ -201,7 +203,8 @@ type DSReferral struct {
 
 type AllReferrals struct {
 	Referralls []DSReferral `json:"referrals"`
-	Cursor     string       `json:"cursor"`
+	CursorPrev string       `json:"cursorPrev"`
+	CursorNext string       `json:"cursorNext"`
 }
 
 // SMS is returned after a text/sms message is posted to Twilio

@@ -758,6 +758,7 @@ func GetAllReferralsGD(c *gin.Context) {
 		pageSize = 0
 	}
 	cursor := c.Query("cursor")
+	cursorPrev := cursor
 	ctx := c.Request.Context()
 	_, _, gproject, err := getUserDetails(ctx, c.Request)
 	if err != nil {
@@ -864,7 +865,8 @@ func GetAllReferralsGD(c *gin.Context) {
 		}
 		var allReferrals contracts.AllReferrals
 		allReferrals.Referralls = dsReferrals
-		allReferrals.Cursor = cursor
+		allReferrals.CursorPrev = cursorPrev
+		allReferrals.CursorNext = cursor
 		c.JSON(http.StatusOK, gin.H{
 			constants.RESPONSE_JSON_DATA:   allReferrals,
 			constants.RESPONSDE_JSON_ERROR: nil,
@@ -883,6 +885,7 @@ func GetAllReferralsSP(c *gin.Context) {
 		pageSize = 0
 	}
 	cursor := c.Query("cursor")
+	cursorPrev := cursor
 	ctx := c.Request.Context()
 	_, _, gproject, err := getUserDetails(ctx, c.Request)
 	if err != nil {
@@ -960,7 +963,8 @@ func GetAllReferralsSP(c *gin.Context) {
 		}
 		var allReferrals contracts.AllReferrals
 		allReferrals.Referralls = dsReferrals
-		allReferrals.Cursor = cursor
+		allReferrals.CursorNext = cursor
+		allReferrals.CursorPrev = cursorPrev
 		c.JSON(http.StatusOK, gin.H{
 			constants.RESPONSE_JSON_DATA:   allReferrals,
 			constants.RESPONSDE_JSON_ERROR: nil,
