@@ -170,56 +170,56 @@ func GetSinglePatientForClinic(c *gin.Context) {
 
 // AddAgentToPatient ....
 func AddAgentToPatient(c *gin.Context) {
-	// Stage 1  Load the incoming request
-	log.Infof("Patient Stuff")
-	gproject := googleprojectlib.GetGoogleProjectID()
-	ctx := c.Request.Context()
-	ctx, span := trace.StartSpan(ctx, "Register incoming request for clinic")
-	defer span.End()
-	// here is we have referral id
-	pID := c.Param("patientId")
-	patientDB := datastoredb.NewPatientHandler()
-	agentID := c.Param("agentId")
+	// // Stage 1  Load the incoming request
+	// log.Infof("Patient Stuff")
+	// gproject := googleprojectlib.GetGoogleProjectID()
+	// ctx := c.Request.Context()
+	// ctx, span := trace.StartSpan(ctx, "Register incoming request for clinic")
+	// defer span.End()
+	// // here is we have referral id
+	// pID := c.Param("patientId")
+	// patientDB := datastoredb.NewPatientHandler()
+	// agentID := c.Param("agentId")
 
-	err := patientDB.InitializeDataBase(ctx, gproject)
-	if err != nil {
-		c.AbortWithStatusJSON(
-			http.StatusInternalServerError,
-			gin.H{
-				constants.RESPONSE_JSON_DATA:   nil,
-				constants.RESPONSDE_JSON_ERROR: err.Error(),
-			},
-		)
-		return
-	}
+	// err := patientDB.InitializeDataBase(ctx, gproject)
+	// if err != nil {
+	// 	c.AbortWithStatusJSON(
+	// 		http.StatusInternalServerError,
+	// 		gin.H{
+	// 			constants.RESPONSE_JSON_DATA:   nil,
+	// 			constants.RESPONSDE_JSON_ERROR: err.Error(),
+	// 		},
+	// 	)
+	// 	return
+	// }
 
-	patients, _, err := patientDB.GetPatientByID(ctx, pID)
-	if err != nil {
-		c.AbortWithStatusJSON(
-			http.StatusInternalServerError,
-			gin.H{
-				constants.RESPONSE_JSON_DATA:   nil,
-				constants.RESPONSDE_JSON_ERROR: err.Error(),
-			},
-		)
-		return
-	}
-	patients.AgentID = agentID
-	_, err = patientDB.AddPatientInformation(ctx, *patients, patients.PatientID)
-	if err != nil {
-		c.AbortWithStatusJSON(
-			http.StatusBadRequest,
-			gin.H{
-				constants.RESPONSE_JSON_DATA:   nil,
-				constants.RESPONSDE_JSON_ERROR: fmt.Errorf("failed to add agent for patient"),
-			},
-		)
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{
-		constants.RESPONSE_JSON_DATA:   "agent registered for patient",
-		constants.RESPONSDE_JSON_ERROR: nil,
-	})
+	// patients, _, err := patientDB.GetPatientByID(ctx, pID)
+	// if err != nil {
+	// 	c.AbortWithStatusJSON(
+	// 		http.StatusInternalServerError,
+	// 		gin.H{
+	// 			constants.RESPONSE_JSON_DATA:   nil,
+	// 			constants.RESPONSDE_JSON_ERROR: err.Error(),
+	// 		},
+	// 	)
+	// 	return
+	// }
+	// patients.AgentID = agentID
+	// _, err = patientDB.AddPatientInformation(ctx, *patients, patients.PatientID)
+	// if err != nil {
+	// 	c.AbortWithStatusJSON(
+	// 		http.StatusBadRequest,
+	// 		gin.H{
+	// 			constants.RESPONSE_JSON_DATA:   nil,
+	// 			constants.RESPONSDE_JSON_ERROR: fmt.Errorf("failed to add agent for patient"),
+	// 		},
+	// 	)
+	// 	return
+	// }
+	// c.JSON(http.StatusOK, gin.H{
+	// 	constants.RESPONSE_JSON_DATA:   "agent registered for patient",
+	// 	constants.RESPONSDE_JSON_ERROR: nil,
+	// })
 
 }
 // AddPatientNotes ....

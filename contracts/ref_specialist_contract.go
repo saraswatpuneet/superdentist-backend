@@ -52,6 +52,15 @@ type PatientStatus struct {
 	Value string `json:"value"`
 }
 
+// PatientInsuranceAgent ....
+
+type PatientInsuranceAgent struct {
+	PatientID string                  `json:"patientId" valid:"required"`
+	AgentID   string                  `json:"agentId" valid:"required"`
+	Dental    PatientDentalInsurance  `json:"dental"`
+	Medical   PatientMedicalInsurance `json:"medical"`
+}
+
 // Patient ....
 type Patient struct {
 	PatientID        string                    `json:"patientId" valid:"required"`
@@ -77,7 +86,6 @@ type Patient struct {
 	ZipCode          string                    `json:"zipCode"`
 	CreatedOn        int64                     `json:"createdOn"`
 	CreationDate     string                    `json:"creationDate"`
-	AgentID          string                    `json:"agentId"`
 }
 
 // PatientList ....
