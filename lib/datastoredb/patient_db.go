@@ -55,7 +55,42 @@ func (db *DSPatient) InitializeDataBase(ctx context.Context, projectID string) e
 }
 
 // AddPatientInformation ....
-func (db DSPatient) AddPatientInformation(ctx context.Context, patient contracts.Patient, pIDString string) (string, error) {
+func (db DSPatient) AddPatientInformation(ctx context.Context, patient contracts.PatientStore, pIDString string, dI []contracts.PatientDentalInsurance, mI []contracts.PatientMedicalInsurance) (string, error) {
+
+	pKey := datastore.NameKey("PatientDetails", pIDString, nil)
+	if global.Options.DSName != "" {
+		pKey.Namespace = global.Options.DSName
+	}
+	patient.PatientID = pIDString
+	_, err := db.client.Put(ctx, pKey, &patient)
+	if err != nil {
+		return "", err
+	}
+	for _, insurance := range dI {
+		pKey := datastore.NameKey("DentalInsurance", insurance.ID, nil)
+		if global.Options.DSName != "" {
+			pKey.Namespace = global.Options.DSName
+		}
+		_, err := db.client.Put(ctx, pKey, &insurance)
+		if err != nil {
+			return "", err
+		}
+	}
+	for _, insurance := range dI {
+		pKey := datastore.NameKey("MedicalInsurance", insurance.ID, nil)
+		if global.Options.DSName != "" {
+			pKey.Namespace = global.Options.DSName
+		}
+		_, err := db.client.Put(ctx, pKey, &insurance)
+		if err != nil {
+			return "", err
+		}
+	}
+	return pIDString, nil
+}
+
+// AddPatientInformation ....
+func (db DSPatient) AddPatientInformationStatus(ctx context.Context, patient contracts.PatientStore, pIDString string) (string, error) {
 
 	pKey := datastore.NameKey("PatientDetails", pIDString, nil)
 	if global.Options.DSName != "" {
@@ -68,7 +103,6 @@ func (db DSPatient) AddPatientInformation(ctx context.Context, patient contracts
 	}
 	return pIDString, nil
 }
-
 // GetPatientInformation ....
 func (db DSPatient) GetAddPatientNotes(ctx context.Context, pIDString string) (contracts.Notes, error) {
 	var regularInterface contracts.Notes
@@ -221,8 +255,8 @@ func (db DSPatient) GetPatientByAddressIDPaginate(ctx context.Context, addressID
 }
 
 // GetPatientByID ...
-func (db DSPatient) GetPatientByID(ctx context.Context, pID string) (*contracts.Patient, *datastore.Key, error) {
-	patients := make([]contracts.Patient, 0)
+func (db DSPatient) GetPatientByID(ctx context.Context, pID string) (*contracts.PatientStore, *datastore.Key, error) {
+	patients := make([]contracts.PatientStore, 0)
 
 	qP := datastore.NewQuery("PatientDetails")
 	qP = qP.Filter("PatientID =", pID)
@@ -245,21 +279,7 @@ func (db DSPatient) UpdatePatientStatus(ctx context.Context, pID string, status 
 		return err
 	}
 	patient.Status = status
-	if len(patient.DentalInsurance) > 0 {
-		for idx, dI := range patient.DentalInsurance {
-			if dI.MemberID == memberID {
-				patient.DentalInsurance[idx].Status = status
-			}
-		}
-	}
-	if len(patient.MedicalInsurance) > 0 {
-		for idx, mI := range patient.MedicalInsurance {
-			if mI.MemberID == memberID || mI.GroupNumber == memberID || mI.SSN == memberID {
-				patient.MedicalInsurance[idx].Status = status
-			}
-		}
-	}
-	_, err = db.AddPatientInformation(ctx, *patient, pID)
+	_, err = db.AddPatientInformationStatus(ctx, *patient, pID)
 	if err != nil {
 		return err
 	}
