@@ -71,29 +71,29 @@ type PatientInsuranceAgent struct {
 
 // Patient ....
 type Patient struct {
-	PatientID          string                    `json:"patientId" valid:"required"`
-	FirstName          string                    `json:"firstName" valid:"required"`
-	LastName           string                    `json:"lastName" valid:"required"`
-	Dob                DOB                       `json:"dob"`
-	Email              string                    `json:"email" valid:"required"`
-	Phone              string                    `json:"phone" valid:"required"`
-	SSN                string                    `json:"_"`
-	DentalInsurance    []PatientDentalInsurance  `json:"dentalInsurance" datastore:"dentalInsurance,noindex"`
-	MedicalInsurance   []PatientMedicalInsurance `json:"medicalInsurance" datastore:"medicalInsurance,noindex"`
-	GDName             string                    `json:"gdName" valid:"required"`
-	SP                 string                    `json:"sp" valid:"required"`
-	GD                 string                    `json:"gd" valid:"required"`
-	AddressID          string                    `json:"addressId" valid:"required"`
-	ClinicName         string                    `json:"clinicName" valid:"required"`
-	SPName             string                    `json:"spName" valid:"required"`
-	ReferralID         string                    `json:"referralId" valid:"required"`
-	DueDate            int64                     `json:"dueDate"`
-	AppointmentTime    string                    `json:"appointmentTime"`
-	SameDay            bool                      `json:"sameDay"`
-	Status             PatientStatus             `json:"status"`
-	ZipCode            string                    `json:"zipCode"`
-	CreatedOn          int64                     `json:"createdOn"`
-	CreationDate       string                    `json:"creationDate"`
+	PatientID        string                    `json:"patientId" valid:"required"`
+	FirstName        string                    `json:"firstName" valid:"required"`
+	LastName         string                    `json:"lastName" valid:"required"`
+	Dob              DOB                       `json:"dob"`
+	Email            string                    `json:"email" valid:"required"`
+	Phone            string                    `json:"phone" valid:"required"`
+	SSN              string                    `json:"_"`
+	DentalInsurance  []PatientDentalInsurance  `json:"dentalInsurance" datastore:"dentalInsurance,noindex"`
+	MedicalInsurance []PatientMedicalInsurance `json:"medicalInsurance" datastore:"medicalInsurance,noindex"`
+	GDName           string                    `json:"gdName" valid:"required"`
+	SP               string                    `json:"sp" valid:"required"`
+	GD               string                    `json:"gd" valid:"required"`
+	AddressID        string                    `json:"addressId" valid:"required"`
+	ClinicName       string                    `json:"clinicName" valid:"required"`
+	SPName           string                    `json:"spName" valid:"required"`
+	ReferralID       string                    `json:"referralId" valid:"required"`
+	DueDate          int64                     `json:"dueDate"`
+	AppointmentTime  string                    `json:"appointmentTime"`
+	SameDay          bool                      `json:"sameDay"`
+	Status           PatientStatus             `json:"status"`
+	ZipCode          string                    `json:"zipCode"`
+	CreatedOn        int64                     `json:"createdOn"`
+	CreationDate     string                    `json:"creationDate"`
 }
 
 // PatientStore ....
@@ -121,6 +121,14 @@ type PatientStore struct {
 	ZipCode            string        `json:"zipCode"`
 	CreatedOn          int64         `json:"createdOn"`
 	CreationDate       string        `json:"creationDate"`
+}
+
+// PatientFilters ...
+
+type PatientFilters struct {
+	StartTime int64
+	EndTime   int64
+	AgentID   string
 }
 
 // PatientList ....
@@ -181,17 +189,17 @@ type Status struct {
 
 // ReferralDetails ....
 type ReferralDetails struct {
-	Patient       PatientStore   `json:"patient" valid:"required"`
-	FromAddressID string    `json:"fromAddressId" valid:"required"`
-	ToAddressID   string    `json:"toAddressId" valid:"required"`
-	FromPlaceID   string    `json:"fromPlaceId"`
-	ToPlaceID     string    `json:"toPlaceId"`
-	Status        Status    `json:"status" valid:"required"`
-	Comments      []Comment `json:"comments"`
-	Reasons       []string  `json:"reasons"`
-	History       []string  `json:"history"`
-	Tooth         []string  `json:"tooth"`
-	IsSummary     bool      `json:"isSummary"`
+	Patient       PatientStore `json:"patient" valid:"required"`
+	FromAddressID string       `json:"fromAddressId" valid:"required"`
+	ToAddressID   string       `json:"toAddressId" valid:"required"`
+	FromPlaceID   string       `json:"fromPlaceId"`
+	ToPlaceID     string       `json:"toPlaceId"`
+	Status        Status       `json:"status" valid:"required"`
+	Comments      []Comment    `json:"comments"`
+	Reasons       []string     `json:"reasons"`
+	History       []string     `json:"history"`
+	Tooth         []string     `json:"tooth"`
+	IsSummary     bool         `json:"isSummary"`
 }
 
 // ReferralComments .....

@@ -86,6 +86,50 @@ func GetAllPatientsForClinic(c *gin.Context) {
 	defer span.End()
 	// here is we have referral id
 	addressID := c.Param("addressId")
+	startTime := c.Query("startTime")
+	endTime := c.Query("endTime")
+	agentID := c.Query("agentId")
+	var startTimeStamp int64
+	var endTimeStamp int64
+
+	startTimeStamp = 0
+	endTimeStamp = 0
+	var err error
+	var filters contracts.PatientFilters
+	if startTime != "" {
+		startTimeStamp, err = strconv.ParseInt(startTime, 10, 64)
+		if err != nil {
+			c.AbortWithStatusJSON(
+				http.StatusInternalServerError,
+				gin.H{
+					constants.RESPONSE_JSON_DATA:   nil,
+					constants.RESPONSDE_JSON_ERROR: err.Error(),
+				},
+			)
+			return
+		}
+		filters.StartTime = startTimeStamp
+	}
+	if endTime != "" {
+		endTimeStamp, err = strconv.ParseInt(endTime, 10, 64)
+		if err != nil {
+			c.AbortWithStatusJSON(
+				http.StatusInternalServerError,
+				gin.H{
+					constants.RESPONSE_JSON_DATA:   nil,
+					constants.RESPONSDE_JSON_ERROR: err.Error(),
+				},
+			)
+			return
+		}
+		filters.EndTime = endTimeStamp
+
+	}
+	filters.AgentID = agentID
+	filteringRequested := false
+	if filters.StartTime > 0 || filters.AgentID != "" {
+		filteringRequested = true
+	}
 	patientDB := datastoredb.NewPatientHandler()
 	pageSize, err := strconv.Atoi(c.Query("pageSize"))
 	if err != nil {
@@ -105,23 +149,43 @@ func GetAllPatientsForClinic(c *gin.Context) {
 		return
 	}
 	if pageSize == 0 {
-		patients := patientDB.GetPatientByAddressID(ctx, addressID)
-		patientsList := patientDB.ReturnPatientsWithDMInsurances(ctx, patients)
-		c.JSON(http.StatusOK, gin.H{
-			constants.RESPONSE_JSON_DATA:   patientsList,
-			constants.RESPONSDE_JSON_ERROR: nil,
-		})
+		if filteringRequested {
+			patients := patientDB.GetPatientByFilters(ctx, addressID, filters)
+			c.JSON(http.StatusOK, gin.H{
+				constants.RESPONSE_JSON_DATA:   patients,
+				constants.RESPONSDE_JSON_ERROR: nil,
+			})
+		} else {
+			patients := patientDB.GetPatientByAddressID(ctx, addressID)
+			patientsList := patientDB.ReturnPatientsWithDMInsurances(ctx, patients)
+			c.JSON(http.StatusOK, gin.H{
+				constants.RESPONSE_JSON_DATA:   patientsList,
+				constants.RESPONSDE_JSON_ERROR: nil,
+			})
+		}
 	} else {
-		patientStore, cursor := patientDB.GetPatientByAddressIDPaginate(ctx, addressID, pageSize, cursor)
-		var patientsList contracts.PatientList
-		patients := patientDB.ReturnPatientsWithDMInsurances(ctx, patientStore)
-		patientsList.Patients = patients
-		patientsList.CursorPrev = cursorPrev
-		patientsList.CursorNext = cursor
-		c.JSON(http.StatusOK, gin.H{
-			constants.RESPONSE_JSON_DATA:   patientsList,
-			constants.RESPONSDE_JSON_ERROR: nil,
-		})
+		if filteringRequested {
+			patients, cursor := patientDB.GetPatientByFiltersPaginate(ctx, addressID, filters, pageSize, cursor)
+			var patientsList contracts.PatientList
+			patientsList.Patients = patients
+			patientsList.CursorPrev = cursorPrev
+			patientsList.CursorNext = cursor
+			c.JSON(http.StatusOK, gin.H{
+				constants.RESPONSE_JSON_DATA:   patientsList,
+				constants.RESPONSDE_JSON_ERROR: nil,
+			})
+		} else {
+			patientStore, cursor := patientDB.GetPatientByAddressIDPaginate(ctx, addressID, pageSize, cursor)
+			var patientsList contracts.PatientList
+			patients := patientDB.ReturnPatientsWithDMInsurances(ctx, patientStore)
+			patientsList.Patients = patients
+			patientsList.CursorPrev = cursorPrev
+			patientsList.CursorNext = cursor
+			c.JSON(http.StatusOK, gin.H{
+				constants.RESPONSE_JSON_DATA:   patientsList,
+				constants.RESPONSDE_JSON_ERROR: nil,
+			})
+		}
 	}
 }
 
@@ -278,6 +342,7 @@ func AddPatientNotes(c *gin.Context) {
 		constants.RESPONSDE_JSON_ERROR: nil,
 	})
 }
+
 // UpdatePatientStatus ....
 func UpdateInsurnaceStatus(c *gin.Context) {
 	// Stage 1  Load the incoming request

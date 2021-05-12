@@ -137,6 +137,176 @@ func (db DSPatient) AddPatientNotes(ctx context.Context, notes contracts.Notes) 
 	return nil
 }
 
+// GetPatientByFilters ...
+func (db DSPatient) GetPatientByFilters(ctx context.Context, addressID string, filters contracts.PatientFilters) []contracts.Patient {
+	dentalInsurance := make([]contracts.PatientDentalInsurance, 0)
+	medicalInsurance := make([]contracts.PatientMedicalInsurance, 0)
+	qP := datastore.NewQuery("DentalInsurance")
+	if filters.StartTime > 0 && filters.EndTime > 0 {
+		qP = qP.Filter("DueDate >=", filters.StartTime)
+		qP = qP.Filter("DueDate <=", filters.EndTime)
+	}
+	if filters.AgentID != "" {
+		qP = qP.Filter("AgentID =", filters.AgentID)
+	}
+	if global.Options.DSName != "" {
+		qP = qP.Namespace(global.Options.DSName)
+	}
+	db.client.GetAll(ctx, qP, &dentalInsurance)
+
+	qP = datastore.NewQuery("MedicalInsurance")
+	if filters.StartTime > 0 && filters.EndTime > 0 {
+		qP = qP.Filter("DueDate >=", filters.StartTime)
+		qP = qP.Filter("DueDate <=", filters.EndTime)
+	}
+	if filters.AgentID != "" {
+		qP = qP.Filter("AgentID =", filters.AgentID)
+	}
+	if global.Options.DSName != "" {
+		qP = qP.Namespace(global.Options.DSName)
+	}
+	db.client.GetAll(ctx, qP, &medicalInsurance)
+	patientsMap := make(map[string]contracts.Patient, 0)
+	if len(medicalInsurance) > 0 {
+		for _, insurance := range medicalInsurance {
+			if patient, ok := patientsMap[insurance.PatientID]; ok {
+				patient.MedicalInsurance = append(patient.MedicalInsurance, insurance)
+			} else {
+				patientOne, err := db.GetPatientByAgentInsurances(ctx, insurance.PatientID)
+				if err == nil {
+					patient.MedicalInsurance = append(patient.MedicalInsurance, insurance)
+					patientsMap[patient.PatientID] = *patientOne
+				}
+			}
+		}
+	}
+	if len(dentalInsurance) > 0 {
+		for _, insurance := range dentalInsurance {
+			if patient, ok := patientsMap[insurance.PatientID]; ok {
+				patient.DentalInsurance = append(patient.DentalInsurance, insurance)
+			} else {
+				patientOne, err := db.GetPatientByAgentInsurances(ctx, insurance.PatientID)
+				if err == nil {
+					patient.DentalInsurance = append(patient.DentalInsurance, insurance)
+					patientsMap[patient.PatientID] = *patientOne
+				}
+			}
+		}
+	}
+	patients := make([]contracts.Patient, 0)
+	for _, patient := range patientsMap {
+		patients = append(patients, patient)
+	}
+	return patients
+}
+
+// GetPatientByFiltersPaginate ...
+func (db DSPatient) GetPatientByFiltersPaginate(ctx context.Context, addressID string, filters contracts.PatientFilters, pageSize int, cursor string) ([]contracts.Patient, string) {
+	dentalInsurance := make([]contracts.PatientDentalInsurance, 0)
+	medicalInsurance := make([]contracts.PatientMedicalInsurance, 0)
+	qP := datastore.NewQuery("DentalInsurance").Limit(pageSize)
+	if cursor == "" {
+		cursor = "cursor_" + "cursor_"
+	}
+	cursors := strings.Split(cursor, "cursor_")
+	mainCursor := ""
+	if filters.StartTime > 0 && filters.EndTime > 0 {
+		qP = qP.Filter("DueDate >=", filters.StartTime)
+		qP = qP.Filter("DueDate <=", filters.EndTime)
+	}
+	if filters.AgentID != "" {
+		qP = qP.Filter("AgentID =", filters.AgentID)
+	}
+	if global.Options.DSName != "" {
+		qP = qP.Namespace(global.Options.DSName)
+	}
+	cursor1 := cursors[1]
+	if cursor1 != "" {
+		cursor, err := datastore.DecodeCursor(cursor1)
+		if err != nil {
+			log.Fatalf("Bad cursor %q: %v", cursor, err)
+		}
+		qP = qP.Start(cursor)
+	}
+	iteratorDental := db.client.Run(ctx, qP)
+	var dentalOne contracts.PatientDentalInsurance
+	_, err := iteratorDental.Next(&dentalOne)
+	for err == nil {
+		dentalInsurance = append(dentalInsurance, dentalOne)
+		_, err = iteratorDental.Next(&dentalOne)
+	}
+	nextCursor, err := iteratorDental.Cursor()
+	if err != nil {
+		mainCursor += "cursor_" + ""
+	} else {
+		mainCursor += "cursor_" + nextCursor.String()
+	}
+	qP = datastore.NewQuery("MedicalInsurance").Limit(pageSize)
+	if filters.StartTime > 0 && filters.EndTime > 0 {
+		qP = qP.Filter("DueDate >=", filters.StartTime)
+		qP = qP.Filter("DueDate <=", filters.EndTime)
+	}
+	if filters.AgentID != "" {
+		qP = qP.Filter("AgentID =", filters.AgentID)
+	}
+	if global.Options.DSName != "" {
+		qP = qP.Namespace(global.Options.DSName)
+	}
+	cursor2 := cursors[2]
+	if cursor2 != "" {
+		cursor, err := datastore.DecodeCursor(cursor2)
+		if err != nil {
+			log.Fatalf("Bad cursor %q: %v", cursor, err)
+		}
+		qP = qP.Start(cursor)
+	}
+	iteratorMedical := db.client.Run(ctx, qP)
+	var medicalOne contracts.PatientMedicalInsurance
+	_, err = iteratorMedical.Next(&medicalOne)
+	for err == nil {
+		medicalInsurance = append(medicalInsurance, medicalOne)
+		_, err = iteratorDental.Next(&dentalOne)
+	}
+	nextCursor, err = iteratorDental.Cursor()
+	if err != nil {
+		mainCursor += "cursor_" + ""
+	} else {
+		mainCursor += "cursor_" + nextCursor.String()
+	}
+	patientsMap := make(map[string]contracts.Patient, 0)
+	patients := make([]contracts.Patient, 0)
+	if len(medicalInsurance) > 0 {
+		for _, insurance := range medicalInsurance {
+			if patient, ok := patientsMap[insurance.PatientID]; ok {
+				patient.MedicalInsurance = append(patient.MedicalInsurance, insurance)
+			} else {
+				patientOne, err := db.GetPatientByAgentInsurances(ctx, insurance.PatientID)
+				if err == nil {
+					patient.MedicalInsurance = append(patient.MedicalInsurance, insurance)
+					patientsMap[patient.PatientID] = *patientOne
+				}
+			}
+		}
+	}
+	if len(dentalInsurance) > 0 {
+		for _, insurance := range dentalInsurance {
+			if patient, ok := patientsMap[insurance.PatientID]; ok {
+				patient.DentalInsurance = append(patient.DentalInsurance, insurance)
+			} else {
+				patientOne, err := db.GetPatientByAgentInsurances(ctx, insurance.PatientID)
+				if err == nil {
+					patient.DentalInsurance = append(patient.DentalInsurance, insurance)
+					patientsMap[patient.PatientID] = *patientOne
+				}
+			}
+		}
+	}
+	for _, patient := range patientsMap {
+		patients = append(patients, patient)
+	}
+	return patients, mainCursor
+}
+
 // GetPatientByAddressID ...
 func (db DSPatient) GetPatientByAddressID(ctx context.Context, addressID string) []contracts.PatientStore {
 	patients := make([]contracts.PatientStore, 0)
@@ -364,9 +534,47 @@ func (db DSPatient) GetPatientByID(ctx context.Context, pID string) (*contracts.
 	return &patientReturn, &patient, key, nil
 }
 
+// GetPatientByFilters ...
+func (db DSPatient) GetPatientByAgentInsurances(ctx context.Context, pID string) (*contracts.Patient, error) {
+	patients := make([]contracts.PatientStore, 0)
+	qP := datastore.NewQuery("Patient")
+	qP = qP.Filter("PatientID =", pID)
+	if global.Options.DSName != "" {
+		qP = qP.Namespace(global.Options.DSName)
+	}
+	_, err := db.client.GetAll(ctx, qP, &patients)
+	if err != nil {
+		return nil, err
+	}
+	patientData := patients[0]
+	var patientStore contracts.Patient
+	patientStore.AddressID = patientData.AddressID
+	patientStore.ClinicName = patientData.ClinicName
+	patientStore.FirstName = patientData.FirstName
+	patientStore.LastName = patientData.LastName
+	patientStore.Dob = patientData.Dob
+	patientStore.Email = patientData.Email
+	patientStore.GD = patientData.GD
+	patientStore.GDName = patientData.GDName
+	patientStore.SP = patientData.SP
+	patientStore.SPName = patientData.SPName
+	patientStore.SSN = patientData.SSN
+	patientStore.SameDay = patientData.SameDay
+	patientStore.Phone = patientData.Phone
+	patientStore.SSN = patientData.SSN
+	patientStore.ZipCode = patientData.ZipCode
+	patientStore.Status = patientData.Status
+	patientStore.DueDate = patientData.DueDate
+	patientStore.AppointmentTime = patientData.AppointmentTime
+	patientStore.CreatedOn = patientData.CreatedOn
+	patientStore.CreationDate = patientData.CreationDate
+	patientStore.PatientID = patientData.PatientID
+	return &patientStore, nil
+}
+
 // UpdatePatientStatus .....
 func (db DSPatient) UpdateInsuranceStatus(ctx context.Context, pID string, status contracts.PatientStatus) error {
-	dInsurance:= db.GetDentalInsurance(ctx, pID)
+	dInsurance := db.GetDentalInsurance(ctx, pID)
 	if dInsurance.ID != "" {
 		dInsurance.Status = status
 		pKey := datastore.NameKey("DentalInsurance", dInsurance.ID, nil)
@@ -375,11 +583,11 @@ func (db DSPatient) UpdateInsuranceStatus(ctx context.Context, pID string, statu
 		}
 		_, err := db.client.Put(ctx, pKey, &dInsurance)
 		if err != nil {
-			return  err
+			return err
 		}
 		return nil
 	}
-	mInsurance:= db.GetMedicalInsurance(ctx, pID)
+	mInsurance := db.GetMedicalInsurance(ctx, pID)
 	if mInsurance.ID != "" {
 		mInsurance.Status = status
 		pKey := datastore.NameKey("MedicalInsurance", mInsurance.ID, nil)
@@ -388,7 +596,7 @@ func (db DSPatient) UpdateInsuranceStatus(ctx context.Context, pID string, statu
 		}
 		_, err := db.client.Put(ctx, pKey, &mInsurance)
 		if err != nil {
-			return  err
+			return err
 		}
 		return nil
 	}
@@ -397,7 +605,7 @@ func (db DSPatient) UpdateInsuranceStatus(ctx context.Context, pID string, statu
 
 // UpdatePatientStatus ....
 func (db DSPatient) AddAgentToInsurance(ctx context.Context, pID string, agent string) error {
-	dInsurance:= db.GetDentalInsurance(ctx, pID)
+	dInsurance := db.GetDentalInsurance(ctx, pID)
 	if dInsurance.ID != "" {
 		dInsurance.AgentID = agent
 		pKey := datastore.NameKey("DentalInsurance", dInsurance.ID, nil)
@@ -406,11 +614,11 @@ func (db DSPatient) AddAgentToInsurance(ctx context.Context, pID string, agent s
 		}
 		_, err := db.client.Put(ctx, pKey, &dInsurance)
 		if err != nil {
-			return  err
+			return err
 		}
 		return nil
 	}
-	mInsurance:= db.GetMedicalInsurance(ctx, pID)
+	mInsurance := db.GetMedicalInsurance(ctx, pID)
 	if mInsurance.ID != "" {
 		mInsurance.AgentID = agent
 		pKey := datastore.NameKey("MedicalInsurance", mInsurance.ID, nil)
@@ -419,7 +627,7 @@ func (db DSPatient) AddAgentToInsurance(ctx context.Context, pID string, agent s
 		}
 		_, err := db.client.Put(ctx, pKey, &mInsurance)
 		if err != nil {
-			return  err
+			return err
 		}
 		return nil
 	}

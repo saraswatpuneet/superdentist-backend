@@ -1,0 +1,10 @@
+indexes:
+- kind: DentalInsurance
+  properties:
+  - name: AgentID
+  - name: DueDate
+  
+- kind: MedicalInsurance
+  properties:
+  - name: AgentID
+  - name: DueDate
