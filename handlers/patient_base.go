@@ -536,7 +536,7 @@ func registerPatientInDB(documentFiles *multipart.Form) error {
 			dInsuranceIDs := make([]string, 0)
 			dentalInsurance1 := make([]contracts.PatientDentalInsurance, 0)
 			err := json.Unmarshal([]byte(fieldValue[0]), &dentalInsurance1)
-			if len(dentalInsurance) > 0 && err == nil {
+			if len(dentalInsurance1) > 0 && err == nil {
 				for _, insurance := range dentalInsurance1 {
 					insurance.MemberID = strings.TrimSpace(insurance.MemberID)
 					insurance.ID = insurance.MemberID
@@ -547,13 +547,14 @@ func registerPatientInDB(documentFiles *multipart.Form) error {
 					}
 				}
 				patientDetails.DentalInsuraceID = dInsuranceIDs
+
 			}
 		case "medicalInsurance":
 			mInsuranceIDs := make([]string, 0)
 			medicalInsurance1 := make([]contracts.PatientMedicalInsurance, 0)
 
 			err := json.Unmarshal([]byte(fieldValue[0]), &medicalInsurance1)
-			if len(medicalInsurance) > 0 && err == nil {
+			if len(medicalInsurance1) > 0 && err == nil {
 				for _, insurance := range medicalInsurance1 {
 					insurance.GroupNumber = strings.TrimSpace(insurance.GroupNumber)
 					insurance.SSN = strings.TrimSpace(insurance.SSN)
