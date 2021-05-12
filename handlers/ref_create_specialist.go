@@ -144,7 +144,7 @@ func QRReferral(c *gin.Context) {
 	referralDetails.FromPlaceID = fromClinic
 	referralDetails.ToPlaceID = toClinic
 	referralDetails.IsSummary = false
-	referralDetails.Patient = contracts.Patient{
+	referralDetails.Patient = contracts.PatientStore{
 		FirstName: patientFName,
 		LastName:  patientLName,
 		Phone:     patientPhone,

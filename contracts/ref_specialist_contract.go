@@ -32,6 +32,10 @@ type PatientDentalInsurance struct {
 	Subscriber Subscriber    `json:"subscriber"`
 	CompanyID  string        `json:"companyId"`
 	Status     PatientStatus `json:"status"`
+	ID         string        `json:"id"`
+	AgentID    string        `json:"agentId"`
+	PatientID  string        `json:"patientId"`
+	DueDate    int64         `json:"dueDate"`
 }
 
 // PatientMedicalInsurance ....
@@ -42,6 +46,10 @@ type PatientMedicalInsurance struct {
 	Subscriber  Subscriber    `json:"subscriber"`
 	SSN         string        `json:"ssn"`
 	Status      PatientStatus `json:"status"`
+	ID          string        `json:"id"`
+	AgentID     string        `json:"agentId"`
+	PatientID   string        `json:"patientId"`
+	DueDate     int64         `json:"dueDate"`
 }
 
 // notes: clinic info, tax id, group npi, provider name, provider npi,
@@ -63,29 +71,56 @@ type PatientInsuranceAgent struct {
 
 // Patient ....
 type Patient struct {
-	PatientID        string                    `json:"patientId" valid:"required"`
-	FirstName        string                    `json:"firstName" valid:"required"`
-	LastName         string                    `json:"lastName" valid:"required"`
-	Dob              DOB                       `json:"dob"`
-	Email            string                    `json:"email" valid:"required"`
-	Phone            string                    `json:"phone" valid:"required"`
-	SSN              string                    `json:"_"`
-	DentalInsurance  []PatientDentalInsurance  `json:"dentalInsurance" datastore:"dentalInsurance,noindex"`
-	MedicalInsurance []PatientMedicalInsurance `json:"medicalInsurance" datastore:"medicalInsurance,noindex"`
-	GDName           string                    `json:"gdName" valid:"required"`
-	SP               string                    `json:"sp" valid:"required"`
-	GD               string                    `json:"gd" valid:"required"`
-	AddressID        string                    `json:"addressId" valid:"required"`
-	ClinicName       string                    `json:"clinicName" valid:"required"`
-	SPName           string                    `json:"spName" valid:"required"`
-	ReferralID       string                    `json:"referralId" valid:"required"`
-	DueDate          int64                     `json:"dueDate"`
-	AppointmentTime  string                    `json:"appointmentTime"`
-	SameDay          bool                      `json:"sameDay"`
-	Status           PatientStatus             `json:"status"`
-	ZipCode          string                    `json:"zipCode"`
-	CreatedOn        int64                     `json:"createdOn"`
-	CreationDate     string                    `json:"creationDate"`
+	PatientID          string                    `json:"patientId" valid:"required"`
+	FirstName          string                    `json:"firstName" valid:"required"`
+	LastName           string                    `json:"lastName" valid:"required"`
+	Dob                DOB                       `json:"dob"`
+	Email              string                    `json:"email" valid:"required"`
+	Phone              string                    `json:"phone" valid:"required"`
+	SSN                string                    `json:"_"`
+	DentalInsurance    []PatientDentalInsurance  `json:"dentalInsurance" datastore:"dentalInsurance,noindex"`
+	MedicalInsurance   []PatientMedicalInsurance `json:"medicalInsurance" datastore:"medicalInsurance,noindex"`
+	GDName             string                    `json:"gdName" valid:"required"`
+	SP                 string                    `json:"sp" valid:"required"`
+	GD                 string                    `json:"gd" valid:"required"`
+	AddressID          string                    `json:"addressId" valid:"required"`
+	ClinicName         string                    `json:"clinicName" valid:"required"`
+	SPName             string                    `json:"spName" valid:"required"`
+	ReferralID         string                    `json:"referralId" valid:"required"`
+	DueDate            int64                     `json:"dueDate"`
+	AppointmentTime    string                    `json:"appointmentTime"`
+	SameDay            bool                      `json:"sameDay"`
+	Status             PatientStatus             `json:"status"`
+	ZipCode            string                    `json:"zipCode"`
+	CreatedOn          int64                     `json:"createdOn"`
+	CreationDate       string                    `json:"creationDate"`
+}
+
+// PatientStore ....
+type PatientStore struct {
+	PatientID          string        `json:"patientId" valid:"required"`
+	FirstName          string        `json:"firstName" valid:"required"`
+	LastName           string        `json:"lastName" valid:"required"`
+	Dob                DOB           `json:"dob"`
+	Email              string        `json:"email" valid:"required"`
+	Phone              string        `json:"phone" valid:"required"`
+	SSN                string        `json:"_"`
+	DentalInsuraceID   []string      `json:"dentalInsuranceId"`
+	MedicalInsuranceID []string      `json:"medicalInsuranceId"`
+	GDName             string        `json:"gdName" valid:"required"`
+	SP                 string        `json:"sp" valid:"required"`
+	GD                 string        `json:"gd" valid:"required"`
+	AddressID          string        `json:"addressId" valid:"required"`
+	ClinicName         string        `json:"clinicName" valid:"required"`
+	SPName             string        `json:"spName" valid:"required"`
+	ReferralID         string        `json:"referralId" valid:"required"`
+	DueDate            int64         `json:"dueDate"`
+	AppointmentTime    string        `json:"appointmentTime"`
+	SameDay            bool          `json:"sameDay"`
+	Status             PatientStatus `json:"status"`
+	ZipCode            string        `json:"zipCode"`
+	CreatedOn          int64         `json:"createdOn"`
+	CreationDate       string        `json:"creationDate"`
 }
 
 // PatientList ....
@@ -146,7 +181,7 @@ type Status struct {
 
 // ReferralDetails ....
 type ReferralDetails struct {
-	Patient       Patient   `json:"patient" valid:"required"`
+	Patient       PatientStore   `json:"patient" valid:"required"`
 	FromAddressID string    `json:"fromAddressId" valid:"required"`
 	ToAddressID   string    `json:"toAddressId" valid:"required"`
 	FromPlaceID   string    `json:"fromPlaceId"`
