@@ -79,7 +79,7 @@ func (db DSPatient) AddPatientInformation(ctx context.Context, patient contracts
 			return "", err
 		}
 	}
-	for _, insurance := range dI {
+	for _, insurance := range mI {
 		pKey := datastore.NameKey("MedicalInsurance", insurance.ID, nil)
 		insurance.PatientID = pIDString
 		insurance.DueDate = patient.DueDate
