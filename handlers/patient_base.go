@@ -106,13 +106,15 @@ func GetAllPatientsForClinic(c *gin.Context) {
 	}
 	if pageSize == 0 {
 		patients := patientDB.GetPatientByAddressID(ctx, addressID)
+		patientsList := patientDB.ReturnPatientsWithDMInsurances(ctx, patients)
 		c.JSON(http.StatusOK, gin.H{
-			constants.RESPONSE_JSON_DATA:   patients,
+			constants.RESPONSE_JSON_DATA:   patientsList,
 			constants.RESPONSDE_JSON_ERROR: nil,
 		})
 	} else {
-		patients, cursor := patientDB.GetPatientByAddressIDPaginate(ctx, addressID, pageSize, cursor)
+		patientStore, cursor := patientDB.GetPatientByAddressIDPaginate(ctx, addressID, pageSize, cursor)
 		var patientsList contracts.PatientList
+		patients := patientDB.ReturnPatientsWithDMInsurances(ctx, patientStore)
 		patientsList.Patients = patients
 		patientsList.CursorPrev = cursorPrev
 		patientsList.CursorNext = cursor
@@ -147,7 +149,7 @@ func GetSinglePatientForClinic(c *gin.Context) {
 		return
 	}
 
-	patients, _, err := patientDB.GetPatientByID(ctx, pID)
+	patients, _, _, err := patientDB.GetPatientByID(ctx, pID)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
@@ -276,15 +278,13 @@ func AddPatientNotes(c *gin.Context) {
 		constants.RESPONSDE_JSON_ERROR: nil,
 	})
 }
-
 // UpdatePatientStatus ....
-func UpdatePatientStatus(c *gin.Context) {
+func UpdateInsurnaceStatus(c *gin.Context) {
 	// Stage 1  Load the incoming request
 	log.Infof("Patient Stuff")
 	ctx := c.Request.Context()
 	// here is we have referral id
-	pID := c.Param("patientId")
-	memberID := c.Query("memberId")
+	insuranceID := c.Param("insuranceId")
 	ctx, span := trace.StartSpan(ctx, "Updating Patient Status")
 	defer span.End()
 	gproject := googleprojectlib.GetGoogleProjectID()
@@ -311,7 +311,7 @@ func UpdatePatientStatus(c *gin.Context) {
 		)
 		return
 	}
-	err = patientDB.UpdatePatientStatus(ctx, pID, pStatus, memberID)
+	err = patientDB.UpdateInsuranceStatus(ctx, insuranceID, pStatus)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusBadRequest,
@@ -324,6 +324,46 @@ func UpdatePatientStatus(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{
 		constants.RESPONSE_JSON_DATA:   "patient status update successful",
+		constants.RESPONSDE_JSON_ERROR: nil,
+	})
+}
+
+// AddInsuranceAgent ....
+func AddInsuranceAgent(c *gin.Context) {
+	// Stage 1  Load the incoming request
+	log.Infof("Patient Stuff")
+	ctx := c.Request.Context()
+	// here is we have referral id
+	insuranceID := c.Param("insuranceId")
+	agentID := c.Param("agentId")
+	ctx, span := trace.StartSpan(ctx, "Updating Patient Agent")
+	defer span.End()
+	gproject := googleprojectlib.GetGoogleProjectID()
+	patientDB := datastoredb.NewPatientHandler()
+	err := patientDB.InitializeDataBase(ctx, gproject)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: fmt.Errorf("Bad data sent to backened"),
+			},
+		)
+		return
+	}
+	err = patientDB.AddAgentToInsurance(ctx, insuranceID, agentID)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: fmt.Errorf("Bad data sent to backened"),
+			},
+		)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		constants.RESPONSE_JSON_DATA:   "agent added successfully",
 		constants.RESPONSDE_JSON_ERROR: nil,
 	})
 }
@@ -429,26 +469,36 @@ func registerPatientInDB(documentFiles *multipart.Form) error {
 			}
 		case "dentalInsurance":
 			dInsuranceIDs := make([]string, 0)
-			err := json.Unmarshal([]byte(fieldValue[0]), &dentalInsurance)
+			dentalInsurance1 := make([]contracts.PatientDentalInsurance, 0)
+			err := json.Unmarshal([]byte(fieldValue[0]), &dentalInsurance1)
 			if len(dentalInsurance) > 0 && err == nil {
-				for idx, insurance := range dentalInsurance {
-					insurance.Status = contracts.PatientStatus{Label: "Pending", Value: "pending"}
+				for _, insurance := range dentalInsurance1 {
+					insurance.MemberID = strings.TrimSpace(insurance.MemberID)
 					insurance.ID = insurance.MemberID
-					dentalInsurance[idx] = insurance
-					dInsuranceIDs = append(dInsuranceIDs, insurance.ID)
+					if insurance.ID != "" && insurance.ID != "0" {
+						insurance.Status = contracts.PatientStatus{Label: "Pending", Value: "pending"}
+						dentalInsurance = append(dentalInsurance, insurance)
+						dInsuranceIDs = append(dInsuranceIDs, insurance.ID)
+					}
 				}
 				patientDetails.DentalInsuraceID = dInsuranceIDs
 			}
 		case "medicalInsurance":
 			mInsuranceIDs := make([]string, 0)
+			medicalInsurance1 := make([]contracts.PatientMedicalInsurance, 0)
 
-			err := json.Unmarshal([]byte(fieldValue[0]), &medicalInsurance)
+			err := json.Unmarshal([]byte(fieldValue[0]), &medicalInsurance1)
 			if len(medicalInsurance) > 0 && err == nil {
-				for idx, insurance := range medicalInsurance {
-					insurance.Status = contracts.PatientStatus{Label: "Pending", Value: "pending"}
+				for _, insurance := range medicalInsurance1 {
+					insurance.GroupNumber = strings.TrimSpace(insurance.GroupNumber)
+					insurance.SSN = strings.TrimSpace(insurance.SSN)
+					insurance.MemberID = strings.TrimSpace(insurance.MemberID)
 					insurance.ID = insurance.MemberID + insurance.GroupNumber + insurance.SSN
-					medicalInsurance[idx] = insurance
-					mInsuranceIDs = append(mInsuranceIDs, insurance.ID)
+					if insurance.ID != "" && insurance.ID != "0" {
+						insurance.Status = contracts.PatientStatus{Label: "Pending", Value: "pending"}
+						medicalInsurance = append(medicalInsurance, insurance)
+						mInsuranceIDs = append(mInsuranceIDs, insurance.ID)
+					}
 				}
 				patientDetails.MedicalInsuranceID = mInsuranceIDs
 			}
