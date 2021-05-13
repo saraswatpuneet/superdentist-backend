@@ -97,9 +97,10 @@ func (sc *Client) WritePatientoGSheet(patient contracts.Patient, sheetID string)
 		pValues = append(pValues, time.Now().String())
 
 	}
-	pValues = append(pValues, patient.Status)
 	vr.Values = append(vr.Values, pValues)
-	_, err := sc.client.Spreadsheets.Values.Append(sheetID, "A:AF", &vr).ValueInputOption("RAW").Do()
+	vr.MajorDimension = "ROWS"
+
+	_, err := sc.client.Spreadsheets.Values.Append(sheetID, "NewPatients!A1:I1", &vr).ValueInputOption("RAW").Do()
 	if err != nil {
 		return err
 	}
