@@ -99,7 +99,7 @@ func (sc *Client) WritePatientoGSheet(patient contracts.Patient, sheetID string)
 	}
 	vr.Values = append(vr.Values, pValues)
 	vr.MajorDimension = "ROWS"
-	rangeWrite := "Patients!A1:A1"
+	rangeWrite := "NewPatients!A1:A1"
 	_, err := sc.client.Spreadsheets.Values.Append(sheetID, rangeWrite, &vr).ValueInputOption("RAW").Do()
 	if err != nil {
 		return err
