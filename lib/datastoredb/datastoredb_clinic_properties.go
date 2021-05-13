@@ -17,7 +17,6 @@ import (
 	"github.com/superdentist/superdentist-backend/lib/geohash"
 	"github.com/superdentist/superdentist-backend/lib/gmaps"
 	"github.com/superdentist/superdentist-backend/lib/helpers"
-	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 )
 
@@ -748,14 +747,15 @@ func (db *DSClinicMeta) GetAllClinicsMetaPaginate(ctx context.Context, pageSize 
 		qP = qP.Start(cursor)
 	}
 	iteratorClinics := db.client.Run(ctx, qP)
-	var address contracts.PhysicalClinicMapLocation
-	_, err := iteratorClinics.Next(&address)
-	for err == nil {
+	for {
+		var address contracts.PhysicalClinicMapLocation
+		_, err := iteratorClinics.Next(&address)
+		if err != nil {
+			log.Printf("query ended %q: %v", cursor, err)
+			break
+		}
 		returnedAddresses = append(returnedAddresses, address)
-		_, err = iteratorClinics.Next(&address)
-	}
-	if err != iterator.Done {
-		return nil, "", err
+		// Do something with the Person p
 	}
 	nextCursor, err := iteratorClinics.Cursor()
 	if err != nil {

@@ -226,16 +226,20 @@ func (db DSPatient) GetPatientByFiltersPaginate(ctx context.Context, addressID s
 	if cursor1 != "" {
 		cursor, err := datastore.DecodeCursor(cursor1)
 		if err != nil {
-			log.Fatalf("Bad cursor %q: %v", cursor, err)
+			log.Printf("Bad cursor %q: %v", cursor, err)
 		}
 		qP = qP.Start(cursor)
 	}
 	iteratorDental := db.client.Run(ctx, qP)
-	var dentalOne contracts.PatientDentalInsurance
-	_, err := iteratorDental.Next(&dentalOne)
-	for err == nil {
+	for {
+		var dentalOne contracts.PatientDentalInsurance
+		_, err := iteratorDental.Next(&dentalOne)
+		if err != nil {
+			log.Printf("query ended %q: %v", cursor, err)
+			break
+		}
 		dentalInsurance = append(dentalInsurance, dentalOne)
-		_, err = iteratorDental.Next(&dentalOne)
+		// Do something with the Person p
 	}
 	nextCursor, err := iteratorDental.Cursor()
 	if err != nil {
@@ -258,16 +262,20 @@ func (db DSPatient) GetPatientByFiltersPaginate(ctx context.Context, addressID s
 	if cursor2 != "" {
 		cursor, err := datastore.DecodeCursor(cursor2)
 		if err != nil {
-			log.Fatalf("Bad cursor %q: %v", cursor, err)
+			log.Printf("Bad cursor %q: %v", cursor, err)
 		}
 		qP = qP.Start(cursor)
 	}
 	iteratorMedical := db.client.Run(ctx, qP)
-	var medicalOne contracts.PatientMedicalInsurance
-	_, err = iteratorMedical.Next(&medicalOne)
-	for err == nil {
+	for {
+		var medicalOne contracts.PatientMedicalInsurance
+		_, err := iteratorMedical.Next(&medicalOne)
+		if err != nil {
+			log.Printf("query ended %q: %v", cursor, err)
+			break
+		}
 		medicalInsurance = append(medicalInsurance, medicalOne)
-		_, err = iteratorDental.Next(&dentalOne)
+		// Do something with the Person p
 	}
 	nextCursor, err = iteratorDental.Cursor()
 	if err != nil {
@@ -348,8 +356,8 @@ func (db DSPatient) GetPatientByAddressID(ctx context.Context, addressID string)
 }
 
 // GetPatientByAddressIDPaginate ...
-func (db DSPatient) GetPatientByAddressIDPaginate(ctx context.Context, addressID string, pageSize int, cursor string) ([]contracts.PatientStore, string) {
-	patients := make([]contracts.PatientStore, 0)
+func (db DSPatient) GetPatientByAddressIDPaginate(ctx context.Context, addressID string, pageSize int, cursor string) (map[string]contracts.PatientStore, string) {
+	patients := make(map[string]contracts.PatientStore, 0)
 	if cursor == "" {
 		cursor = "cursor_" + "cursor_" + "cursor_"
 	}
@@ -364,18 +372,22 @@ func (db DSPatient) GetPatientByAddressIDPaginate(ctx context.Context, addressID
 	if cursor1 != "" {
 		cursor, err := datastore.DecodeCursor(cursor1)
 		if err != nil {
-			log.Fatalf("Bad cursor %q: %v", cursor, err)
+			log.Printf("Bad cursor %q: %v", cursor, err)
 		}
 		qP = qP.Start(cursor)
 	}
-	iteratorPatient := db.client.Run(ctx, qP)
-	var onePatient contracts.PatientStore
-	_, err := iteratorPatient.Next(&onePatient)
-	for err == nil {
-		patients = append(patients, onePatient)
-		_, err = iteratorPatient.Next(&onePatient)
+	iteratorPatient1 := db.client.Run(ctx, qP)
+	for {
+		var onePatient contracts.PatientStore
+		_, err := iteratorPatient1.Next(&onePatient)
+		if err != nil {
+			log.Printf("query ended %q: %v", cursor, err)
+			break
+		}
+		patients[onePatient.PatientID] = onePatient
+		// Do something with the Person p
 	}
-	nextCursor, err := iteratorPatient.Cursor()
+	nextCursor, err := iteratorPatient1.Cursor()
 	if err != nil {
 		mainCursor += "cursor_" + ""
 	} else {
@@ -390,17 +402,22 @@ func (db DSPatient) GetPatientByAddressIDPaginate(ctx context.Context, addressID
 	if cursor2 != "" {
 		cursor, err := datastore.DecodeCursor(cursor2)
 		if err != nil {
-			log.Fatalf("Bad cursor %q: %v", cursor, err)
+			log.Printf("Bad cursor %q: %v", cursor, err)
 		}
 		qP = qP.Start(cursor)
 	}
-	iteratorPatient = db.client.Run(ctx, qP)
-	_, err = iteratorPatient.Next(&onePatient)
-	for err == nil {
-		patients = append(patients, onePatient)
-		_, err = iteratorPatient.Next(&onePatient)
+	iteratorPatient2 := db.client.Run(ctx, qP)
+	for {
+		var onePatient contracts.PatientStore
+		_, err := iteratorPatient2.Next(&onePatient)
+		if err != nil {
+			log.Printf("query ended %q: %v", cursor, err)
+			break
+		}
+		patients[onePatient.PatientID] = onePatient
+		// Do something with the Person p
 	}
-	nextCursor, err = iteratorPatient.Cursor()
+	nextCursor, err = iteratorPatient2.Cursor()
 	if err != nil {
 		mainCursor += "cursor_" + ""
 	} else {
@@ -415,17 +432,25 @@ func (db DSPatient) GetPatientByAddressIDPaginate(ctx context.Context, addressID
 	if cursor3 != "" {
 		cursor, err := datastore.DecodeCursor(cursor3)
 		if err != nil {
-			log.Fatalf("Bad cursor %q: %v", cursor, err)
+			log.Printf("Bad cursor %q: %v", cursor, err)
 		}
 		qP = qP.Start(cursor)
 	}
-	iteratorPatient = db.client.Run(ctx, qP)
-	_, err = iteratorPatient.Next(&onePatient)
-	for err == nil {
-		patients = append(patients, onePatient)
-		_, err = iteratorPatient.Next(&onePatient)
+	iteratorPatient3 := db.client.Run(ctx, qP)
+	for {
+		var onePatient contracts.PatientStore
+		_, err := iteratorPatient3.Next(&onePatient)
+		if err != nil {
+			log.Printf("query ended %q: %v", cursor, err)
+			break
+		}
+		if onePatient.PatientID == "2a4f4d8f-925f-11eb-93a0-3293553715c5" {
+			log.Println("2a4f4d8f-925f-11eb-93a0-3293553715c5")
+		}
+		patients[onePatient.PatientID] = onePatient
+		// Do something with the Person p
 	}
-	nextCursor, err = iteratorPatient.Cursor()
+	nextCursor, err = iteratorPatient3.Cursor()
 	if err != nil {
 		mainCursor += "cursor_" + ""
 	} else {
@@ -433,15 +458,29 @@ func (db DSPatient) GetPatientByAddressIDPaginate(ctx context.Context, addressID
 	}
 	return patients, mainCursor
 }
-func (db DSPatient) ReturnPatientsWithDMInsurances(ctx context.Context, patientStores []contracts.PatientStore) []contracts.Patient {
+func (db DSPatient) ReturnPatientsWithDMInsurances(ctx context.Context, patientStores map[string]contracts.PatientStore) []contracts.Patient {
 	patients := make([]contracts.Patient, 0)
 	for _, patientData := range patientStores {
+		if patientData.PatientID == "2a4f4d8f-925f-11eb-93a0-3293553715c5" {
+			log.Println("2a4f4d8f-925f-11eb-93a0-3293553715c5")
+		}
 		patient := db.ParsePatient(ctx, patientData)
 		patients = append(patients, patient)
 	}
 	return patients
 }
 
+func (db DSPatient) ReturnPatientsWithDMInsurancesArr(ctx context.Context, patientStores []contracts.PatientStore) []contracts.Patient {
+	patients := make([]contracts.Patient, 0)
+	for _, patientData := range patientStores {
+		if patientData.PatientID == "2a4f4d8f-925f-11eb-93a0-3293553715c5" {
+			log.Println("2a4f4d8f-925f-11eb-93a0-3293553715c5")
+		}
+		patient := db.ParsePatient(ctx, patientData)
+		patients = append(patients, patient)
+	}
+	return patients
+}
 func (db DSPatient) ParsePatient(ctx context.Context, patientData contracts.PatientStore) contracts.Patient {
 	var patientStore contracts.Patient
 	patientStore.AddressID = patientData.AddressID

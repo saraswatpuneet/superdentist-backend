@@ -3,13 +3,13 @@ package datastoredb
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
 	"strings"
 
 	"github.com/superdentist/superdentist-backend/contracts"
 	"github.com/superdentist/superdentist-backend/global"
 	"github.com/superdentist/superdentist-backend/lib/helpers"
-	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 
 	"cloud.google.com/go/datastore"
@@ -206,14 +206,15 @@ func (db *DSReferral) GetAllReferralsGDPaginate(ctx context.Context, addressID s
 		qP = qP.Filter("FromAddressID =", addressID).Filter("IsDirty =", false)
 	}
 	iteratorClinics := db.client.Run(ctx, qP)
-	var referral contracts.DSReferral
-	_, err := iteratorClinics.Next(&referral)
-	for err == nil {
+	for {
+		var referral contracts.DSReferral
+		_, err := iteratorClinics.Next(&referral)
+		if err != nil {
+			log.Printf("query ended %q: %v", cursor, err)
+			break
+		}
 		returnedReferrals = append(returnedReferrals, referral)
-		_, err = iteratorClinics.Next(&referral)
-	}
-	if err != iterator.Done {
-		return returnedReferrals, "", err
+		// Do something with the Person p
 	}
 	nextCursor, err := iteratorClinics.Cursor()
 	if err != nil {
@@ -256,7 +257,6 @@ func (db *DSReferral) GetAllReferralsSP(ctx context.Context, addressID string, c
 	return returnedReferrals, nil
 }
 
-
 // GetAllReferralsSPPaginate .....
 func (db *DSReferral) GetAllReferralsSPPaginate(ctx context.Context, addressID string, clinicName string, pageSize int, cursor string) ([]contracts.DSReferral, string, error) {
 	returnedReferrals := make([]contracts.DSReferral, 0)
@@ -275,14 +275,15 @@ func (db *DSReferral) GetAllReferralsSPPaginate(ctx context.Context, addressID s
 		qP = qP.Filter("ToPlaceID =", addressID).Filter("IsDirty =", false)
 	}
 	iteratorClinics := db.client.Run(ctx, qP)
-	var referral contracts.DSReferral
-	_, err := iteratorClinics.Next(&referral)
-	for err == nil {
+	for {
+		var referral contracts.DSReferral
+		_, err := iteratorClinics.Next(&referral)
+		if err != nil {
+			log.Printf("query ended %q: %v", cursor, err)
+			break
+		}
 		returnedReferrals = append(returnedReferrals, referral)
-		_, err = iteratorClinics.Next(&referral)
-	}
-	if err != iterator.Done {
-		return returnedReferrals, "", err
+		// Do something with the Person p
 	}
 	nextCursor, err := iteratorClinics.Cursor()
 	if err != nil {

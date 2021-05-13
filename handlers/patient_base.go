@@ -21,6 +21,7 @@ import (
 	"github.com/superdentist/superdentist-backend/contracts"
 	"github.com/superdentist/superdentist-backend/lib/datastoredb"
 	"github.com/superdentist/superdentist-backend/lib/googleprojectlib"
+	"github.com/superdentist/superdentist-backend/lib/gsheets"
 	"github.com/superdentist/superdentist-backend/lib/identity"
 	"github.com/superdentist/superdentist-backend/lib/sms"
 	"github.com/superdentist/superdentist-backend/lib/storage"
@@ -157,7 +158,7 @@ func GetAllPatientsForClinic(c *gin.Context) {
 			})
 		} else {
 			patients := patientDB.GetPatientByAddressID(ctx, addressID)
-			patientsList := patientDB.ReturnPatientsWithDMInsurances(ctx, patients)
+			patientsList := patientDB.ReturnPatientsWithDMInsurancesArr(ctx, patients)
 			c.JSON(http.StatusOK, gin.H{
 				constants.RESPONSE_JSON_DATA:   patientsList,
 				constants.RESPONSDE_JSON_ERROR: nil,
@@ -660,12 +661,36 @@ func registerPatientInDB(documentFiles *multipart.Form) error {
 		return err
 	}
 	patientFolder := key
-	// googleSheet := gsheets.NewSheetsHandler()
-	// googleSheet.InitializeSheetsClient(ctx, gproject)
-	// err = googleSheet.WritePatientoGSheet(patientDetails, "12A93KjDeO4eVEUYwunzLZxKx4HkqjI19HrCDjhp85Q8")
-	// if err != nil {
-	// 	log.Errorf("Sheet write error: %v", err.Error())
-	// }
+	var patientStore contracts.Patient
+	patientStore.AddressID = patientDetails.AddressID
+	patientStore.ClinicName = patientDetails.ClinicName
+	patientStore.FirstName = patientDetails.FirstName
+	patientStore.LastName = patientDetails.LastName
+	patientStore.Dob = patientDetails.Dob
+	patientStore.Email = patientDetails.Email
+	patientStore.GD = patientDetails.GD
+	patientStore.GDName = patientDetails.GDName
+	patientStore.SP = patientDetails.SP
+	patientStore.SPName = patientDetails.SPName
+	patientStore.SSN = patientDetails.SSN
+	patientStore.SameDay = patientDetails.SameDay
+	patientStore.Phone = patientDetails.Phone
+	patientStore.SSN = patientDetails.SSN
+	patientStore.ZipCode = patientDetails.ZipCode
+	patientStore.Status = patientDetails.Status
+	patientStore.DueDate = patientDetails.DueDate
+	patientStore.AppointmentTime = patientDetails.AppointmentTime
+	patientStore.CreatedOn = patientDetails.CreatedOn
+	patientStore.CreationDate = patientDetails.CreationDate
+	patientStore.PatientID = patientDetails.PatientID
+	patientStore.DentalInsurance = dentalInsurance
+	patientStore.MedicalInsurance = medicalInsurance
+	googleSheet := gsheets.NewSheetsHandler()
+	googleSheet.InitializeSheetsClient(ctx, gproject)
+	err = googleSheet.WritePatientoGSheet(patientStore, "12A93KjDeO4eVEUYwunzLZxKx4HkqjI19HrCDjhp85Q8")
+	if err != nil {
+		log.Errorf("Sheet write error: %v", err.Error())
+	}
 	if documentFiles != nil && documentFiles.File != nil && len(documentFiles.File) > 0 {
 		for _, fheaders := range documentFiles.File {
 			for _, hdr := range fheaders {
