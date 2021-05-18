@@ -123,6 +123,13 @@ type PatientStore struct {
 	CreationDate       string        `json:"creationDate"`
 }
 
+// AgentInsuranceMap ...
+type AgentInsuranceMap struct {
+	AgentID  string `json:"agentId"`
+	InsuranceID  string `json:"insuranceId"`
+
+}
+
 // PatientFilters ...
 
 type PatientFilters struct {

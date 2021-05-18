@@ -99,6 +99,7 @@ func SDRouter() (*gin.Engine, error) {
 		patientGroup.GET("/list/:addressId", handlers.GetAllPatientsForClinic)
 		patientGroup.GET("/info/:patientId", handlers.GetSinglePatientForClinic)
 		patientGroup.POST("/insurance/:insuranceId/agent/:agentId", handlers.AddInsuranceAgent)
+		patientGroup.POST("/addAgents", handlers.AddInsuranceAgents)
 		patientGroup.POST("/status/:insuranceId", handlers.UpdateInsurnaceStatus)
 		patientGroup.POST("/notes/:patientId", handlers.AddPatientNotes)
 		patientGroup.GET("/notes/:patientId", handlers.GetPatientNotes)
