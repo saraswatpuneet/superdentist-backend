@@ -90,13 +90,16 @@ func GetAllPatientsForClinic(c *gin.Context) {
 	startTime := c.Query("startTime")
 	endTime := c.Query("endTime")
 	agentID := c.Query("agentId")
+	providers := c.Query("providers")
+	companies := make([]string, 0)
+	json.Unmarshal([]byte(providers), &companies)
 	var startTimeStamp int64
 	var endTimeStamp int64
-
 	startTimeStamp = 0
 	endTimeStamp = 0
 	var err error
 	var filters contracts.PatientFilters
+	filters.Companies= companies
 	if startTime != "" {
 		startTimeStamp, err = strconv.ParseInt(startTime, 10, 64)
 		if err != nil {
@@ -128,7 +131,7 @@ func GetAllPatientsForClinic(c *gin.Context) {
 	}
 	filters.AgentID = agentID
 	filteringRequested := false
-	if filters.StartTime > 0 || filters.AgentID != "" {
+	if filters.StartTime > 0 || filters.AgentID != "" || (companies != nil && len(companies) > 0) {
 		filteringRequested = true
 	}
 	patientDB := datastoredb.NewPatientHandler()

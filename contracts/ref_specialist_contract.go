@@ -125,9 +125,8 @@ type PatientStore struct {
 
 // AgentInsuranceMap ...
 type AgentInsuranceMap struct {
-	AgentID  string `json:"agentId"`
-	InsuranceID  string `json:"insuranceId"`
-
+	AgentID     string `json:"agentId"`
+	InsuranceID string `json:"insuranceId"`
 }
 
 // PatientFilters ...
@@ -136,6 +135,7 @@ type PatientFilters struct {
 	StartTime int64
 	EndTime   int64
 	AgentID   string
+	Companies []string
 }
 
 // PatientList ....
