@@ -434,6 +434,35 @@ func AddInsuranceAgent(c *gin.Context) {
 	})
 }
 
+// ListInsuranceCompanies ....
+func ListInsuranceCompanies(c *gin.Context) {
+	// Stage 1  Load the incoming request
+	log.Infof("Patient Stuff")
+	ctx := c.Request.Context()
+	// here is we have referral id
+	ctx, span := trace.StartSpan(ctx, "Updating Patient Agent")
+	defer span.End()
+	gproject := googleprojectlib.GetGoogleProjectID()
+	patientDB := datastoredb.NewPatientHandler()
+	err := patientDB.InitializeDataBase(ctx, gproject)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: fmt.Errorf("Bad data sent to backened"),
+			},
+		)
+		return
+	}
+	companies, _ := patientDB.ListInsuranceCompanies(ctx)
+
+	c.JSON(http.StatusOK, gin.H{
+		constants.RESPONSE_JSON_DATA:   companies,
+		constants.RESPONSDE_JSON_ERROR: nil,
+	})
+}
+
 // AddInsuranceAgents ....
 func AddInsuranceAgents(c *gin.Context) {
 	// Stage 1  Load the incoming request

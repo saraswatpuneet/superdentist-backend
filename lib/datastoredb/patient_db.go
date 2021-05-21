@@ -10,6 +10,7 @@ import (
 	"github.com/superdentist/superdentist-backend/contracts"
 	"github.com/superdentist/superdentist-backend/global"
 	"github.com/superdentist/superdentist-backend/lib/helpers"
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 
 	"cloud.google.com/go/datastore"
@@ -675,4 +676,44 @@ func (db DSPatient) AddAgentToInsurance(ctx context.Context, pID string, agent s
 		return nil
 	}
 	return fmt.Errorf("insurance not found")
+}
+
+// UpdatePatientStatus ....
+func (db DSPatient) ListInsuranceCompanies(ctx context.Context) ([]string, error) {
+	qP := datastore.NewQuery("DentalInsurance").Project("Company").DistinctOn("Company")
+	if global.Options.DSName != "" {
+		qP = qP.Namespace(global.Options.DSName)
+	}
+	it := db.client.Run(ctx, qP)
+	companies := make(map[string]string, 0)
+	for {
+		var dentalOne contracts.PatientDentalInsurance
+		if _, err := it.Next(&dentalOne); err == iterator.Done {
+			break
+		} else if err != nil {
+			log.Printf("end of companies")
+		}
+		comp := strings.TrimSpace(dentalOne.Company)
+		companies[comp]= comp
+	}
+	qP = datastore.NewQuery("MedicalInsurance").Project("Company").DistinctOn("Company")
+	if global.Options.DSName != "" {
+		qP = qP.Namespace(global.Options.DSName)
+	}
+	it = db.client.Run(ctx, qP)
+	for {
+		var medOne contracts.PatientMedicalInsurance
+		if _, err := it.Next(&medOne); err == iterator.Done {
+			break
+		} else if err != nil {
+			log.Printf("end of companies")
+		}
+		comp := strings.TrimSpace(medOne.Company)
+		companies[comp]= comp
+	}
+	returnedCompanies := make([]string, 0)
+	for _, value := range companies{
+		returnedCompanies= append(returnedCompanies, value)
+	}
+	return returnedCompanies, nil
 }
