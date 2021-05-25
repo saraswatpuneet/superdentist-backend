@@ -251,6 +251,7 @@
       "key": "D2000-D2999",
       "label": "RESTORATIVE",
       "breakDownKeys": [
+        "D2140",
         "D2330",
         "D2331",
         "D2332",
@@ -259,6 +260,7 @@
         "D2391",
         "D2392",
         "D2393",
+        "D2510",
         "D2394",
         "D2610",
         "D2620",
@@ -292,6 +294,11 @@
         "D2999"
       ],
       "breakDowns": {
+        "D2140":{
+          "key": "D2140",
+          "value": "Amalgam One Surface, Primary or Permanent"
+
+        },
         "D2330": {
           "key": "D2330",
           "label": "Resin Composite One Surface Anterior"
@@ -327,6 +334,10 @@
         "D2394": {
           "key": "D2394",
           "label": "Resin Composite Four/More Surfaces Posterior"
+        },
+        "D2510":{
+          "key": "D2510",
+          "value": "Inlay Metallic One surface"
         },
         "D2610": {
           "key": "D2610",
@@ -1705,6 +1716,7 @@
       "key": "D8000-D8999",
       "label": "ORTHODONTICS",
       "breakDownKeys": [
+        "D8090",
         "D8696",
         "D8697",
         "D8698",
@@ -1715,6 +1727,10 @@
         "D8704"
       ],
       "breakDowns": {
+        "D8090": {
+          "key": "D8090",
+          "label": "Comprehensive Orthodontic Treatment(Adult Denticon)"
+        },
         "D8696": {
           "key": "D8696",
           "label": "Repair Of Ortho Appliance - Maxillary"
