@@ -19,6 +19,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/superdentist/superdentist-backend/constants"
 	"github.com/superdentist/superdentist-backend/contracts"
+	"github.com/superdentist/superdentist-backend/helpers"
 	"github.com/superdentist/superdentist-backend/lib/datastoredb"
 	"github.com/superdentist/superdentist-backend/lib/googleprojectlib"
 	"github.com/superdentist/superdentist-backend/lib/gsheets"
@@ -99,7 +100,7 @@ func GetAllPatientsForClinic(c *gin.Context) {
 	endTimeStamp = 0
 	var err error
 	var filters contracts.PatientFilters
-	filters.Companies= companies
+	filters.Companies = companies
 	if startTime != "" {
 		startTimeStamp, err = strconv.ParseInt(startTime, 10, 64)
 		if err != nil {
@@ -140,7 +141,9 @@ func GetAllPatientsForClinic(c *gin.Context) {
 		pageSize = 0
 	}
 	cursor := c.Query("cursor")
-	cursorPrev := cursor
+	if cursor != "" {
+		cursor, _ = helpers.DecryptAndDecode(cursor)
+	}
 	err = patientDB.InitializeDataBase(ctx, gproject)
 	if err != nil {
 		c.AbortWithStatusJSON(
@@ -172,8 +175,7 @@ func GetAllPatientsForClinic(c *gin.Context) {
 			patients, cursor := patientDB.GetPatientByFiltersPaginate(ctx, addressID, filters, pageSize, cursor)
 			var patientsList contracts.PatientList
 			patientsList.Patients = patients
-			patientsList.CursorPrev = cursorPrev
-			patientsList.CursorNext = cursor
+			patientsList.CursorNext, _ = helpers.EncryptAndEncode(cursor)
 			c.JSON(http.StatusOK, gin.H{
 				constants.RESPONSE_JSON_DATA:   patientsList,
 				constants.RESPONSDE_JSON_ERROR: nil,
@@ -183,8 +185,7 @@ func GetAllPatientsForClinic(c *gin.Context) {
 			var patientsList contracts.PatientList
 			patients := patientDB.ReturnPatientsWithDMInsurances(ctx, patientStore)
 			patientsList.Patients = patients
-			patientsList.CursorPrev = cursorPrev
-			patientsList.CursorNext = cursor
+			patientsList.CursorNext, _ = helpers.EncryptAndEncode(cursor)
 			c.JSON(http.StatusOK, gin.H{
 				constants.RESPONSE_JSON_DATA:   patientsList,
 				constants.RESPONSDE_JSON_ERROR: nil,

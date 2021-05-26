@@ -28,6 +28,7 @@ import (
 	"github.com/superdentist/superdentist-backend/constants"
 	"github.com/superdentist/superdentist-backend/contracts"
 	"github.com/superdentist/superdentist-backend/global"
+	"github.com/superdentist/superdentist-backend/helpers"
 	"github.com/superdentist/superdentist-backend/lib/datastoredb"
 	"github.com/superdentist/superdentist-backend/lib/gmaps"
 	"github.com/superdentist/superdentist-backend/lib/googleprojectlib"
@@ -758,7 +759,9 @@ func GetAllReferralsGD(c *gin.Context) {
 		pageSize = 0
 	}
 	cursor := c.Query("cursor")
-	cursorPrev := cursor
+	if cursor != "" {
+		cursor, _ = helpers.DecryptAndDecode(cursor)
+	}
 	ctx := c.Request.Context()
 	_, _, gproject, err := getUserDetails(ctx, c.Request)
 	if err != nil {
@@ -865,8 +868,7 @@ func GetAllReferralsGD(c *gin.Context) {
 		}
 		var allReferrals contracts.AllReferrals
 		allReferrals.Referralls = dsReferrals
-		allReferrals.CursorPrev = cursorPrev
-		allReferrals.CursorNext = cursor
+		allReferrals.CursorNext, _ = helpers.EncryptAndEncode(cursor)
 		c.JSON(http.StatusOK, gin.H{
 			constants.RESPONSE_JSON_DATA:   allReferrals,
 			constants.RESPONSDE_JSON_ERROR: nil,
@@ -885,7 +887,9 @@ func GetAllReferralsSP(c *gin.Context) {
 		pageSize = 0
 	}
 	cursor := c.Query("cursor")
-	cursorPrev := cursor
+	if cursor != "" {
+		cursor, _ = helpers.DecryptAndDecode(cursor)
+	}
 	ctx := c.Request.Context()
 	_, _, gproject, err := getUserDetails(ctx, c.Request)
 	if err != nil {
@@ -963,8 +967,7 @@ func GetAllReferralsSP(c *gin.Context) {
 		}
 		var allReferrals contracts.AllReferrals
 		allReferrals.Referralls = dsReferrals
-		allReferrals.CursorNext = cursor
-		allReferrals.CursorPrev = cursorPrev
+		allReferrals.CursorNext, _ = helpers.EncryptAndEncode(cursor)
 		c.JSON(http.StatusOK, gin.H{
 			constants.RESPONSE_JSON_DATA:   allReferrals,
 			constants.RESPONSDE_JSON_ERROR: nil,

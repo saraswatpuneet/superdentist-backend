@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/base64"
-	"errors"
 	"fmt"
 	"image/jpeg"
 	"image/png"
@@ -25,7 +24,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/superdentist/superdentist-backend/constants"
 	"github.com/superdentist/superdentist-backend/contracts"
-	"github.com/superdentist/superdentist-backend/global"
+	"github.com/superdentist/superdentist-backend/helpers"
 	"github.com/superdentist/superdentist-backend/lib/datastoredb"
 	"github.com/superdentist/superdentist-backend/lib/gmaps"
 	"github.com/superdentist/superdentist-backend/lib/googleprojectlib"
@@ -100,7 +99,7 @@ func QRReferral(c *gin.Context) {
 	dobDay := c.Query("day")
 	from := c.Query("from")
 	to := c.Query("to")
-	decryptedKey, err := decrypt(secureKey)
+	decryptedKey, err := helpers.DecryptAndDecode(secureKey)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
@@ -502,24 +501,4 @@ func processReferral(referralDetails contracts.ReferralDetails, gproject string,
 	//	return nil, nil
 	//}
 	return &dsReferral, &returnComments
-}
-
-func decrypt(ciphertext64 string) (string, error) {
-	ciphertext, err := base64.URLEncoding.DecodeString(ciphertext64)
-	if err != nil {
-		return "", err
-	}
-
-	nonceSize := global.Options.GCMQR.NonceSize()
-	if len(ciphertext) < nonceSize {
-		return "", errors.New("ciphertext too short")
-	}
-	nonce, ciphertext := ciphertext[:nonceSize], ciphertext[nonceSize:]
-
-	b, err := global.Options.GCMQR.Open(nil, nonce, ciphertext, nil)
-	if err != nil {
-		return "", err
-	}
-
-	return string(b), err
 }

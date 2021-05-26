@@ -51,7 +51,6 @@ type PhysicalClinicMapLocation struct {
 }
 type ClinicList struct {
 	Clinics []PhysicalClinicMapLocation `json:"clinics"`
-	CursorPrev  string                      `json:"cursorPrev"`
 	CursorNext  string                      `json:"cursorNext"`
 
 }

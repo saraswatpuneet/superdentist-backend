@@ -3,7 +3,6 @@ package handlers
 import (
 	"bytes"
 	"context"
-	"crypto/rand"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -22,6 +21,7 @@ import (
 	"github.com/superdentist/superdentist-backend/constants"
 	"github.com/superdentist/superdentist-backend/contracts"
 	"github.com/superdentist/superdentist-backend/global"
+	"github.com/superdentist/superdentist-backend/helpers"
 	"github.com/superdentist/superdentist-backend/lib/datastoredb"
 	"github.com/superdentist/superdentist-backend/lib/gmaps"
 	"github.com/superdentist/superdentist-backend/lib/googleprojectlib"
@@ -89,7 +89,9 @@ func GetAllClinicNameAddressID(c *gin.Context) {
 		pageSize = 0
 	}
 	cursor := c.Query("cursor")
-	cursorPrev := cursor
+	if cursor != "" {
+		cursor, _ = helpers.DecryptAndDecode(cursor)
+	}
 	_, _, gproject, err := getUserDetails(ctx, c.Request)
 	if err != nil {
 		c.AbortWithStatusJSON(
@@ -145,8 +147,7 @@ func GetAllClinicNameAddressID(c *gin.Context) {
 		}
 		var results contracts.ClinicList
 		results.Clinics = registeredClinics
-		results.CursorPrev = cursorPrev
-		results.CursorNext = cursor
+		results.CursorNext, _ = helpers.EncryptAndEncode(cursor)
 
 		c.JSON(http.StatusOK, gin.H{
 			constants.RESPONSE_JSON_DATA:   results,
@@ -1306,7 +1307,7 @@ func GenerateQRAndStore(ctx context.Context,
 		break
 	}
 	key := "superdentist+true+10074"
-	secureKey, err := encryptAndEncode(key)
+	secureKey, err := helpers.EncryptAndEncode(key)
 	if err != nil {
 		log.Errorf("failed to encode qr url: %v", err.Error())
 	}
@@ -1370,16 +1371,6 @@ func GenerateQRAndStore(ctx context.Context,
 	}
 	buckerW.Close()
 	return png
-}
-
-func encryptAndEncode(toencode string) (string, error) {
-	nonce := make([]byte, global.Options.GCMQR.NonceSize())
-	if _, err := io.ReadFull(rand.Reader, nonce); err != nil {
-		return "", err
-	}
-	ciphertext := global.Options.GCMQR.Seal(nil, nonce, []byte(toencode), nil)
-	str := base64.URLEncoding.EncodeToString(append(nonce, ciphertext...))
-	return str, nil
 }
 
 func createQRsAndSave(project string,
@@ -1520,7 +1511,7 @@ func addFavoriteToNewClinics(project string, currentClinic contracts.PhysicalCli
 			jsonString, err := json.Marshal(defineMap)
 			currentPlaceIDS := string(jsonString)
 			key := "superdentist+true+10074" + "+" + fav
-			secureKey, err := encryptAndEncode(key)
+			secureKey, err := helpers.EncryptAndEncode(key)
 			if err != nil {
 				log.Errorf("failed to encode qr url: %v", err.Error())
 			}

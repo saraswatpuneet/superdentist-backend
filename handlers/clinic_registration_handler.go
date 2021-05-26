@@ -13,6 +13,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/superdentist/superdentist-backend/constants"
 	"github.com/superdentist/superdentist-backend/contracts"
+	"github.com/superdentist/superdentist-backend/helpers"
 	"github.com/superdentist/superdentist-backend/lib/datastoredb"
 	"github.com/superdentist/superdentist-backend/lib/gmaps"
 	"github.com/superdentist/superdentist-backend/lib/googleprojectlib"
@@ -167,7 +168,7 @@ func DirectJoinHandler(c *gin.Context) {
 	log.Infof("Received QR referral request")
 	secureKey := c.Query("secureKey")
 	places := c.Query("places")
-	decryptedKey, err := decrypt(secureKey)
+	decryptedKey, err := helpers.DecryptAndDecode(secureKey)
 	if err != nil {
 		c.AbortWithStatusJSON(
 			http.StatusInternalServerError,
@@ -801,7 +802,7 @@ func getUserDetailsAnonymous(ctx context.Context, request *http.Request) (string
 	return userID, err
 }
 
-func getProviderID(ctx context.Context, request *http.Request) (string , error) {
+func getProviderID(ctx context.Context, request *http.Request) (string, error) {
 	providerID, err := jwt.GetProviderID(request)
 	return providerID, err
 }

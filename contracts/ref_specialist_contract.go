@@ -142,7 +142,6 @@ type PatientFilters struct {
 type PatientList struct {
 	Patients   []Patient `json:"patients"`
 	CursorNext string    `json:"cursorNext"`
-	CursorPrev string    `json:"cursorPrev"`
 }
 
 // SelectedDentalCodes ....
@@ -261,7 +260,6 @@ type DSReferral struct {
 
 type AllReferrals struct {
 	Referralls []DSReferral `json:"referrals"`
-	CursorPrev string       `json:"cursorPrev"`
 	CursorNext string       `json:"cursorNext"`
 }
 
