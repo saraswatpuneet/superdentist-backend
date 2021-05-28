@@ -108,15 +108,15 @@ func SearchPatientByNames(c *gin.Context) {
 	}
 	splitNames := strings.Split(searchString, " ")
 	firstName := ""
-	lastName:= ""
+	lastName := ""
 	if len(splitNames) > 1 {
-		firstName = strings.Title(strings.ToLower(splitNames[0]))
-		lastName = strings.Title(strings.ToLower(splitNames[len(splitNames)-1]))
-	 }
-	 if len(splitNames) == 1 {
-		firstName = strings.Title(strings.ToLower(splitNames[0]))
-		lastName = strings.Title(strings.ToLower(splitNames[0]))
-	 }
+		firstName = strings.TrimSpace(strings.Title(strings.ToLower(splitNames[0])))
+		lastName = strings.TrimSpace(strings.Title(strings.ToLower(splitNames[len(splitNames)-1])))
+	}
+	if len(splitNames) == 1 {
+		firstName = strings.TrimSpace(strings.Title(strings.ToLower(splitNames[0])))
+		lastName = strings.TrimSpace(strings.Title(strings.ToLower(splitNames[0])))
+	}
 
 	patients := patientDB.GetPatientByNames(ctx, addressID, firstName, lastName)
 	c.JSON(http.StatusOK, gin.H{
