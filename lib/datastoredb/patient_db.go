@@ -270,6 +270,70 @@ func (db DSPatient) GetPatientByFilters(ctx context.Context, addressID string, f
 	return patients
 }
 
+// GetPatientByFilters ...
+func (db DSPatient) GetPatientByNames(ctx context.Context, addressID string, firstName string, lastName string) []contracts.Patient {
+	patientsMap := make(map[string]contracts.PatientStore, 0)
+	if firstName == lastName {
+		qP1 := datastore.NewQuery("Patient")
+		qP1 = qP1.Filter("AddressID=", addressID)
+		qP1 = qP1.Filter("FirstName=", firstName)
+		qP2 := datastore.NewQuery("Patient")
+		qP2 = qP2.Filter("AddressID=", addressID)
+		qP2 = qP2.Filter("LastName=", lastName)
+		if global.Options.DSName != "" {
+			qP1 = qP1.Namespace(global.Options.DSName)
+			qP2 = qP2.Namespace(global.Options.DSName)
+		}
+		patientsArr := make([]contracts.PatientStore, 0)
+		_, err := db.client.GetAll(ctx, qP1, &patientsArr)
+		if len(patientsArr) > 0 && err== nil{
+			for _, pat := range patientsArr {
+				if (pat.MedicalInsuranceID != nil && len(pat.MedicalInsuranceID) > 0) || (pat.DentalInsuraceID != nil && len(pat.DentalInsuraceID) > 0) {
+					patientsMap[pat.PatientID] = pat
+
+				}
+
+			}
+		}
+		_, err = db.client.GetAll(ctx, qP2, &patientsArr)
+		if len(patientsArr) > 0 && err== nil {
+			for _, pat := range patientsArr {
+				if (pat.MedicalInsuranceID != nil && len(pat.MedicalInsuranceID) > 0) || (pat.DentalInsuraceID != nil && len(pat.DentalInsuraceID) > 0) {
+					patientsMap[pat.PatientID] = pat
+
+				}
+
+			}
+		}
+
+	} else {
+		qP := datastore.NewQuery("Patient")
+		qP = qP.Filter("AddressID=", addressID)
+		qP = qP.Filter("FirstName=", firstName)
+		qP = qP.Filter("LastName=", lastName)
+		if global.Options.DSName != "" {
+			qP = qP.Namespace(global.Options.DSName)
+		}
+		patientsArr := make([]contracts.PatientStore, 0)
+		db.client.GetAll(ctx, qP, &patientsArr)
+		if len(patientsArr) > 0 {
+			for _, pat := range patientsArr {
+				if (pat.MedicalInsuranceID != nil && len(pat.MedicalInsuranceID) > 0) || (pat.DentalInsuraceID != nil && len(pat.DentalInsuraceID) > 0) {
+					patientsMap[pat.PatientID] = pat
+
+				}
+
+			}
+		}
+	}
+	patientsReturn := make([]contracts.Patient, 0)
+	if len(patientsMap) > 0 {
+		patientsReturn = db.ReturnPatientsWithDMInsurances(ctx, patientsMap)
+	}
+
+	return patientsReturn
+}
+
 // GetPatientByFiltersPaginate ...
 func (db DSPatient) GetPatientByFiltersPaginate(ctx context.Context, addressID string, filters contracts.PatientFilters, pageSize int, cursor string) ([]contracts.Patient, string) {
 	patientsMap := make(map[string]contracts.Patient, 0)

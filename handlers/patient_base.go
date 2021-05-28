@@ -78,6 +78,54 @@ func RegisterPatientInformation(c *gin.Context) {
 	})
 }
 
+// SearchPatientByNames ....
+func SearchPatientByNames(c *gin.Context) {
+	// Stage 1  Load the incoming request
+	log.Infof("Patient Stuff")
+	gproject := googleprojectlib.GetGoogleProjectID()
+	ctx := c.Request.Context()
+	ctx, span := trace.StartSpan(ctx, "Register incoming request for clinic")
+	defer span.End()
+	// here is we have referral id
+	addressID := c.Param("addressId")
+	searchString := c.Query("searchString")
+	var err error
+	patientDB := datastoredb.NewPatientHandler()
+	cursor := c.Query("cursor")
+	if cursor != "" {
+		cursor, _ = helpers.DecryptAndDecode(cursor)
+	}
+	err = patientDB.InitializeDataBase(ctx, gproject)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	splitNames := strings.Split(searchString, " ")
+	firstName := ""
+	lastName:= ""
+	if len(splitNames) > 1 {
+		firstName = strings.Title(strings.ToLower(splitNames[0]))
+		lastName = strings.Title(strings.ToLower(splitNames[len(splitNames)-1]))
+	 }
+	 if len(splitNames) == 1 {
+		firstName = strings.Title(strings.ToLower(splitNames[0]))
+		lastName = strings.Title(strings.ToLower(splitNames[0]))
+	 }
+
+	patients := patientDB.GetPatientByNames(ctx, addressID, firstName, lastName)
+	c.JSON(http.StatusOK, gin.H{
+		constants.RESPONSE_JSON_DATA:   patients,
+		constants.RESPONSDE_JSON_ERROR: nil,
+	})
+
+}
+
 // GetAllPatientsForClinic ....
 func GetAllPatientsForClinic(c *gin.Context) {
 	// Stage 1  Load the incoming request

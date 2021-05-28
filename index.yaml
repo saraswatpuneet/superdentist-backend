@@ -10,3 +10,9 @@ indexes:
   - name: AgentID
   - name: DueDate
   - name: Company
+
+- kind: Patient
+  properties:
+  - name: FirstName
+  - name: LastName
+  - name: AddressID
