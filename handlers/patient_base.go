@@ -711,11 +711,15 @@ func registerPatientInDB(documentFiles *multipart.Form) error {
 			patientDetails.AddressID = addId
 		}
 	}
-	for idx := range dentalInsurance {
-		dentalInsurance[idx].AddressID = patientDetails.AddressID
+	if len(dentalInsurance) > 0 {
+		for idx := range dentalInsurance {
+			dentalInsurance[idx].AddressID = patientDetails.AddressID
+		}
 	}
-	for idx := range medicalInsurance {
-		medicalInsurance[idx].AddressID = patientDetails.AddressID
+	if len(medicalInsurance) > 0 {
+		for idx := range medicalInsurance {
+			medicalInsurance[idx].AddressID = patientDetails.AddressID
+		}
 	}
 	gproject := googleprojectlib.GetGoogleProjectID()
 	ctx := context.Background()
