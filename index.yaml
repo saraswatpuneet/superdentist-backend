@@ -1,20 +1,64 @@
 indexes:
-- kind: DentalInsurance
+- kind: DentalInsuranceIndexed
   properties:
   - name: AgentID
   - name: DueDate
   - name: Company
   - name: AddressID
   
-- kind: MedicalInsurance
+- kind: MedicalInsuranceIndexed
   properties:
   - name: AgentID
   - name: DueDate
   - name: Company
   - name: AddressID
 
-- kind: Patient
+- kind: DentalInsuranceIndexed
+  properties:
+  - name: DueDate
+  - name: AddressID
+  
+- kind: MedicalInsuranceIndexed
+  properties:
+  - name: DueDate
+  - name: AddressID
+
+- kind: DentalInsuranceIndexed
+  properties:
+  - name: AgentID
+  - name: DueDate
+  - name: AddressID
+  
+- kind: MedicalInsuranceIndexed
+  properties:
+  - name: AgentID
+  - name: DueDate
+  - name: AddressID
+
+- kind: DentalInsuranceIndexed
+  properties:
+  - name: DueDate
+  - name: Company
+  - name: AddressID
+  
+- kind: MedicalInsuranceIndexed
+  properties:
+  - name: DueDate
+  - name: Company
+  - name: AddressID
+
+- kind: PatientIndexed
   properties:
   - name: FirstName
+  - name: LastName
+  - name: AddressID
+
+- kind: PatientIndexed
+  properties:
+  - name: FirstName
+  - name: AddressID
+
+- kind: PatientIndexed
+  properties:
   - name: LastName
   - name: AddressID

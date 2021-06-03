@@ -58,7 +58,7 @@ func (db *DSPatient) InitializeDataBase(ctx context.Context, projectID string) e
 // AddPatientInformation ....
 func (db DSPatient) AddPatientInformation(ctx context.Context, patient contracts.PatientStore, pIDString string, dI []contracts.PatientDentalInsurance, mI []contracts.PatientMedicalInsurance) (string, error) {
 
-	pKey := datastore.NameKey("Patient", pIDString, nil)
+	pKey := datastore.NameKey("PatientIndexed", pIDString, nil)
 	if global.Options.DSName != "" {
 		pKey.Namespace = global.Options.DSName
 	}
@@ -68,7 +68,7 @@ func (db DSPatient) AddPatientInformation(ctx context.Context, patient contracts
 		return "", err
 	}
 	for _, insurance := range dI {
-		pKey := datastore.NameKey("DentalInsurance", insurance.ID, nil)
+		pKey := datastore.NameKey("DentalInsuranceIndexed", insurance.ID, nil)
 		insurance.PatientID = pIDString
 		insurance.DueDate = patient.DueDate
 
@@ -81,7 +81,7 @@ func (db DSPatient) AddPatientInformation(ctx context.Context, patient contracts
 		}
 	}
 	for _, insurance := range mI {
-		pKey := datastore.NameKey("MedicalInsurance", insurance.ID, nil)
+		pKey := datastore.NameKey("MedicalInsuranceIndexed", insurance.ID, nil)
 		insurance.PatientID = pIDString
 		insurance.DueDate = patient.DueDate
 		if global.Options.DSName != "" {
@@ -98,7 +98,7 @@ func (db DSPatient) AddPatientInformation(ctx context.Context, patient contracts
 // AddPatientInformation ....
 func (db DSPatient) AddPatientInformationStatus(ctx context.Context, patient contracts.PatientStore, pIDString string) (string, error) {
 
-	pKey := datastore.NameKey("Patient", pIDString, nil)
+	pKey := datastore.NameKey("PatientIndexed", pIDString, nil)
 	if global.Options.DSName != "" {
 		pKey.Namespace = global.Options.DSName
 	}
@@ -146,7 +146,7 @@ func (db DSPatient) GetPatientByFilters(ctx context.Context, addressID string, f
 		for company := range filters.Companies {
 			dentalInsurance := make([]contracts.PatientDentalInsurance, 0)
 			medicalInsurance := make([]contracts.PatientMedicalInsurance, 0)
-			qP := datastore.NewQuery("DentalInsurance")
+			qP := datastore.NewQuery("DentalInsuranceIndexed")
 			qP = qP.Filter("AddressID=", addressID)
 			if filters.StartTime > 0 && filters.EndTime > 0 {
 				qP = qP.Filter("DueDate >=", filters.StartTime)
@@ -161,7 +161,7 @@ func (db DSPatient) GetPatientByFilters(ctx context.Context, addressID string, f
 			}
 			db.client.GetAll(ctx, qP, &dentalInsurance)
 
-			qP = datastore.NewQuery("MedicalInsurance")
+			qP = datastore.NewQuery("MedicalInsuranceIndexed")
 			qP = qP.Filter("AddressID=", addressID)
 			if filters.StartTime > 0 && filters.EndTime > 0 {
 				qP = qP.Filter("DueDate >=", filters.StartTime)
@@ -209,7 +209,7 @@ func (db DSPatient) GetPatientByFilters(ctx context.Context, addressID string, f
 	} else {
 		dentalInsurance := make([]contracts.PatientDentalInsurance, 0)
 		medicalInsurance := make([]contracts.PatientMedicalInsurance, 0)
-		qP := datastore.NewQuery("DentalInsurance")
+		qP := datastore.NewQuery("DentalInsuranceIndexed")
 		qP = qP.Filter("AddressID=", addressID)
 		if filters.StartTime > 0 && filters.EndTime > 0 {
 			qP = qP.Filter("DueDate >=", filters.StartTime)
@@ -223,7 +223,7 @@ func (db DSPatient) GetPatientByFilters(ctx context.Context, addressID string, f
 		}
 		db.client.GetAll(ctx, qP, &dentalInsurance)
 
-		qP = datastore.NewQuery("MedicalInsurance")
+		qP = datastore.NewQuery("MedicalInsuranceIndexed")
 		qP = qP.Filter("AddressID=", addressID)
 		if filters.StartTime > 0 && filters.EndTime > 0 {
 			qP = qP.Filter("DueDate >=", filters.StartTime)
@@ -276,10 +276,10 @@ func (db DSPatient) GetPatientByFilters(ctx context.Context, addressID string, f
 func (db DSPatient) GetPatientByNames(ctx context.Context, addressID string, firstName string, lastName string) []contracts.Patient {
 	patientsMap := make(map[string]contracts.PatientStore, 0)
 	if firstName == lastName {
-		qP1 := datastore.NewQuery("Patient")
+		qP1 := datastore.NewQuery("PatientIndexed")
 		qP1 = qP1.Filter("AddressID=", addressID)
 		qP1 = qP1.Filter("FirstName=", firstName)
-		qP2 := datastore.NewQuery("Patient")
+		qP2 := datastore.NewQuery("PatientIndexed")
 		qP2 = qP2.Filter("AddressID=", addressID)
 		qP2 = qP2.Filter("LastName=", lastName)
 		if global.Options.DSName != "" {
@@ -288,7 +288,7 @@ func (db DSPatient) GetPatientByNames(ctx context.Context, addressID string, fir
 		}
 		patientsArr := make([]contracts.PatientStore, 0)
 		_, err := db.client.GetAll(ctx, qP1, &patientsArr)
-		if len(patientsArr) > 0 && err== nil{
+		if len(patientsArr) > 0 && err == nil {
 			for _, pat := range patientsArr {
 				if (pat.MedicalInsuranceID != nil && len(pat.MedicalInsuranceID) > 0) || (pat.DentalInsuraceID != nil && len(pat.DentalInsuraceID) > 0) {
 					patientsMap[pat.PatientID] = pat
@@ -298,7 +298,7 @@ func (db DSPatient) GetPatientByNames(ctx context.Context, addressID string, fir
 			}
 		}
 		_, err = db.client.GetAll(ctx, qP2, &patientsArr)
-		if len(patientsArr) > 0 && err== nil {
+		if len(patientsArr) > 0 && err == nil {
 			for _, pat := range patientsArr {
 				if (pat.MedicalInsuranceID != nil && len(pat.MedicalInsuranceID) > 0) || (pat.DentalInsuraceID != nil && len(pat.DentalInsuraceID) > 0) {
 					patientsMap[pat.PatientID] = pat
@@ -309,7 +309,7 @@ func (db DSPatient) GetPatientByNames(ctx context.Context, addressID string, fir
 		}
 
 	} else {
-		qP := datastore.NewQuery("Patient")
+		qP := datastore.NewQuery("PatientIndexed")
 		qP = qP.Filter("AddressID=", addressID)
 		qP = qP.Filter("FirstName=", firstName)
 		qP = qP.Filter("LastName=", lastName)
@@ -344,7 +344,7 @@ func (db DSPatient) GetPatientByFiltersPaginate(ctx context.Context, addressID s
 		for company := range filters.Companies {
 			dentalInsurance := make([]contracts.PatientDentalInsurance, 0)
 			medicalInsurance := make([]contracts.PatientMedicalInsurance, 0)
-			qP := datastore.NewQuery("DentalInsurance").Limit(pageSize)
+			qP := datastore.NewQuery("DentalInsuranceIndexed").Limit(pageSize)
 			qP = qP.Filter("AddressID=", addressID)
 			if cursor == "" {
 				cursor = "cursor_" + "cursor_"
@@ -386,7 +386,7 @@ func (db DSPatient) GetPatientByFiltersPaginate(ctx context.Context, addressID s
 			} else {
 				mainCursor += "cursor_" + nextCursor.String()
 			}
-			qP = datastore.NewQuery("MedicalInsurance").Limit(pageSize)
+			qP = datastore.NewQuery("MedicalInsuranceIndexed").Limit(pageSize)
 			qP = qP.Filter("AddressID=", addressID)
 			if filters.StartTime > 0 && filters.EndTime > 0 {
 				qP = qP.Filter("DueDate >=", filters.StartTime)
@@ -457,7 +457,7 @@ func (db DSPatient) GetPatientByFiltersPaginate(ctx context.Context, addressID s
 	} else {
 		dentalInsurance := make([]contracts.PatientDentalInsurance, 0)
 		medicalInsurance := make([]contracts.PatientMedicalInsurance, 0)
-		qP := datastore.NewQuery("DentalInsurance").Limit(pageSize)
+		qP := datastore.NewQuery("DentalInsuranceIndexed").Limit(pageSize)
 		qP = qP.Filter("AddressID=", addressID)
 		if cursor == "" {
 			cursor = "cursor_" + "cursor_"
@@ -498,7 +498,7 @@ func (db DSPatient) GetPatientByFiltersPaginate(ctx context.Context, addressID s
 		} else {
 			mainCursor += "cursor_" + nextCursor.String()
 		}
-		qP = datastore.NewQuery("MedicalInsurance").Limit(pageSize)
+		qP = datastore.NewQuery("MedicalInsuranceIndexed").Limit(pageSize)
 		qP = qP.Filter("AddressID=", addressID)
 		if filters.StartTime > 0 && filters.EndTime > 0 {
 			qP = qP.Filter("DueDate >=", filters.StartTime)
@@ -578,19 +578,19 @@ func (db DSPatient) GetPatientByAddressID(ctx context.Context, addressID string)
 	patients1 := make([]contracts.PatientStore, 0)
 	patients2 := make([]contracts.PatientStore, 0)
 	patients3 := make([]contracts.PatientStore, 0)
-	qP := datastore.NewQuery("Patient")
+	qP := datastore.NewQuery("PatientIndexed")
 	qP = qP.Filter("GD =", addressID)
 	if global.Options.DSName != "" {
 		qP = qP.Namespace(global.Options.DSName)
 	}
 	db.client.GetAll(ctx, qP, &patients1)
-	qP = datastore.NewQuery("Patient")
+	qP = datastore.NewQuery("PatientIndexed")
 	qP = qP.Filter("SP =", addressID)
 	if global.Options.DSName != "" {
 		qP = qP.Namespace(global.Options.DSName)
 	}
 	db.client.GetAll(ctx, qP, &patients2)
-	qP = datastore.NewQuery("Patient")
+	qP = datastore.NewQuery("PatientIndexed")
 	qP = qP.Filter("AddressID =", addressID)
 	if global.Options.DSName != "" {
 		qP = qP.Namespace(global.Options.DSName)
@@ -616,7 +616,7 @@ func (db DSPatient) GetPatientByAddressIDPaginate(ctx context.Context, addressID
 	}
 	cursors := strings.Split(cursor, "cursor_")
 	mainCursor := ""
-	qP := datastore.NewQuery("Patient").Limit(pageSize)
+	qP := datastore.NewQuery("PatientIndexed").Limit(pageSize)
 	qP = qP.Filter("GD =", addressID)
 	if global.Options.DSName != "" {
 		qP = qP.Namespace(global.Options.DSName)
@@ -646,7 +646,7 @@ func (db DSPatient) GetPatientByAddressIDPaginate(ctx context.Context, addressID
 	} else {
 		mainCursor += "cursor_" + nextCursor.String()
 	}
-	qP = datastore.NewQuery("Patient").Limit(pageSize)
+	qP = datastore.NewQuery("PatientIndexed").Limit(pageSize)
 	qP = qP.Filter("SP =", addressID)
 	if global.Options.DSName != "" {
 		qP = qP.Namespace(global.Options.DSName)
@@ -676,7 +676,7 @@ func (db DSPatient) GetPatientByAddressIDPaginate(ctx context.Context, addressID
 	} else {
 		mainCursor += "cursor_" + nextCursor.String()
 	}
-	qP = datastore.NewQuery("Patient").Limit(pageSize)
+	qP = datastore.NewQuery("PatientIndexed").Limit(pageSize)
 	qP = qP.Filter("AddressID =", addressID)
 	if global.Options.DSName != "" {
 		qP = qP.Namespace(global.Options.DSName)
@@ -775,7 +775,7 @@ func (db DSPatient) GetDentalInsurance(ctx context.Context, dID string) contract
 	var patientDental contracts.PatientDentalInsurance
 	dIS := make([]contracts.PatientDentalInsurance, 0)
 
-	qP := datastore.NewQuery("DentalInsurance")
+	qP := datastore.NewQuery("DentalInsuranceIndexed")
 	qP = qP.Filter("ID =", dID)
 	if global.Options.DSName != "" {
 		qP = qP.Namespace(global.Options.DSName)
@@ -795,7 +795,7 @@ func (db DSPatient) GetMedicalInsurance(ctx context.Context, mID string) contrac
 	var patientMedical contracts.PatientMedicalInsurance
 	mIS := make([]contracts.PatientMedicalInsurance, 0)
 
-	qP := datastore.NewQuery("MedicalInsurance")
+	qP := datastore.NewQuery("MedicalInsuranceIndexed")
 	qP = qP.Filter("ID =", mID)
 	if global.Options.DSName != "" {
 		qP = qP.Namespace(global.Options.DSName)
@@ -815,7 +815,7 @@ func (db DSPatient) GetMedicalInsurance(ctx context.Context, mID string) contrac
 func (db DSPatient) GetPatientByID(ctx context.Context, pID string) (*contracts.Patient, *contracts.PatientStore, *datastore.Key, error) {
 	patients := make([]contracts.PatientStore, 0)
 	var patientReturn contracts.Patient
-	qP := datastore.NewQuery("Patient")
+	qP := datastore.NewQuery("PatientIndexed")
 	qP = qP.Filter("PatientID =", pID)
 	if global.Options.DSName != "" {
 		qP = qP.Namespace(global.Options.DSName)
@@ -833,7 +833,7 @@ func (db DSPatient) GetPatientByID(ctx context.Context, pID string) (*contracts.
 // GetPatientByFilters ...
 func (db DSPatient) GetPatientByAgentInsurances(ctx context.Context, pID string) (*contracts.Patient, error) {
 	patients := make([]contracts.PatientStore, 0)
-	qP := datastore.NewQuery("Patient")
+	qP := datastore.NewQuery("PatientIndexed")
 	qP = qP.Filter("PatientID =", pID)
 	if global.Options.DSName != "" {
 		qP = qP.Namespace(global.Options.DSName)
@@ -873,7 +873,7 @@ func (db DSPatient) UpdateInsuranceStatus(ctx context.Context, pID string, statu
 	dInsurance := db.GetDentalInsurance(ctx, pID)
 	if dInsurance.ID != "" {
 		dInsurance.Status = status
-		pKey := datastore.NameKey("DentalInsurance", dInsurance.ID, nil)
+		pKey := datastore.NameKey("DentalInsuranceIndexed", dInsurance.ID, nil)
 		if global.Options.DSName != "" {
 			pKey.Namespace = global.Options.DSName
 		}
@@ -886,7 +886,7 @@ func (db DSPatient) UpdateInsuranceStatus(ctx context.Context, pID string, statu
 	mInsurance := db.GetMedicalInsurance(ctx, pID)
 	if mInsurance.ID != "" {
 		mInsurance.Status = status
-		pKey := datastore.NameKey("MedicalInsurance", mInsurance.ID, nil)
+		pKey := datastore.NameKey("MedicalInsuranceIndexed", mInsurance.ID, nil)
 		if global.Options.DSName != "" {
 			pKey.Namespace = global.Options.DSName
 		}
@@ -904,7 +904,7 @@ func (db DSPatient) AddAgentToInsurance(ctx context.Context, pID string, agent s
 	dInsurance := db.GetDentalInsurance(ctx, pID)
 	if dInsurance.ID != "" {
 		dInsurance.AgentID = agent
-		pKey := datastore.NameKey("DentalInsurance", dInsurance.ID, nil)
+		pKey := datastore.NameKey("DentalInsuranceIndexed", dInsurance.ID, nil)
 		if global.Options.DSName != "" {
 			pKey.Namespace = global.Options.DSName
 		}
@@ -917,7 +917,7 @@ func (db DSPatient) AddAgentToInsurance(ctx context.Context, pID string, agent s
 	mInsurance := db.GetMedicalInsurance(ctx, pID)
 	if mInsurance.ID != "" {
 		mInsurance.AgentID = agent
-		pKey := datastore.NameKey("MedicalInsurance", mInsurance.ID, nil)
+		pKey := datastore.NameKey("MedicalInsuranceIndexed", mInsurance.ID, nil)
 		if global.Options.DSName != "" {
 			pKey.Namespace = global.Options.DSName
 		}
@@ -932,7 +932,7 @@ func (db DSPatient) AddAgentToInsurance(ctx context.Context, pID string, agent s
 
 // UpdatePatientStatus ....
 func (db DSPatient) ListInsuranceCompanies(ctx context.Context) ([]string, error) {
-	qP := datastore.NewQuery("DentalInsurance").Project("Company").DistinctOn("Company")
+	qP := datastore.NewQuery("DentalInsuranceIndexed").Project("Company").DistinctOn("Company")
 	if global.Options.DSName != "" {
 		qP = qP.Namespace(global.Options.DSName)
 	}
@@ -948,7 +948,7 @@ func (db DSPatient) ListInsuranceCompanies(ctx context.Context) ([]string, error
 		comp := strings.TrimSpace(dentalOne.Company)
 		companies[comp] = comp
 	}
-	qP = datastore.NewQuery("MedicalInsurance").Project("Company").DistinctOn("Company")
+	qP = datastore.NewQuery("MedicalInsuranceIndexed").Project("Company").DistinctOn("Company")
 	if global.Options.DSName != "" {
 		qP = qP.Namespace(global.Options.DSName)
 	}
