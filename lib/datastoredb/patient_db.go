@@ -147,7 +147,7 @@ func (db DSPatient) GetPatientByFilters(ctx context.Context, addressID string, f
 			dentalInsurance := make([]contracts.PatientDentalInsurance, 0)
 			medicalInsurance := make([]contracts.PatientMedicalInsurance, 0)
 			qP := datastore.NewQuery("DentalInsurance")
-
+			qP = qP.Filter("AddressID=", addressID)
 			if filters.StartTime > 0 && filters.EndTime > 0 {
 				qP = qP.Filter("DueDate >=", filters.StartTime)
 				qP = qP.Filter("DueDate <=", filters.EndTime)
@@ -162,6 +162,7 @@ func (db DSPatient) GetPatientByFilters(ctx context.Context, addressID string, f
 			db.client.GetAll(ctx, qP, &dentalInsurance)
 
 			qP = datastore.NewQuery("MedicalInsurance")
+			qP = qP.Filter("AddressID=", addressID)
 			if filters.StartTime > 0 && filters.EndTime > 0 {
 				qP = qP.Filter("DueDate >=", filters.StartTime)
 				qP = qP.Filter("DueDate <=", filters.EndTime)
@@ -209,7 +210,7 @@ func (db DSPatient) GetPatientByFilters(ctx context.Context, addressID string, f
 		dentalInsurance := make([]contracts.PatientDentalInsurance, 0)
 		medicalInsurance := make([]contracts.PatientMedicalInsurance, 0)
 		qP := datastore.NewQuery("DentalInsurance")
-
+		qP = qP.Filter("AddressID=", addressID)
 		if filters.StartTime > 0 && filters.EndTime > 0 {
 			qP = qP.Filter("DueDate >=", filters.StartTime)
 			qP = qP.Filter("DueDate <=", filters.EndTime)
@@ -223,6 +224,7 @@ func (db DSPatient) GetPatientByFilters(ctx context.Context, addressID string, f
 		db.client.GetAll(ctx, qP, &dentalInsurance)
 
 		qP = datastore.NewQuery("MedicalInsurance")
+		qP = qP.Filter("AddressID=", addressID)
 		if filters.StartTime > 0 && filters.EndTime > 0 {
 			qP = qP.Filter("DueDate >=", filters.StartTime)
 			qP = qP.Filter("DueDate <=", filters.EndTime)
@@ -343,6 +345,7 @@ func (db DSPatient) GetPatientByFiltersPaginate(ctx context.Context, addressID s
 			dentalInsurance := make([]contracts.PatientDentalInsurance, 0)
 			medicalInsurance := make([]contracts.PatientMedicalInsurance, 0)
 			qP := datastore.NewQuery("DentalInsurance").Limit(pageSize)
+			qP = qP.Filter("AddressID=", addressID)
 			if cursor == "" {
 				cursor = "cursor_" + "cursor_"
 			}
@@ -384,6 +387,7 @@ func (db DSPatient) GetPatientByFiltersPaginate(ctx context.Context, addressID s
 				mainCursor += "cursor_" + nextCursor.String()
 			}
 			qP = datastore.NewQuery("MedicalInsurance").Limit(pageSize)
+			qP = qP.Filter("AddressID=", addressID)
 			if filters.StartTime > 0 && filters.EndTime > 0 {
 				qP = qP.Filter("DueDate >=", filters.StartTime)
 				qP = qP.Filter("DueDate <=", filters.EndTime)
@@ -454,6 +458,7 @@ func (db DSPatient) GetPatientByFiltersPaginate(ctx context.Context, addressID s
 		dentalInsurance := make([]contracts.PatientDentalInsurance, 0)
 		medicalInsurance := make([]contracts.PatientMedicalInsurance, 0)
 		qP := datastore.NewQuery("DentalInsurance").Limit(pageSize)
+		qP = qP.Filter("AddressID=", addressID)
 		if cursor == "" {
 			cursor = "cursor_" + "cursor_"
 		}
@@ -494,6 +499,7 @@ func (db DSPatient) GetPatientByFiltersPaginate(ctx context.Context, addressID s
 			mainCursor += "cursor_" + nextCursor.String()
 		}
 		qP = datastore.NewQuery("MedicalInsurance").Limit(pageSize)
+		qP = qP.Filter("AddressID=", addressID)
 		if filters.StartTime > 0 && filters.EndTime > 0 {
 			qP = qP.Filter("DueDate >=", filters.StartTime)
 			qP = qP.Filter("DueDate <=", filters.EndTime)

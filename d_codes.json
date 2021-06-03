@@ -1771,6 +1771,7 @@
       "breakDownKeys": [
         "D9110",
         "D9120",
+        "D9222",
         "D9230",
         "D9310",
         "D9430",
@@ -1812,6 +1813,10 @@
         "D9120": {
           "key": "D9120",
           "label": "Fixed Partial Denture Sectioning"
+        },
+        "D9222": {
+          "key": "D9222",
+          "label": "General Anesthesia"
         },
         "D9230": {
           "key": "D9230",

@@ -4,12 +4,14 @@ indexes:
   - name: AgentID
   - name: DueDate
   - name: Company
+  - name: AddressID
   
 - kind: MedicalInsurance
   properties:
   - name: AgentID
   - name: DueDate
   - name: Company
+  - name: AddressID
 
 - kind: Patient
   properties:

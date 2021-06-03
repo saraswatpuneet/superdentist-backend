@@ -35,6 +35,7 @@ type PatientDentalInsurance struct {
 	ID         string        `json:"id"`
 	AgentID    string        `json:"agentId"`
 	PatientID  string        `json:"patientId"`
+	AddressID  string        `json:"addressId"`
 	DueDate    int64         `json:"dueDate"`
 }
 
@@ -49,6 +50,7 @@ type PatientMedicalInsurance struct {
 	ID          string        `json:"id"`
 	AgentID     string        `json:"agentId"`
 	PatientID   string        `json:"patientId"`
+	AddressID   string        `json:"addressId"`
 	DueDate     int64         `json:"dueDate"`
 }
 
