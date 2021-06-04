@@ -62,3 +62,22 @@ indexes:
   properties:
   - name: AddressID
   - name: LastName
+
+- kind: PatientIndexed
+  properties:
+  - name: AddressID
+  - name: FirstName
+  - name: LastName
+  - name: DueDate
+
+- kind: PatientIndexed
+  properties:
+  - name: AddressID
+  - name: FirstName
+  - name: DueDate
+
+- kind: PatientIndexed
+  properties:
+  - name: AddressID
+  - name: LastName
+  - name: DueDate
