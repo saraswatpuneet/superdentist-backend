@@ -383,7 +383,6 @@ func (db DSPatient) GetPatientByFiltersPaginate(ctx context.Context, addressID s
 					}
 				}
 				if dentalOne.Company == company {
-
 					dentalInsurance = append(dentalInsurance, dentalOne)
 				}
 				// Do something with the Person p
