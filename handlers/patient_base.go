@@ -517,7 +517,7 @@ func ListInsuranceCompanies(c *gin.Context) {
 
 	codeMaps := make(map[string]string, 0)
 	for _, array := range codeMapping {
-		codeMaps[array["old"]] = array["new"]
+		codeMaps[strings.TrimSpace(strings.ToLower(array["new"]))] = array["new"]
 	}
 	companies, _ := patientDB.ListInsuranceCompanies(ctx)
 	for _, comp := range companies {
