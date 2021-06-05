@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"mime/multipart"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -507,10 +508,29 @@ func ListInsuranceCompanies(c *gin.Context) {
 		)
 		return
 	}
-	companies, _ := patientDB.ListInsuranceCompanies(ctx)
+	jsonFile, _ := os.Open("./codes/convertcsv.json")
+	jsonBytes, _ := ioutil.ReadAll(jsonFile)
+	type mytype []map[string]string
 
+	var codeMapping mytype
+	json.Unmarshal(jsonBytes, &codeMapping)
+
+	codeMaps := make(map[string]string, 0)
+	for _, array := range codeMapping {
+		codeMaps[array["old"]] = array["new"]
+	}
+	companies, _ := patientDB.ListInsuranceCompanies(ctx)
+	for _, comp := range companies {
+		if _, ok := codeMaps[strings.TrimSpace(strings.ToLower(comp))]; !ok {
+			codeMaps[strings.TrimSpace(strings.ToLower(comp))] = comp
+		}
+	}
+	outputCompanies := make([]string, 0)
+	for _, comp := range codeMaps {
+		outputCompanies = append(outputCompanies, comp)
+	}
 	c.JSON(http.StatusOK, gin.H{
-		constants.RESPONSE_JSON_DATA:   companies,
+		constants.RESPONSE_JSON_DATA:   outputCompanies,
 		constants.RESPONSDE_JSON_ERROR: nil,
 	})
 }

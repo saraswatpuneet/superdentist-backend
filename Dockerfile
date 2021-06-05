@@ -53,6 +53,8 @@ RUN apt-get install -y -qq \
 # If you want to download these traineddata via `wget`, don't forget to locate
 # downloaded traineddata under ${TESSDATA_PREFIX}/tessdata.
 COPY --from=builder /go/src/app/d_codes.json ./codes/
+COPY --from=builder /go/src/app/convertcsv.json ./codes/
+
 COPY --from=builder /go/src/app/dental_insurances.json ./insurance/
 
 COPY --from=builder /go/src/app/superdentist-backend /usr/bin/
