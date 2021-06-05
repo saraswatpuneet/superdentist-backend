@@ -377,7 +377,11 @@ func (db DSPatient) GetPatientByFiltersPaginate(ctx context.Context, addressID s
 					log.Printf("query ended %q: %v", cursor, err)
 					break
 				}
-				dentalInsurance = append(dentalInsurance, dentalOne)
+				if dentalOne.Company == company {
+					dentalInsurance = append(dentalInsurance, dentalOne)
+				} else {
+					break
+				}
 				// Do something with the Person p
 			}
 			nextCursor, err := iteratorDental.Cursor()
@@ -416,7 +420,11 @@ func (db DSPatient) GetPatientByFiltersPaginate(ctx context.Context, addressID s
 					log.Printf("query ended %q: %v", cursor, err)
 					break
 				}
-				medicalInsurance = append(medicalInsurance, medicalOne)
+				if medicalOne.Company == company {
+					medicalInsurance = append(medicalInsurance, medicalOne)
+				} else {
+					break
+				}
 				// Do something with the Person p
 			}
 			nextCursor, err = iteratorDental.Cursor()
