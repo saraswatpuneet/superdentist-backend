@@ -933,9 +933,7 @@ func (db DSPatient) AddAgentToInsurance(ctx context.Context, pID string, agent s
 // UpdatePatientStatus ....
 func (db DSPatient) ListInsuranceCompanies(ctx context.Context) ([]string, error) {
 	qP := datastore.NewQuery("DentalInsuranceIndexed").Project("Company").DistinctOn("Company")
-	if global.Options.DSName != "" {
-		qP = qP.Namespace(global.Options.DSName)
-	}
+	qP = qP.Namespace("sdprod")
 	it := db.client.Run(ctx, qP)
 	companies := make(map[string]string, 0)
 	for {
