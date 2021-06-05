@@ -341,7 +341,7 @@ func (db DSPatient) GetPatientByFiltersPaginate(ctx context.Context, addressID s
 	patientsMap := make(map[string]contracts.Patient, 0)
 	mainCursor := ""
 	if filters.Companies != nil && len(filters.Companies) > 0 {
-		for company := range filters.Companies {
+		for _, company := range filters.Companies {
 			dentalInsurance := make([]contracts.PatientDentalInsurance, 0)
 			medicalInsurance := make([]contracts.PatientMedicalInsurance, 0)
 			qP := datastore.NewQuery("DentalInsuranceIndexed").Limit(pageSize)
