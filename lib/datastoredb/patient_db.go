@@ -379,8 +379,6 @@ func (db DSPatient) GetPatientByFiltersPaginate(ctx context.Context, addressID s
 				}
 				if dentalOne.Company == company {
 					dentalInsurance = append(dentalInsurance, dentalOne)
-				} else {
-					break
 				}
 				// Do something with the Person p
 			}
@@ -422,8 +420,6 @@ func (db DSPatient) GetPatientByFiltersPaginate(ctx context.Context, addressID s
 				}
 				if medicalOne.Company == company {
 					medicalInsurance = append(medicalInsurance, medicalOne)
-				} else {
-					break
 				}
 				// Do something with the Person p
 			}
