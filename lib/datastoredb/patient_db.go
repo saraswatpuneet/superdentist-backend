@@ -357,6 +357,9 @@ func (db DSPatient) GetPatientByFiltersPaginate(ctx context.Context, addressID s
 			if global.Options.DSName != "" {
 				qP = qP.Namespace(global.Options.DSName)
 			}
+			if filters.AgentID != "" {
+				qP = qP.Filter("AgentID =", filters.AgentID)
+			}
 			qP.Filter("Company=", company)
 			cursor1 := cursors[1]
 			if cursor1 != "" {
@@ -380,6 +383,7 @@ func (db DSPatient) GetPatientByFiltersPaginate(ctx context.Context, addressID s
 					}
 				}
 				if dentalOne.Company == company {
+
 					dentalInsurance = append(dentalInsurance, dentalOne)
 				}
 				// Do something with the Person p
@@ -500,6 +504,11 @@ func (db DSPatient) GetPatientByFiltersPaginate(ctx context.Context, addressID s
 				log.Printf("query ended %q: %v", cursor, err)
 				break
 			}
+			if filters.AgentID != "" {
+				if strings.ToLower(filters.AgentID) != strings.ToLower(dentalOne.AgentID) {
+					continue
+				}
+			}
 			dentalInsurance = append(dentalInsurance, dentalOne)
 			// Do something with the Person p
 		}
@@ -536,6 +545,11 @@ func (db DSPatient) GetPatientByFiltersPaginate(ctx context.Context, addressID s
 			if err != nil {
 				log.Printf("query ended %q: %v", cursor, err)
 				break
+			}
+			if filters.AgentID != "" {
+				if strings.ToLower(filters.AgentID) != strings.ToLower(medicalOne.AgentID) {
+					continue
+				}
 			}
 			medicalInsurance = append(medicalInsurance, medicalOne)
 			// Do something with the Person p
