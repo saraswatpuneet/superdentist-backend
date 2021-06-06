@@ -81,3 +81,19 @@ indexes:
   - name: AddressID
   - name: LastName
   - name: DueDate
+
+- kind: DentalInsuranceIndexed
+  properties:
+  - name: AddressID
+  - name: AgentID
+  - name: Company
+  - name: DueDate
+  - name: Status
+
+- kind: MedicalInsuranceIndexed
+  properties:
+  - name: AddressID
+  - name: AgentID
+  - name: Company
+  - name: DueDate
+  - name: Status
