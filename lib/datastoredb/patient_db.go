@@ -447,7 +447,7 @@ func (db DSPatient) GetPatientByFiltersPaginate(ctx context.Context, addressID s
 					} else {
 						patientOne, err := db.GetPatientByAgentInsurances(ctx, insurance.PatientID)
 						if err == nil {
-							patientOne.MedicalInsurance =append([]contracts.PatientMedicalInsurance{insurance}, patient.MedicalInsurance...)
+							patientOne.MedicalInsurance = append([]contracts.PatientMedicalInsurance{insurance}, patient.MedicalInsurance...)
 							patientsMap[patientOne.PatientID] = *patientOne
 						}
 					}
@@ -738,9 +738,6 @@ func (db DSPatient) GetPatientByAddressIDPaginate(ctx context.Context, addressID
 func (db DSPatient) ReturnPatientsWithDMInsurances(ctx context.Context, patientStores map[string]contracts.PatientStore) []contracts.Patient {
 	patients := make([]contracts.Patient, 0)
 	for _, patientData := range patientStores {
-		if patientData.PatientID == "2a4f4d8f-925f-11eb-93a0-3293553715c5" {
-			log.Println("2a4f4d8f-925f-11eb-93a0-3293553715c5")
-		}
 		patient := db.ParsePatient(ctx, patientData)
 		patients = append(patients, patient)
 	}
