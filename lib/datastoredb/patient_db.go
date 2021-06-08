@@ -179,12 +179,12 @@ func (db DSPatient) GetPatientByFilters(ctx context.Context, addressID string, f
 			if len(medicalInsurance) > 0 {
 				for _, insurance := range medicalInsurance {
 					if patient, ok := patientsMap[insurance.PatientID]; ok {
-						patient.MedicalInsurance = append(patient.MedicalInsurance, insurance)
+						patient.MedicalInsurance = append([]contracts.PatientMedicalInsurance{insurance}, patient.MedicalInsurance...)
 						patientsMap[patient.PatientID] = patient
 					} else {
 						patientOne, err := db.GetPatientByAgentInsurances(ctx, insurance.PatientID)
 						if err == nil {
-							patientOne.MedicalInsurance = append(patientOne.MedicalInsurance, insurance)
+							patientOne.MedicalInsurance = append([]contracts.PatientMedicalInsurance{insurance}, patient.MedicalInsurance...)
 							patientsMap[patientOne.PatientID] = *patientOne
 						}
 					}
@@ -193,12 +193,12 @@ func (db DSPatient) GetPatientByFilters(ctx context.Context, addressID string, f
 			if len(dentalInsurance) > 0 {
 				for _, insurance := range dentalInsurance {
 					if patient, ok := patientsMap[insurance.PatientID]; ok {
-						patient.DentalInsurance = append(patient.DentalInsurance, insurance)
+						patient.DentalInsurance = append([]contracts.PatientDentalInsurance{insurance}, patient.DentalInsurance...)
 						patientsMap[patient.PatientID] = patient
 					} else {
 						patientOne, err := db.GetPatientByAgentInsurances(ctx, insurance.PatientID)
 						if err == nil {
-							patientOne.DentalInsurance = append(patientOne.DentalInsurance, insurance)
+							patientOne.DentalInsurance = append([]contracts.PatientDentalInsurance{insurance}, patient.DentalInsurance...)
 							patientsMap[patientOne.PatientID] = *patientOne
 						}
 					}
@@ -239,12 +239,12 @@ func (db DSPatient) GetPatientByFilters(ctx context.Context, addressID string, f
 		if len(medicalInsurance) > 0 {
 			for _, insurance := range medicalInsurance {
 				if patient, ok := patientsMap[insurance.PatientID]; ok {
-					patient.MedicalInsurance = append(patient.MedicalInsurance, insurance)
+					patient.MedicalInsurance = append([]contracts.PatientMedicalInsurance{insurance}, patient.MedicalInsurance...)
 					patientsMap[patient.PatientID] = patient
 				} else {
 					patientOne, err := db.GetPatientByAgentInsurances(ctx, insurance.PatientID)
 					if err == nil {
-						patientOne.MedicalInsurance = append(patientOne.MedicalInsurance, insurance)
+						patientOne.MedicalInsurance = append([]contracts.PatientMedicalInsurance{insurance}, patient.MedicalInsurance...)
 						patientsMap[patientOne.PatientID] = *patientOne
 					}
 				}
@@ -253,12 +253,12 @@ func (db DSPatient) GetPatientByFilters(ctx context.Context, addressID string, f
 		if len(dentalInsurance) > 0 {
 			for _, insurance := range dentalInsurance {
 				if patient, ok := patientsMap[insurance.PatientID]; ok {
-					patient.DentalInsurance = append(patient.DentalInsurance, insurance)
+					patient.DentalInsurance = append([]contracts.PatientDentalInsurance{insurance}, patient.DentalInsurance...)
 					patientsMap[patient.PatientID] = patient
 				} else {
 					patientOne, err := db.GetPatientByAgentInsurances(ctx, insurance.PatientID)
 					if err == nil {
-						patientOne.DentalInsurance = append(patientOne.DentalInsurance, insurance)
+						patientOne.DentalInsurance = append([]contracts.PatientDentalInsurance{insurance}, patient.DentalInsurance...)
 						patientsMap[patientOne.PatientID] = *patientOne
 					}
 				}
@@ -442,12 +442,12 @@ func (db DSPatient) GetPatientByFiltersPaginate(ctx context.Context, addressID s
 			if len(medicalInsurance) > 0 {
 				for _, insurance := range medicalInsurance {
 					if patient, ok := patientsMap[insurance.PatientID]; ok {
-						patient.MedicalInsurance = append(patient.MedicalInsurance, insurance)
+						patient.MedicalInsurance = append([]contracts.PatientMedicalInsurance{insurance}, patient.MedicalInsurance...)
 						patientsMap[patient.PatientID] = patient
 					} else {
 						patientOne, err := db.GetPatientByAgentInsurances(ctx, insurance.PatientID)
 						if err == nil {
-							patientOne.MedicalInsurance = append(patientOne.MedicalInsurance, insurance)
+							patientOne.MedicalInsurance =append([]contracts.PatientMedicalInsurance{insurance}, patient.MedicalInsurance...)
 							patientsMap[patientOne.PatientID] = *patientOne
 						}
 					}
@@ -456,12 +456,12 @@ func (db DSPatient) GetPatientByFiltersPaginate(ctx context.Context, addressID s
 			if len(dentalInsurance) > 0 {
 				for _, insurance := range dentalInsurance {
 					if patient, ok := patientsMap[insurance.PatientID]; ok {
-						patient.DentalInsurance = append(patient.DentalInsurance, insurance)
+						patient.DentalInsurance = append([]contracts.PatientDentalInsurance{insurance}, patient.DentalInsurance...)
 						patientsMap[patient.PatientID] = patient
 					} else {
 						patientOne, err := db.GetPatientByAgentInsurances(ctx, insurance.PatientID)
 						if err == nil {
-							patientOne.DentalInsurance = append(patientOne.DentalInsurance, insurance)
+							patientOne.DentalInsurance = append([]contracts.PatientDentalInsurance{insurance}, patient.DentalInsurance...)
 							patientsMap[patientOne.PatientID] = *patientOne
 						}
 					}
@@ -562,12 +562,12 @@ func (db DSPatient) GetPatientByFiltersPaginate(ctx context.Context, addressID s
 		if len(medicalInsurance) > 0 {
 			for _, insurance := range medicalInsurance {
 				if patient, ok := patientsMap[insurance.PatientID]; ok {
-					patient.MedicalInsurance = append(patient.MedicalInsurance, insurance)
+					patient.MedicalInsurance = append([]contracts.PatientMedicalInsurance{insurance}, patient.MedicalInsurance...)
 					patientsMap[patient.PatientID] = patient
 				} else {
 					patientOne, err := db.GetPatientByAgentInsurances(ctx, insurance.PatientID)
 					if err == nil {
-						patientOne.MedicalInsurance = append(patientOne.MedicalInsurance, insurance)
+						patientOne.MedicalInsurance = append([]contracts.PatientMedicalInsurance{insurance}, patient.MedicalInsurance...)
 						patientsMap[patientOne.PatientID] = *patientOne
 					}
 				}
@@ -576,12 +576,12 @@ func (db DSPatient) GetPatientByFiltersPaginate(ctx context.Context, addressID s
 		if len(dentalInsurance) > 0 {
 			for _, insurance := range dentalInsurance {
 				if patient, ok := patientsMap[insurance.PatientID]; ok {
-					patient.DentalInsurance = append(patient.DentalInsurance, insurance)
+					patient.DentalInsurance = append([]contracts.PatientDentalInsurance{insurance}, patient.DentalInsurance...)
 					patientsMap[patient.PatientID] = patient
 				} else {
 					patientOne, err := db.GetPatientByAgentInsurances(ctx, insurance.PatientID)
 					if err == nil {
-						patientOne.DentalInsurance = append(patientOne.DentalInsurance, insurance)
+						patientOne.DentalInsurance = append([]contracts.PatientDentalInsurance{insurance}, patient.DentalInsurance...)
 						patientsMap[patientOne.PatientID] = *patientOne
 					}
 				}
