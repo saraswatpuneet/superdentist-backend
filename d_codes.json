@@ -296,7 +296,7 @@
       "breakDowns": {
         "D2140":{
           "key": "D2140",
-          "value": "Restorations / Fillings (2140-2430)"
+          "label": "Restorations / Fillings (2140-2430)"
 
         },
         "D2330": {
@@ -337,7 +337,7 @@
         },
         "D2510":{
           "key": "D2510",
-          "value": "Crowns / Restorations (2510-2799)"
+          "label": "Crowns / Restorations (2510-2799)"
         },
         "D2610": {
           "key": "D2610",
