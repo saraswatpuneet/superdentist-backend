@@ -1168,8 +1168,16 @@ func GetClinicPracticeCodes(c *gin.Context) {
 		)
 		return
 	}
+	returnedCodes := make([]contracts.SelectedDentalCodes, 0)
+	for idx := range codeData.PracticeCodes {
+		currentCodeData := codeData.PracticeCodes[idx]
+		if currentCodeData.CodeIds == nil {
+			currentCodeData.CodeIds = make([]string, 0)
+		}
+		returnedCodes = append(returnedCodes, currentCodeData)
+	}
 	c.JSON(http.StatusOK, gin.H{
-		constants.RESPONSE_JSON_DATA:   codeData.PracticeCodes,
+		constants.RESPONSE_JSON_DATA:   returnedCodes,
 		constants.RESPONSDE_JSON_ERROR: nil,
 	})
 }
