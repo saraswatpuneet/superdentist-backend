@@ -399,6 +399,11 @@ func (db DSPatient) GetPatientByFiltersPaginate(ctx context.Context, addressID s
 						continue
 					}
 				}
+				if filters.Status!= "" {
+					if strings.ToLower(filters.Status) != strings.ToLower(dentalOne.Status.Value) {
+						continue
+					}
+				}
 				if dentalOne.Company == company {
 					dentalInsurance = append(dentalInsurance, dentalOne)
 					counterDental+=1
@@ -449,6 +454,11 @@ func (db DSPatient) GetPatientByFiltersPaginate(ctx context.Context, addressID s
 				}
 				if filters.AgentID != "" {
 					if strings.ToLower(filters.AgentID) != strings.ToLower(medicalOne.AgentID) {
+						continue
+					}
+				}
+				if filters.Status!= "" {
+					if strings.ToLower(filters.Status) != strings.ToLower(medicalOne.Status.Value) {
 						continue
 					}
 				}
@@ -541,6 +551,11 @@ func (db DSPatient) GetPatientByFiltersPaginate(ctx context.Context, addressID s
 					continue
 				}
 			}
+			if filters.Status!= "" {
+				if strings.ToLower(filters.Status) != strings.ToLower(dentalOne.Status.Value) {
+					continue
+				}
+			}
 			dentalInsurance = append(dentalInsurance, dentalOne)
 			counterDental  +=1
 			if counterDental == pageSize {
@@ -587,6 +602,11 @@ func (db DSPatient) GetPatientByFiltersPaginate(ctx context.Context, addressID s
 			}
 			if filters.AgentID != "" {
 				if strings.ToLower(filters.AgentID) != strings.ToLower(medicalOne.AgentID) {
+					continue
+				}
+			}
+			if filters.Status!= "" {
+				if strings.ToLower(filters.Status) != strings.ToLower(medicalOne.Status.Value) {
 					continue
 				}
 			}

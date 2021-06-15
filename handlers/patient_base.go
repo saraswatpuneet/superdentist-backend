@@ -183,7 +183,7 @@ func GetAllPatientsForClinic(c *gin.Context) {
 	filters.AgentID = agentID
 	filters.Status = status
 	filteringRequested := false
-	if filters.StartTime > 0 || filters.AgentID != "" || (companies != nil && len(companies) > 0) || filters.Status !=""{
+	if filters.StartTime > 0 || filters.AgentID != "" || (companies != nil && len(companies) > 0) || filters.Status != "" {
 		filteringRequested = true
 	}
 	patientDB := datastoredb.NewPatientHandler()
@@ -205,6 +205,9 @@ func GetAllPatientsForClinic(c *gin.Context) {
 			},
 		)
 		return
+	}
+	if pageSize == 0 {
+		pageSize = 20
 	}
 	if pageSize == 0 {
 		if filteringRequested {
