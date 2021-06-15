@@ -152,7 +152,10 @@ func (db DSPatient) GetPatientByFilters(ctx context.Context, addressID string, f
 				qP = qP.Filter("DueDate >=", filters.StartTime)
 				qP = qP.Filter("DueDate <=", filters.EndTime)
 			}
-			if filters.AgentID != "" {
+			if filters.AgentID != ""  {
+				if filters.AgentID =="unassigned" {
+					filters.AgentID = ""
+				}
 				qP = qP.Filter("AgentID =", filters.AgentID)
 			}
 			qP.Filter("Company =", company)
@@ -168,6 +171,9 @@ func (db DSPatient) GetPatientByFilters(ctx context.Context, addressID string, f
 				qP = qP.Filter("DueDate <=", filters.EndTime)
 			}
 			if filters.AgentID != "" {
+				if filters.AgentID =="unassigned" {
+					filters.AgentID = ""
+				}
 				qP = qP.Filter("AgentID =", filters.AgentID)
 			}
 			if global.Options.DSName != "" {
@@ -216,6 +222,9 @@ func (db DSPatient) GetPatientByFilters(ctx context.Context, addressID string, f
 			qP = qP.Filter("DueDate <=", filters.EndTime)
 		}
 		if filters.AgentID != "" {
+			if filters.AgentID =="unassigned" {
+				filters.AgentID = ""
+			}
 			qP = qP.Filter("AgentID =", filters.AgentID)
 		}
 		if global.Options.DSName != "" {
@@ -230,6 +239,9 @@ func (db DSPatient) GetPatientByFilters(ctx context.Context, addressID string, f
 			qP = qP.Filter("DueDate <=", filters.EndTime)
 		}
 		if filters.AgentID != "" {
+			if filters.AgentID =="unassigned" {
+				filters.AgentID = ""
+			}
 			qP = qP.Filter("AgentID =", filters.AgentID)
 		}
 		if global.Options.DSName != "" {
@@ -358,6 +370,9 @@ func (db DSPatient) GetPatientByFiltersPaginate(ctx context.Context, addressID s
 				qP = qP.Namespace(global.Options.DSName)
 			}
 			if filters.AgentID != "" {
+				if filters.AgentID =="unassigned" {
+					filters.AgentID = ""
+				}
 				qP = qP.Filter("AgentID =", filters.AgentID)
 			}
 			qP.Filter("Company=", company)
@@ -400,6 +415,9 @@ func (db DSPatient) GetPatientByFiltersPaginate(ctx context.Context, addressID s
 				qP = qP.Filter("DueDate <=", filters.EndTime)
 			}
 			if filters.AgentID != "" {
+				if filters.AgentID =="unassigned" {
+					filters.AgentID = ""
+				}
 				qP = qP.Filter("AgentID =", filters.AgentID)
 			}
 			if global.Options.DSName != "" {
@@ -482,6 +500,9 @@ func (db DSPatient) GetPatientByFiltersPaginate(ctx context.Context, addressID s
 			qP = qP.Filter("DueDate <=", filters.EndTime)
 		}
 		if filters.AgentID != "" {
+			if filters.AgentID =="unassigned" {
+				filters.AgentID = ""
+			}
 			qP = qP.Filter("AgentID =", filters.AgentID)
 		}
 		if global.Options.DSName != "" {
@@ -524,6 +545,9 @@ func (db DSPatient) GetPatientByFiltersPaginate(ctx context.Context, addressID s
 			qP = qP.Filter("DueDate <=", filters.EndTime)
 		}
 		if filters.AgentID != "" {
+			if filters.AgentID =="unassigned" {
+				filters.AgentID = ""
+			}
 			qP = qP.Filter("AgentID =", filters.AgentID)
 		}
 		if global.Options.DSName != "" {
