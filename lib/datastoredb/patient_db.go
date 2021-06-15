@@ -353,10 +353,12 @@ func (db DSPatient) GetPatientByFiltersPaginate(ctx context.Context, addressID s
 	patientsMap := make(map[string]contracts.Patient, 0)
 	mainCursor := ""
 	if filters.Companies != nil && len(filters.Companies) > 0 {
+		counterDental := 0
+		counterMedical := 0
 		for _, company := range filters.Companies {
 			dentalInsurance := make([]contracts.PatientDentalInsurance, 0)
 			medicalInsurance := make([]contracts.PatientMedicalInsurance, 0)
-			qP := datastore.NewQuery("DentalInsuranceIndexed").Limit(pageSize)
+			qP := datastore.NewQuery("DentalInsuranceIndexed")
 			qP = qP.Filter("AddressID=", addressID)
 			if cursor == "" {
 				cursor = "cursor_" + "cursor_"
@@ -399,6 +401,10 @@ func (db DSPatient) GetPatientByFiltersPaginate(ctx context.Context, addressID s
 				}
 				if dentalOne.Company == company {
 					dentalInsurance = append(dentalInsurance, dentalOne)
+					counterDental+=1
+				}
+				if counterDental == pageSize{
+					break
 				}
 				// Do something with the Person p
 			}
@@ -408,7 +414,7 @@ func (db DSPatient) GetPatientByFiltersPaginate(ctx context.Context, addressID s
 			} else {
 				mainCursor += "cursor_" + nextCursor.String()
 			}
-			qP = datastore.NewQuery("MedicalInsuranceIndexed").Limit(pageSize)
+			qP = datastore.NewQuery("MedicalInsuranceIndexed")
 			qP = qP.Filter("AddressID=", addressID)
 			if filters.StartTime > 0 && filters.EndTime > 0 {
 				qP = qP.Filter("DueDate >=", filters.StartTime)
@@ -448,10 +454,14 @@ func (db DSPatient) GetPatientByFiltersPaginate(ctx context.Context, addressID s
 				}
 				if medicalOne.Company == company {
 					medicalInsurance = append(medicalInsurance, medicalOne)
+					counterMedical +=1
+				}
+				if counterMedical == pageSize{
+					break
 				}
 				// Do something with the Person p
 			}
-			nextCursor, err = iteratorDental.Cursor()
+			nextCursor, err = iteratorMedical.Cursor()
 			if err != nil {
 				mainCursor += "cursor_" + ""
 			} else {
@@ -489,7 +499,9 @@ func (db DSPatient) GetPatientByFiltersPaginate(ctx context.Context, addressID s
 	} else {
 		dentalInsurance := make([]contracts.PatientDentalInsurance, 0)
 		medicalInsurance := make([]contracts.PatientMedicalInsurance, 0)
-		qP := datastore.NewQuery("DentalInsuranceIndexed").Limit(pageSize)
+		counterDental := 0
+		counterMedical := 0
+		qP := datastore.NewQuery("DentalInsuranceIndexed")
 		qP = qP.Filter("AddressID=", addressID)
 		if cursor == "" {
 			cursor = "cursor_" + "cursor_"
@@ -530,6 +542,10 @@ func (db DSPatient) GetPatientByFiltersPaginate(ctx context.Context, addressID s
 				}
 			}
 			dentalInsurance = append(dentalInsurance, dentalOne)
+			counterDental  +=1
+			if counterDental == pageSize {
+				break
+			}
 			// Do something with the Person p
 		}
 		nextCursor, err := iteratorDental.Cursor()
@@ -538,7 +554,7 @@ func (db DSPatient) GetPatientByFiltersPaginate(ctx context.Context, addressID s
 		} else {
 			mainCursor += "cursor_" + nextCursor.String()
 		}
-		qP = datastore.NewQuery("MedicalInsuranceIndexed").Limit(pageSize)
+		qP = datastore.NewQuery("MedicalInsuranceIndexed")
 		qP = qP.Filter("AddressID=", addressID)
 		if filters.StartTime > 0 && filters.EndTime > 0 {
 			qP = qP.Filter("DueDate >=", filters.StartTime)
@@ -575,9 +591,13 @@ func (db DSPatient) GetPatientByFiltersPaginate(ctx context.Context, addressID s
 				}
 			}
 			medicalInsurance = append(medicalInsurance, medicalOne)
+			counterMedical +=1
+			if counterMedical == pageSize {
+				break
+			}
 			// Do something with the Person p
 		}
-		nextCursor, err = iteratorDental.Cursor()
+		nextCursor, err = iteratorMedical.Cursor()
 		if err != nil {
 			mainCursor += "cursor_" + ""
 		} else {

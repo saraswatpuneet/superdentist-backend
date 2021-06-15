@@ -141,6 +141,7 @@ func GetAllPatientsForClinic(c *gin.Context) {
 	endTime := c.Query("endTime")
 	agentID := c.Query("agentId")
 	providers := c.Query("providers")
+	status := c.Query("status")
 	companies := make([]string, 0)
 	json.Unmarshal([]byte(providers), &companies)
 	var startTimeStamp int64
@@ -180,8 +181,9 @@ func GetAllPatientsForClinic(c *gin.Context) {
 
 	}
 	filters.AgentID = agentID
+	filters.Status = status
 	filteringRequested := false
-	if filters.StartTime > 0 || filters.AgentID != "" || (companies != nil && len(companies) > 0) {
+	if filters.StartTime > 0 || filters.AgentID != "" || (companies != nil && len(companies) > 0) || filters.Status !=""{
 		filteringRequested = true
 	}
 	patientDB := datastoredb.NewPatientHandler()

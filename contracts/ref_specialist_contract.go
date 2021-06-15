@@ -137,6 +137,7 @@ type PatientFilters struct {
 	StartTime int64
 	EndTime   int64
 	AgentID   string
+	Status    string
 	Companies []string
 }
 
