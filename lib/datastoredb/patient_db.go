@@ -114,7 +114,7 @@ func (db DSPatient) AddPatientInformationStatus(ctx context.Context, patient con
 func (db DSPatient) GetAddPatientNotes(ctx context.Context, pIDString string) (contracts.Notes, error) {
 	var regularInterface contracts.Notes
 
-	pKey := datastore.NameKey("PatientNotes", pIDString, nil)
+	pKey := datastore.NameKey("PatientNotesIndexed", pIDString, nil)
 	if global.Options.DSName != "" {
 		pKey.Namespace = global.Options.DSName
 	}
@@ -127,7 +127,7 @@ func (db DSPatient) GetAddPatientNotes(ctx context.Context, pIDString string) (c
 
 // AddPatientNotes ....
 func (db DSPatient) AddPatientNotes(ctx context.Context, notes contracts.Notes) error {
-	pKey := datastore.NameKey("PatientNotes", notes.PatientID+notes.Type, nil)
+	pKey := datastore.NameKey("PatientNotesIndexed", notes.PatientID+notes.Type, nil)
 	if global.Options.DSName != "" {
 		pKey.Namespace = global.Options.DSName
 	}
