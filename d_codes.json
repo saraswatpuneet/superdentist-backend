@@ -479,6 +479,220 @@
         }
       }
     },
+    "D2000-D2999": {
+      "key": "D2000-D2999",
+      "label": "RESTORATIVE: OLD (DO NOT FILL)",
+      "breakDownKeys": [
+        "D2140",
+        "D2330",
+        "D2331",
+        "D2332",
+        "D2335",
+        "D2390",
+        "D2391",
+        "D2392",
+        "D2393",
+        "D2510",
+        "D2394",
+        "D2610",
+        "D2620",
+        "D2630",
+        "D2642",
+        "D2643",
+        "D2644",
+        "D2740",
+        "D2750",
+        "D2752",
+        "D2753",
+        "D2753A",
+        "D2790",
+        "D2799",
+        "D2910",
+        "D2915",
+        "D2920",
+        "D2921",
+        "D2929",
+        "D2940",
+        "D2950",
+        "D2954",
+        "D2955",
+        "D2960",
+        "D2962",
+        "D2975",
+        "D2980",
+        "D2982",
+        "D2983",
+        "D2990",
+        "D2999"
+      ],
+      "breakDowns": {
+        "D2140":{
+          "key": "D2140",
+          "label": "Restorations / Fillings (2140-2430)"
+
+        },
+        "D2330": {
+          "key": "D2330",
+          "label": "Resin Composite One Surface Anterior"
+        },
+        "D2331": {
+          "key": "D2331",
+          "label": "Resin Composite Two Surfaces Anterior"
+        },
+        "D2332": {
+          "key": "D2332",
+          "label": "Resin Composite Three Surfaces Anterior"
+        },
+        "D2335": {
+          "key": "D2335",
+          "label": "Resin Composite Four/More Surf Anterior"
+        },
+        "D2390": {
+          "key": "D2390",
+          "label": "Resin Composite Crown Anterior"
+        },
+        "D2391": {
+          "key": "D2391",
+          "label": "Posterior Composites Downgrade (D2391-D2394)"
+        },
+        "D2392": {
+          "key": "D2392",
+          "label": "Resin Composite Two Surfaces Posterior"
+        },
+        "D2393": {
+          "key": "D2393",
+          "label": "Resin Composite Three Surfaces Posterior"
+        },
+        "D2394": {
+          "key": "D2394",
+          "label": "Resin Composite Four/More Surfaces Posterior"
+        },
+        "D2510":{
+          "key": "D2510",
+          "label": "Crowns / Restorations (2510-2799)"
+        },
+        "D2610": {
+          "key": "D2610",
+          "label": "Inlay Porcelain/Ceramic One Surface"
+        },
+        "D2620": {
+          "key": "D2620",
+          "label": "Inlay Porcelain/Ceramic Two Surfaces"
+        },
+        "D2630": {
+          "key": "D2630",
+          "label": "Inlay Porcelain/Ceramic Three+ Surfaces"
+        },
+        "D2642": {
+          "key": "D2642",
+          "label": "Onlay Porcelain/Ceramic Two Surfaces"
+        },
+        "D2643": {
+          "key": "D2643",
+          "label": "Onlay Porcelain/Ceramic Three Surfaces"
+        },
+        "D2644": {
+          "key": "D2644",
+          "label": "Onlay Porcelain/Ceramic Four+ Surfaces"
+        },
+        "D2740": {
+          "key": "D2740",
+          "label": "Crown Porcelain/Ceramic"
+        },
+        "D2750": {
+          "key": "D2750",
+          "label": "Crown Porcelain Fused High Noble Metal"
+        },
+        "D2752": {
+          "key": "D2752",
+          "label": "Crown Porcelain Fused Noble Metal"
+        },
+        "D2753": {
+          "key": "D2753",
+          "label": "Crown- Porcelain Fused To Titanium/titanium Alloys"
+        },
+        "D2753A": {
+          "key": "D2753A",
+          "label": "Crown - Porcelain Fused To Titanium/Titanium Alloy"
+        },
+        "D2790": {
+          "key": "D2790",
+          "label": "Crown Full Cast High Noble Metal"
+        },
+        "D2799": {
+          "key": "D2799",
+          "label": "Provisional Crown - Further TX/Completion Necessar"
+        },
+        "D2910": {
+          "key": "D2910",
+          "label": "Recement Or Rebond Inlay/Onlay/Veneer/Partial Cvrg"
+        },
+        "D2915": {
+          "key": "D2915",
+          "label": "Recement Or Rebond Indirect Fab Or Prefab Post/Cor"
+        },
+        "D2920": {
+          "key": "D2920",
+          "label": "Recement Or Rebond Crown"
+        },
+        "D2921": {
+          "key": "D2921",
+          "label": "Reattachment Of Tooth Fragment, Incisal Edge/Cusp"
+        },
+        "D2929": {
+          "key": "D2929",
+          "label": "Prefabricated Porcelain/Ceramic Crown - Primary"
+        },
+        "D2940": {
+          "key": "D2940",
+          "label": "Protective Restoration"
+        },
+        "D2950": {
+          "key": "D2950",
+          "label": "Core Buildup, Including Any Pins When Required"
+        },
+        "D2954": {
+          "key": "D2954",
+          "label": "Prefab Post & Core (Addition To Crown)"
+        },
+        "D2955": {
+          "key": "D2955",
+          "label": "Post Removal"
+        },
+        "D2960": {
+          "key": "D2960",
+          "label": "Labial Veneer Resin Laminate Chair"
+        },
+        "D2962": {
+          "key": "D2962",
+          "label": "Labial Veneer Porcelain Laminate Lab"
+        },
+        "D2975": {
+          "key": "D2975",
+          "label": "Coping"
+        },
+        "D2980": {
+          "key": "D2980",
+          "label": "Crown Repair - Restorative Material Failure"
+        },
+        "D2982": {
+          "key": "D2982",
+          "label": "Onlay Repair - Restorative Material Failure"
+        },
+        "D2983": {
+          "key": "D2983",
+          "label": "Veneer Repair - Restorative Material Failure"
+        },
+        "D2990": {
+          "key": "D2990",
+          "label": "Resin Infiltration Incipient Smooth Surface Lesion"
+        },
+        "D2999": {
+          "key": "D2999",
+          "label": "Unspec Rest Proc/Rpt"
+        }
+      }
+    },
     "D3000-D3999": {
       "key": "D3000-D3999",
       "label": "ENDODONTICS",
