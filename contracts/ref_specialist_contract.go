@@ -117,6 +117,8 @@ type PatientStore struct {
 	SPName             string        `json:"spName" valid:"required"`
 	ReferralID         string        `json:"referralId" valid:"required"`
 	DueDate            int64         `json:"dueDate"`
+	LastAppointment    int64         `json:"lastAppointment"`
+	VisitCount         int           `json:"visitCount"`
 	AppointmentTime    string        `json:"appointmentTime"`
 	SameDay            bool          `json:"sameDay"`
 	Status             PatientStatus `json:"status"`
