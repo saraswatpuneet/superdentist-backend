@@ -739,13 +739,11 @@ func registerPatientInDB(documentFiles *multipart.Form) error {
 	if len(dentalInsurance) > 0 {
 		for idx := range dentalInsurance {
 			dentalInsurance[idx].AddressID = patientDetails.AddressID
-			dentalInsurance[idx].ID = dentalInsurance[idx].ID+ patientDetails.FirstName+patientDetails.LastName
 		}
 	}
 	if len(medicalInsurance) > 0 {
 		for idx := range medicalInsurance {
 			medicalInsurance[idx].AddressID = patientDetails.AddressID
-			medicalInsurance[idx].ID = medicalInsurance[idx].ID+ patientDetails.FirstName+patientDetails.LastName
 		}
 	}
 	gproject := googleprojectlib.GetGoogleProjectID()
