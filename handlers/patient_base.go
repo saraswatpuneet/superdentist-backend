@@ -16,7 +16,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
-	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
 	"github.com/superdentist/superdentist-backend/constants"
 	"github.com/superdentist/superdentist-backend/contracts"
@@ -804,6 +803,7 @@ func registerPatientInDB(documentFiles *multipart.Form) error {
 		} else {
 			patientDetails.SP = dsReferral.ToPlaceID
 		}
+		patientDetails.AddressID = patientDetails.SP
 		patientDetails.GDName = dsReferral.FromClinicName
 		patientDetails.SPName = dsReferral.ToClinicName
 		patientDetails.ReferralID = refID
@@ -821,8 +821,29 @@ func registerPatientInDB(documentFiles *multipart.Form) error {
 		log.Errorf("Failed to created patient information: %v", err.Error())
 		return err
 	}
-	patientID, _ := uuid.NewUUID()
-	pIDString := patientID.String()
+	unique := ""
+	unique += patientDetails.FirstName + patientDetails.LastName + patientDetails.Dob.Day + patientDetails.Dob.Month + patientDetails.Dob.Year + patientDetails.ZipCode
+	ssnStuff := strings.Replace(patientDetails.SSN, " ", "", -1)
+	if ssnStuff != "" {
+		unique += patientDetails.SSN
+	} else if len(dentalInsurance) > 0 {
+		for _, ins := range dentalInsurance {
+			if ins.MemberID != "" && ins.MemberID != "0" {
+				unique += ins.MemberID
+				break
+			}
+		}
+	} else if len(medicalInsurance) > 0 {
+		for _, ins := range medicalInsurance {
+			if ins.MemberID != "" && ins.MemberID != "0" {
+				unique += ins.MemberID
+				break
+			}
+		}
+	}
+	unique = strings.Replace(unique, " ", "", -1)
+	patientID := unique
+	pIDString := patientID
 	patientDetails.PatientID = pIDString
 	key, err := patientDB.AddPatientInformation(ctx, patientDetails, pIDString, dentalInsurance, medicalInsurance)
 	if err != nil {

@@ -58,39 +58,101 @@ func (db *DSPatient) InitializeDataBase(ctx context.Context, projectID string) e
 // AddPatientInformation ....
 func (db DSPatient) AddPatientInformation(ctx context.Context, patient contracts.PatientStore, pIDString string, dI []contracts.PatientDentalInsurance, mI []contracts.PatientMedicalInsurance) (string, error) {
 
+
 	pKey := datastore.NameKey("PatientIndexed", pIDString, nil)
-	if global.Options.DSName != "" {
-		pKey.Namespace = global.Options.DSName
+	pQ := datastore.NewQuery("PatientIndexed").Namespace("sdprod")
+	pQ = pQ.Filter("PatientID=", patient.PatientID)
+	existingPatient := make([]contracts.PatientStore, 0)
+	_, err := db.client.GetAll(ctx, pQ, &existingPatient)
+	patientAfter10Days := false
+	if err == nil && len(existingPatient) > 0 {
+		currentPatient := existingPatient[0]
+		if (patient.DueDate - currentPatient.DueDate) > 9*86400 {
+			patientAfter10Days = true
+		}
+		if currentPatient.VisitCount > 0 && patientAfter10Days {
+			patient.VisitCount = currentPatient.VisitCount + 1
+			patient.LastAppointment = currentPatient.DueDate
+		} else {
+			patient.VisitCount = 1
+			patient.LastAppointment = patient.DueDate
+		}
 	}
+	pKey.Namespace = "sdprod"
 	patient.PatientID = pIDString
-	_, err := db.client.Put(ctx, pKey, &patient)
+	dueDate := patient.DueDate
+
+	if len(dI) > 0 {
+		for _, insurance := range dI {
+			dQP := datastore.NewQuery("DentalInsuranceIndexed").Namespace("sdprod")
+			dQP = dQP.Filter("ID=", insurance.ID)
+			existingPatientDI := make([]contracts.PatientDentalInsurance, 0)
+			_, err := db.client.GetAll(ctx, dQP, &existingPatientDI)
+			if err == nil && len(existingPatientDI) > 0 {
+				currentDI := existingPatientDI[0]
+				insurance.Status = currentDI.Status
+				insurance.AgentID = currentDI.AgentID
+				if patientAfter10Days {
+					insurance.Status = contracts.PatientStatus{Label: "Pending", Value: "pending"}
+					insurance.AgentID =""
+				}
+				if currentDI.PatientID != patient.PatientID {
+					newID := insurance.ID + patient.FirstName + patient.LastName
+					for idx, id := range patient.DentalInsuraceID {
+						if id == insurance.ID {
+							patient.DentalInsuraceID[idx] = newID
+						}
+					}
+					insurance.ID = newID
+				}
+			}
+			insurance.PatientID = pIDString
+			insurance.DueDate = dueDate
+			dKey := datastore.NameKey("DentalInsuranceIndexed", insurance.ID, nil)
+			dKey.Namespace = "sdprod"
+			_, err = db.client.Put(ctx, dKey, &insurance)
+			if err != nil {
+				return "", err
+			}
+		}
+	}
+	if len(mI) > 0 {
+		for _, insurance := range mI {
+			mQP := datastore.NewQuery("MedicalInsuranceIndexed").Namespace("sdprod")
+			mQP = mQP.Filter("ID=", insurance.ID)
+			existingPatientMI := make([]contracts.PatientMedicalInsurance, 0)
+			_, err := db.client.GetAll(ctx, mQP, &existingPatientMI)
+			if err == nil && len(existingPatientMI) > 0 {
+				currentMI := existingPatientMI[0]
+				insurance.Status = currentMI.Status
+				insurance.AgentID = currentMI.AgentID
+				if patientAfter10Days {
+					insurance.Status = contracts.PatientStatus{Label: "Pending", Value: "pending"}
+					insurance.AgentID =""
+				}
+				if currentMI.PatientID != patient.PatientID {
+					newID := insurance.ID + patient.FirstName + patient.LastName
+					for idx, id := range patient.DentalInsuraceID {
+						if id == insurance.ID {
+							patient.MedicalInsuranceID[idx] = newID
+						}
+					}
+					insurance.ID = newID
+				}
+			}
+			insurance.PatientID = pIDString
+			insurance.DueDate = dueDate
+			mKey := datastore.NameKey("MedicalInsuranceIndexed", insurance.ID, nil)
+			mKey.Namespace = "sdprod"
+			_, err = db.client.Put(ctx, mKey, &insurance)
+			if err != nil {
+				return "", err
+			}
+		}
+	}
+	_, err = db.client.Put(ctx, pKey, &patient)
 	if err != nil {
 		return "", err
-	}
-	for _, insurance := range dI {
-		pKey := datastore.NameKey("DentalInsuranceIndexed", insurance.ID, nil)
-		insurance.PatientID = pIDString
-		insurance.DueDate = patient.DueDate
-
-		if global.Options.DSName != "" {
-			pKey.Namespace = global.Options.DSName
-		}
-		_, err := db.client.Put(ctx, pKey, &insurance)
-		if err != nil {
-			return "", err
-		}
-	}
-	for _, insurance := range mI {
-		pKey := datastore.NameKey("MedicalInsuranceIndexed", insurance.ID, nil)
-		insurance.PatientID = pIDString
-		insurance.DueDate = patient.DueDate
-		if global.Options.DSName != "" {
-			pKey.Namespace = global.Options.DSName
-		}
-		_, err := db.client.Put(ctx, pKey, &insurance)
-		if err != nil {
-			return "", err
-		}
 	}
 	return pIDString, nil
 }
