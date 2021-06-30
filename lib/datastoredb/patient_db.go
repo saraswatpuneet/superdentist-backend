@@ -352,10 +352,12 @@ func (db DSPatient) GetPatientByNames(ctx context.Context, addressID string, fir
 	if firstName == lastName {
 		qP1 := datastore.NewQuery("PatientIndexed")
 		qP1 = qP1.Filter("AddressID=", addressID)
-		qP1 = qP1.Filter("FirstName=", firstName)
+		qP1 = qP1.Filter("FirstName>=", firstName)
+		qP1 = qP1.Filter("FirstName<=", firstName+"~")
 		qP2 := datastore.NewQuery("PatientIndexed")
 		qP2 = qP2.Filter("AddressID=", addressID)
-		qP2 = qP2.Filter("LastName=", lastName)
+		qP2 = qP2.Filter("LastName>=", lastName)
+		qP2 = qP2.Filter("LastName<=", lastName+"~")
 		if global.Options.DSName != "" {
 			qP1 = qP1.Namespace(global.Options.DSName)
 			qP2 = qP2.Namespace(global.Options.DSName)
