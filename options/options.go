@@ -26,6 +26,15 @@ type Options struct {
 	ReferralPhone          string `json:"refphone,omitempty"`
 	EncryptionKeyQR        string `json:"encryptionkeyqr,omitempty"`
 	GCMQR                  cipher.AEAD
+	DBHost                 string `json:"dbhost,omitempty"`
+	DBPort                 int    `json:"dbport,omitempty"`
+	DBName                 string `json:"dbname,omitempty"`
+	DBUser                 string `json:"dbuser,omitempty"`
+	DBPassword             string `json:"dbpassword,omitempty"`
+	SSLMode                string `json:"sslmode,omitempty"`
+	RootCA                 string `json:"sslRootCert,omitempty"`
+	SSLKey                 string `json:"sslKey,omitempty"`
+	SSLCert                string `json:"sslCert,omitempty"`
 }
 
 // New .. create a new instance
@@ -40,7 +49,7 @@ func InitOptions() (*Options, error) {
 		return nil, fmt.Errorf("Options initialization unmarshal error: %v", err)
 	}
 	if !options.Debug {
-		options.DSName = os.Getenv("DS_NAMESPACE")
+		options.DSName  = os.Getenv("DS_NAMESPACE")
 		options.ReplyTo = os.Getenv("SD_ADMIN_EMAIL_REPLYTO")
 		options.PatientConfTemp = os.Getenv("SD_PATIENT_REF_CONF")
 		options.SpecialistConfTemp = os.Getenv("SD_SPECIALIZT_REF_CONF")

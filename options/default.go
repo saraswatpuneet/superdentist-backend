@@ -13,6 +13,15 @@ var Default = []byte(`
 	"cnn": "d-a4a7dc5e0bf0436cb7766a3631ee803d",
 	"pnn": "d-7c54cb4262a64e10a344551c77a56ec9",
 	"curi": "https://dev.superdentist.io",
-	"refphone": "+17373772180"
+	"refphone": "+17373772180",
+	"dbhost":"34.70.1.167",
+	"dbport": 5432,
+	"dbname": "superdentistpg",
+	"dbuser": "sdadmin",
+	"dbpassword": "rpt6eq2xPcyLcxw7",
+	"sslmode": "verify-ca",
+	"sslRootCert": "./certs/server-ca-dev.pem",
+	"sslCert": "./certs/client-cert-dev.pem",
+	"sslKey": "./certs/client-key-dev.pem"
 }
 `)
