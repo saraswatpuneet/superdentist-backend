@@ -139,7 +139,7 @@ spec:
           image: gcr.io/cloudsql-docker/gce-proxy:1.17
           command:
             - "/cloud_sql_proxy"
-            - "-instances= sd-dev-sql=tcp:5432"
+            - "-instances=superdentist:us-central1:sd-dev-sql=tcp:5432"
             - "-credential_file=/var/run/secrets/superdentist-backend/super-dentist-backend.json"
           volumeMounts:
           - name: superdentist-backend
