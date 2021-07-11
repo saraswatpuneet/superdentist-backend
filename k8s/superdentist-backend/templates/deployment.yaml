@@ -133,6 +133,18 @@ spec:
               secretKeyRef:
                 name: {{.Values.encqr.name}}
                 key : {{.Values.encqr.secret}}
+        - name: cloud-sql-proxy
+          # It is recommended to use the latest version of the Cloud SQL proxy
+          # Make sure to update on a regular schedule!
+          image: gcr.io/cloudsql-docker/gce-proxy:1.17
+          command:
+            - "/cloud_sql_proxy"
+            - "-instances= sd-dev-sql=tcp:5432"
+            - "-credential_file=/var/run/secrets/superdentist-backend/super-dentist-backend.json"
+          volumeMounts:
+          - name: superdentist-backend
+            mountPath: {{ .Values.sdServiceAccount.credential.dir | quote }}
+            readOnly: true
       volumes:
       - name: superdentist-backend
         secret:
