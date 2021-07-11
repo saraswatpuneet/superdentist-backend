@@ -69,7 +69,7 @@ spec:
             readOnly: true
           env:
           - name: DB_HOST
-            value: 34.123.130.172
+            value: 127.0.0.1
           - name: DB_NAME
             value: superdentistpg
           - name: DB_USER
