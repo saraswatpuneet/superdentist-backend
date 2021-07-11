@@ -69,7 +69,7 @@ spec:
             readOnly: true
           env:
           - name: DB_HOST
-            value: 34.70.123.179
+            value: 127.0.0.1
           - name: DB_NAME
             value: superdentistpg
           - name: DB_USER
@@ -77,7 +77,7 @@ spec:
           - name: DB_PASSWORD
             value: qlhH4IJMmFC9jxAa
           - name: SSL_MODE
-            value: verify-ca
+            value: disable
           - name: SSL_ROOT_CA
             value: /var/run/secrets/server-ca-prod.pem
           - name: SSL_KEY
@@ -135,6 +135,18 @@ spec:
               secretKeyRef:
                 name: {{.Values.encqr.name}}
                 key : {{.Values.encqr.secret}}
+        - name: cloud-sql-proxy
+          # It is recommended to use the latest version of the Cloud SQL proxy
+          # Make sure to update on a regular schedule!
+          image: gcr.io/cloudsql-docker/gce-proxy:1.17
+          command:
+            - "/cloud_sql_proxy"
+            - "-instances=superdentist:us-central1:sd-prod-sql=tcp:5432"
+            - "-credential_file=/var/run/secrets/superdentist-backend/super-dentist-backend.json"
+          volumeMounts:
+          - name: superdentist-backend
+            mountPath: {{ .Values.sdServiceAccount.credential.dir | quote }}
+            readOnly: true
       volumes:
       - name: superdentist-backend
         secret:
