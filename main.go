@@ -20,11 +20,10 @@ func main() {
 	//os.Setenv("SENDGRID_API_KEY", "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")
 	// ...........................................
 	_, err := postgres.NewPostgresHandler()
-	if err!= nil {
+	if err != nil {
 		log.Errorf("Error connecting to Postgres: %s", err)
 		log.Infof("Backend intialization failed")
-		panic(err)
-	}	
+	}
 	// any global settings like PMS username/password/configuration goes here
 	config.Init()
 	// Only log the warning severity or above.
