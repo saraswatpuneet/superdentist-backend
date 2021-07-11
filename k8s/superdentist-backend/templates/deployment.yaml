@@ -58,7 +58,32 @@ spec:
           - name: superdentist-backend
             mountPath: {{ .Values.sdServiceAccount.credential.dir | quote }}
             readOnly: true
+          - name: sd-pg-root
+            mountPath: {{ .Values.sdPGRoot.credential.dir | quote }}
+            readOnly: true
+          - name: sd-pg-client
+            mountPath: {{ .Values.sdPGClient.credential.dir | quote }}
+            readOnly: true
+          - name: sd-pg-key
+            mountPath: {{ .Values.sdPGKey.credential.dir | quote }}
+            readOnly: true
           env:
+          - name: DB_HOST
+            value: 34.123.130.172
+          - name: DB_NAME
+            value: superdentistpg
+          - name: DB_USER
+            value: sdadmin
+          - name: DB_PASSWORD
+            value: pCiHGvnBob26o0q8
+          - name: SSL_MODE
+            value: verify-ca
+          - name: SSL_ROOT_CA
+            value: /var/run/secrets/server-ca-dev.pem
+          - name: SSL_KEY
+            value: /var/run/secrets/client-key-dev.pem
+          - name: SSL_CERT
+            value: /var/run/secrets/client-cert-dev.pem
           - name: SD_REFERRAL_PHONE
             value: '+17373772180'
           - name: SD_ADMIN_EMAIL_REPLYTO
@@ -112,3 +137,12 @@ spec:
       - name: superdentist-backend
         secret:
           secretName: {{ .Values.sdServiceAccount.secret }}
+      - name: sd-pg-root
+        secret:
+          secretName: {{ .Values.sdPGRoot.secret }}
+      - name: sd-pg-client
+        secret:
+          secretName: {{ .Values.sdPGClient.secret }}
+      - name: sd-pg-key
+        secret:
+          secretName: {{ .Values.sdPGKey.secret }} 

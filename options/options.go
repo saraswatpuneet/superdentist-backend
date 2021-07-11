@@ -72,6 +72,40 @@ func InitOptions() (*Options, error) {
 				options.GCMQR = gcm
 			}
 		}
+		dbHost := os.Getenv("DB_HOST")
+		if dbHost!= "" {
+			options.DBHost = dbHost
+		}
+		options.DBPort = 5432
+		dbName := os.Getenv("DB_NAME")
+		if dbName != "" {
+			options.DBName = dbName
+		}
+		dbUser := os.Getenv("DB_USER")
+		if dbUser != "" {
+			options.DBUser = dbUser
+		}
+		dbPassword := os.Getenv("DB_PASSWORD")
+		if dbPassword != "" {
+			options.DBPassword = dbPassword
+		}
+		sslMode := os.Getenv("SSL_MODE")
+		if sslMode != "" {
+			options.SSLMode = sslMode
+		}
+		rootCA := os.Getenv("SSL_ROOT_CA")
+		if rootCA != "" {
+			options.RootCA = rootCA
+		}
+		sslKey := os.Getenv("SSL_KEY")
+		if sslKey != "" {
+			options.SSLKey = sslKey
+		}
+		sslCert := os.Getenv("SSL_CERT")
+		if sslCert != "" {
+			options.SSLCert = sslCert
+		}
+
 	}
 	return options, nil
 }

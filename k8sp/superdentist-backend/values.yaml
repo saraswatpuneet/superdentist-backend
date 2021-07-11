@@ -31,6 +31,24 @@ sdServiceAccount:
   credential:
     dir: /var/run/secrets/superdentist-backend
     file: super-dentist-backend.json
+sdPGRoot:
+  name: sd-pg-root
+  secret: sd-pg-root
+  credential:
+    dir: /var/run/secrets
+    file: server-ca-prod.pem
+sdPGClient:
+  name: sd-pg-client
+  secret: sd-pg-client
+  credential:
+    dir: /var/run/secrets
+    file: client-cert-prod.pem
+sdPGKey:
+  name: sd-pg-key
+  secret: sd-pg-key
+  credential:
+    dir: /var/run/secrets
+    file: client-key-prod.pem
 sdAPISecret:
   name: sd-api-key
   secret: GCP_API_KEY
