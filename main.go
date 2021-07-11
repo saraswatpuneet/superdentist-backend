@@ -6,6 +6,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/superdentist/superdentist-backend/config"
 	"github.com/superdentist/superdentist-backend/global"
+	"github.com/superdentist/superdentist-backend/lib/postgres"
 	servertrigger "github.com/superdentist/superdentist-backend/trigger"
 )
 
@@ -18,7 +19,12 @@ func main() {
 	//os.Setenv("TWI_AUTH", "fbec2dcbf1d93d233b34b1d39dabf064")
 	//os.Setenv("SENDGRID_API_KEY", "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")
 	// ...........................................
-
+	_, err := postgres.NewPostgresHandler()
+	if err!= nil {
+		log.Errorf("Error connecting to Postgres: %s", err)
+		log.Infof("Backend intialization failed")
+		panic(err)
+	}	
 	// any global settings like PMS username/password/configuration goes here
 	config.Init()
 	// Only log the warning severity or above.
@@ -26,7 +32,7 @@ func main() {
 		log.SetLevel(log.DebugLevel)
 	}
 	// Initialize Rest APIs
-	err := servertrigger.CoreServer()
+	err = servertrigger.CoreServer()
 	if err != nil {
 		//send signal to all channels to calm down we found an error
 		log.Errorf("Backend server went crazy: %v", err.Error())
