@@ -15,10 +15,9 @@ import (
 )
 
 // CoreServer ....CoreServer
-func CoreServer() error {
+func CoreServer(ctx context.Context, cancel context.CancelFunc) error {
 	// create a new context and save it in global
 	port := 8090
-	ctx, cancel := context.WithCancel(context.Background())
 	log.Infof("Starting superdentist-backend container.")
 	portFromEnv := os.Getenv("PORT")
 	var err error
