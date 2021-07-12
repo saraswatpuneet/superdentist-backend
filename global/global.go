@@ -6,6 +6,7 @@ import (
 
 	"context"
 
+	"github.com/jackc/pgx"
 	"github.com/superdentist/superdentist-backend/options"
 
 	log "github.com/sirupsen/logrus"
@@ -13,9 +14,13 @@ import (
 
 // some global variables commonly used
 var (
-	Options         *options.Options
-	UnitTest        bool
-	Ctx             context.Context
+	Options       *options.Options
+	UnitTest      bool
+	Ctx           context.Context
+	PGXConn       *pgx.ConnPool
+	PGXConfig     *pgx.ConnConfig
+	PGXPoolConfig *pgx.ConnPoolConfig
+
 	WaitGroupServer sync.WaitGroup
 )
 

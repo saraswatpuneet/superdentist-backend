@@ -22,6 +22,7 @@ require (
 	github.com/google/uuid v1.2.0
 	github.com/gorilla/websocket v1.4.2
 	github.com/grokify/html-strip-tags-go v0.0.1 // indirect
+	github.com/jackc/pgx v3.6.2+incompatible // indirect
 	github.com/johnfercher/maroto v0.29.0
 	github.com/json-iterator/go v1.1.10 // indirect
 	github.com/jung-kurt/gofpdf v1.16.2 // indirect
