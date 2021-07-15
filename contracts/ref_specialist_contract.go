@@ -96,6 +96,8 @@ type Patient struct {
 	ZipCode          string                    `json:"zipCode"`
 	CreatedOn        int64                     `json:"createdOn"`
 	CreationDate     string                    `json:"creationDate"`
+	VisitCount       int                       `json:"visitCount"`
+	LastAppointment  int64                     `json:"lastAppointment"`
 }
 
 // PatientStore ....
@@ -125,6 +127,13 @@ type PatientStore struct {
 	ZipCode            string        `json:"zipCode"`
 	CreatedOn          int64         `json:"createdOn"`
 	CreationDate       string        `json:"creationDate"`
+}
+
+//PatientVerificationStatistics ...
+type PatientVerificationStatistics struct {
+	TotalPatients    int            `json:"totalPatients"`
+	StatusCounts     map[string]int `json:"statusCounts"`
+	VisitationCounts map[string]int `json:"visitationCounts"`
 }
 
 // AgentInsuranceMap ...

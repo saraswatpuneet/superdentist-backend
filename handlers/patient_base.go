@@ -247,6 +247,90 @@ func GetAllPatientsForClinic(c *gin.Context) {
 	}
 }
 
+// GetAgentStatistic ....
+func GetAgentStatistic(c *gin.Context) {
+	// Stage 1  Load the incoming request
+	log.Infof("Patient Stuff: Getting statistics")
+	gproject := googleprojectlib.GetGoogleProjectID()
+	ctx := c.Request.Context()
+	ctx, span := trace.StartSpan(ctx, "Get statistics for agents")
+	defer span.End()
+	// here is we have addressID
+	addressID := c.Param("addressId")
+	startTime := c.Query("startTime")
+	endTime := c.Query("endTime")
+	var startTimeStamp int64
+	var endTimeStamp int64
+	startTimeStamp = 0
+	endTimeStamp = 0
+	var err error
+	var filters contracts.PatientFilters
+	if startTime != "" {
+		startTimeStamp, err = strconv.ParseInt(startTime, 10, 64)
+		if err != nil {
+			c.AbortWithStatusJSON(
+				http.StatusInternalServerError,
+				gin.H{
+					constants.RESPONSE_JSON_DATA:   nil,
+					constants.RESPONSDE_JSON_ERROR: err.Error(),
+				},
+			)
+			return
+		}
+		filters.StartTime = startTimeStamp
+	}
+	if endTime != "" {
+		endTimeStamp, err = strconv.ParseInt(endTime, 10, 64)
+		if err != nil {
+			c.AbortWithStatusJSON(
+				http.StatusInternalServerError,
+				gin.H{
+					constants.RESPONSE_JSON_DATA:   nil,
+					constants.RESPONSDE_JSON_ERROR: err.Error(),
+				},
+			)
+			return
+		}
+		filters.EndTime = endTimeStamp
+
+	}
+	if filters.StartTime <= 0 || filters.EndTime <= 0 {
+		c.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: fmt.Errorf("Missing startTime and endTime to get statistics").Error(),
+			},
+		)
+		return
+	}
+	patientDB := datastoredb.NewPatientHandler()
+	err = patientDB.InitializeDataBase(ctx, gproject)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+
+	count, mapVisit, mapStatus := patientDB.GetPatientByFiltersStats(ctx, addressID, filters)
+	var statistics contracts.PatientVerificationStatistics
+	statistics.TotalPatients = count
+	statistics.VisitationCounts = mapVisit
+	statistics.StatusCounts = mapStatus
+
+
+	c.JSON(http.StatusOK, gin.H{
+		constants.RESPONSE_JSON_DATA:   statistics,
+		constants.RESPONSDE_JSON_ERROR: nil,
+	})
+
+}
+
 // GetAllPatientsForClinic ....
 func GetSinglePatientForClinic(c *gin.Context) {
 	// Stage 1  Load the incoming request

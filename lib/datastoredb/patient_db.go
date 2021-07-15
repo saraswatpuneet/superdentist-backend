@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/superdentist/superdentist-backend/contracts"
@@ -58,7 +59,6 @@ func (db *DSPatient) InitializeDataBase(ctx context.Context, projectID string) e
 // AddPatientInformation ....
 func (db DSPatient) AddPatientInformation(ctx context.Context, patient contracts.PatientStore, pIDString string, dI []contracts.PatientDentalInsurance, mI []contracts.PatientMedicalInsurance) (string, error) {
 
-
 	pKey := datastore.NameKey("PatientIndexed", pIDString, nil)
 	pQ := datastore.NewQuery("PatientIndexed").Namespace("sdprod")
 	pQ = pQ.Filter("PatientID=", patient.PatientID)
@@ -94,7 +94,7 @@ func (db DSPatient) AddPatientInformation(ctx context.Context, patient contracts
 				insurance.AgentID = currentDI.AgentID
 				if patientAfter10Days {
 					insurance.Status = contracts.PatientStatus{Label: "Pending", Value: "pending"}
-					insurance.AgentID =""
+					insurance.AgentID = ""
 				}
 				if currentDI.PatientID != patient.PatientID {
 					newID := insurance.ID + patient.FirstName + patient.LastName
@@ -128,7 +128,7 @@ func (db DSPatient) AddPatientInformation(ctx context.Context, patient contracts
 				insurance.AgentID = currentMI.AgentID
 				if patientAfter10Days {
 					insurance.Status = contracts.PatientStatus{Label: "Pending", Value: "pending"}
-					insurance.AgentID =""
+					insurance.AgentID = ""
 				}
 				if currentMI.PatientID != patient.PatientID {
 					newID := insurance.ID + patient.FirstName + patient.LastName
@@ -214,8 +214,8 @@ func (db DSPatient) GetPatientByFilters(ctx context.Context, addressID string, f
 				qP = qP.Filter("DueDate >=", filters.StartTime)
 				qP = qP.Filter("DueDate <=", filters.EndTime)
 			}
-			if filters.AgentID != ""  {
-				if filters.AgentID =="unassigned" {
+			if filters.AgentID != "" {
+				if filters.AgentID == "unassigned" {
 					filters.AgentID = ""
 				}
 				qP = qP.Filter("AgentID =", filters.AgentID)
@@ -233,7 +233,7 @@ func (db DSPatient) GetPatientByFilters(ctx context.Context, addressID string, f
 				qP = qP.Filter("DueDate <=", filters.EndTime)
 			}
 			if filters.AgentID != "" {
-				if filters.AgentID =="unassigned" {
+				if filters.AgentID == "unassigned" {
 					filters.AgentID = ""
 				}
 				qP = qP.Filter("AgentID =", filters.AgentID)
@@ -284,7 +284,7 @@ func (db DSPatient) GetPatientByFilters(ctx context.Context, addressID string, f
 			qP = qP.Filter("DueDate <=", filters.EndTime)
 		}
 		if filters.AgentID != "" {
-			if filters.AgentID =="unassigned" {
+			if filters.AgentID == "unassigned" {
 				filters.AgentID = ""
 			}
 			qP = qP.Filter("AgentID =", filters.AgentID)
@@ -301,7 +301,7 @@ func (db DSPatient) GetPatientByFilters(ctx context.Context, addressID string, f
 			qP = qP.Filter("DueDate <=", filters.EndTime)
 		}
 		if filters.AgentID != "" {
-			if filters.AgentID =="unassigned" {
+			if filters.AgentID == "unassigned" {
 				filters.AgentID = ""
 			}
 			qP = qP.Filter("AgentID =", filters.AgentID)
@@ -344,6 +344,87 @@ func (db DSPatient) GetPatientByFilters(ctx context.Context, addressID string, f
 		patients = append(patients, patient)
 	}
 	return patients
+}
+
+// GetPatientByFiltersStats ...
+func (db DSPatient) GetPatientByFiltersStats(ctx context.Context, addressID string, filters contracts.PatientFilters)( int, map[string]int, map[string]int){
+	patientsMap := make(map[string]string, 0)
+	mapStatus := make(map[string]int)
+	mapVisit := make(map[string]int)
+	dentalInsurance := make([]contracts.PatientDentalInsurance, 0)
+	medicalInsurance := make([]contracts.PatientMedicalInsurance, 0)
+	qP := datastore.NewQuery("DentalInsuranceIndexed")
+	qP = qP.Filter("AddressID=", addressID)
+	if filters.StartTime > 0 && filters.EndTime > 0 {
+		qP = qP.Filter("DueDate >=", filters.StartTime)
+		qP = qP.Filter("DueDate <=", filters.EndTime)
+	}
+	if global.Options.DSName != "" {
+		qP = qP.Namespace(global.Options.DSName)
+	}
+	db.client.GetAll(ctx, qP, &dentalInsurance)
+
+	qP = datastore.NewQuery("MedicalInsuranceIndexed")
+	qP = qP.Filter("AddressID=", addressID)
+	if filters.StartTime > 0 && filters.EndTime > 0 {
+		qP = qP.Filter("DueDate >=", filters.StartTime)
+		qP = qP.Filter("DueDate <=", filters.EndTime)
+	}
+	if global.Options.DSName != "" {
+		qP = qP.Namespace(global.Options.DSName)
+	}
+	db.client.GetAll(ctx, qP, &medicalInsurance)
+	if len(medicalInsurance) > 0 {
+		for _, insurance := range medicalInsurance {
+			if _, ok := patientsMap[insurance.PatientID]; !ok {
+				patientOne, _ := db.GetPatientByAgentInsurances(ctx, insurance.PatientID)
+				vCount := strconv.Itoa(patientOne.VisitCount)
+				if vCount == "" || vCount== "0" {
+					vCount = "1"
+				}
+				if patientOne != nil {
+					patientsMap[patientOne.PatientID] = patientOne.PatientID
+				}
+				patientsMap[insurance.PatientID] = insurance.PatientID
+				if _, ok := mapVisit[vCount]; !ok {
+					mapVisit[vCount] = 1
+				} else {
+					mapVisit[vCount] = mapVisit[vCount] + 1
+				}
+			}
+			if _, ok := mapStatus[insurance.Status.Label]; !ok {
+				mapStatus[insurance.Status.Label] = 1
+			} else {
+				mapStatus[insurance.Status.Label] = mapStatus[insurance.Status.Label] + 1
+			}
+		}
+	}
+	if len(dentalInsurance) > 0 {
+		for _, insurance := range dentalInsurance {
+			if _, ok := patientsMap[insurance.PatientID]; !ok {
+				patientOne, _ := db.GetPatientByAgentInsurances(ctx, insurance.PatientID)
+				vCount := strconv.Itoa(patientOne.VisitCount)
+				if vCount == ""  || vCount== "0" {
+					vCount = "1"
+				}
+				if patientOne != nil {
+					patientsMap[patientOne.PatientID] = patientOne.PatientID
+				}
+				patientsMap[insurance.PatientID] = insurance.PatientID
+				if _, ok := mapVisit[vCount]; !ok {
+					mapVisit[vCount] = 1
+				} else {
+					mapVisit[vCount] = mapVisit[vCount] + 1
+				}
+			}
+			if _, ok := mapStatus[insurance.Status.Value]; !ok {
+				mapStatus[insurance.Status.Value] = 1
+			} else {
+				mapStatus[insurance.Status.Value] = mapStatus[insurance.Status.Value] + 1
+			}
+		}
+	}
+	return len(patientsMap), mapVisit, mapStatus
 }
 
 // GetPatientByFilters ...
@@ -436,7 +517,7 @@ func (db DSPatient) GetPatientByFiltersPaginate(ctx context.Context, addressID s
 				qP = qP.Namespace(global.Options.DSName)
 			}
 			if filters.AgentID != "" {
-				if filters.AgentID =="unassigned" {
+				if filters.AgentID == "unassigned" {
 					filters.AgentID = ""
 				}
 				qP = qP.Filter("AgentID =", filters.AgentID)
@@ -463,16 +544,16 @@ func (db DSPatient) GetPatientByFiltersPaginate(ctx context.Context, addressID s
 						continue
 					}
 				}
-				if filters.Status!= "" {
+				if filters.Status != "" {
 					if strings.ToLower(filters.Status) != strings.ToLower(dentalOne.Status.Value) {
 						continue
 					}
 				}
 				if dentalOne.Company == company {
 					dentalInsurance = append(dentalInsurance, dentalOne)
-					counterDental+=1
+					counterDental += 1
 				}
-				if counterDental == pageSize{
+				if counterDental == pageSize {
 					break
 				}
 				// Do something with the Person p
@@ -490,7 +571,7 @@ func (db DSPatient) GetPatientByFiltersPaginate(ctx context.Context, addressID s
 				qP = qP.Filter("DueDate <=", filters.EndTime)
 			}
 			if filters.AgentID != "" {
-				if filters.AgentID =="unassigned" {
+				if filters.AgentID == "unassigned" {
 					filters.AgentID = ""
 				}
 				qP = qP.Filter("AgentID =", filters.AgentID)
@@ -521,16 +602,16 @@ func (db DSPatient) GetPatientByFiltersPaginate(ctx context.Context, addressID s
 						continue
 					}
 				}
-				if filters.Status!= "" {
+				if filters.Status != "" {
 					if strings.ToLower(filters.Status) != strings.ToLower(medicalOne.Status.Value) {
 						continue
 					}
 				}
 				if medicalOne.Company == company {
 					medicalInsurance = append(medicalInsurance, medicalOne)
-					counterMedical +=1
+					counterMedical += 1
 				}
-				if counterMedical == pageSize{
+				if counterMedical == pageSize {
 					break
 				}
 				// Do something with the Person p
@@ -586,7 +667,7 @@ func (db DSPatient) GetPatientByFiltersPaginate(ctx context.Context, addressID s
 			qP = qP.Filter("DueDate <=", filters.EndTime)
 		}
 		if filters.AgentID != "" {
-			if filters.AgentID =="unassigned" {
+			if filters.AgentID == "unassigned" {
 				filters.AgentID = ""
 			}
 			qP = qP.Filter("AgentID =", filters.AgentID)
@@ -615,13 +696,13 @@ func (db DSPatient) GetPatientByFiltersPaginate(ctx context.Context, addressID s
 					continue
 				}
 			}
-			if filters.Status!= "" {
+			if filters.Status != "" {
 				if strings.ToLower(filters.Status) != strings.ToLower(dentalOne.Status.Value) {
 					continue
 				}
 			}
 			dentalInsurance = append(dentalInsurance, dentalOne)
-			counterDental  +=1
+			counterDental += 1
 			if counterDental == pageSize {
 				break
 			}
@@ -640,7 +721,7 @@ func (db DSPatient) GetPatientByFiltersPaginate(ctx context.Context, addressID s
 			qP = qP.Filter("DueDate <=", filters.EndTime)
 		}
 		if filters.AgentID != "" {
-			if filters.AgentID =="unassigned" {
+			if filters.AgentID == "unassigned" {
 				filters.AgentID = ""
 			}
 			qP = qP.Filter("AgentID =", filters.AgentID)
@@ -669,13 +750,13 @@ func (db DSPatient) GetPatientByFiltersPaginate(ctx context.Context, addressID s
 					continue
 				}
 			}
-			if filters.Status!= "" {
+			if filters.Status != "" {
 				if strings.ToLower(filters.Status) != strings.ToLower(medicalOne.Status.Value) {
 					continue
 				}
 			}
 			medicalInsurance = append(medicalInsurance, medicalOne)
-			counterMedical +=1
+			counterMedical += 1
 			if counterMedical == pageSize {
 				break
 			}
@@ -1014,6 +1095,8 @@ func (db DSPatient) GetPatientByAgentInsurances(ctx context.Context, pID string)
 	patientStore.CreatedOn = patientData.CreatedOn
 	patientStore.CreationDate = patientData.CreationDate
 	patientStore.PatientID = patientData.PatientID
+	patientStore.VisitCount = patientData.VisitCount
+	patientStore.LastAppointment = patientData.LastAppointment
 	return &patientStore, nil
 }
 
