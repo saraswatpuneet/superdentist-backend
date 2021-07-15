@@ -417,10 +417,10 @@ func (db DSPatient) GetPatientByFiltersStats(ctx context.Context, addressID stri
 					mapVisit[vCount] = mapVisit[vCount] + 1
 				}
 			}
-			if _, ok := mapStatus[insurance.Status.Value]; !ok {
-				mapStatus[insurance.Status.Value] = 1
+			if _, ok := mapStatus[insurance.Status.Label]; !ok {
+				mapStatus[insurance.Status.Label] = 1
 			} else {
-				mapStatus[insurance.Status.Value] = mapStatus[insurance.Status.Value] + 1
+				mapStatus[insurance.Status.Label] = mapStatus[insurance.Status.Label] + 1
 			}
 		}
 	}
