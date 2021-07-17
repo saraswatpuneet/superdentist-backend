@@ -718,6 +718,22 @@ func (db *DSClinicMeta) GetAllClinicsByEmail(ctx context.Context, clinicEmailID 
 	return returnedAddresses, nil
 }
 
+
+// SearchClinics ....
+func (db *DSClinicMeta) SearchClinics(ctx context.Context, nameSearch string) ([]contracts.PhysicalClinicMapLocation, error) {
+	returnedAddresses := make([]contracts.PhysicalClinicMapLocation, 0)
+	qP := datastore.NewQuery("ClinicAddress")
+	qP = qP.Filter("Name>=", nameSearch)
+	qP = qP.Filter("Name<=", nameSearch+"~")
+	if global.Options.DSName != "" {
+		qP = qP.Namespace(global.Options.DSName)
+	}
+	keysClinics, err := db.client.GetAll(ctx, qP, &returnedAddresses)
+	if err != nil || len(keysClinics) <= 0 {
+		return nil, fmt.Errorf("clinic with given address id not found: %v", err)
+	}
+	return returnedAddresses, nil
+}
 // GetAllClinicsMeta ....
 func (db *DSClinicMeta) GetAllClinicsMeta(ctx context.Context) ([]contracts.PhysicalClinicMapLocation, error) {
 	returnedAddresses := make([]contracts.PhysicalClinicMapLocation, 0)

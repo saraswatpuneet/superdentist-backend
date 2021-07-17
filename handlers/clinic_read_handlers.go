@@ -80,6 +80,58 @@ func GetPhysicalClinics(c *gin.Context) {
 	clinicMetaDB.Close()
 }
 
+// GetPhysicalClinics ... after registering clinic main account we add multiple locations etc.
+func SearchClinicsByName(c *gin.Context) {
+	log.Infof("Get all clinics associated with admin")
+	ctx := c.Request.Context()
+	searchString := c.Query("searchString")
+	if searchString == "" {
+		c.AbortWithStatusJSON(
+			http.StatusBadRequest,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: "Search string is empty",
+			},
+		)
+		return
+	}
+
+	clinicNameSearch := strings.Title(strings.ToLower(searchString))
+	ctx, span := trace.StartSpan(ctx, "Get all clinics search")
+	defer span.End()
+	clinicMetaDB := datastoredb.NewClinicMetaHandler()
+	err := clinicMetaDB.InitializeDataBase(ctx, "superdentist")
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	registeredClinics, err := clinicMetaDB.SearchClinics(ctx, clinicNameSearch)
+	if err != nil {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError,
+			gin.H{
+				constants.RESPONSE_JSON_DATA:   nil,
+				constants.RESPONSDE_JSON_ERROR: err.Error(),
+			},
+		)
+		return
+	}
+	responseData := contracts.GetClinicAddressResponse{
+		ClinicDetails: registeredClinics,
+	}
+	c.JSON(http.StatusOK, gin.H{
+		constants.RESPONSE_JSON_DATA:   responseData,
+		constants.RESPONSDE_JSON_ERROR: nil,
+	})
+	clinicMetaDB.Close()
+}
+
 // GetAllClinicNameAddressID ... after registering clinic main account we add multiple locations etc.
 func GetAllClinicNameAddressID(c *gin.Context) {
 	log.Infof("Get all clinics associated with admin")
